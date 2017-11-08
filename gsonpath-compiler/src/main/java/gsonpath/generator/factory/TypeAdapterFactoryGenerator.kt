@@ -37,7 +37,7 @@ class TypeAdapterFactoryGenerator(processingEnv: ProcessingEnvironment) : Genera
 
         val packageLocalHandleResults: Map<String, List<HandleResult>> =
                 generatedGsonAdapters.fold(emptyMap()) { map, generatedGsonAdapter ->
-                    val packageName = generatedGsonAdapter.generatedClassName.packageName()
+                    val packageName = generatedGsonAdapter.adapterClassName.packageName()
 
                     val newList: List<HandleResult> =
                             map[packageName]?.plus(generatedGsonAdapter) ?: listOf(generatedGsonAdapter)
@@ -130,13 +130,17 @@ class TypeAdapterFactoryGenerator(processingEnv: ProcessingEnvironment) : Genera
                 .addStatement("Class rawType = type.getRawType()")
 
         for ((currentAdapterIndex, result) in packageLocalGsonAdapters.withIndex()) {
+            val condition = result.adapterGenericTypeClassNames
+                    .map { "rawType.equals(\$T.class)" }
+                    .joinToString(separator = " || ")
+
             if (currentAdapterIndex == 0) {
-                codeBlock.beginControlFlow("if (rawType.equals(\$T.class))", result.originalClassName)
+                codeBlock.beginControlFlow("if ($condition)", *result.adapterGenericTypeClassNames)
             } else {
                 codeBlock.addNewLine() // New line for easier readability.
-                        .nextControlFlow("else if (rawType.equals(\$T.class))", result.originalClassName)
+                        .nextControlFlow("else if ($condition)", *result.adapterGenericTypeClassNames)
             }
-            codeBlock.addStatement("return new \$T(gson)", result.generatedClassName)
+            codeBlock.addStatement("return new \$T(gson)", result.adapterClassName)
         }
 
         codeBlock.endControlFlow()

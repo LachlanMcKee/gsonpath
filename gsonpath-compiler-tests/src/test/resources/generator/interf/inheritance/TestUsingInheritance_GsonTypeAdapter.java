@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.lang.Integer;
 import java.lang.Override;
 
 import javax.annotation.Generated;
@@ -135,5 +136,38 @@ public final class TestUsingInheritance_GsonTypeAdapter extends TypeAdapter<Test
 
     @Override
     public void write(JsonWriter out, TestUsingInheritance value) throws IOException {
+        if (value == null) {
+            out.nullValue();
+            return;
+        }
+
+        // Begin
+        out.beginObject();
+        Integer obj0 = value.getValue3();
+        if (obj0 != null) {
+            out.name("value3");
+            out.value(obj0);
+        }
+
+        Integer obj1 = value.getValue1();
+        if (obj1 != null) {
+            out.name("value1");
+            out.value(obj1);
+        }
+
+
+        // Begin Json1
+        out.name("Json1");
+        out.beginObject();
+        Integer obj2 = value.getValue2();
+        if (obj2 != null) {
+            out.name("Nest2");
+            out.value(obj2);
+        }
+
+        // End Json1
+        out.endObject();
+        // End
+        out.endObject();
     }
 }

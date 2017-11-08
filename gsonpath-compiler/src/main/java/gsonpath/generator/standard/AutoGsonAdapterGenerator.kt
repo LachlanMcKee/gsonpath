@@ -2,7 +2,6 @@ package gsonpath.generator.standard
 
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
-import com.google.gson.stream.JsonWriter
 import com.squareup.javapoet.*
 import gsonpath.*
 import gsonpath.compiler.GsonPathExtension
@@ -12,7 +11,6 @@ import gsonpath.generator.Generator
 import gsonpath.generator.HandleResult
 import gsonpath.generator.interf.ModelInterfaceGenerator
 import gsonpath.model.*
-import java.io.IOException
 import javax.annotation.Generated
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.ElementKind
@@ -65,6 +63,8 @@ class AutoGsonAdapterGenerator(processingEnv: ProcessingEnvironment) : Generator
                 }
 
         val fieldInfoFactory = FieldInfoFactory(processingEnv)
+        val adapterGenericTypeClassNames: Array<ClassName>
+
         if (!isModelInterface) {
             concreteClassName = modelClassName
 
@@ -73,11 +73,16 @@ class AutoGsonAdapterGenerator(processingEnv: ProcessingEnvironment) : Generator
                     properties.fieldsRequireAnnotation,
                     requiresConstructorInjection)
 
+            adapterGenericTypeClassNames = arrayOf(modelClassName)
+
         } else {
             val interfaceInfo = ModelInterfaceGenerator(processingEnv).handle(modelElement)
             concreteClassName = interfaceInfo.parentClassName
 
             fieldInfoList = fieldInfoFactory.getModelFieldsFromInterface(interfaceInfo)
+
+            // The adapter should handle both the interface and concrete class.
+            adapterGenericTypeClassNames = arrayOf(interfaceInfo.parentClassName, modelClassName)
         }
 
         val rootGsonObject = GsonObjectTreeFactory().createGsonObject(fieldInfoList, properties.rootField,
@@ -105,26 +110,13 @@ class AutoGsonAdapterGenerator(processingEnv: ProcessingEnvironment) : Generator
         adapterTypeBuilder.addMethod(createReadMethod(processingEnv, modelClassName, concreteClassName,
                 requiresConstructorInjection, mandatoryInfoMap, rootGsonObject, extensions))
 
-        if (!isModelInterface) {
-            adapterTypeBuilder.addMethod(createWriteMethod(modelClassName, rootGsonObject, properties.serializeNulls))
-
-        } else {
-            // Create an empty method for the write, since we do not support writing for interfaces.
-            val writeMethod = MethodSpec.methodBuilder("write")
-                    .addAnnotation(Override::class.java)
-                    .addModifiers(Modifier.PUBLIC)
-                    .addParameter(JsonWriter::class.java, "out")
-                    .addParameter(modelClassName, "value")
-                    .addException(IOException::class.java)
-
-            adapterTypeBuilder.addMethod(writeMethod.build())
-        }
+        adapterTypeBuilder.addMethod(createWriteMethod(modelClassName, rootGsonObject, properties.serializeNulls))
 
         // Adds any required subtype type adapters depending on the usage of the GsonSubtype annotation.
         addSubTypeTypeAdapters(processingEnv, adapterTypeBuilder, rootGsonObject)
 
         if (writeFile(adapterClassName.packageName(), adapterTypeBuilder)) {
-            return HandleResult(modelClassName, adapterClassName)
+            return HandleResult(adapterGenericTypeClassNames, adapterClassName)
         }
 
         throw ProcessingException("Failed to write generated file: " + adapterClassName.simpleName())

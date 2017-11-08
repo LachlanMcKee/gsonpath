@@ -70,6 +70,21 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
 
     @Override
     public void write(JsonWriter out, TypesList value) throws IOException {
+        if (value == null) {
+            out.nullValue();
+            return;
+        }
+
+        // Begin
+        out.beginObject();
+        Type[] obj0 = value.getItems();
+        if (obj0 != null) {
+            out.name("items");
+            getItemsGsonSubtype().write(out, obj0);
+        }
+
+        // End
+        out.endObject();
     }
 
     private StrictArrayTypeAdapter getItemsGsonSubtype() {

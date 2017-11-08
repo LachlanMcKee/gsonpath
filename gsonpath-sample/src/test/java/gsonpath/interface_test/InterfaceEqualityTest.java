@@ -20,10 +20,26 @@ public class InterfaceEqualityTest {
         compareJsonFiles("InterfaceEqualityVariant1TestJson.json", "InterfaceEqualityVariant2TestJson.json", false);
     }
 
+    @Test
+    public void testCreatingJsonFromInterface() {
+        Gson gson = buildGson();
+
+        InterfaceExample interfaceExample = InterfaceExample.create(
+                1,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        String jsonText = gson.toJson(interfaceExample);
+        Assert.assertEquals("{\"intExample\":1}", jsonText);
+    }
+
     private void compareJsonFiles(String filename1, String filename2, boolean expectEqual) {
-        GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory.class));
-        Gson gson = builder.create();
+        Gson gson = buildGson();
 
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         InterfaceExample sample1 = gson.fromJson(new InputStreamReader(classLoader.getResourceAsStream(filename1)), InterfaceExample.class);
@@ -34,6 +50,12 @@ public class InterfaceEqualityTest {
         } else {
             Assert.assertNotEquals(sample1, sample2);
         }
+    }
+
+    private Gson buildGson() {
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory.class));
+        return builder.create();
     }
 
 }

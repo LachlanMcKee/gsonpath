@@ -10,7 +10,7 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 import java.lang.Override;
-
+import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
@@ -66,5 +66,20 @@ public final class TestFlattenJsonWithInterface_GsonTypeAdapter extends TypeAdap
 
     @Override
     public void write(JsonWriter out, TestFlattenJsonWithInterface value) throws IOException {
+        if (value == null) {
+            out.nullValue();
+            return;
+        }
+
+        // Begin
+        out.beginObject();
+        String obj0 = value.getFlattenExample();
+        if (obj0 != null) {
+            out.name("flattenExample");
+            out.value(obj0);
+        }
+
+        // End
+        out.endObject();
     }
 }

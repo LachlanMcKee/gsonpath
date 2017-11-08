@@ -7,8 +7,11 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import java.lang.Double;
+import java.lang.Integer;
 import java.lang.Override;
-
+import java.lang.String;
+import java.util.Map;
 import javax.annotation.Generated;
 
 @Generated(
@@ -76,5 +79,32 @@ public final class GenericsTest_GsonTypeAdapter extends TypeAdapter<GenericsTest
 
     @Override
     public void write(JsonWriter out, GenericsTest value) throws IOException {
+        if (value == null) {
+            out.nullValue();
+            return;
+        }
+
+        // Begin
+        out.beginObject();
+        String obj0 = value.getValue1();
+        if (obj0 != null) {
+            out.name("value1");
+            out.value(obj0);
+        }
+
+        Map<String, Integer> obj1 = value.getValue2();
+        if (obj1 != null) {
+            out.name("value2");
+            mGson.getAdapter(new com.google.gson.reflect.TypeToken<java.util.Map<java.lang.String, java.lang.Integer>>(){}).write(out, obj1);
+        }
+
+        Double obj2 = value.getValue3();
+        if (obj2 != null) {
+            out.name("value3");
+            out.value(obj2);
+        }
+
+        // End
+        out.endObject();
     }
 }
