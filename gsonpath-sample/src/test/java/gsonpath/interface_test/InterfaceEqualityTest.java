@@ -21,7 +21,7 @@ public class InterfaceEqualityTest {
     }
 
     @Test
-    public void testCreatingJsonFromInterface() {
+    public void givenModelCreated_whenToJsonInvoked_thenExpectJsonTextOutput() {
         Gson gson = buildGson();
 
         InterfaceExample interfaceExample = InterfaceExample.create(
@@ -35,7 +35,7 @@ public class InterfaceEqualityTest {
                 null
         );
         String jsonText = gson.toJson(interfaceExample);
-        Assert.assertEquals("{\"intExample\":1}", jsonText);
+        Assert.assertEquals("Check JSON text exists", "{\"intExample\":1}", jsonText);
     }
 
     private void compareJsonFiles(String filename1, String filename2, boolean expectEqual) {
