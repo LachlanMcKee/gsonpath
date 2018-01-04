@@ -76,6 +76,7 @@ public class GsonUtil {
                 return in.nextInt();
             } catch (NumberFormatException ignored) {
                 // Fall back to return null
+                in.skipValue();
             }
         }
         return null;
@@ -96,6 +97,7 @@ public class GsonUtil {
                 return in.nextLong();
             } catch (NumberFormatException ignored) {
                 // Fall back to return null
+                in.skipValue();
             }
         }
         return null;
@@ -116,6 +118,7 @@ public class GsonUtil {
                 return in.nextDouble();
             } catch (NumberFormatException ignored) {
                 // Fall back to return null
+                in.skipValue();
             }
         }
         return null;
