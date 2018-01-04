@@ -72,7 +72,12 @@ public class GsonUtil {
     @SuppressWarnings("unused")
     public static Integer getIntegerSafely(JsonReader in) throws IOException {
         if (isValidValue(in)) {
-            return in.nextInt();
+            try {
+                return in.nextInt();
+            } catch (NumberFormatException ignored) {
+                // Fall back to return null
+                in.skipValue();
+            }
         }
         return null;
     }
@@ -88,7 +93,12 @@ public class GsonUtil {
     @SuppressWarnings("unused")
     public static Long getLongSafely(JsonReader in) throws IOException {
         if (isValidValue(in)) {
-            return in.nextLong();
+            try {
+                return in.nextLong();
+            } catch (NumberFormatException ignored) {
+                // Fall back to return null
+                in.skipValue();
+            }
         }
         return null;
     }
@@ -104,7 +114,12 @@ public class GsonUtil {
     @SuppressWarnings("unused")
     public static Double getDoubleSafely(JsonReader in) throws IOException {
         if (isValidValue(in)) {
-            return in.nextDouble();
+            try {
+                return in.nextDouble();
+            } catch (NumberFormatException ignored) {
+                // Fall back to return null
+                in.skipValue();
+            }
         }
         return null;
     }
