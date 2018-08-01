@@ -1,10 +1,13 @@
 package gsonpath.model
 
+import com.google.gson.FieldNamingPolicy
 import com.google.gson.annotations.SerializedName
 import com.squareup.javapoet.TypeName
 import gsonpath.GsonFieldValidationType
+import gsonpath.NestedJson
 import gsonpath.ProcessingException
-import gsonpath.RepeatableSerializedName
+import java.lang.reflect.Field
+import java.lang.reflect.InvocationTargetException
 import java.util.regex.Pattern
 import javax.lang.model.element.Element
 
@@ -22,26 +25,6 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
         if (fieldTypeName == TypeName.OBJECT) {
             throw ProcessingException("Invalid field type: $fieldTypeName", fieldInfo.element)
         }
-
-        val serializedName = getSerializedName(fieldInfo)
-        val fieldName = fieldInfo.fieldName
-        val jsonFieldPath: String =
-                if (serializedName != null && serializedName.isNotEmpty()) {
-                    if (metadata.pathSubstitutions.isNotEmpty()) {
-
-                        // Check if the serialized name needs any values to be substituted
-                        metadata.pathSubstitutions.fold(serializedName) { fieldPath, substitution ->
-                            fieldPath.replace("{${substitution.original}}", substitution.replacement)
-                        }
-
-                    } else {
-                        serializedName
-                    }
-
-                } else {
-                    // Since the serialized annotation wasn't specified, we need to apply the naming policy instead.
-                    FieldNamingPolicyMapper.applyFieldNamingPolicy(metadata.gsonFieldNamingPolicy, fieldName)
-                }
 
         // Attempt to find a Nullable or NonNull annotation type.
         val isOptional: Boolean = fieldInfo.annotationNames.any { it == "Nullable" }
@@ -82,12 +65,17 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
 
         val gsonSubTypeMetadata = subTypeMetadataFactory.getGsonSubType(fieldInfo)
 
-        if (jsonFieldPath.contains(metadata.flattenDelimiter.toString())) {
-            addNestedType(gsonPathObject, fieldInfo, jsonFieldPath, metadata.flattenDelimiter, fieldInfoIndex,
-                    isRequired, fieldName, gsonSubTypeMetadata)
+        val jsonFieldPath = getJsonFieldPath(fieldInfo, metadata)
+        when (jsonFieldPath) {
+            is FieldPath.Nested -> {
+                addNestedType(gsonPathObject, fieldInfo, jsonFieldPath, metadata.flattenDelimiter,
+                        fieldInfoIndex, isRequired, gsonSubTypeMetadata)
+            }
 
-        } else {
-            addStandardType(gsonPathObject, fieldInfo, jsonFieldPath, fieldInfoIndex, isRequired, gsonSubTypeMetadata)
+            is FieldPath.Standard -> {
+                addStandardType(gsonPathObject, fieldInfo, jsonFieldPath,
+                        fieldInfoIndex, isRequired, gsonSubTypeMetadata)
+            }
         }
     }
 
@@ -95,27 +83,15 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
     private fun addNestedType(
             gsonPathObject: GsonObject,
             fieldInfo: FieldInfo,
-            initialJsonFieldPath: String,
+            jsonFieldPath: FieldPath.Nested,
             flattenDelimiter: Char,
             fieldInfoIndex: Int,
             isRequired: Boolean,
-            fieldName: String,
             gsonSubTypeMetadata: SubTypeMetadata?) {
-
-        val jsonFieldPath =
-        //
-        // When the last character is a delimiter, we should append the variable name to
-        // the end of the field name, as this may reduce annotation repetition.
-        //
-                if (initialJsonFieldPath[initialJsonFieldPath.length - 1] == flattenDelimiter) {
-                    initialJsonFieldPath + fieldName
-                } else {
-                    initialJsonFieldPath
-                }
 
         // Ensure that the delimiter is correctly escaped before attempting to pathSegments the string.
         val regexSafeDelimiter: Regex = Pattern.quote(flattenDelimiter.toString()).toRegex()
-        val pathSegments: List<String> = jsonFieldPath.split(regexSafeDelimiter)
+        val pathSegments: List<String> = jsonFieldPath.path.split(regexSafeDelimiter)
 
         val lastPathIndex = pathSegments.size - 1
 
@@ -148,7 +124,7 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
             } else {
                 // We have reached the end of this object branch, add the field at the end.
                 try {
-                    val field = GsonField(fieldInfoIndex, fieldInfo, jsonFieldPath, isRequired, gsonSubTypeMetadata)
+                    val field = GsonField(fieldInfoIndex, fieldInfo, jsonFieldPath.path, isRequired, gsonSubTypeMetadata)
                     return@fold (current as GsonObject).addField(pathSegment, field)
 
                 } catch (e: IllegalArgumentException) {
@@ -164,18 +140,51 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
     private fun addStandardType(
             gsonPathObject: GsonObject,
             fieldInfo: FieldInfo,
-            jsonFieldPath: String,
+            jsonFieldPath: FieldPath.Standard,
             fieldInfoIndex: Int,
             isRequired: Boolean,
             gsonSubTypeMetadata: SubTypeMetadata?) {
 
-        if (!gsonPathObject.containsKey(jsonFieldPath)) {
-            gsonPathObject.addField(jsonFieldPath,
-                    GsonField(fieldInfoIndex, fieldInfo, jsonFieldPath, isRequired, gsonSubTypeMetadata))
+        val path = jsonFieldPath.path
+        if (!gsonPathObject.containsKey(path)) {
+            gsonPathObject.addField(path, GsonField(fieldInfoIndex, fieldInfo, path, isRequired, gsonSubTypeMetadata))
 
         } else {
-            throwDuplicateFieldException(fieldInfo.element, jsonFieldPath)
+            throwDuplicateFieldException(fieldInfo.element, path)
         }
+    }
+
+    /**
+     * Applies the gson field naming policy using the given field name.
+     * @param fieldNamingPolicy the field naming policy to apply
+     * *
+     * @param fieldName         the name being altered.
+     * *
+     * @return the altered name.
+     */
+    @Throws(ProcessingException::class)
+    private fun applyFieldNamingPolicy(fieldNamingPolicy: FieldNamingPolicy, fieldName: String): String {
+        //
+        // Unfortunately the field naming policy uses a Field parameter to translate name.
+        // As a result, for now it was decided to create a fake field class which supplies the correct name,
+        // as opposed to copying the logic from GSON and potentially breaking compatibility if they add another enum.
+        //
+        val fieldConstructor = Field::class.java.declaredConstructors[0]
+        fieldConstructor.isAccessible = true
+        val fakeField: Field
+        try {
+            fakeField = fieldConstructor.newInstance(null, fieldName, null, -1, -1, null, null) as Field
+
+        } catch (e: InstantiationException) {
+            throw ProcessingException("Error while creating 'fake' field for naming policy.")
+        } catch (e: IllegalAccessException) {
+            throw ProcessingException("Error while creating 'fake' field for naming policy.")
+        } catch (e: InvocationTargetException) {
+            throw ProcessingException("Error while creating 'fake' field for naming policy.")
+        }
+
+        // Applies the naming transformation on the input field name.
+        return fieldNamingPolicy.translateName(fakeField)
     }
 
     @Throws(ProcessingException::class)
@@ -184,8 +193,43 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
                 "' found. Each tree branch must use a unique value!", field)
     }
 
-    private fun getSerializedName(fieldInfo: FieldInfo): String? {
+    private fun getJsonFieldPath(fieldInfo: FieldInfo,
+                                 metadata: GsonObjectMetadata): FieldPath {
+
+        val serializedName = getSerializedName(fieldInfo, metadata.flattenDelimiter)
+        val path = if (serializedName != null && serializedName.isNotBlank()) {
+            if (metadata.pathSubstitutions.isNotEmpty()) {
+
+                // Check if the serialized name needs any values to be substituted
+                metadata.pathSubstitutions.fold(serializedName) { fieldPath, substitution ->
+                    fieldPath.replace("{${substitution.original}}", substitution.replacement)
+                }
+
+            } else {
+                serializedName
+            }
+
+        } else {
+            // Since the serialized annotation wasn't specified, we need to apply the naming policy instead.
+            applyFieldNamingPolicy(metadata.gsonFieldNamingPolicy, fieldInfo.fieldName)
+        }
+
+        return if (path.contains(metadata.flattenDelimiter)) {
+            FieldPath.Nested(
+                    if (path.last() == metadata.flattenDelimiter) {
+                        path + fieldInfo.fieldName
+                    } else {
+                        path
+                    }
+            )
+        } else {
+            FieldPath.Standard(path)
+        }
+    }
+
+    private fun getSerializedName(fieldInfo: FieldInfo, flattenDelimiter: Char): String? {
         val serializedNameAnnotation = fieldInfo.getAnnotation(SerializedName::class.java)
+        val nestedJson = fieldInfo.getAnnotation(NestedJson::class.java)
 
         // SerializedName 'alternate' is not supported and should fail fast.
         serializedNameAnnotation?.let {
@@ -194,10 +238,25 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
             }
         }
 
-        if (serializedNameAnnotation != null) {
-            return serializedNameAnnotation.value
+        nestedJson?.let {
+            if (it.value.endsWith(flattenDelimiter)) {
+                throw ProcessingException("NestedJson path must not end with $flattenDelimiter", fieldInfo.element)
+            }
         }
 
-        return fieldInfo.getAnnotation(RepeatableSerializedName::class.java)?.value
+        return when {
+            nestedJson != null && serializedNameAnnotation != null -> {
+                nestedJson.value + flattenDelimiter + serializedNameAnnotation.value
+            }
+            nestedJson != null -> nestedJson.value + flattenDelimiter
+            serializedNameAnnotation != null -> serializedNameAnnotation.value
+            else -> null
+        }
     }
+
+    sealed class FieldPath {
+        class Standard(val path: String) : FieldPath()
+        class Nested(val path: String) : FieldPath()
+    }
+
 }

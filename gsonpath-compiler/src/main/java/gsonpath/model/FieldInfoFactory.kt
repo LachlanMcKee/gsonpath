@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import gsonpath.ExcludeField
+import gsonpath.NestedJson
 import gsonpath.ProcessingException
-import gsonpath.RepeatableSerializedName
 import gsonpath.util.*
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
@@ -54,7 +54,7 @@ class FieldInfoFactory(
                     (!it.modifiers.contains(Modifier.FINAL) || useConstructor) &&
 
                     (!fieldsRequireAnnotation || it.getAnnotationEx(SerializedName::class.java) != null ||
-                            it.getAnnotationEx(RepeatableSerializedName::class.java) != null) &&
+                            it.getAnnotationEx(NestedJson::class.java) != null) &&
 
                     // Ignore any excluded fields
                     it.getAnnotationEx(ExcludeField::class.java) == null

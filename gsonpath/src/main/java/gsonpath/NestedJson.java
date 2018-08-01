@@ -9,10 +9,10 @@ import java.lang.annotation.Target;
  * Used to reduce SerializedName repetition. This is especially helpful when duplicating jsonpath numerous times.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.ANNOTATION_TYPE)
-public @interface RepeatableSerializedName {
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
+public @interface NestedJson {
     /**
-     * @return the desired name of the field when it is serialized or deserialized
+     * @return the path of the nesting. Must be delimited by the correct character.
      */
     String value();
 }
