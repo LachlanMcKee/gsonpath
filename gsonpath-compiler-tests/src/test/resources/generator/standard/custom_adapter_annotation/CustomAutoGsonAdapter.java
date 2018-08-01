@@ -1,4 +1,4 @@
-package generator.standard.custom_annotation;
+package generator.standard.custom_adapter_annotation;
 
 import com.google.gson.FieldNamingPolicy;
 import gsonpath.AutoGsonAdapter;

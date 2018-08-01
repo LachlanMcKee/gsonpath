@@ -7,7 +7,7 @@ import org.junit.Test
 class CustomAutoGsonAdapterTest {
     @Test
     fun testCustomAutoGsonAdapterAnnotation() {
-        assertGeneratedContent(TestCriteria("generator/standard/custom_annotation",
+        assertGeneratedContent(TestCriteria("generator/standard/custom_adapter_annotation",
 
                 absoluteSourceNames = listOf(
                         "generator/standard/TestGsonTypeFactory.java"),
