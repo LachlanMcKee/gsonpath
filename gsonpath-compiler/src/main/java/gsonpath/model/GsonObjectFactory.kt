@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 import com.squareup.javapoet.TypeName
 import gsonpath.GsonFieldValidationType
 import gsonpath.ProcessingException
+import gsonpath.RepeatableSerializedName
 import java.util.regex.Pattern
 import javax.lang.model.element.Element
 
@@ -22,27 +23,19 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
             throw ProcessingException("Invalid field type: $fieldTypeName", fieldInfo.element)
         }
 
-        val serializedNameAnnotation = fieldInfo.getAnnotation(SerializedName::class.java)
-
-        // SerializedName 'alternate' is not supported and should fail fast.
-        serializedNameAnnotation?.let {
-            if (it.alternate.isNotEmpty()) {
-                throw ProcessingException("SerializedName 'alternate' feature is not supported", fieldInfo.element)
-            }
-        }
-
+        val serializedName = getSerializedName(fieldInfo)
         val fieldName = fieldInfo.fieldName
         val jsonFieldPath: String =
-                if (serializedNameAnnotation != null && serializedNameAnnotation.value.isNotEmpty()) {
+                if (serializedName != null && serializedName.isNotEmpty()) {
                     if (metadata.pathSubstitutions.isNotEmpty()) {
 
                         // Check if the serialized name needs any values to be substituted
-                        metadata.pathSubstitutions.fold(serializedNameAnnotation.value) { fieldPath, substitution ->
+                        metadata.pathSubstitutions.fold(serializedName) { fieldPath, substitution ->
                             fieldPath.replace("{${substitution.original}}", substitution.replacement)
                         }
 
                     } else {
-                        serializedNameAnnotation.value
+                        serializedName
                     }
 
                 } else {
@@ -189,5 +182,22 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
     private fun throwDuplicateFieldException(field: Element?, jsonKey: String) {
         throw ProcessingException("Unexpected duplicate field '" + jsonKey +
                 "' found. Each tree branch must use a unique value!", field)
+    }
+
+    private fun getSerializedName(fieldInfo: FieldInfo): String? {
+        val serializedNameAnnotation = fieldInfo.getAnnotation(SerializedName::class.java)
+
+        // SerializedName 'alternate' is not supported and should fail fast.
+        serializedNameAnnotation?.let {
+            if (it.alternate.isNotEmpty()) {
+                throw ProcessingException("SerializedName 'alternate' feature is not supported", fieldInfo.element)
+            }
+        }
+
+        if (serializedNameAnnotation != null) {
+            return serializedNameAnnotation.value
+        }
+
+        return fieldInfo.getAnnotation(RepeatableSerializedName::class.java)?.value
     }
 }

@@ -8,7 +8,7 @@ import javax.lang.model.type.NoType
 class AnnotationFetcher(private val typeHandler: TypeHandler, private val fieldGetterFinder: FieldGetterFinder) {
 
     fun <T : Annotation> getAnnotation(parentElement: TypeElement, fieldElement: Element, annotationClass: Class<T>): T? {
-        return fieldElement.getAnnotation(annotationClass)
+        return fieldElement.getAnnotationEx(annotationClass)
                 ?: findMethodAnnotation(parentElement, fieldElement, annotationClass)
     }
 

@@ -9,6 +9,7 @@ import gsonpath.generator.writeFile
 import gsonpath.model.FieldInfoFactory
 import gsonpath.model.FieldInfoFactory.InterfaceFieldInfo
 import gsonpath.model.FieldInfoFactory.InterfaceInfo
+import gsonpath.util.getAnnotationEx
 import gsonpath.util.*
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
@@ -213,7 +214,7 @@ class ModelInterfaceGenerator(
     private class StandardElementInfo(override val underlyingElement: Element) : FieldInfoFactory.ElementInfo {
 
         override fun <T : Annotation> getAnnotation(annotationClass: Class<T>): T? {
-            return underlyingElement.getAnnotation(annotationClass)
+            return underlyingElement.getAnnotationEx(annotationClass)
         }
 
         override val annotationNames: List<String>

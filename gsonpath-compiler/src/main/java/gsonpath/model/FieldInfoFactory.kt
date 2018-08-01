@@ -5,10 +5,8 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import gsonpath.ExcludeField
 import gsonpath.ProcessingException
-import gsonpath.util.AnnotationFetcher
-import gsonpath.util.DefaultValueDetector
-import gsonpath.util.FieldGetterFinder
-import gsonpath.util.TypeHandler
+import gsonpath.RepeatableSerializedName
+import gsonpath.util.*
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
@@ -55,10 +53,11 @@ class FieldInfoFactory(
                     // If a field is final, we only add it if we are using a constructor to assign it.
                     (!it.modifiers.contains(Modifier.FINAL) || useConstructor) &&
 
-                    (!fieldsRequireAnnotation || it.getAnnotation(SerializedName::class.java) != null) &&
+                    (!fieldsRequireAnnotation || it.getAnnotationEx(SerializedName::class.java) != null ||
+                            it.getAnnotationEx(RepeatableSerializedName::class.java) != null) &&
 
                     // Ignore any excluded fields
-                    it.getAnnotation(ExcludeField::class.java) == null
+                    it.getAnnotationEx(ExcludeField::class.java) == null
         }
         return typeHandler.getFields(modelElement, filterFunc)
                 .map { (memberElement, generifiedElement) ->
