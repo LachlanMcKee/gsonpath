@@ -13,16 +13,50 @@ plugins {
     id "org.sonarqube" version "2.5"
 }
 
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.2-SNAPSHOT" // the snapshot ignores generated kotlin code
+}
+
 allprojects {
     repositories {
         jcenter()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
     }
 }
-
 
 sonarqube {
     properties {
         property "sonar.projectName", "Gsonpath"
         property "sonar.projectKey", "gsonpath"
     }
+}
+
+task codeCoverageReport(type: JacocoReport) {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    // Ignore extension code
+    def excludes = ['gsonpath/compiler/ExtensionFieldMetadata.class']
+
+    classDirectories = fileTree(dir: "gsonpath-compiler/build/classes/main") +
+            fileTree(dir: "gsonpath-compiler/build/kotlin-classes/main") +
+            fileTree(dir: "gsonpath-compiler-base/build/classes/main", excludes: excludes) +
+            fileTree(dir: "gsonpath-compiler-base/build/kotlin-classes/main", excludes: excludes)
+
+    sourceDirectories = files('gsonpath-compiler/src/main/java',
+            'gsonpath-compiler-base/src/main/java')
+
+    reports {
+        xml.enabled true
+        xml.destination "${buildDir}/reports/jacoco/report.xml"
+        html.enabled false
+        csv.enabled false
+    }
+}
+
+codeCoverageReport.dependsOn {
+    subprojects*.test
 }

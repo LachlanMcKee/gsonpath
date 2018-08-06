@@ -30,31 +30,3 @@ dependencies {
     testCompile "com.google.testing.compile:compile-testing:0.11"
     testCompile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
 }
-
-
-repositories {
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots/"
-    }
-}
-
-jacocoTestReport {
-    reports {
-        xml.enabled true
-        html.enabled true
-    }
-
-    // Ignore extension code
-    def excludes = ['gsonpath/compiler/ExtensionFieldMetadata.class']
-
-    classDirectories = fileTree(dir: "../gsonpath-compiler/build/classes/main") +
-            fileTree(dir: "../gsonpath-compiler/build/kotlin-classes/main") +
-            fileTree(dir: "../gsonpath-compiler-base/build/classes/main", excludes: excludes) +
-            fileTree(dir: "../gsonpath-compiler-base/build/kotlin-classes/main", excludes: excludes)
-
-    sourceDirectories = files('../gsonpath-compiler/src/main/java',
-            '../gsonpath-compiler-base/src/main/java')
-}
-
-check.dependsOn jacocoTestReport
-test { finalizedBy jacocoTestReport }
