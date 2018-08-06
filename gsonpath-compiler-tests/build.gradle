@@ -2,6 +2,10 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'jacoco'
 
+jacoco {
+    toolVersion = "0.8.2-SNAPSHOT" // the snapshot ignores generated kotlin code
+}
+
 targetCompatibility = JavaVersion.VERSION_1_8
 sourceCompatibility = JavaVersion.VERSION_1_8
 
@@ -27,11 +31,29 @@ dependencies {
     testCompile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
 }
 
+
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+}
+
 jacocoTestReport {
     reports {
         xml.enabled true
-        html.enabled false
+        html.enabled true
     }
+
+    // Ignore extension code
+    def excludes = ['gsonpath/compiler/ExtensionFieldMetadata.class']
+
+    classDirectories = fileTree(dir: "../gsonpath-compiler/build/classes/main") +
+            fileTree(dir: "../gsonpath-compiler/build/kotlin-classes/main") +
+            fileTree(dir: "../gsonpath-compiler-base/build/classes/main", excludes: excludes) +
+            fileTree(dir: "../gsonpath-compiler-base/build/kotlin-classes/main", excludes: excludes)
+
+    sourceDirectories = files('../gsonpath-compiler/src/main/java',
+            '../gsonpath-compiler-base/src/main/java')
 }
 
 check.dependsOn jacocoTestReport
