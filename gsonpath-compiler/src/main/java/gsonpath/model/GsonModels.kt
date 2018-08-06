@@ -1,7 +1,6 @@
 package gsonpath.model
 
-import com.google.common.base.Objects
-import java.util.LinkedHashMap
+import java.util.*
 
 sealed class GsonModel
 
@@ -10,8 +9,7 @@ data class GsonField(val fieldIndex: Int, val fieldInfo: FieldInfo, val jsonPath
         get() = "value_" + jsonPath.replace("[^A-Za-z0-9_]".toRegex(), "_")
 }
 
-class GsonObject : GsonModel() {
-    private val fieldMap: LinkedHashMap<String, GsonModel> = LinkedHashMap()
+data class GsonObject(private val fieldMap: LinkedHashMap<String, GsonModel> = LinkedHashMap()) : GsonModel() {
 
     fun addObject(branchName: String, gsonObject: GsonObject): GsonObject {
         fieldMap[branchName] = gsonObject
@@ -41,21 +39,5 @@ class GsonObject : GsonModel() {
 
     fun containsKey(key: String): Boolean {
         return fieldMap.containsKey(key)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-
-        val gsonObject = other as GsonObject?
-        return Objects.equal(fieldMap, gsonObject!!.fieldMap)
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hashCode(fieldMap)
-    }
-
-    override fun toString(): String {
-        return "GsonObject: " + fieldMap
     }
 }
