@@ -62,7 +62,7 @@ private fun writeGsonFieldWriter(codeBlock: CodeBlock.Builder,
                 val fieldInfo = value.fieldInfo
 
                 // Make sure the field's annotations don't have any problems.
-                validateFieldAnnotations(fieldInfo)
+                SharedFunctions.validateFieldAnnotations(fieldInfo)
 
                 val fieldTypeName = fieldInfo.typeName
                 val isPrimitive = fieldTypeName.isPrimitive

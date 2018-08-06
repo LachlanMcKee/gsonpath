@@ -203,13 +203,12 @@ private fun writeGsonFieldReader(processingEnvironment: ProcessingEnvironment,
     val fieldTypeName = fieldInfo.typeName
 
     // Make sure the field's annotations don't have any problems.
-    validateFieldAnnotations(fieldInfo)
+    SharedFunctions.validateFieldAnnotations(fieldInfo)
 
     // Add a new line to improve readability for the multi-lined mapping.
     codeBlock.addNewLine()
 
     val result = writeGsonFieldReading(codeBlock, gsonField, requiresConstructorInjection)
-
 
     if (result.checkIfNull) {
         codeBlock.beginControlFlow("if (${result.variableName} != null)")
