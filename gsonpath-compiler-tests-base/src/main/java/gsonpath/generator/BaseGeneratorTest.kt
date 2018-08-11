@@ -52,13 +52,13 @@ abstract class BaseGeneratorTest {
                             val absoluteSourceNames: List<String> = emptyList(),
                             val absoluteGeneratedNames: List<String> = emptyList()) {
 
-        internal val sourceFilesSize: Int
+        val sourceFilesSize: Int
             get() = relativeSourceNames.size + absoluteSourceNames.size
 
-        internal val generatedFilesSize: Int
+        val generatedFilesSize: Int
             get() = relativeGeneratedNames.size + absoluteGeneratedNames.size
 
-        internal fun getSourceFileObject(index: Int): JavaFileObject {
+        fun getSourceFileObject(index: Int): JavaFileObject {
             val relativeSize = relativeSourceNames.size
             if (index < relativeSize) {
                 return JavaFileObjects.forResource(resourcePath + "/" + relativeSourceNames[index])
@@ -66,14 +66,12 @@ abstract class BaseGeneratorTest {
             return JavaFileObjects.forResource(absoluteSourceNames[index - relativeSize])
         }
 
-        internal fun getGeneratedFileObject(index: Int): JavaFileObject {
+        fun getGeneratedFileObject(index: Int): JavaFileObject {
             val relativeSize = relativeGeneratedNames.size
             if (index < relativeSize) {
                 return JavaFileObjects.forResource(resourcePath + "/" + relativeGeneratedNames[index])
             }
             return JavaFileObjects.forResource(absoluteGeneratedNames[index - relativeSize])
         }
-
     }
-
 }
