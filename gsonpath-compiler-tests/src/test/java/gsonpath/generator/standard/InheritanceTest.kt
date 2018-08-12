@@ -1,9 +1,10 @@
 package gsonpath.generator.standard
 
-import gsonpath.generator.BaseGeneratorTest
+import gsonpath.generator.GeneratorTester.assertGeneratedContent
+import gsonpath.generator.TestCriteria
 import org.junit.Test
 
-class InheritanceTest : BaseGeneratorTest() {
+class InheritanceTest {
     @Test
     fun testInheritance() {
         assertGeneratedContent(TestCriteria("generator/standard/inheritance",

@@ -1,6 +1,7 @@
 package gsonpath.generator.standard
 
-import gsonpath.generator.BaseGeneratorTest
+import gsonpath.generator.GeneratorTester.assertGeneratedContent
+import gsonpath.generator.TestCriteria
 import org.junit.Test
 
 /**
@@ -10,7 +11,7 @@ import org.junit.Test
  * This can be due to the class being empty, or the content within the class isn't
  * applicable for a type adapter.
  */
-class EmptyAdapterTest : BaseGeneratorTest() {
+class EmptyAdapterTest {
 
     /**
      * Tests the output generated when only a [gsonpath.AutoGsonAdapter] annotation is used.

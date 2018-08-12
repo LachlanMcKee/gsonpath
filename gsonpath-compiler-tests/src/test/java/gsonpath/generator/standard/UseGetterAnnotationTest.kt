@@ -1,9 +1,10 @@
 package gsonpath.generator.standard
 
-import gsonpath.generator.BaseGeneratorTest
+import gsonpath.generator.GeneratorTester.assertGeneratedContent
+import gsonpath.generator.TestCriteria
 import org.junit.Test
 
-class UseGetterAnnotationTest : BaseGeneratorTest() {
+class UseGetterAnnotationTest {
     @Test
     fun testDataClassJavaRepresentation() {
         assertGeneratedContent(TestCriteria("generator/standard/use_getter_annotation/",

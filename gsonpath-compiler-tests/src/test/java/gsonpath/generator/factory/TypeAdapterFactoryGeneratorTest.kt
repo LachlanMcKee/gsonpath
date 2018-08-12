@@ -1,16 +1,18 @@
 package gsonpath.generator.factory
 
-import com.google.common.truth.Truth.*
+import com.google.common.truth.Truth.assertAbout
+import com.google.testing.compile.JavaFileObjects
 import com.google.testing.compile.JavaSourceSubjectFactory
 import com.google.testing.compile.JavaSourcesSubjectFactory
 import gsonpath.GsonProcessorImpl
-import gsonpath.generator.BaseGeneratorTest
+import gsonpath.generator.GeneratorTester.assertGeneratedContent
+import gsonpath.generator.TestCriteria
 import org.junit.Test
 
-class TypeAdapterFactoryGeneratorTest : BaseGeneratorTest() {
+class TypeAdapterFactoryGeneratorTest {
     @Test
     fun givenTypeAdaptersAndTypeFactory_whenProcessorRuns_expectFactoryImplAndLoaders() {
-        assertGeneratedContent(BaseGeneratorTest.TestCriteria("generator/factory",
+        assertGeneratedContent(TestCriteria("generator/factory",
 
                 relativeSourceNames = listOf(
                         "TestGsonTypeFactory.java",
@@ -28,10 +30,8 @@ class TypeAdapterFactoryGeneratorTest : BaseGeneratorTest() {
 
     @Test
     fun givenNoTypeAdaptersAndNoTypeAdapterFactory_whenProcessorRuns_expectNoErrors() {
-        val criteria = BaseGeneratorTest.TestCriteria("generator/factory",
-                relativeSourceNames = listOf("NonGsonPathFile.java"))
-
-        assertAbout(JavaSourceSubjectFactory.javaSource()).that(criteria.getSourceFileObject(0))
+        assertAbout(JavaSourceSubjectFactory.javaSource())
+                .that(JavaFileObjects.forResource("generator/factory/NonGsonPathFile.java"))
                 .processedWith(GsonProcessorImpl())
                 .compilesWithoutError()
     }
@@ -68,14 +68,10 @@ class TypeAdapterFactoryGeneratorTest : BaseGeneratorTest() {
     }
 
     private fun assertTypeAdapterFactoryFailure(typeAdapterFactoryFileName: List<String>, errorMessage: String) {
-        val criteria = BaseGeneratorTest.TestCriteria("generator/factory",
-                relativeSourceNames = listOf("TestLoaderSource.java").plus(typeAdapterFactoryFileName)
-        )
-
-        val sourceFilesSize = criteria.sourceFilesSize
-        val sources = (0..sourceFilesSize - 1).map { criteria.getSourceFileObject(it) }
-
-        assertAbout(JavaSourcesSubjectFactory.javaSources()).that(sources)
+        assertAbout(JavaSourcesSubjectFactory.javaSources())
+                .that(listOf(JavaFileObjects.forResource("generator/factory/TestLoaderSource.java"))
+                        .plus(typeAdapterFactoryFileName.map { JavaFileObjects.forResource("generator/factory/$it") })
+                )
                 .processedWith(GsonProcessorImpl())
                 .failsToCompile()
                 .withErrorContaining(errorMessage)

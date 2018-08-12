@@ -1,9 +1,10 @@
 package gsonpath.generator.standard
 
-import gsonpath.generator.BaseGeneratorTest
+import gsonpath.generator.GeneratorTester.assertGeneratedContent
+import gsonpath.generator.TestCriteria
 import org.junit.Test
 
-class NestedJsonTest : BaseGeneratorTest() {
+class NestedJsonTest {
     @Test
     fun testFlatteningUsingFields() {
         assertGeneratedContent(TestCriteria("generator/standard/nested_json/field_nesting",

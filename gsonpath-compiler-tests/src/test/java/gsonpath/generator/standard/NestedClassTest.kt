@@ -1,9 +1,10 @@
 package gsonpath.generator.standard
 
-import gsonpath.generator.BaseGeneratorTest
+import gsonpath.generator.GeneratorTester.assertGeneratedContent
+import gsonpath.generator.TestCriteria
 import org.junit.Test
 
-class NestedClassTest : BaseGeneratorTest() {
+class NestedClassTest {
     @Test
     fun testNestedClasses() {
         assertGeneratedContent(TestCriteria("generator/standard/nested_class",

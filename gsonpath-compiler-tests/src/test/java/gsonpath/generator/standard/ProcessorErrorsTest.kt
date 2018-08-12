@@ -1,14 +1,12 @@
 package gsonpath.generator.standard
 
+import com.google.common.truth.Truth.assertAbout
 import com.google.testing.compile.JavaFileObjects
+import com.google.testing.compile.JavaSourceSubjectFactory.javaSource
 import gsonpath.GsonProcessorImpl
-import gsonpath.generator.BaseGeneratorTest
 import org.junit.Test
 
-import com.google.common.truth.Truth.assertAbout
-import com.google.testing.compile.JavaSourceSubjectFactory.javaSource
-
-class ProcessorErrorsTest : BaseGeneratorTest() {
+class ProcessorErrorsTest {
     @Test
     fun testInvalidFieldType() {
         val source = JavaFileObjects.forResource("generator/standard/processor_errors/TestInvalidFieldTypeError.java")

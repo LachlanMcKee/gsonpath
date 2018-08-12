@@ -8,18 +8,18 @@ import com.google.testing.compile.ProcessedCompileTesterFactory
 import gsonpath.GsonProcessorImpl
 import javax.tools.JavaFileObject
 
-abstract class BaseGeneratorTest {
+object GeneratorTester {
 
-    protected fun assertGeneratedContent(criteria: TestCriteria) {
+    fun assertGeneratedContent(criteria: TestCriteria) {
         val sourceFilesSize = criteria.sourceFilesSize
 
         // Add all the required 'source' files.
         val testerFactory: ProcessedCompileTesterFactory = if (sourceFilesSize == 1) {
-            assertAbout(javaSource()).that(criteria.getSourceFileObject(0))
+            assertAbout(javaSource()).that(getSourceFileObject(criteria, 0))
 
         } else {
             // Since we have multiple sources, we need to use a slightly different assert.
-            val sources = (0 until sourceFilesSize).map { criteria.getSourceFileObject(it) }
+            val sources = (0 until sourceFilesSize).map { getSourceFileObject(criteria, it) }
             assertAbout(javaSources()).that(sources)
         }
 
@@ -29,7 +29,7 @@ abstract class BaseGeneratorTest {
                 .apply {
                     // Add all the required 'generated' files based off the input source files.
                     val generatedSources = (0 until criteria.generatedFilesSize).map {
-                        criteria.getGeneratedFileObject(it)
+                        getGeneratedFileObject(criteria, it)
                     }
 
                     if (generatedSources.size == 1) {
@@ -42,32 +42,23 @@ abstract class BaseGeneratorTest {
                 }
     }
 
-    class TestCriteria(private val resourcePath: String,
-                       val relativeSourceNames: List<String> = emptyList(),
-                       val relativeGeneratedNames: List<String> = emptyList(),
-                       val absoluteSourceNames: List<String> = emptyList(),
-                       private val absoluteGeneratedNames: List<String> = emptyList()) {
-
-        val sourceFilesSize: Int
-            get() = relativeSourceNames.size + absoluteSourceNames.size
-
-        val generatedFilesSize: Int
-            get() = relativeGeneratedNames.size + absoluteGeneratedNames.size
-
-        fun getSourceFileObject(index: Int): JavaFileObject {
-            val relativeSize = relativeSourceNames.size
+    private fun getSourceFileObject(criteria: TestCriteria, index: Int): JavaFileObject {
+        return criteria.let {
+            val relativeSize = it.relativeSourceNames.size
             if (index < relativeSize) {
-                return JavaFileObjects.forResource(resourcePath + "/" + relativeSourceNames[index])
+                return JavaFileObjects.forResource(it.resourcePath + "/" + it.relativeSourceNames[index])
             }
-            return JavaFileObjects.forResource(absoluteSourceNames[index - relativeSize])
+            JavaFileObjects.forResource(it.absoluteSourceNames[index - relativeSize])
         }
+    }
 
-        fun getGeneratedFileObject(index: Int): JavaFileObject {
-            val relativeSize = relativeGeneratedNames.size
+    private fun getGeneratedFileObject(criteria: TestCriteria, index: Int): JavaFileObject {
+        return criteria.let {
+            val relativeSize = it.relativeGeneratedNames.size
             if (index < relativeSize) {
-                return JavaFileObjects.forResource(resourcePath + "/" + relativeGeneratedNames[index])
+                return JavaFileObjects.forResource(it.resourcePath + "/" + it.relativeGeneratedNames[index])
             }
-            return JavaFileObjects.forResource(absoluteGeneratedNames[index - relativeSize])
+            JavaFileObjects.forResource(it.absoluteGeneratedNames[index - relativeSize])
         }
     }
 }

@@ -1,14 +1,14 @@
 package gsonpath.generator.standard
 
+import com.google.common.truth.Truth.assertAbout
 import com.google.testing.compile.JavaFileObjects
+import com.google.testing.compile.JavaSourceSubjectFactory.javaSource
 import gsonpath.GsonProcessorImpl
-import gsonpath.generator.BaseGeneratorTest
+import gsonpath.generator.GeneratorTester.assertGeneratedContent
+import gsonpath.generator.TestCriteria
 import org.junit.Test
 
-import com.google.common.truth.Truth.assertAbout
-import com.google.testing.compile.JavaSourceSubjectFactory.javaSource
-
-class SubstitutionTest : BaseGeneratorTest() {
+class SubstitutionTest {
     @Test
     fun testValidSubstitution() {
         assertGeneratedContent(TestCriteria("generator/standard/substitution/valid",

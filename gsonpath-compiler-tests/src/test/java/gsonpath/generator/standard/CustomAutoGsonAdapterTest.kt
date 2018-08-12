@@ -1,9 +1,10 @@
 package gsonpath.generator.standard
 
-import gsonpath.generator.BaseGeneratorTest
+import gsonpath.generator.GeneratorTester.assertGeneratedContent
+import gsonpath.generator.TestCriteria
 import org.junit.Test
 
-class CustomAutoGsonAdapterTest : BaseGeneratorTest() {
+class CustomAutoGsonAdapterTest {
     @Test
     fun testCustomAutoGsonAdapterAnnotation() {
         assertGeneratedContent(TestCriteria("generator/standard/custom_annotation",

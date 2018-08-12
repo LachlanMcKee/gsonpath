@@ -1,9 +1,10 @@
 package gsonpath.generator.standard
 
-import gsonpath.generator.BaseGeneratorTest
+import gsonpath.generator.GeneratorTester.assertGeneratedContent
+import gsonpath.generator.TestCriteria
 import org.junit.Test
 
-class FieldValidationTypeTest : BaseGeneratorTest() {
+class FieldValidationTypeTest {
     @Test
     fun testValidateExplicitNonNull() {
         assertGeneratedContent(TestCriteria("generator/standard/field_policy/validate_explicit_non_null",

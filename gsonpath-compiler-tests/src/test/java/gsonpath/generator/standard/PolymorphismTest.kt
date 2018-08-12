@@ -1,12 +1,14 @@
 package gsonpath.generator.standard
 
 import com.google.common.truth.Truth
+import com.google.testing.compile.JavaFileObjects
 import com.google.testing.compile.JavaSourcesSubjectFactory
 import gsonpath.GsonProcessorImpl
-import gsonpath.generator.BaseGeneratorTest
+import gsonpath.generator.GeneratorTester.assertGeneratedContent
+import gsonpath.generator.TestCriteria
 import org.junit.Test
 
-class PolymorphismTest : BaseGeneratorTest() {
+class PolymorphismTest {
     @Test
     fun givenStringKeys_whenProcessorExecuted_expectValidGsonTypeAdapter() {
         assertGeneratedContent(TestCriteria("generator/standard/polymorphism/string_keys",
@@ -194,18 +196,11 @@ class PolymorphismTest : BaseGeneratorTest() {
     }
 
     private fun assertPolymorphismFailure(className: String, errorMessage: String) {
-        val criteria = TestCriteria("generator/standard/polymorphism/failures",
-
-                absoluteSourceNames = listOf(
-                        "generator/standard/TestGsonTypeFactory.java"),
-
-                relativeSourceNames = listOf(
-                        className))
-
-        val sourceFilesSize = criteria.sourceFilesSize
-        val sources = (0..sourceFilesSize - 1).map { criteria.getSourceFileObject(it) }
-
-        Truth.assertAbout(JavaSourcesSubjectFactory.javaSources()).that(sources)
+        Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
+                .that(listOf(
+                        JavaFileObjects.forResource("generator/standard/TestGsonTypeFactory.java"),
+                        JavaFileObjects.forResource("generator/standard/polymorphism/failures/$className")
+                ))
                 .processedWith(GsonProcessorImpl())
                 .failsToCompile()
                 .withErrorContaining(errorMessage)

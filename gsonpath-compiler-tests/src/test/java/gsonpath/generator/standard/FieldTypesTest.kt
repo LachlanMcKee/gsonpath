@@ -1,9 +1,10 @@
 package gsonpath.generator.standard
 
-import gsonpath.generator.BaseGeneratorTest
+import gsonpath.generator.GeneratorTester.assertGeneratedContent
+import gsonpath.generator.TestCriteria
 import org.junit.Test
 
-class FieldTypesTest : BaseGeneratorTest() {
+class FieldTypesTest {
     @Test
     fun testValidPrimitives() {
         assertGeneratedContent(TestCriteria("generator/standard/field_types/primitives/valid",
