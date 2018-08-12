@@ -1,28 +1,26 @@
 package gsonpath.generator.interf
 
 import com.squareup.javapoet.*
+import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
-import gsonpath.generator.Generator
+import gsonpath.compiler.addNewLine
+import gsonpath.compiler.generateClassName
+import gsonpath.generator.writeFile
 import gsonpath.model.InterfaceFieldInfo
 import gsonpath.model.InterfaceInfo
 import java.util.*
+import javax.annotation.Generated
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
-import javax.lang.model.type.ExecutableType
-import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.TypeName
-import com.squareup.javapoet.MethodSpec
-import com.squareup.javapoet.TypeSpec
-import gsonpath.compiler.generateClassName
-import gsonpath.compiler.addNewLine
-import javax.annotation.Generated
 import javax.lang.model.type.DeclaredType
+import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.TypeMirror
 
-internal class ModelInterfaceGenerator(processingEnv: ProcessingEnvironment) : Generator(processingEnv) {
+internal class ModelInterfaceGenerator(private val processingEnv: ProcessingEnvironment) {
 
     @Throws(ProcessingException::class)
     fun handle(element: TypeElement): InterfaceInfo {
@@ -225,7 +223,7 @@ internal class ModelInterfaceGenerator(processingEnv: ProcessingEnvironment) : G
                 .addStatement("\t\t'}'", modelClassName.simpleName())
                 .build())
 
-        if (!writeFile(outputClassName.packageName(), typeBuilder)) {
+        if (!typeBuilder.writeFile(processingEnv, outputClassName.packageName())) {
             throw ProcessingException("Failed to write generated file: " + outputClassName.simpleName())
         }
 
