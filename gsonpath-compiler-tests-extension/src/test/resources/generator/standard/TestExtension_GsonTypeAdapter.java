@@ -1,4 +1,4 @@
-package generator.standard.field_annotations.exclude;
+package generator.standard;
 
 import static gsonpath.GsonUtil.*;
 
@@ -17,21 +17,21 @@ import javax.annotation.Generated;
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestExclude_GsonTypeAdapter extends TypeAdapter<TestExclude> {
+public final class TestExtension_GsonTypeAdapter extends TypeAdapter<TestExtension> {
     private final Gson mGson;
 
-    public TestExclude_GsonTypeAdapter(Gson gson) {
+    public TestExtension_GsonTypeAdapter(Gson gson) {
         this.mGson = gson;
     }
 
     @Override
-    public TestExclude read(JsonReader in) throws IOException {
+    public TestExtension read(JsonReader in) throws IOException {
 
         // Ensure the object is not null.
         if (!isValidValue(in)) {
             return null;
         }
-        TestExclude result = new TestExclude();
+        TestExtension result = new TestExtension();
 
         int jsonFieldCounter0 = 0;
         in.beginObject();
@@ -64,7 +64,7 @@ public final class TestExclude_GsonTypeAdapter extends TypeAdapter<TestExclude> 
     }
 
     @Override
-    public void write(JsonWriter out, TestExclude value) throws IOException {
+    public void write(JsonWriter out, TestExtension value) throws IOException {
         if (value == null) {
             out.nullValue();
             return;
