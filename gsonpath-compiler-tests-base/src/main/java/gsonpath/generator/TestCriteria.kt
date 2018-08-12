@@ -1,8 +1,5 @@
 package gsonpath.generator
 
-import com.google.testing.compile.JavaFileObjects
-import javax.tools.JavaFileObject
-
 class TestCriteria(val resourcePath: String,
                    val relativeSourceNames: List<String> = emptyList(),
                    val relativeGeneratedNames: List<String> = emptyList(),
