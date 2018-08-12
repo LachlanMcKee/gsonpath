@@ -6,16 +6,14 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
 import java.io.IOException;
-import java.lang.Integer;
 import java.lang.Override;
-
+import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
-        value = "gsonpath.GsonProcessor",
-        comments = "https://github.com/LachlanMcKee/gsonpath"
+    value = "gsonpath.GsonProcessor",
+    comments = "https://github.com/LachlanMcKee/gsonpath"
 )
 public final class TestExtension_GsonTypeAdapter extends TypeAdapter<TestExtension> {
     private final Gson mGson;
@@ -26,7 +24,6 @@ public final class TestExtension_GsonTypeAdapter extends TypeAdapter<TestExtensi
 
     @Override
     public TestExtension read(JsonReader in) throws IOException {
-
         // Ensure the object is not null.
         if (!isValidValue(in)) {
             return null;
@@ -46,9 +43,19 @@ public final class TestExtension_GsonTypeAdapter extends TypeAdapter<TestExtensi
                 case "element1":
                     jsonFieldCounter0++;
 
-                    Integer value_element1 = mGson.getAdapter(Integer.class).read(in);
+                    String value_element1 = mGson.getAdapter(String.class).read(in);
                     if (value_element1 != null) {
                         result.element1 = value_element1;
+                    }
+
+                    // Gsonpath Extensions
+                    if (value_element1 != null) {
+
+                        // Extension - 'EmptyStringToNull' Annotation
+                        if (value_element1.trim().length() == 0) {
+                            value_element1 = null;
+                        }
+
                     }
                     break;
 
@@ -57,7 +64,6 @@ public final class TestExtension_GsonTypeAdapter extends TypeAdapter<TestExtensi
                     break;
             }
         }
-
 
         in.endObject();
         return result;
@@ -72,9 +78,11 @@ public final class TestExtension_GsonTypeAdapter extends TypeAdapter<TestExtensi
 
         // Begin
         out.beginObject();
-        int obj0 = value.element1;
-        out.name("element1");
-        mGson.getAdapter(Integer.class).write(out, obj0);
+        String obj0 = value.element1;
+        if (obj0 != null) {
+            out.name("element1");
+            mGson.getAdapter(String.class).write(out, obj0);
+        }
 
         // End
         out.endObject();

@@ -1,11 +1,10 @@
 package generator.standard;
 
 import gsonpath.AutoGsonAdapter;
-import gsonpath.ExcludeField;
+import gsonpath.extension.EmptyStringToNull;
 
 @AutoGsonAdapter
 public class TestExtension {
-    public int element1;
-    @ExcludeField
-    public int element2;
+    @EmptyStringToNull
+    public String element1;
 }
