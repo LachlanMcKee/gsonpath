@@ -1,56 +1,52 @@
 package gsonpath.generator
 
-import com.google.testing.compile.JavaFileObjects
-import com.google.testing.compile.ProcessedCompileTesterFactory
-import gsonpath.GsonProcessorImpl
-
-import javax.tools.JavaFileObject
-import java.util.Arrays
-
 import com.google.common.truth.Truth.assertAbout
+import com.google.testing.compile.JavaFileObjects
 import com.google.testing.compile.JavaSourceSubjectFactory.javaSource
 import com.google.testing.compile.JavaSourcesSubjectFactory.javaSources
+import com.google.testing.compile.ProcessedCompileTesterFactory
+import gsonpath.GsonProcessorImpl
+import javax.tools.JavaFileObject
 
 abstract class BaseGeneratorTest {
 
     protected fun assertGeneratedContent(criteria: TestCriteria) {
-        val testerFactory: ProcessedCompileTesterFactory
+        val sourceFilesSize = criteria.sourceFilesSize
 
         // Add all the required 'source' files.
-        val sourceFilesSize = criteria.sourceFilesSize
-        if (sourceFilesSize == 1) {
-            testerFactory = assertAbout(javaSource()).that(criteria.getSourceFileObject(0))
+        val testerFactory: ProcessedCompileTesterFactory = if (sourceFilesSize == 1) {
+            assertAbout(javaSource()).that(criteria.getSourceFileObject(0))
 
         } else {
             // Since we have multiple sources, we need to use a slightly different assert.
-            val sources = (0..sourceFilesSize - 1).map { criteria.getSourceFileObject(it) }
-            testerFactory = assertAbout(javaSources()).that(sources)
+            val sources = (0 until sourceFilesSize).map { criteria.getSourceFileObject(it) }
+            assertAbout(javaSources()).that(sources)
         }
 
-        val predicateClause = testerFactory.processedWith(GsonProcessorImpl())
+        testerFactory.processedWith(GsonProcessorImpl())
                 .compilesWithoutError()
                 .and()
+                .apply {
+                    // Add all the required 'generated' files based off the input source files.
+                    val generatedSources = (0 until criteria.generatedFilesSize).map {
+                        criteria.getGeneratedFileObject(it)
+                    }
 
-        // Add all the required 'generated' files based off the input source files.
-        val generatedFilesSize = criteria.generatedFilesSize
-        val generatedSources = arrayOfNulls<JavaFileObject>(generatedFilesSize)
-        for (i in 0..generatedFilesSize - 1) {
-            generatedSources[i] = criteria.getGeneratedFileObject(i)
-        }
+                    if (generatedSources.size == 1) {
+                        generatesSources(generatedSources.first())
 
-        if (generatedSources.size == 1) {
-            predicateClause.generatesSources(generatedSources[0])
-
-        } else {
-            predicateClause.generatesSources(generatedSources[0], *Arrays.copyOfRange<JavaFileObject>(generatedSources, 1, generatedSources.size))
-        }
+                    } else {
+                        generatesSources(generatedSources.first(),
+                                *generatedSources.subList(1, generatedSources.size).toTypedArray())
+                    }
+                }
     }
 
-    data class TestCriteria(private val resourcePath: String,
-                            val relativeSourceNames: List<String> = emptyList(),
-                            val relativeGeneratedNames: List<String> = emptyList(),
-                            val absoluteSourceNames: List<String> = emptyList(),
-                            val absoluteGeneratedNames: List<String> = emptyList()) {
+    class TestCriteria(private val resourcePath: String,
+                       val relativeSourceNames: List<String> = emptyList(),
+                       val relativeGeneratedNames: List<String> = emptyList(),
+                       val absoluteSourceNames: List<String> = emptyList(),
+                       private val absoluteGeneratedNames: List<String> = emptyList()) {
 
         val sourceFilesSize: Int
             get() = relativeSourceNames.size + absoluteSourceNames.size
