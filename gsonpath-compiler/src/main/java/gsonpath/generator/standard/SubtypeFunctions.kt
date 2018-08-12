@@ -8,12 +8,13 @@ import com.google.gson.internal.Streams
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import com.squareup.javapoet.*
+import gsonpath.GsonSubTypeFailureException
 import gsonpath.GsonSubTypeFailureOutcome
 import gsonpath.GsonSubtype
-import gsonpath.GsonSubTypeFailureException
 import gsonpath.ProcessingException
 import gsonpath.compiler.addComment
 import gsonpath.compiler.isFieldCollectionType
+import gsonpath.generator.standard.SharedFunctions.getMirroredClass
 import gsonpath.internal.CollectionTypeAdapter
 import gsonpath.internal.StrictArrayTypeAdapter
 import gsonpath.model.GsonField
@@ -25,7 +26,6 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
 import javax.lang.model.type.ArrayType
 import javax.lang.model.type.DeclaredType
-import javax.lang.model.type.MirroredTypeException
 import javax.lang.model.type.TypeMirror
 
 val arrayTypeAdapterClassName: ClassName = ClassName.get(StrictArrayTypeAdapter::class.java)
@@ -61,6 +61,12 @@ fun addSubTypeTypeAdapters(processingEnv: ProcessingEnvironment, typeSpecBuilder
 fun getSubTypeGetterName(gsonField: GsonField): String {
     val variableName = getSubTypeAdapterVariableName(gsonField)
     return "get${variableName[0].toUpperCase()}${variableName.substring(1)}"
+}
+
+private fun getGsonSubTypeKeyAndClass(key: String,
+                                      gsonField: GsonField,
+                                      accessorFunc: () -> Unit): GsonSubTypeKeyAndClass {
+    return GsonSubTypeKeyAndClass(key, getMirroredClass(gsonField, accessorFunc))
 }
 
 /**
@@ -102,38 +108,17 @@ private fun validateGsonSubType(processingEnv: ProcessingEnvironment, gsonField:
     //
     val genericGsonSubTypeKeys: List<GsonSubTypeKeyAndClass> =
             when (keyType) {
-                SubTypeKeyType.STRING ->
-                    gsonSubType.stringValueSubtypes.map { it ->
-                        try {
-                            it.subtype
-                            throw ProcessingException("Unexpected annotation processing defect while obtaining class.",
-                                    gsonField.fieldInfo.element)
-                        } catch (mte: MirroredTypeException) {
-                            GsonSubTypeKeyAndClass("\"${it.value}\"", mte.typeMirror)
-                        }
-                    }
+                SubTypeKeyType.STRING -> gsonSubType.stringValueSubtypes.map {
+                    getGsonSubTypeKeyAndClass("\"${it.value}\"", gsonField) { it.subtype }
+                }
 
-                SubTypeKeyType.INTEGER ->
-                    gsonSubType.integerValueSubtypes.map { it ->
-                        try {
-                            it.subtype
-                            throw ProcessingException("Unexpected annotation processing defect while obtaining class.",
-                                    gsonField.fieldInfo.element)
-                        } catch (mte: MirroredTypeException) {
-                            GsonSubTypeKeyAndClass("${it.value}", mte.typeMirror)
-                        }
-                    }
+                SubTypeKeyType.INTEGER -> gsonSubType.integerValueSubtypes.map {
+                    getGsonSubTypeKeyAndClass(it.value.toString(), gsonField) { it.subtype }
+                }
 
-                SubTypeKeyType.BOOLEAN ->
-                    gsonSubType.booleanValueSubtypes.map { it ->
-                        try {
-                            it.subtype
-                            throw ProcessingException("Unexpected annotation processing defect while obtaining class.",
-                                    gsonField.fieldInfo.element)
-                        } catch (mte: MirroredTypeException) {
-                            GsonSubTypeKeyAndClass("${it.value}", mte.typeMirror)
-                        }
-                    }
+                SubTypeKeyType.BOOLEAN -> gsonSubType.booleanValueSubtypes.map {
+                    getGsonSubTypeKeyAndClass(it.value.toString(), gsonField) { it.subtype }
+                }
             }
 
     // Ensure that each subtype inherits from the annotated field.
@@ -143,13 +128,7 @@ private fun validateGsonSubType(processingEnv: ProcessingEnvironment, gsonField:
     }
 
     // Inspect the failure outcome values.
-    val defaultTypeMirror: TypeMirror
-    try {
-        gsonSubType.defaultType
-        throw ProcessingException("Unexpected annotation processing defect while obtaining class.", gsonField.fieldInfo.element)
-    } catch (mte: MirroredTypeException) {
-        defaultTypeMirror = mte.typeMirror
-    }
+    val defaultTypeMirror = getMirroredClass(gsonField) { gsonSubType.defaultType }
 
     val defaultsElement = processingEnv.typeUtils.asElement(defaultTypeMirror)
     if (defaultsElement != null) {
