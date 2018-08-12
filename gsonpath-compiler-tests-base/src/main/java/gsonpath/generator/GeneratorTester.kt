@@ -11,7 +11,7 @@ import javax.tools.JavaFileObject
 object GeneratorTester {
 
     fun assertGeneratedContent(criteria: TestCriteria) {
-        val sourceFilesSize = criteria.sourceFilesSize
+        val sourceFilesSize = criteria.absoluteSourceNames.size + criteria.relativeSourceNames.size
 
         // Add all the required 'source' files.
         val testerFactory: ProcessedCompileTesterFactory = if (sourceFilesSize == 1) {
@@ -28,7 +28,7 @@ object GeneratorTester {
                 .and()
                 .apply {
                     // Add all the required 'generated' files based off the input source files.
-                    val generatedSources = (0 until criteria.generatedFilesSize).map {
+                    val generatedSources = (0 until criteria.relativeGeneratedNames.size).map {
                         getGeneratedFileObject(criteria, it)
                     }
 
@@ -46,19 +46,16 @@ object GeneratorTester {
         return criteria.let {
             val relativeSize = it.relativeSourceNames.size
             if (index < relativeSize) {
-                return JavaFileObjects.forResource(it.resourcePath + "/" + it.relativeSourceNames[index])
+                JavaFileObjects.forResource(it.resourcePath + "/" + it.relativeSourceNames[index])
+            } else {
+                JavaFileObjects.forResource(it.absoluteSourceNames[index - relativeSize])
             }
-            JavaFileObjects.forResource(it.absoluteSourceNames[index - relativeSize])
         }
     }
 
     private fun getGeneratedFileObject(criteria: TestCriteria, index: Int): JavaFileObject {
         return criteria.let {
-            val relativeSize = it.relativeGeneratedNames.size
-            if (index < relativeSize) {
-                return JavaFileObjects.forResource(it.resourcePath + "/" + it.relativeGeneratedNames[index])
-            }
-            JavaFileObjects.forResource(it.absoluteGeneratedNames[index - relativeSize])
+            JavaFileObjects.forResource(it.resourcePath + "/" + it.relativeGeneratedNames[index])
         }
     }
 }
