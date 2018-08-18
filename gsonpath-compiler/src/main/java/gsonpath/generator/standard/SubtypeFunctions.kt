@@ -13,8 +13,9 @@ import gsonpath.GsonSubTypeFailureOutcome
 import gsonpath.GsonSubtype
 import gsonpath.ProcessingException
 import gsonpath.compiler.addComment
-import gsonpath.compiler.isFieldCollectionType
 import gsonpath.generator.standard.SharedFunctions.getMirroredClass
+import gsonpath.generator.standard.SharedFunctions.getRawType
+import gsonpath.generator.standard.SharedFunctions.isArrayType
 import gsonpath.internal.CollectionTypeAdapter
 import gsonpath.internal.StrictArrayTypeAdapter
 import gsonpath.model.GsonField
@@ -24,8 +25,6 @@ import java.io.IOException
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
-import javax.lang.model.type.ArrayType
-import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.TypeMirror
 
 val arrayTypeAdapterClassName: ClassName = ClassName.get(StrictArrayTypeAdapter::class.java)
@@ -39,16 +38,10 @@ fun addSubTypeTypeAdapters(processingEnv: ProcessingEnvironment, typeSpecBuilder
             .forEach { (subTypeAnnotation, gsonField) ->
                 // Ignore any fields that do not have a GsonSubtype annotation.
                 val validatedGsonSubType = validateGsonSubType(processingEnv, gsonField, subTypeAnnotation)
-
-                val typeAdapterWrapperClassName =
-                        if (isArrayType(processingEnv, gsonField)) {
-                            arrayTypeAdapterClassName
-                        } else {
-                            getCollectionTypeAdapterTypeName(gsonField)
-                        }
+                val typeAdapterDetails = getTypeAdapterDetails(processingEnv, gsonField)
 
                 val subTypeAdapterVariableName = getSubTypeAdapterVariableName(gsonField)
-                typeSpecBuilder.addField(typeAdapterWrapperClassName, subTypeAdapterVariableName, Modifier.PRIVATE)
+                typeSpecBuilder.addField(typeAdapterDetails.typeName, subTypeAdapterVariableName, Modifier.PRIVATE)
 
                 createGetter(processingEnv, typeSpecBuilder, gsonField, validatedGsonSubType)
                 createSubTypeAdapter(processingEnv, typeSpecBuilder, gsonField, validatedGsonSubType)
@@ -89,17 +82,11 @@ private fun validateGsonSubType(processingEnv: ProcessingEnvironment, gsonField:
     }
 
     val keyType: SubTypeKeyType =
-            if (gsonSubType.stringValueSubtypes.isNotEmpty()) {
-                SubTypeKeyType.STRING
-
-            } else if (gsonSubType.integerValueSubtypes.isNotEmpty()) {
-                SubTypeKeyType.INTEGER
-
-            } else if (gsonSubType.booleanValueSubtypes.isNotEmpty()) {
-                SubTypeKeyType.BOOLEAN
-
-            } else {
-                throw ProcessingException("Keys must be specified for the GsonSubType", gsonField.fieldInfo.element)
+            when {
+                gsonSubType.stringValueSubtypes.isNotEmpty() -> SubTypeKeyType.STRING
+                gsonSubType.integerValueSubtypes.isNotEmpty() -> SubTypeKeyType.INTEGER
+                gsonSubType.booleanValueSubtypes.isNotEmpty() -> SubTypeKeyType.BOOLEAN
+                else -> throw ProcessingException("Keys must be specified for the GsonSubType", gsonField.fieldInfo.element)
             }
 
     //
@@ -163,26 +150,19 @@ private fun createGetter(processingEnv: ProcessingEnvironment, typeSpecBuilder: 
                          validatedGsonSubType: ValidatedGsonSubType) {
 
     val variableName = getSubTypeAdapterVariableName(gsonField)
-
-    val isArrayType = isArrayType(processingEnv, gsonField)
-    val typeAdapterClassName =
-            if (isArrayType) {
-                arrayTypeAdapterClassName
-            } else {
-                getCollectionTypeAdapterTypeName(gsonField)
-            }
+    val typeAdapterDetails = getTypeAdapterDetails(processingEnv, gsonField)
 
     val getterCodeBuilder = CodeBlock.builder()
             .beginControlFlow("if ($variableName == null)")
 
     val filterNulls = (validatedGsonSubType.failureOutcome == GsonSubTypeFailureOutcome.REMOVE_ELEMENT)
 
-    if (isArrayType) {
+    if (typeAdapterDetails === TypeAdapterDetails.ArrayTypeAdapter) {
         getterCodeBuilder.addStatement("$variableName = new \$T<>(new ${getSubTypeAdapterClassName(gsonField)}(mGson), \$T.class, $filterNulls)",
-                typeAdapterClassName, getRawTypeName(gsonField))
+                typeAdapterDetails, getRawTypeName(gsonField))
     } else {
         getterCodeBuilder.addStatement("$variableName = new \$T(new ${getSubTypeAdapterClassName(gsonField)}(mGson), $filterNulls)",
-                typeAdapterClassName)
+                typeAdapterDetails)
     }
 
     getterCodeBuilder.endControlFlow()
@@ -190,49 +170,21 @@ private fun createGetter(processingEnv: ProcessingEnvironment, typeSpecBuilder: 
 
     typeSpecBuilder.addMethod(MethodSpec.methodBuilder(getSubTypeGetterName(gsonField))
             .addModifiers(Modifier.PRIVATE)
-            .returns(typeAdapterClassName)
+            .returns(typeAdapterDetails.typeName)
 
             .addCode(getterCodeBuilder.build())
             .build())
 }
 
 /**
- * Determines whether the type is an array or a collection type.
- */
-private fun isArrayType(processingEnv: ProcessingEnvironment, gsonField: GsonField): Boolean {
-    val typeMirror = gsonField.fieldInfo.typeMirror
-    if (typeMirror is ArrayType) {
-        return true
-    }
-
-    if (isFieldCollectionType(processingEnv, typeMirror)) {
-        return false
-    }
-
-    throw ProcessingException("Unexpected type found for GsonSubtype field, ensure you either use " +
-            "an array, or a collection class (List, Collection, etc).", gsonField.fieldInfo.element)
-}
-
-/**
  * Creates a collection type adapter class name and uses the fields type as the generic parameter.
  */
-private fun getCollectionTypeAdapterTypeName(gsonField: GsonField): ParameterizedTypeName {
-    return ParameterizedTypeName.get(ClassName.get(CollectionTypeAdapter::class.java), TypeName.get(getRawType(gsonField)))
-}
-
-/**
- * Obtains the actual type name that is either contained within the array or the list.
- * e.g. for 'String[]' or 'List<String>' the returned type name is 'String'
- */
-private fun getRawType(gsonField: GsonField): TypeMirror {
-    val typeMirror = gsonField.fieldInfo.typeMirror
-    return when (typeMirror) {
-        is ArrayType -> typeMirror.componentType
-
-        is DeclaredType -> typeMirror.typeArguments.first()
-
-        else -> throw ProcessingException("Unexpected type found for GsonSubtype field, ensure you either use " +
-                "an array, or a List class.", gsonField.fieldInfo.element)
+private fun getTypeAdapterDetails(processingEnv: ProcessingEnvironment, gsonField: GsonField): TypeAdapterDetails {
+    return if (isArrayType(processingEnv, gsonField)) {
+        TypeAdapterDetails.ArrayTypeAdapter
+    } else {
+        TypeAdapterDetails.CollectionTypeAdapter(ParameterizedTypeName.get(
+                ClassName.get(CollectionTypeAdapter::class.java), TypeName.get(getRawType(gsonField))))
     }
 }
 
@@ -431,4 +383,9 @@ data class ValidatedGsonSubType(
  */
 enum class SubTypeKeyType {
     STRING, INTEGER, BOOLEAN
+}
+
+sealed class TypeAdapterDetails(val typeName: TypeName) {
+    object ArrayTypeAdapter : TypeAdapterDetails(arrayTypeAdapterClassName)
+    class CollectionTypeAdapter(typeName: TypeName) : TypeAdapterDetails(typeName)
 }

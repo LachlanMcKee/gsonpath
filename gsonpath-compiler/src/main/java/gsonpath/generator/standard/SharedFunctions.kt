@@ -3,8 +3,12 @@ package gsonpath.generator.standard
 import gsonpath.FlattenJson
 import gsonpath.ProcessingException
 import gsonpath.compiler.CLASS_NAME_STRING
+import gsonpath.compiler.isFieldCollectionType
 import gsonpath.model.FieldInfo
 import gsonpath.model.GsonField
+import javax.annotation.processing.ProcessingEnvironment
+import javax.lang.model.type.ArrayType
+import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.MirroredTypeException
 import javax.lang.model.type.TypeMirror
 
@@ -27,6 +31,41 @@ object SharedFunctions {
                     gsonField.fieldInfo.element)
         } catch (mte: MirroredTypeException) {
             mte.typeMirror
+        }
+    }
+
+
+    /**
+     * Determines whether the type is an array or a collection type.
+     */
+    fun isArrayType(processingEnv: ProcessingEnvironment, gsonField: GsonField): Boolean {
+        val typeMirror = gsonField.fieldInfo.typeMirror
+        if (typeMirror is ArrayType) {
+            return true
+        }
+
+        if (isFieldCollectionType(processingEnv, typeMirror)) {
+            return false
+        }
+
+        throw ProcessingException("Unexpected type found for GsonSubtype field, ensure you either use " +
+                "an array, or a collection class (List, Collection, etc).", gsonField.fieldInfo.element)
+    }
+
+
+    /**
+     * Obtains the actual type name that is either contained within the array or the list.
+     * e.g. for 'String[]' or 'List<String>' the returned type name is 'String'
+     */
+    fun getRawType(gsonField: GsonField): TypeMirror {
+        val typeMirror = gsonField.fieldInfo.typeMirror
+        return when (typeMirror) {
+            is ArrayType -> typeMirror.componentType
+
+            is DeclaredType -> typeMirror.typeArguments.first()
+
+            else -> throw ProcessingException("Unexpected type found for GsonSubtype field, ensure you either use " +
+                    "an array, or a List class.", gsonField.fieldInfo.element)
         }
     }
 }
