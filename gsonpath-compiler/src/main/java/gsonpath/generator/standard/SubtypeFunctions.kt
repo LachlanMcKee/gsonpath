@@ -18,6 +18,7 @@ import gsonpath.internal.StrictArrayTypeAdapter
 import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
 import gsonpath.model.GsonObjectTreeFactory
+import gsonpath.util.ProcessorTypeHandler
 import java.io.IOException
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Modifier
@@ -29,7 +30,7 @@ val arrayTypeAdapterClassName: ClassName = ClassName.get(StrictArrayTypeAdapter:
  * Creates the code required for subtype adapters for any fields that use the GsonSubtype annotation.
  */
 fun addSubTypeTypeAdapters(processingEnv: ProcessingEnvironment, typeSpecBuilder: TypeSpec.Builder, rootElements: GsonObject) {
-    GsonObjectTreeFactory(SubTypeMetadataFactory(processingEnv))
+    GsonObjectTreeFactory(SubTypeMetadataFactoryImpl(ProcessorTypeHandler(processingEnv)))
             .getFlattenedFieldsFromGsonObject(rootElements)
             .mapNotNull { it.subTypeMetadata?.to(it) }
             .forEach { (subTypeMetadata, gsonField) ->

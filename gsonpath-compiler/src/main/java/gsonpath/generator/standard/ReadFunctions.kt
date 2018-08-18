@@ -13,6 +13,7 @@ import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
 import gsonpath.model.GsonObjectTreeFactory
 import gsonpath.model.MandatoryFieldInfo
+import gsonpath.util.ProcessorTypeHandler
 import java.io.IOException
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Modifier
@@ -32,7 +33,7 @@ fun createReadMethod(processingEnvironment: ProcessingEnvironment,
                      extensions: List<GsonPathExtension>): MethodSpec {
 
     // Create a flat list of the variables and ensure they are ordered by their original field index within the POJO
-    val flattenedFields = GsonObjectTreeFactory(SubTypeMetadataFactory(processingEnvironment))
+    val flattenedFields = GsonObjectTreeFactory(SubTypeMetadataFactoryImpl(ProcessorTypeHandler(processingEnvironment)))
             .getFlattenedFieldsFromGsonObject(rootElements)
 
     val readMethod = MethodSpec.methodBuilder("read")

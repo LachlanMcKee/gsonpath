@@ -4,13 +4,17 @@ import gsonpath.GsonSubTypeFailureOutcome
 import gsonpath.GsonSubtype
 import gsonpath.ProcessingException
 import gsonpath.model.FieldInfo
-import javax.annotation.processing.ProcessingEnvironment
+import gsonpath.util.TypeHandler
 import javax.lang.model.element.Element
 import javax.lang.model.type.TypeMirror
 
-open class SubTypeMetadataFactory(private val processingEnv: ProcessingEnvironment) {
+interface SubTypeMetadataFactory {
+    fun getGsonSubType(fieldInfo: FieldInfo): SubTypeMetadata?
+}
 
-    fun getGsonSubType(fieldInfo: FieldInfo): SubTypeMetadata? {
+class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubTypeMetadataFactory {
+
+    override fun getGsonSubType(fieldInfo: FieldInfo): SubTypeMetadata? {
         return fieldInfo.getAnnotation(GsonSubtype::class.java)?.let {
             validateGsonSubType(fieldInfo, it)
         }
@@ -65,13 +69,13 @@ open class SubTypeMetadataFactory(private val processingEnv: ProcessingEnvironme
         // Ensure that each subtype inherits from the annotated field.
         val gsonFieldType = SharedFunctions.getRawType(fieldInfo)
         genericGsonSubTypeKeys.forEach {
-            validateSubType(processingEnv, gsonFieldType, it.clazzTypeMirror, fieldInfo.element)
+            validateSubType(gsonFieldType, it.clazzTypeMirror, fieldInfo.element)
         }
 
         // Inspect the failure outcome values.
         val defaultTypeMirror = SharedFunctions.getMirroredClass(fieldInfo) { gsonSubType.defaultType }
 
-        val defaultsElement = processingEnv.typeUtils.asElement(defaultTypeMirror)
+        val defaultsElement = typeHandler.asElement(defaultTypeMirror)
         if (defaultsElement != null) {
             // It is not valid to specify a default type if the failure outcome does not use it.
             if (gsonSubType.subTypeFailureOutcome != GsonSubTypeFailureOutcome.NULL_OR_DEFAULT_VALUE) {
@@ -79,9 +83,8 @@ open class SubTypeMetadataFactory(private val processingEnv: ProcessingEnvironme
             }
 
             // Ensure that the default type inherits from the base type.
-            validateSubType(processingEnv, gsonFieldType, defaultTypeMirror, fieldInfo.element)
+            validateSubType(gsonFieldType, defaultTypeMirror, fieldInfo.element)
         }
-
 
         val variableName = "${fieldInfo.fieldName}GsonSubtype"
         return SubTypeMetadata(
@@ -95,8 +98,8 @@ open class SubTypeMetadataFactory(private val processingEnv: ProcessingEnvironme
                 failureOutcome = gsonSubType.subTypeFailureOutcome)
     }
 
-    private fun validateSubType(processingEnv: ProcessingEnvironment, baseType: TypeMirror, subType: TypeMirror, fieldElement: Element?) {
-        if (!processingEnv.typeUtils.isSubtype(subType, baseType)) {
+    private fun validateSubType(baseType: TypeMirror, subType: TypeMirror, fieldElement: Element?) {
+        if (!typeHandler.isSubtype(subType, baseType)) {
             throw ProcessingException("subtype $subType does not inherit from $baseType", fieldElement)
         }
     }

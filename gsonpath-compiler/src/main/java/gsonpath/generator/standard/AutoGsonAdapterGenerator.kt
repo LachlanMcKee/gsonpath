@@ -16,6 +16,7 @@ import gsonpath.model.FieldInfo
 import gsonpath.model.FieldInfoFactory
 import gsonpath.model.GsonObjectTreeFactory
 import gsonpath.model.MandatoryFieldInfoFactory
+import gsonpath.util.ProcessorTypeHandler
 import java.io.IOException
 import javax.annotation.Generated
 import javax.annotation.processing.ProcessingEnvironment
@@ -82,7 +83,7 @@ class AutoGsonAdapterGenerator(private val processingEnv: ProcessingEnvironment)
             fieldInfoList = fieldInfoFactory.getModelFieldsFromInterface(interfaceInfo)
         }
 
-        val rootGsonObject = GsonObjectTreeFactory(SubTypeMetadataFactory(processingEnv))
+        val rootGsonObject = GsonObjectTreeFactory(SubTypeMetadataFactoryImpl(ProcessorTypeHandler(processingEnv)))
                 .createGsonObject(fieldInfoList, properties.rootField,
                         properties.flattenDelimiter, properties.gsonFieldNamingPolicy, properties.gsonFieldValidationType,
                         properties.pathSubstitutions)
