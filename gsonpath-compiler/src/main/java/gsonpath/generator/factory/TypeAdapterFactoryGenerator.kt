@@ -9,6 +9,7 @@ import gsonpath.ProcessingException
 import gsonpath.compiler.addNewLine
 import gsonpath.generator.HandleResult
 import gsonpath.generator.writeFile
+import gsonpath.util.FileWriter
 import gsonpath.util.Logger
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement

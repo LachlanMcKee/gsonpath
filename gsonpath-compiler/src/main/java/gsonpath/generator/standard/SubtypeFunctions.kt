@@ -18,9 +18,8 @@ import gsonpath.internal.StrictArrayTypeAdapter
 import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
 import gsonpath.model.GsonObjectTreeFactory
-import gsonpath.util.ProcessorTypeHandler
+import gsonpath.util.TypeHandler
 import java.io.IOException
-import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Modifier
 import javax.lang.model.type.TypeMirror
 
@@ -29,17 +28,17 @@ val arrayTypeAdapterClassName: ClassName = ClassName.get(StrictArrayTypeAdapter:
 /**
  * Creates the code required for subtype adapters for any fields that use the GsonSubtype annotation.
  */
-fun addSubTypeTypeAdapters(processingEnv: ProcessingEnvironment, typeSpecBuilder: TypeSpec.Builder, rootElements: GsonObject) {
-    GsonObjectTreeFactory(SubTypeMetadataFactoryImpl(ProcessorTypeHandler(processingEnv)))
+fun addSubTypeTypeAdapters(typeHandler: TypeHandler, typeSpecBuilder: TypeSpec.Builder, rootElements: GsonObject) {
+    GsonObjectTreeFactory(SubTypeMetadataFactoryImpl(typeHandler))
             .getFlattenedFieldsFromGsonObject(rootElements)
             .mapNotNull { it.subTypeMetadata?.to(it) }
             .forEach { (subTypeMetadata, gsonField) ->
-                val typeAdapterDetails = getTypeAdapterDetails(processingEnv, gsonField)
+                val typeAdapterDetails = getTypeAdapterDetails(typeHandler, gsonField)
 
                 typeSpecBuilder.addField(typeAdapterDetails.typeName, subTypeMetadata.variableName, Modifier.PRIVATE)
 
-                createGetter(processingEnv, typeSpecBuilder, gsonField, subTypeMetadata)
-                createSubTypeAdapter(processingEnv, typeSpecBuilder, gsonField, subTypeMetadata)
+                createGetter(typeHandler, typeSpecBuilder, gsonField, subTypeMetadata)
+                createSubTypeAdapter(typeHandler, typeSpecBuilder, gsonField, subTypeMetadata)
             }
 }
 
@@ -47,11 +46,11 @@ fun addSubTypeTypeAdapters(processingEnv: ProcessingEnvironment, typeSpecBuilder
  * Creates the getter for the type adapter.
  * This implementration lazily loads, and then cached the result for subsequent usages.
  */
-private fun createGetter(processingEnv: ProcessingEnvironment, typeSpecBuilder: TypeSpec.Builder, gsonField: GsonField,
+private fun createGetter(typeHandler: TypeHandler, typeSpecBuilder: TypeSpec.Builder, gsonField: GsonField,
                          subTypeMetadata: SubTypeMetadata) {
 
     val variableName = subTypeMetadata.variableName
-    val typeAdapterDetails = getTypeAdapterDetails(processingEnv, gsonField)
+    val typeAdapterDetails = getTypeAdapterDetails(typeHandler, gsonField)
 
     val getterCodeBuilder = CodeBlock.builder()
             .beginControlFlow("if ($variableName == null)")
@@ -80,8 +79,8 @@ private fun createGetter(processingEnv: ProcessingEnvironment, typeSpecBuilder: 
 /**
  * Creates a collection type adapter class name and uses the fields type as the generic parameter.
  */
-private fun getTypeAdapterDetails(processingEnv: ProcessingEnvironment, gsonField: GsonField): TypeAdapterDetails {
-    return if (isArrayType(processingEnv, gsonField)) {
+private fun getTypeAdapterDetails(typeHandler: TypeHandler, gsonField: GsonField): TypeAdapterDetails {
+    return if (isArrayType(typeHandler, gsonField)) {
         TypeAdapterDetails.ArrayTypeAdapter
     } else {
         TypeAdapterDetails.CollectionTypeAdapter(ParameterizedTypeName.get(
@@ -98,7 +97,7 @@ private fun getRawTypeName(gsonField: GsonField): TypeName {
  * <p>
  * Only gson fields that are annotated with 'GsonSubtype' should invoke this method
  */
-private fun createSubTypeAdapter(processingEnv: ProcessingEnvironment, typeSpecBuilder: TypeSpec.Builder, gsonField: GsonField,
+private fun createSubTypeAdapter(typeHandler: TypeHandler, typeSpecBuilder: TypeSpec.Builder, gsonField: GsonField,
                                  subTypeMetadata: SubTypeMetadata) {
 
     val rawTypeName = getRawTypeName(gsonField)
@@ -148,7 +147,7 @@ private fun createSubTypeAdapter(processingEnv: ProcessingEnvironment, typeSpecB
 
     // Instantiate each subtype delegated adapter
     subTypeMetadata.gsonSubTypeKeys.forEach {
-        val subtypeElement = processingEnv.typeUtils.asElement(it.clazzTypeMirror)
+        val subtypeElement = typeHandler.asElement(it.clazzTypeMirror)
 
         constructorBuilder.addCode("\n")
         constructorBuilder.addStatement("typeAdaptersDelegatedByValueMap.put(${it.key}, gson.getAdapter(\$T.class))", subtypeElement)

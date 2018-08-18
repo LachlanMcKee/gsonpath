@@ -6,24 +6,24 @@ import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
 import gsonpath.compiler.addNewLine
 import gsonpath.compiler.generateClassName
-import gsonpath.generator.factory.FileWriter
 import gsonpath.generator.writeFile
 import gsonpath.model.InterfaceFieldInfo
 import gsonpath.model.InterfaceInfo
+import gsonpath.util.FileWriter
 import gsonpath.util.Logger
+import gsonpath.util.TypeHandler
 import java.util.*
 import javax.annotation.Generated
-import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
-import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.TypeMirror
 
-internal class ModelInterfaceGenerator(private val processingEnv: ProcessingEnvironment,
-                                       private val fileWriter: FileWriter, private val logger: Logger) {
+internal class ModelInterfaceGenerator(private val typeHandler: TypeHandler,
+                                       private val fileWriter: FileWriter,
+                                       private val logger: Logger) {
 
     @Throws(ProcessingException::class)
     fun handle(element: TypeElement): InterfaceInfo {
@@ -78,7 +78,7 @@ internal class ModelInterfaceGenerator(private val processingEnv: ProcessingEnvi
             val methodType = enclosedElement.asType() as ExecutableType
 
             // Ensure that any generics have been converted into their actual return types.
-            val returnTypeMirror: TypeMirror = (processingEnv.typeUtils.asMemberOf(element.asType() as DeclaredType, enclosedElement)
+            val returnTypeMirror: TypeMirror = (typeHandler.getGenerifiedTypeMirror(element, enclosedElement)
                     as ExecutableType).returnType
             val typeName = TypeName.get(returnTypeMirror)
 
@@ -234,7 +234,7 @@ internal class ModelInterfaceGenerator(private val processingEnv: ProcessingEnvi
     }
 
     private fun getMethodElements(element: TypeElement): List<Element> {
-        return processingEnv.elementUtils.getAllMembers(element)
+        return typeHandler.getAllMembers(element)
                 .filter {
                     // Ignore methods from the base Object class
                     TypeName.get(it.enclosingElement.asType()) != TypeName.OBJECT

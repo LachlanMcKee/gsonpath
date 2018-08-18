@@ -2,7 +2,7 @@ package gsonpath.generator
 
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
-import gsonpath.generator.factory.FileWriter
+import gsonpath.util.FileWriter
 import gsonpath.util.Logger
 import java.io.IOException
 

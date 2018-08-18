@@ -3,10 +3,6 @@ package gsonpath.compiler
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.TypeName
-import java.util.*
-import javax.annotation.processing.ProcessingEnvironment
-import javax.lang.model.type.DeclaredType
-import javax.lang.model.type.TypeMirror
 
 val CLASS_NAME_STRING: ClassName = ClassName.get(String::class.java)
 
@@ -46,19 +42,6 @@ fun generateClassName(className: ClassName, classNameSuffix: String): String {
 
     // Make sure no '.' managed to sneak through!
     return fileName.replace(".", "_") + "_" + classNameSuffix
-}
-
-fun isFieldCollectionType(processingEnv: ProcessingEnvironment, typeMirror: TypeMirror): Boolean {
-    val rawType: TypeMirror = when (typeMirror) {
-        is DeclaredType -> typeMirror.typeArguments.first()
-
-        else -> return false
-    }
-
-    val collectionTypeElement = processingEnv.elementUtils.getTypeElement(Collection::class.java.name)
-    val collectionType = processingEnv.typeUtils.getDeclaredType(collectionTypeElement, rawType)
-
-    return processingEnv.typeUtils.isSubtype(typeMirror, collectionType)
 }
 
 fun CodeBlock.Builder.addWithNewLine(format: String, vararg args: Any): CodeBlock.Builder {

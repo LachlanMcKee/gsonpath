@@ -1,27 +1,23 @@
 package gsonpath.model
 
 import com.google.gson.annotations.SerializedName
-import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
-import com.sun.source.tree.VariableTree
-import com.sun.source.util.TreePathScanner
-import com.sun.source.util.Trees
 import gsonpath.ExcludeField
 import gsonpath.ProcessingException
-import javax.annotation.processing.ProcessingEnvironment
+import gsonpath.util.DefaultValueDetector
+import gsonpath.util.TypeHandler
 import javax.lang.model.element.*
-import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.NoType
 import javax.lang.model.type.TypeMirror
 
-class FieldInfoFactory(private val processingEnv: ProcessingEnvironment) {
+class FieldInfoFactory(private val typeHandler: TypeHandler, private val defaultValueDetector: DefaultValueDetector) {
 
     /**
      * Obtain all possible elements contained within the annotated class, including inherited fields.
      */
     fun getModelFieldsFromElement(modelElement: TypeElement, fieldsRequireAnnotation: Boolean, useConstructor: Boolean): List<FieldInfo> {
-        val allMembers = processingEnv.getAllMembers(modelElement)
+        val allMembers = typeHandler.getAllMembers(modelElement)
 
         return allMembers
                 .filter {
@@ -46,7 +42,7 @@ class FieldInfoFactory(private val processingEnv: ProcessingEnvironment) {
                 }
                 .map { memberElement ->
                     // Ensure that any generics have been converted into their actual class.
-                    val generifiedElement = processingEnv.getGenerifiedTypeMirror(modelElement, memberElement)
+                    val generifiedElement = typeHandler.getGenerifiedTypeMirror(modelElement, memberElement)
 
                     object : FieldInfo {
                         override val typeName: TypeName
@@ -92,9 +88,7 @@ class FieldInfoFactory(private val processingEnv: ProcessingEnvironment) {
 
                         override val hasDefaultValue: Boolean
                             get() {
-                                return DefaultValueScanner(memberElement).scan(
-                                        Trees.instance(processingEnv).getPath(memberElement),
-                                        null) != null
+                                return defaultValueDetector.hasDefaultValue(memberElement)
                             }
                     }
                 }
@@ -106,14 +100,14 @@ class FieldInfoFactory(private val processingEnv: ProcessingEnvironment) {
             annotationClass: Class<T>): T? {
 
         if (modelElement != null && modelElement !is NoType) {
-            val annotation = findFieldGetterMethod(processingEnv.getAllMembers(modelElement), memberElement)
+            val annotation = findFieldGetterMethod(typeHandler.getAllMembers(modelElement), memberElement)
                     ?.getAnnotation(annotationClass)
 
             if (annotation != null) {
                 return annotation
             }
 
-            return findMethodAnnotation(processingEnv.asElement(modelElement.superclass) as? TypeElement,
+            return findMethodAnnotation(typeHandler.asElement(modelElement.superclass) as? TypeElement,
                     memberElement, annotationClass)
         }
         return null
@@ -121,10 +115,10 @@ class FieldInfoFactory(private val processingEnv: ProcessingEnvironment) {
 
     private fun getMethodAnnotationMirrors(modelElement: TypeElement?, memberElement: Element): List<AnnotationMirror> {
         return if (modelElement != null && modelElement !is NoType) {
-            val annotationMirrors = findFieldGetterMethod(processingEnv.getAllMembers(modelElement), memberElement)
+            val annotationMirrors = findFieldGetterMethod(typeHandler.getAllMembers(modelElement), memberElement)
                     ?.annotationMirrors ?: emptyList()
 
-            val superElement = processingEnv.asElement(modelElement.superclass)
+            val superElement = typeHandler.asElement(modelElement.superclass)
             annotationMirrors.plus(getMethodAnnotationMirrors(superElement as? TypeElement, memberElement))
         } else {
             emptyList()
@@ -203,43 +197,4 @@ class FieldInfoFactory(private val processingEnv: ProcessingEnvironment) {
             }
         }
     }
-
-    /**
-     * Scans a field and detects whether a default value has been set.
-     *
-     * If a value has been set, the result will be an empty list, otherwise it will be null.
-     */
-    /**
-     * Scans a field and detects whether a default value has been set.
-     *
-     * If a value has been set, the result will be an empty list, otherwise it will be null.
-     */
-    private class DefaultValueScanner(val fieldElement: Element) : TreePathScanner<List<String>?, Void>() {
-        override fun visitVariable(node: VariableTree?, p: Void?): List<String>? {
-            // Ignore default values for Kotlin classes (the stubs always set a default, but the real bytecode does not)
-            if (isKotlinClass(fieldElement.enclosingElement)) {
-                return null
-            }
-            return node?.initializer?.let { emptyList() }
-        }
-
-        private fun isKotlinClass(element: Element): Boolean {
-            return element.annotationMirrors.any {
-                TypeName.get(it.annotationType.asElement().asType()) == ClassName.get("kotlin", "Metadata")
-            }
-        }
-    }
-
-    private fun ProcessingEnvironment.getAllMembers(type: TypeElement): List<Element> {
-        return elementUtils.getAllMembers(type)
-    }
-
-    private fun ProcessingEnvironment.asElement(typeMirror: TypeMirror): Element? {
-        return typeUtils.asElement(typeMirror)
-    }
-
-    private fun ProcessingEnvironment.getGenerifiedTypeMirror(containing: TypeElement, element: Element): TypeMirror {
-        return typeUtils.asMemberOf(containing.asType() as DeclaredType, element)
-    }
-
 }

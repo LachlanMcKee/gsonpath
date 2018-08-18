@@ -1,4 +1,4 @@
-package gsonpath.generator.factory
+package gsonpath.util
 
 import javax.annotation.processing.Filer
 import javax.annotation.processing.ProcessingEnvironment

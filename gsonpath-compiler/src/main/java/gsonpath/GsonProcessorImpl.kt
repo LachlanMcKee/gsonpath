@@ -4,10 +4,10 @@ import com.google.common.collect.Sets
 import com.squareup.javapoet.ClassName
 import gsonpath.compiler.GsonPathExtension
 import gsonpath.generator.HandleResult
-import gsonpath.generator.factory.FileWriter
 import gsonpath.generator.factory.TypeAdapterFactoryGenerator
 import gsonpath.generator.standard.AutoGsonAdapterGenerator
-import gsonpath.util.LoggerImpl
+import gsonpath.model.FieldInfoFactory
+import gsonpath.util.*
 import java.util.*
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
@@ -24,65 +24,54 @@ open class GsonProcessorImpl : AbstractProcessor() {
         }
 
         val supportedAnnotations = annotations
-            .map { ClassName.get(it) }
-            .filter {
-                it == ClassName.get(AutoGsonAdapter::class.java) ||
-                    it == ClassName.get(AutoGsonAdapterFactory::class.java)
-            }
+                .map { ClassName.get(it) }
+                .filter {
+                    it == ClassName.get(AutoGsonAdapter::class.java) ||
+                            it == ClassName.get(AutoGsonAdapterFactory::class.java)
+                }
 
         val customAnnotations: List<TypeElement> = annotations
-            .filter { it.getAnnotation(AutoGsonAdapter::class.java) != null }
+                .filter { it.getAnnotation(AutoGsonAdapter::class.java) != null }
 
         // Avoid going any further if no supported annotations are found.
         if (supportedAnnotations.isEmpty() && customAnnotations.isEmpty()) {
             return false
         }
 
-        // Load any extensions that are also available at compile time.
-        println()
-        val extensions: List<GsonPathExtension> =
-            try {
-                ServiceLoader.load(GsonPathExtension::class.java, javaClass.classLoader).toList()
-
-            } catch (t: Throwable) {
-                printError("Failed to load one or more GsonPath extensions. Cause: ${t.message}")
-                return false
-            }
-
-        // Print the extensions for auditing purposes.
-        extensions.forEach {
-            printMessage("Extension found: " + it.extensionName)
-        }
+        val extensions = loadExtensions() ?: return false
 
         println()
         printMessage("Started annotation processing")
 
         val fileWriter = FileWriter(processingEnv)
         val logger = LoggerImpl(processingEnv)
+        val typeHandler = ProcessorTypeHandler(processingEnv)
+        val defaultValueDetector = DefaultValueDetectorImpl(processingEnv)
 
         // Handle the standard type adapters.
-        val adapterGenerator = AutoGsonAdapterGenerator(processingEnv, fileWriter, logger)
+        val adapterGenerator = AutoGsonAdapterGenerator(FieldInfoFactory(typeHandler, defaultValueDetector),
+                typeHandler, fileWriter, logger)
 
         val autoGsonAdapterResults: List<HandleResult> =
-            getAnnotatedModelElements(env, customAnnotations)
-                .map { (element, autoGsonAdapter) ->
-                    printMessage("Generating TypeAdapter ($element)")
+                getAnnotatedModelElements(env, customAnnotations)
+                        .map { (element, autoGsonAdapter) ->
+                            printMessage("Generating TypeAdapter ($element)")
 
-                    try {
-                        adapterGenerator.handle(element, autoGsonAdapter, extensions)
-                    } catch (e: ProcessingException) {
-                        printError(e.message, e.element ?: element)
-                        return false
-                    }
-                }
+                            try {
+                                adapterGenerator.handle(element, autoGsonAdapter, ExtensionsHandler(processingEnv, extensions))
+                            } catch (e: ProcessingException) {
+                                printError(e.message, e.element ?: element)
+                                return false
+                            }
+                        }
 
         if (autoGsonAdapterResults.isNotEmpty()) {
             val gsonPathFactories = env.getElementsAnnotatedWith(AutoGsonAdapterFactory::class.java)
 
             if (gsonPathFactories.count() == 0) {
                 printError("An interface annotated with @AutoGsonAdapterFactory (that directly extends " +
-                    "com.google.gson.TypeAdapterFactory) must exist before the annotation processor can succeed. " +
-                    "See the AutoGsonAdapterFactory annotation for further details.")
+                        "com.google.gson.TypeAdapterFactory) must exist before the annotation processor can succeed. " +
+                        "See the AutoGsonAdapterFactory annotation for further details.")
                 return false
             }
 
@@ -109,6 +98,26 @@ open class GsonProcessorImpl : AbstractProcessor() {
         return false
     }
 
+    private fun loadExtensions(): List<GsonPathExtension>? {
+        // Load any extensions that are also available at compile time.
+        println()
+        val extensions: List<GsonPathExtension> =
+                try {
+                    ServiceLoader.load(GsonPathExtension::class.java, javaClass.classLoader).toList()
+
+                } catch (t: Throwable) {
+                    printError("Failed to load one or more GsonPath extensions. Cause: ${t.message}")
+                    return null
+                }
+
+        // Print the extensions for auditing purposes.
+        extensions.forEach {
+            printMessage("Extension found: " + it.extensionName)
+        }
+
+        return extensions
+    }
+
     private fun printMessage(message: String) {
         println(LOG_PREFIX + message)
     }
@@ -132,28 +141,28 @@ open class GsonProcessorImpl : AbstractProcessor() {
     private fun getAnnotatedModelElements(env: RoundEnvironment,
                                           customAnnotations: List<TypeElement>): Set<ElementAndAutoGson> {
         return env
-            .getElementsAnnotatedWith(AutoGsonAdapter::class.java)
-            .map {
-                ElementAndAutoGson(it as TypeElement, it.getAnnotation(AutoGsonAdapter::class.java))
-            }
-            .filter {
-                !customAnnotations.contains(it.element)
-            }
-            .toSet()
-            .plus(
-                customAnnotations.flatMap { customAnnotation ->
-                    env
-                        .getElementsAnnotatedWith(customAnnotation)
-                        .map {
-                            ElementAndAutoGson(it as TypeElement, customAnnotation.getAnnotation(AutoGsonAdapter::class.java))
-                        }
+                .getElementsAnnotatedWith(AutoGsonAdapter::class.java)
+                .map {
+                    ElementAndAutoGson(it as TypeElement, it.getAnnotation(AutoGsonAdapter::class.java))
                 }
-            )
+                .filter {
+                    !customAnnotations.contains(it.element)
+                }
+                .toSet()
+                .plus(
+                        customAnnotations.flatMap { customAnnotation ->
+                            env
+                                    .getElementsAnnotatedWith(customAnnotation)
+                                    .map {
+                                        ElementAndAutoGson(it as TypeElement, customAnnotation.getAnnotation(AutoGsonAdapter::class.java))
+                                    }
+                        }
+                )
     }
 
     private data class ElementAndAutoGson(
-        val element: TypeElement,
-        val autoGsonAdapter: AutoGsonAdapter
+            val element: TypeElement,
+            val autoGsonAdapter: AutoGsonAdapter
     )
 
     companion object {

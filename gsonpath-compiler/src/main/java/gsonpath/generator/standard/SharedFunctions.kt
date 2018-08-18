@@ -3,10 +3,9 @@ package gsonpath.generator.standard
 import gsonpath.FlattenJson
 import gsonpath.ProcessingException
 import gsonpath.compiler.CLASS_NAME_STRING
-import gsonpath.compiler.isFieldCollectionType
 import gsonpath.model.FieldInfo
 import gsonpath.model.GsonField
-import javax.annotation.processing.ProcessingEnvironment
+import gsonpath.util.TypeHandler
 import javax.lang.model.type.ArrayType
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.MirroredTypeException
@@ -38,13 +37,13 @@ object SharedFunctions {
     /**
      * Determines whether the type is an array or a collection type.
      */
-    fun isArrayType(processingEnv: ProcessingEnvironment, gsonField: GsonField): Boolean {
+    fun isArrayType(typeHandler: TypeHandler, gsonField: GsonField): Boolean {
         val typeMirror = gsonField.fieldInfo.typeMirror
         if (typeMirror is ArrayType) {
             return true
         }
 
-        if (isFieldCollectionType(processingEnv, typeMirror)) {
+        if (typeHandler.isMirrorOfCollectionType(typeMirror)) {
             return false
         }
 
