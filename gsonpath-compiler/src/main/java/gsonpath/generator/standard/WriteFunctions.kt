@@ -67,7 +67,7 @@ private fun writeGsonFieldWriter(codeBlock: CodeBlock.Builder,
                 val fieldTypeName = fieldInfo.typeName
                 val isPrimitive = fieldTypeName.isPrimitive
 
-                val objectName = "obj" + fieldCount
+                val objectName = "obj$fieldCount"
 
                 codeBlock.addStatement("\$T $objectName = value.${fieldInfo.fieldAccessor}", fieldTypeName)
 
@@ -117,11 +117,10 @@ private fun writeGsonFieldWriter(codeBlock: CodeBlock.Builder,
 
             is GsonObject -> {
                 if (value.size() > 0) {
-                    val newPath: String
-                    if (currentPath.isNotEmpty()) {
-                        newPath = currentPath + "" + key
+                    val newPath: String = if (currentPath.isNotEmpty()) {
+                        currentPath + "" + key
                     } else {
-                        newPath = key
+                        key
                     }
 
                     // Add a comment mentioning what nested object we are current pointing at.

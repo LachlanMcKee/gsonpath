@@ -22,7 +22,7 @@ class GsonObjectFactory {
         val fieldTypeName = fieldInfo.typeName
 
         if (fieldTypeName == TypeName.OBJECT) {
-            throw ProcessingException("Invalid field type: " + fieldTypeName, fieldInfo.element)
+            throw ProcessingException("Invalid field type: $fieldTypeName", fieldInfo.element)
         }
 
         val serializedNameAnnotation = fieldInfo.getAnnotation(SerializedName::class.java)

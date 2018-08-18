@@ -122,7 +122,7 @@ private fun addReadCodeForElements(processingEnvironment: ProcessingEnvironment,
         return recursionCount
     }
 
-    val counterVariableName = "jsonFieldCounter" + recursionCount
+    val counterVariableName = "jsonFieldCounter$recursionCount"
 
     codeBlock.addStatement("int $counterVariableName = 0")
             .addStatement("in.beginObject()")
@@ -213,11 +213,10 @@ private fun writeGsonFieldReader(processingEnvironment: ProcessingEnvironment,
     if (result.checkIfNull) {
         codeBlock.beginControlFlow("if (${result.variableName} != null)")
 
-        val assignmentBlock: String
-        if (!requiresConstructorInjection) {
-            assignmentBlock = "result." + fieldInfo.fieldName
+        val assignmentBlock: String = if (!requiresConstructorInjection) {
+            "result." + fieldInfo.fieldName
         } else {
-            assignmentBlock = gsonField.variableName
+            gsonField.variableName
         }
 
         codeBlock.addStatement("$assignmentBlock = ${result.variableName}${if (result.callToString) ".toString()" else ""}")
@@ -238,7 +237,7 @@ private fun writeGsonFieldReader(processingEnvironment: ProcessingEnvironment,
     val extensionsCodeBlockBuilder = CodeBlock.builder()
     extensions.forEach { extension ->
         val validationCodeBlock: CodeBlock? = extension.createFieldReadCodeBlock(processingEnvironment,
-            ExtensionFieldMetadata(fieldInfo, result.variableName, gsonField.jsonPath, gsonField.isRequired))
+                ExtensionFieldMetadata(fieldInfo, result.variableName, gsonField.jsonPath, gsonField.isRequired))
 
         if (validationCodeBlock != null && !validationCodeBlock.isEmpty) {
             extensionsCodeBlockBuilder.addNewLine()
@@ -368,7 +367,7 @@ private fun addMandatoryValuesCheck(codeBlock: CodeBlock.Builder,
             .addStatement("String fieldName = null")
             .beginControlFlow("switch (mandatoryFieldIndex)")
 
-    for ((key, mandatoryFieldInfo) in mandatoryInfoMap) {
+    for ((_, mandatoryFieldInfo) in mandatoryInfoMap) {
         codeBlock.addWithNewLine("case ${mandatoryFieldInfo.indexVariableName}:")
                 .indent()
                 .addEscapedStatement("""fieldName = "${mandatoryFieldInfo.gsonField.jsonPath}"""")

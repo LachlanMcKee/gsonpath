@@ -93,13 +93,14 @@ internal class ModelInterfaceGenerator(private val processingEnv: ProcessingEnvi
             // Transform the method name into the field name by removing the first camel-cased portion.
             // e.g. 'getName' becomes 'name'
             //
-            val fieldName: String
-            val indexOfFirst = methodName.indexOfFirst(Char::isUpperCase)
-            if (indexOfFirst != -1) {
-                fieldName = methodName[indexOfFirst].toLowerCase() + methodName.substring(indexOfFirst + 1)
-            } else {
-                fieldName = methodName
-            }
+            val fieldName: String = methodName.indexOfFirst(Char::isUpperCase)
+                    .let { upperCaseIndex ->
+                        if (upperCaseIndex != -1) {
+                            methodName[upperCaseIndex].toLowerCase() + methodName.substring(upperCaseIndex + 1)
+                        } else {
+                            methodName
+                        }
+                    }
 
             typeBuilder.addField(typeName, fieldName, Modifier.PRIVATE, Modifier.FINAL)
 
@@ -136,30 +137,25 @@ internal class ModelInterfaceGenerator(private val processingEnv: ProcessingEnvi
             }
 
             // Add to the hash code method
-            val hashCodeLine: String
-
-            if (typeName.isPrimitive) {
+            val hashCodeLine: String = if (typeName.isPrimitive) {
                 // The allowed primitive types are: int, long, double, boolean
-                if (typeName == TypeName.INT) {
-                    hashCodeLine = fieldName
+                when (typeName) {
+                    TypeName.INT -> fieldName
+                    TypeName.LONG -> "(int) ($fieldName ^ ($fieldName >>> 32))"
+                    TypeName.DOUBLE -> {
+                        hasCodeCodeBlock.addStatement("temp = java.lang.Double.doubleToLongBits($fieldName)")
+                        "(int) (temp ^ (temp >>> 32))"
 
-                } else if (typeName == TypeName.LONG) {
-                    hashCodeLine = "(int) ($fieldName ^ ($fieldName >>> 32))"
-
-                } else if (typeName == TypeName.DOUBLE) {
-                    hasCodeCodeBlock.addStatement("temp = java.lang.Double.doubleToLongBits($fieldName)")
-                    hashCodeLine = "(int) (temp ^ (temp >>> 32))"
-
-                } else {
-                    // Last possible outcome in a boolean.
-                    hashCodeLine = "($fieldName ? 1 : 0)"
+                    }
+                    else -> // Last possible outcome in a boolean.
+                        "($fieldName ? 1 : 0)"
                 }
             } else {
                 if (typeName is ArrayTypeName) {
-                    hashCodeLine = "java.util.Arrays.hashCode($fieldName)"
+                    "java.util.Arrays.hashCode($fieldName)"
 
                 } else {
-                    hashCodeLine = "$fieldName != null ? $fieldName.hashCode() : 0"
+                    "$fieldName != null ? $fieldName.hashCode() : 0"
                 }
             }
 
@@ -235,7 +231,7 @@ internal class ModelInterfaceGenerator(private val processingEnv: ProcessingEnvi
     }
 
     private fun getMethodElements(element: TypeElement): List<Element> {
-        val methodElements = processingEnv.elementUtils.getAllMembers(element)
+        return processingEnv.elementUtils.getAllMembers(element)
                 .filter {
                     // Ignore methods from the base Object class
                     TypeName.get(it.enclosingElement.asType()) != TypeName.OBJECT
@@ -248,7 +244,6 @@ internal class ModelInterfaceGenerator(private val processingEnv: ProcessingEnvi
                     !it.modifiers.contains(Modifier.DEFAULT) &&
                             !it.modifiers.contains(Modifier.STATIC)
                 }
-        return methodElements
     }
 
     private class StandardElementInfo constructor(override val underlyingElement: Element) : InterfaceFieldInfo.ElementInfo {

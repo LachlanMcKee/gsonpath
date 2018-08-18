@@ -148,7 +148,7 @@ class TypeAdapterFactoryGenerator(private val processingEnv: ProcessingEnvironme
     }
 
     companion object {
-        private val PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME = "PackagePrivateTypeAdapterLoader"
+        private const val PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME = "PackagePrivateTypeAdapterLoader"
     }
 
 }
