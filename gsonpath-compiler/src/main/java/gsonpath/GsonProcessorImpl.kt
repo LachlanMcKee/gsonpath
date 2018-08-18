@@ -4,8 +4,10 @@ import com.google.common.collect.Sets
 import com.squareup.javapoet.ClassName
 import gsonpath.compiler.GsonPathExtension
 import gsonpath.generator.HandleResult
+import gsonpath.generator.factory.FileWriter
 import gsonpath.generator.factory.TypeAdapterFactoryGenerator
 import gsonpath.generator.standard.AutoGsonAdapterGenerator
+import gsonpath.util.LoggerImpl
 import java.util.*
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
@@ -55,8 +57,11 @@ open class GsonProcessorImpl : AbstractProcessor() {
         println()
         printMessage("Started annotation processing")
 
+        val fileWriter = FileWriter(processingEnv)
+        val logger = LoggerImpl(processingEnv)
+
         // Handle the standard type adapters.
-        val adapterGenerator = AutoGsonAdapterGenerator(processingEnv)
+        val adapterGenerator = AutoGsonAdapterGenerator(processingEnv, fileWriter, logger)
 
         val autoGsonAdapterResults: List<HandleResult> =
             getAnnotatedModelElements(env, customAnnotations)
@@ -88,7 +93,7 @@ open class GsonProcessorImpl : AbstractProcessor() {
 
             val factoryElement = gsonPathFactories.first()
             try {
-                if (!TypeAdapterFactoryGenerator(processingEnv).generate(factoryElement as TypeElement, autoGsonAdapterResults)) {
+                if (!TypeAdapterFactoryGenerator(fileWriter, logger).generate(factoryElement as TypeElement, autoGsonAdapterResults)) {
                     printError("Error while generating TypeAdapterFactory", factoryElement)
                     return false
                 }

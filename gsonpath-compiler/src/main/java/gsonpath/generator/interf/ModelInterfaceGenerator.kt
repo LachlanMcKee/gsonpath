@@ -6,9 +6,11 @@ import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
 import gsonpath.compiler.addNewLine
 import gsonpath.compiler.generateClassName
+import gsonpath.generator.factory.FileWriter
 import gsonpath.generator.writeFile
 import gsonpath.model.InterfaceFieldInfo
 import gsonpath.model.InterfaceInfo
+import gsonpath.util.Logger
 import java.util.*
 import javax.annotation.Generated
 import javax.annotation.processing.ProcessingEnvironment
@@ -20,7 +22,8 @@ import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.TypeMirror
 
-internal class ModelInterfaceGenerator(private val processingEnv: ProcessingEnvironment) {
+internal class ModelInterfaceGenerator(private val processingEnv: ProcessingEnvironment,
+                                       private val fileWriter: FileWriter, private val logger: Logger) {
 
     @Throws(ProcessingException::class)
     fun handle(element: TypeElement): InterfaceInfo {
@@ -219,7 +222,7 @@ internal class ModelInterfaceGenerator(private val processingEnv: ProcessingEnvi
                 .addStatement("\t\t'}'", modelClassName.simpleName())
                 .build())
 
-        if (!typeBuilder.writeFile(processingEnv, outputClassName.packageName())) {
+        if (!typeBuilder.writeFile(fileWriter, logger, outputClassName.packageName())) {
             throw ProcessingException("Failed to write generated file: " + outputClassName.simpleName())
         }
 

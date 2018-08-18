@@ -2,25 +2,24 @@ package gsonpath.generator
 
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
-
+import gsonpath.generator.factory.FileWriter
+import gsonpath.util.Logger
 import java.io.IOException
 
-import javax.annotation.processing.ProcessingEnvironment
-import javax.tools.Diagnostic
-
-fun TypeSpec.Builder.writeFile(processingEnv: ProcessingEnvironment,
+fun TypeSpec.Builder.writeFile(fileWriter: FileWriter,
+                               logger: Logger,
                                packageName: String,
                                fileBuiltFunc: (builder: JavaFile.Builder) -> Unit = {}): Boolean {
 
     return try {
         JavaFile.builder(packageName, build()).apply {
             fileBuiltFunc(this)
-            build().writeTo(processingEnv.filer)
+            build().writeTo(fileWriter.filer)
         }
         true
 
     } catch (e: IOException) {
-        processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "Error while writing javapoet file: " + e.message)
+        logger.error("Error while writing javapoet file: " + e.message)
         false
     }
 }

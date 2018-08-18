@@ -9,11 +9,11 @@ import gsonpath.ProcessingException
 import gsonpath.compiler.addNewLine
 import gsonpath.generator.HandleResult
 import gsonpath.generator.writeFile
-import javax.annotation.processing.ProcessingEnvironment
+import gsonpath.util.Logger
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 
-class TypeAdapterFactoryGenerator(private val processingEnv: ProcessingEnvironment) {
+class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter, private val logger: Logger) {
 
     fun generate(factoryElement: TypeElement, generatedGsonAdapters: List<HandleResult>): Boolean {
         if (generatedGsonAdapters.isEmpty()) {
@@ -106,7 +106,7 @@ class TypeAdapterFactoryGenerator(private val processingEnv: ProcessingEnvironme
         createMethod.addCode(codeBlock.build())
         typeBuilder.addMethod(createMethod.build())
 
-        return typeBuilder.writeFile(processingEnv, factoryClassName.packageName())
+        return typeBuilder.writeFile(fileWriter, logger, factoryClassName.packageName())
     }
 
     private fun createPackageLocalTypeAdapterLoaders(packageName: String, packageLocalGsonAdapters: List<HandleResult>): Boolean {
@@ -144,7 +144,7 @@ class TypeAdapterFactoryGenerator(private val processingEnv: ProcessingEnvironme
         createMethod.addCode(codeBlock.build())
         typeBuilder.addMethod(createMethod.build())
 
-        return typeBuilder.writeFile(processingEnv, packageName)
+        return typeBuilder.writeFile(fileWriter, logger, packageName)
     }
 
     companion object {
