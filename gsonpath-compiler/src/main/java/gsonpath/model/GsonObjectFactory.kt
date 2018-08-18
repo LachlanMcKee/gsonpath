@@ -6,10 +6,13 @@ import com.squareup.javapoet.TypeName
 import gsonpath.GsonFieldValidationType
 import gsonpath.PathSubstitution
 import gsonpath.ProcessingException
+import gsonpath.generator.standard.SubTypeMetadata
+import gsonpath.generator.standard.SubTypeMetadataFactory
 import java.util.regex.Pattern
 import javax.lang.model.element.Element
 
-class GsonObjectFactory {
+class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFactory) {
+
     @Throws(ProcessingException::class)
     fun addGsonType(gsonPathObject: GsonObject,
                     fieldInfo: FieldInfo,
@@ -90,12 +93,14 @@ class GsonObjectFactory {
                 isMandatory && !fieldInfo.hasDefaultValue
         }
 
+        val gsonSubTypeMetadata = subTypeMetadataFactory.getGsonSubType(fieldInfo)
+
         if (jsonFieldPath.contains(flattenDelimiter.toString())) {
             addNestedType(gsonPathObject, fieldInfo, jsonFieldPath, flattenDelimiter, fieldInfoIndex, isRequired,
-                    fieldName)
+                    fieldName, gsonSubTypeMetadata)
 
         } else {
-            addStandardType(gsonPathObject, fieldInfo, jsonFieldPath, fieldInfoIndex, isRequired)
+            addStandardType(gsonPathObject, fieldInfo, jsonFieldPath, fieldInfoIndex, isRequired, gsonSubTypeMetadata)
         }
     }
 
@@ -106,13 +111,14 @@ class GsonObjectFactory {
                               flattenDelimiter: Char,
                               fieldInfoIndex: Int,
                               isRequired: Boolean,
-                              fieldName: String) {
+                              fieldName: String,
+                              gsonSubTypeMetadata: SubTypeMetadata?) {
 
         val jsonFieldPath =
-                //
-                // When the last character is a delimiter, we should append the variable name to
-                // the end of the field name, as this may reduce annotation repetition.
-                //
+        //
+        // When the last character is a delimiter, we should append the variable name to
+        // the end of the field name, as this may reduce annotation repetition.
+        //
                 if (initialJsonFieldPath[initialJsonFieldPath.length - 1] == flattenDelimiter) {
                     initialJsonFieldPath + fieldName
                 } else {
@@ -154,7 +160,7 @@ class GsonObjectFactory {
             } else {
                 // We have reached the end of this object branch, add the field at the end.
                 try {
-                    val field = GsonField(fieldInfoIndex, fieldInfo, jsonFieldPath, isRequired)
+                    val field = GsonField(fieldInfoIndex, fieldInfo, jsonFieldPath, isRequired, gsonSubTypeMetadata)
                     return@fold (current as GsonObject).addField(pathSegment, field)
 
                 } catch (e: IllegalArgumentException) {
@@ -171,10 +177,12 @@ class GsonObjectFactory {
                                 fieldInfo: FieldInfo,
                                 jsonFieldPath: String,
                                 fieldInfoIndex: Int,
-                                isRequired: Boolean) {
+                                isRequired: Boolean,
+                                gsonSubTypeMetadata: SubTypeMetadata?) {
 
         if (!gsonPathObject.containsKey(jsonFieldPath)) {
-            gsonPathObject.addField(jsonFieldPath, GsonField(fieldInfoIndex, fieldInfo, jsonFieldPath, isRequired))
+            gsonPathObject.addField(jsonFieldPath,
+                    GsonField(fieldInfoIndex, fieldInfo, jsonFieldPath, isRequired, gsonSubTypeMetadata))
 
         } else {
             throwDuplicateFieldException(fieldInfo.element, jsonFieldPath)

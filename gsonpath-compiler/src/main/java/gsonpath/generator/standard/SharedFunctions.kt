@@ -24,11 +24,11 @@ object SharedFunctions {
         }
     }
 
-    fun getMirroredClass(gsonField: GsonField, accessorFunc: () -> Unit): TypeMirror {
+    fun getMirroredClass(fieldInfo: FieldInfo, accessorFunc: () -> Unit): TypeMirror {
         return try {
             accessorFunc()
             throw ProcessingException("Unexpected annotation processing defect while obtaining class.",
-                    gsonField.fieldInfo.element)
+                    fieldInfo.element)
         } catch (mte: MirroredTypeException) {
             mte.typeMirror
         }
@@ -57,15 +57,17 @@ object SharedFunctions {
      * Obtains the actual type name that is either contained within the array or the list.
      * e.g. for 'String[]' or 'List<String>' the returned type name is 'String'
      */
-    fun getRawType(gsonField: GsonField): TypeMirror {
-        val typeMirror = gsonField.fieldInfo.typeMirror
+    fun getRawType(fieldInfo: FieldInfo): TypeMirror {
+        val typeMirror = fieldInfo.typeMirror
         return when (typeMirror) {
             is ArrayType -> typeMirror.componentType
 
             is DeclaredType -> typeMirror.typeArguments.first()
 
             else -> throw ProcessingException("Unexpected type found for GsonSubtype field, ensure you either use " +
-                    "an array, or a List class.", gsonField.fieldInfo.element)
+                    "an array, or a List class.", fieldInfo.element)
         }
     }
+
+    fun getRawType(gsonField: GsonField) = getRawType(gsonField.fieldInfo)
 }

@@ -6,11 +6,11 @@ import com.squareup.javapoet.TypeName
 import gsonpath.GsonFieldValidationType
 import gsonpath.PathSubstitution
 import gsonpath.ProcessingException
+import gsonpath.generator.standard.SubTypeMetadataFactory
 import org.junit.Rule
 import org.junit.rules.ExpectedException
-
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
 
 open class BaseGsonObjectFactoryTest {
 
@@ -18,7 +18,8 @@ open class BaseGsonObjectFactoryTest {
     @Rule
     val exception: ExpectedException = ExpectedException.none()
 
-    @JvmOverloads internal fun mockFieldInfo(fieldName: String, jsonPath: String? = null): FieldInfo {
+    @JvmOverloads
+    internal fun mockFieldInfo(fieldName: String, jsonPath: String? = null): FieldInfo {
         val fieldInfo = mock(FieldInfo::class.java)
         `when`(fieldInfo.typeName).thenReturn(TypeName.INT)
         `when`(fieldInfo.annotationNames).thenReturn(emptyList())
@@ -35,8 +36,9 @@ open class BaseGsonObjectFactoryTest {
     }
 
     @Throws(ProcessingException::class)
-    @JvmOverloads internal fun executeAddGsonType(arguments: GsonTypeArguments, outputGsonObject: GsonObject = GsonObject()): GsonObject {
-        GsonObjectFactory().addGsonType(
+    @JvmOverloads
+    internal fun executeAddGsonType(arguments: GsonTypeArguments, outputGsonObject: GsonObject = GsonObject()): GsonObject {
+        GsonObjectFactory(mock(SubTypeMetadataFactory::class.java)).addGsonType(
                 outputGsonObject,
                 arguments.fieldInfo,
                 arguments.fieldInfoIndex,

@@ -29,7 +29,7 @@ class GsonObjectFactoryTest {
 
             // then
             val expectedGsonObject = GsonObject()
-            expectedGsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, false))
+            expectedGsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, false, null))
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
 
@@ -45,7 +45,7 @@ class GsonObjectFactoryTest {
             // then
             val expectedGsonObject = GsonObject()
             val gsonObject = GsonObject()
-            gsonObject.addField("child", GsonField(0, fieldInfo, "root.child", false))
+            gsonObject.addField("child", GsonField(0, fieldInfo, "root.child", false, null))
             expectedGsonObject.addObject("root", gsonObject)
 
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
@@ -63,7 +63,7 @@ class GsonObjectFactoryTest {
             // then
             val expectedGsonObject = GsonObject()
             val gsonObject = GsonObject()
-            gsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, "root." + BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, false))
+            gsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, "root." + BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, false, null))
             expectedGsonObject.addObject("root", gsonObject)
 
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
@@ -88,7 +88,7 @@ class GsonObjectFactoryTest {
             // then
             val expectedGsonObject = GsonObject()
             expectedGsonObject.addObject("replacement", GsonObject())
-                    .addField("value", GsonField(0, fieldInfo, "replacement.value", false))
+                    .addField("value", GsonField(0, fieldInfo, "replacement.value", false, null))
 
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
@@ -125,7 +125,7 @@ class GsonObjectFactoryTest {
         fun givenDuplicateChildFields_whenAddGsonType_throwDuplicateFieldException() {
             // given
             val existingGsonObject = GsonObject()
-            val existingField = GsonField(0, mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME), BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, false)
+            val existingField = GsonField(0, mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME), BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, false, null)
             existingGsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, existingField)
 
             val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
@@ -143,7 +143,7 @@ class GsonObjectFactoryTest {
             val duplicateBranchName = "duplicate"
 
             val existingGsonObject = GsonObject()
-            val existingField = GsonField(0, mockFieldInfo(duplicateBranchName), duplicateBranchName, false)
+            val existingField = GsonField(0, mockFieldInfo(duplicateBranchName), duplicateBranchName, false, null)
             existingGsonObject.addField(duplicateBranchName, existingField)
 
             val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, duplicateBranchName + "." + BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
@@ -161,7 +161,7 @@ class GsonObjectFactoryTest {
             val duplicateBranchName = "duplicate"
 
             val existingGsonObject = GsonObject()
-            val existingField = GsonField(0, mockFieldInfo(duplicateBranchName), duplicateBranchName, false)
+            val existingField = GsonField(0, mockFieldInfo(duplicateBranchName), duplicateBranchName, false, null)
 
             val childObject = GsonObject()
             childObject.addField(duplicateBranchName, existingField)
@@ -195,7 +195,7 @@ class GsonObjectFactoryTest {
 
             // then
             val expectedGsonObject = GsonObject()
-            expectedGsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, isRequired))
+            expectedGsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, isRequired, null))
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
 
@@ -257,7 +257,7 @@ class GsonObjectFactoryTest {
 
             // then
             val expectedGsonObject = GsonObject()
-            expectedGsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, true))
+            expectedGsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, true, null))
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
 

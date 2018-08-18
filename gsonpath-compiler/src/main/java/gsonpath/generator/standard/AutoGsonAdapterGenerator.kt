@@ -82,9 +82,10 @@ class AutoGsonAdapterGenerator(private val processingEnv: ProcessingEnvironment)
             fieldInfoList = fieldInfoFactory.getModelFieldsFromInterface(interfaceInfo)
         }
 
-        val rootGsonObject = GsonObjectTreeFactory().createGsonObject(fieldInfoList, properties.rootField,
-                properties.flattenDelimiter, properties.gsonFieldNamingPolicy, properties.gsonFieldValidationType,
-                properties.pathSubstitutions)
+        val rootGsonObject = GsonObjectTreeFactory(SubTypeMetadataFactory(processingEnv))
+                .createGsonObject(fieldInfoList, properties.rootField,
+                        properties.flattenDelimiter, properties.gsonFieldNamingPolicy, properties.gsonFieldValidationType,
+                        properties.pathSubstitutions)
 
         // Adds the mandatory field index constants and also populates the mandatoryInfoMap values.
         val mandatoryInfoMap = MandatoryFieldInfoFactory().createMandatoryFieldsFromGsonObject(rootGsonObject)

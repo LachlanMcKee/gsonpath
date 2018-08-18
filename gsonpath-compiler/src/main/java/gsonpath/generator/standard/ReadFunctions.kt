@@ -7,7 +7,6 @@ import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterizedTypeName
 import gsonpath.FlattenJson
-import gsonpath.GsonSubtype
 import gsonpath.ProcessingException
 import gsonpath.compiler.*
 import gsonpath.model.GsonField
@@ -33,7 +32,8 @@ fun createReadMethod(processingEnvironment: ProcessingEnvironment,
                      extensions: List<GsonPathExtension>): MethodSpec {
 
     // Create a flat list of the variables and ensure they are ordered by their original field index within the POJO
-    val flattenedFields = GsonObjectTreeFactory().getFlattenedFieldsFromGsonObject(rootElements)
+    val flattenedFields = GsonObjectTreeFactory(SubTypeMetadataFactory(processingEnvironment))
+            .getFlattenedFieldsFromGsonObject(rootElements)
 
     val readMethod = MethodSpec.methodBuilder("read")
             .addAnnotation(Override::class.java)
@@ -308,11 +308,10 @@ private fun writeGsonFieldReading(codeBlock: CodeBlock.Builder, gsonField: GsonF
     val variableName = getVariableName(gsonField, requiresConstructorInjection)
     val checkIfResultIsNull = isCheckIfNullApplicable(gsonField, requiresConstructorInjection)
 
-    val subTypeAnnotation = fieldInfo.getAnnotation(GsonSubtype::class.java)
-    if (subTypeAnnotation != null) {
+    val subTypeMetadata = gsonField.subTypeMetadata
+    if (subTypeMetadata != null) {
         // If this field uses a subtype annotation, we use the type adapter subclasses instead of gson.
-        val variableAssignment = "$variableName = (\$T) ${getSubTypeGetterName(gsonField)}().read(in)"
-
+        val variableAssignment = "$variableName = (\$T) ${subTypeMetadata.getterName}().read(in)"
 
         if (checkIfResultIsNull) {
             codeBlock.addStatement("\$T $variableAssignment", fieldTypeName, fieldTypeName)
