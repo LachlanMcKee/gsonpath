@@ -28,8 +28,12 @@ val arrayTypeAdapterClassName: ClassName = ClassName.get(StrictArrayTypeAdapter:
 /**
  * Creates the code required for subtype adapters for any fields that use the GsonSubtype annotation.
  */
-fun addSubTypeTypeAdapters(typeHandler: TypeHandler, typeSpecBuilder: TypeSpec.Builder, rootElements: GsonObject) {
-    GsonObjectTreeFactory(SubTypeMetadataFactoryImpl(typeHandler))
+fun addSubTypeTypeAdapters(typeHandler: TypeHandler,
+                           gsonObjectTreeFactory: GsonObjectTreeFactory,
+                           typeSpecBuilder: TypeSpec.Builder,
+                           rootElements: GsonObject) {
+
+    gsonObjectTreeFactory
             .getFlattenedFieldsFromGsonObject(rootElements)
             .mapNotNull { it.subTypeMetadata?.to(it) }
             .forEach { (subTypeMetadata, gsonField) ->

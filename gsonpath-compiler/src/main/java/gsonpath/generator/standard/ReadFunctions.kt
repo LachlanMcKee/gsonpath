@@ -14,7 +14,6 @@ import gsonpath.model.GsonObject
 import gsonpath.model.GsonObjectTreeFactory
 import gsonpath.model.MandatoryFieldInfo
 import gsonpath.util.ExtensionsHandler
-import gsonpath.util.TypeHandler
 import java.io.IOException
 import javax.lang.model.element.Modifier
 
@@ -24,7 +23,7 @@ val CLASS_NAME_JSON_ELEMENT: ClassName = ClassName.get(JsonElement::class.java)
  * public T read(JsonReader in) throws IOException {
  */
 @Throws(ProcessingException::class)
-fun createReadMethod(typeHandler: TypeHandler,
+fun createReadMethod(gsonObjectTreeFactory: GsonObjectTreeFactory,
                      baseElement: ClassName,
                      concreteElement: ClassName,
                      requiresConstructorInjection: Boolean,
@@ -33,7 +32,7 @@ fun createReadMethod(typeHandler: TypeHandler,
                      extensionsHandler: ExtensionsHandler): MethodSpec {
 
     // Create a flat list of the variables and ensure they are ordered by their original field index within the POJO
-    val flattenedFields = GsonObjectTreeFactory(SubTypeMetadataFactoryImpl(typeHandler))
+    val flattenedFields = gsonObjectTreeFactory
             .getFlattenedFieldsFromGsonObject(rootElements)
 
     val readMethod = MethodSpec.methodBuilder("read")

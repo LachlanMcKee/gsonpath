@@ -7,7 +7,6 @@ import com.squareup.javapoet.*
 import gsonpath.AutoGsonAdapter
 import gsonpath.GsonUtil
 import gsonpath.ProcessingException
-import gsonpath.compiler.GsonPathExtension
 import gsonpath.compiler.generateClassName
 import gsonpath.generator.HandleResult
 import gsonpath.generator.interf.ModelInterfaceGenerator
@@ -30,6 +29,7 @@ import javax.lang.model.type.ExecutableType
 class AutoGsonAdapterGenerator(private val fieldInfoFactory: FieldInfoFactory,
                                private val typeHandler: TypeHandler,
                                private val fileWriter: FileWriter,
+                               private val gsonObjectTreeFactory: GsonObjectTreeFactory,
                                private val logger: Logger) {
 
     @Throws(ProcessingException::class)
@@ -87,7 +87,7 @@ class AutoGsonAdapterGenerator(private val fieldInfoFactory: FieldInfoFactory,
             fieldInfoList = fieldInfoFactory.getModelFieldsFromInterface(interfaceInfo)
         }
 
-        val rootGsonObject = GsonObjectTreeFactory(SubTypeMetadataFactoryImpl(typeHandler))
+        val rootGsonObject = gsonObjectTreeFactory
                 .createGsonObject(fieldInfoList, properties.rootField,
                         properties.flattenDelimiter, properties.gsonFieldNamingPolicy, properties.gsonFieldValidationType,
                         properties.pathSubstitutions)
@@ -110,7 +110,7 @@ class AutoGsonAdapterGenerator(private val fieldInfoFactory: FieldInfoFactory,
                     .build())
         }
 
-        adapterTypeBuilder.addMethod(createReadMethod(typeHandler, modelClassName, concreteClassName,
+        adapterTypeBuilder.addMethod(createReadMethod(gsonObjectTreeFactory, modelClassName, concreteClassName,
                 requiresConstructorInjection, mandatoryInfoMap, rootGsonObject, extensionsHandler))
 
         if (!isModelInterface) {
@@ -129,7 +129,7 @@ class AutoGsonAdapterGenerator(private val fieldInfoFactory: FieldInfoFactory,
         }
 
         // Adds any required subtype type adapters depending on the usage of the GsonSubtype annotation.
-        addSubTypeTypeAdapters(typeHandler, adapterTypeBuilder, rootGsonObject)
+        addSubTypeTypeAdapters(typeHandler, gsonObjectTreeFactory, adapterTypeBuilder, rootGsonObject)
 
         if (adapterTypeBuilder.writeFile(fileWriter, logger, adapterClassName.packageName(), this::onJavaFileBuilt)) {
             return HandleResult(modelClassName, adapterClassName)
