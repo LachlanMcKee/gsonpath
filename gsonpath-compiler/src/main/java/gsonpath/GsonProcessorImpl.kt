@@ -49,7 +49,13 @@ open class GsonProcessorImpl : AbstractProcessor() {
         val defaultValueDetector = DefaultValueDetectorImpl(processingEnv)
 
         // Handle the standard type adapters.
-        val adapterGenerator = AutoGsonAdapterGenerator(FieldInfoFactory(typeHandler, defaultValueDetector),
+        val fieldGetterFinder = FieldGetterFinder(typeHandler)
+        val adapterGenerator = AutoGsonAdapterGenerator(
+                FieldInfoFactory(
+                        typeHandler,
+                        fieldGetterFinder,
+                        AnnotationFetcher(typeHandler, fieldGetterFinder),
+                        defaultValueDetector),
                 typeHandler, fileWriter, logger)
 
         val autoGsonAdapterResults: List<HandleResult> =
