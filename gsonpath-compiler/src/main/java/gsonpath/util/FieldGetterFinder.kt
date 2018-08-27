@@ -20,13 +20,17 @@ class FieldGetterFinder(private val typeHandler: TypeHandler) {
     fun findGetter(parentElement: TypeElement, variableElement: Element): Element? {
         return typeHandler.getAllMembers(parentElement)
                 .filter { it.kind == ElementKind.METHOD }
-                .filter {
-                    // See if the method name either matches the variable name, or starts with a standard getter prefix.
-                    val remainder = it.simpleName.toString()
-                            .toLowerCase()
-                            .replace(variableElement.simpleName.toString().toLowerCase(), "")
-                    arrayOf("", "is", "has", "get").contains(remainder)
-                }
+                .filter { isMethodNameGetter(it, variableElement) }
                 .find { (it.asType() as ExecutableType).parameterTypes.size == 0 }
+    }
+
+    /**
+     * Determines if the method name either matches the variable name, or starts with a standard getter prefix.
+     */
+    private fun isMethodNameGetter(methodElement: Element, variableElement: Element): Boolean {
+        val remainder = methodElement.simpleName.toString()
+                .toLowerCase()
+                .replace(variableElement.simpleName.toString().toLowerCase(), "")
+        return arrayOf("", "is", "has", "get").contains(remainder)
     }
 }
