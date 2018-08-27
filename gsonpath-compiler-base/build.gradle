@@ -1,3 +1,5 @@
+import org.gradle.internal.jvm.Jvm
+
 apply plugin: 'java'
 apply plugin: "kotlin"
 apply plugin: 'maven'
@@ -21,6 +23,7 @@ buildscript {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "com.squareup:javapoet:$javapoet_version"
+    compile files(Jvm.current().getToolsJar())
 
     testCompile "junit:junit:$junit_version"
 }
