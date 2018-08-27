@@ -8,30 +8,24 @@ import javax.lang.model.type.NoType
 class AnnotationFetcher(private val typeHandler: TypeHandler, private val fieldGetterFinder: FieldGetterFinder) {
 
     fun <T : Annotation> getAnnotation(parentElement: TypeElement, fieldElement: Element, annotationClass: Class<T>): T? {
-        val memberAnnotation = fieldElement.getAnnotation(annotationClass)
-        if (memberAnnotation != null) {
-            return memberAnnotation
-        }
-        return findMethodAnnotation(parentElement, fieldElement, annotationClass)
+        return fieldElement.getAnnotation(annotationClass)
+                ?: findMethodAnnotation(parentElement, fieldElement, annotationClass)
     }
 
     private fun <T : Annotation> findMethodAnnotation(
-            modelElement: TypeElement?,
-            memberElement: Element,
+            parentElement: TypeElement?,
+            fieldElement: Element,
             annotationClass: Class<T>): T? {
 
-        if (modelElement != null && modelElement !is NoType) {
-            val annotation = fieldGetterFinder.findGetter(modelElement, memberElement)
-                    ?.getAnnotation(annotationClass)
-
-            if (annotation != null) {
-                return annotation
+        return when {
+            parentElement != null && parentElement !is NoType -> {
+                fieldGetterFinder.findGetter(parentElement, fieldElement)
+                        ?.getAnnotation(annotationClass)
+                        ?: findMethodAnnotation(typeHandler.asElement(parentElement.superclass) as? TypeElement,
+                                fieldElement, annotationClass)
             }
-
-            return findMethodAnnotation(typeHandler.asElement(modelElement.superclass) as? TypeElement,
-                    memberElement, annotationClass)
+            else -> null
         }
-        return null
     }
 
     fun getAnnotationMirrors(parentElement: TypeElement, fieldElement: Element): List<AnnotationMirror> {
@@ -39,13 +33,13 @@ class AnnotationFetcher(private val typeHandler: TypeHandler, private val fieldG
                 .plus(getMethodAnnotationMirrors(parentElement, fieldElement))
     }
 
-    private fun getMethodAnnotationMirrors(modelElement: TypeElement?, memberElement: Element): List<AnnotationMirror> {
-        return if (modelElement != null && modelElement !is NoType) {
-            val annotationMirrors = fieldGetterFinder.findGetter(modelElement, memberElement)
+    private fun getMethodAnnotationMirrors(parentElement: TypeElement?, fieldElement: Element): List<AnnotationMirror> {
+        return if (parentElement != null && parentElement !is NoType) {
+            val annotationMirrors = fieldGetterFinder.findGetter(parentElement, fieldElement)
                     ?.annotationMirrors ?: emptyList()
 
-            val superElement = typeHandler.asElement(modelElement.superclass)
-            annotationMirrors.plus(getMethodAnnotationMirrors(superElement as? TypeElement, memberElement))
+            val superElement = typeHandler.asElement(parentElement.superclass)
+            annotationMirrors.plus(getMethodAnnotationMirrors(superElement as? TypeElement, fieldElement))
         } else {
             emptyList()
         }

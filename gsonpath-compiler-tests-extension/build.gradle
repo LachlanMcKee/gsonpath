@@ -3,7 +3,7 @@ apply plugin: 'kotlin'
 apply plugin: 'jacoco'
 
 jacoco {
-    toolVersion = "0.8.2-SNAPSHOT" // the snapshot ignores generated kotlin code
+    toolVersion = "0.8.2"
 }
 
 targetCompatibility = JavaVersion.VERSION_1_8
