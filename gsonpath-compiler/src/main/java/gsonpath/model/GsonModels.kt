@@ -5,17 +5,19 @@ import java.util.*
 
 sealed class GsonModel
 
-data class GsonField(val fieldIndex: Int,
-                     val fieldInfo: FieldInfo,
-                     val jsonPath: String,
-                     val isRequired: Boolean,
-                     val subTypeMetadata: SubTypeMetadata?) : GsonModel() {
+data class GsonField(
+        val fieldIndex: Int,
+        val fieldInfo: FieldInfo,
+        val jsonPath: String,
+        val isRequired: Boolean,
+        val subTypeMetadata: SubTypeMetadata?) : GsonModel() {
 
     val variableName: String
         get() = "value_" + jsonPath.replace("[^A-Za-z0-9_]".toRegex(), "_")
 }
 
-data class GsonObject(private val fieldMap: LinkedHashMap<String, GsonModel> = LinkedHashMap()) : GsonModel() {
+data class GsonObject(
+        private val fieldMap: LinkedHashMap<String, GsonModel> = LinkedHashMap()) : GsonModel() {
 
     fun addObject(branchName: String, gsonObject: GsonObject): GsonObject {
         fieldMap[branchName] = gsonObject

@@ -18,9 +18,10 @@ import javax.lang.model.element.Modifier
  * public void write(JsonWriter out, ImageSizes value) throws IOException {
  */
 @Throws(ProcessingException::class)
-fun createWriteMethod(elementClassName: ClassName,
-                      rootElements: GsonObject,
-                      serializeNulls: Boolean): MethodSpec {
+fun createWriteMethod(
+        elementClassName: ClassName,
+        rootElements: GsonObject,
+        serializeNulls: Boolean): MethodSpec {
 
     val writeMethod = MethodSpec.methodBuilder("write")
             .addAnnotation(Override::class.java)
@@ -47,11 +48,12 @@ fun createWriteMethod(elementClassName: ClassName,
 }
 
 @Throws(ProcessingException::class)
-private fun writeGsonFieldWriter(codeBlock: CodeBlock.Builder,
-                                 jsonMapping: GsonObject,
-                                 currentPath: String,
-                                 serializeNulls: Boolean,
-                                 currentFieldCount: Int): Int {
+private fun writeGsonFieldWriter(
+        codeBlock: CodeBlock.Builder,
+        jsonMapping: GsonObject,
+        currentPath: String,
+        serializeNulls: Boolean,
+        currentFieldCount: Int): Int {
 
     codeBlock.addStatement("out.beginObject()")
 

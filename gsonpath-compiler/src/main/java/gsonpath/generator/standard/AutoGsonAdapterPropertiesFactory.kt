@@ -4,24 +4,24 @@ import gsonpath.AutoGsonAdapter
 import gsonpath.GsonFieldValidationType
 import gsonpath.ProcessingException
 
-internal class AutoGsonAdapterPropertiesFactory {
+class AutoGsonAdapterPropertiesFactory {
 
     @Throws(ProcessingException::class)
     fun create(autoGsonAnnotation: AutoGsonAdapter, isInterface: Boolean): AutoGsonAdapterProperties {
 
         val gsonFieldValidationType =
-            if (isInterface) {
-                // Interfaces must use field validation to prevent issues with primitives.
-                when (autoGsonAnnotation.fieldValidationType) {
-                    GsonFieldValidationType.NO_VALIDATION ->
-                        GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL
+                if (isInterface) {
+                    // Interfaces must use field validation to prevent issues with primitives.
+                    when (autoGsonAnnotation.fieldValidationType) {
+                        GsonFieldValidationType.NO_VALIDATION ->
+                            GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL
 
-                    else ->
-                        autoGsonAnnotation.fieldValidationType
+                        else ->
+                            autoGsonAnnotation.fieldValidationType
+                    }
+                } else {
+                    autoGsonAnnotation.fieldValidationType
                 }
-            } else {
-                autoGsonAnnotation.fieldValidationType
-            }
 
         val pathSubstitutions = autoGsonAnnotation.substitutions
 
@@ -34,13 +34,13 @@ internal class AutoGsonAdapterPropertiesFactory {
         }
 
         return AutoGsonAdapterProperties(
-            autoGsonAnnotation.ignoreNonAnnotatedFields,
-            autoGsonAnnotation.flattenDelimiter,
-            autoGsonAnnotation.serializeNulls,
-            autoGsonAnnotation.rootField,
-            gsonFieldValidationType,
-            autoGsonAnnotation.fieldNamingPolicy,
-            pathSubstitutions)
+                autoGsonAnnotation.ignoreNonAnnotatedFields,
+                autoGsonAnnotation.flattenDelimiter,
+                autoGsonAnnotation.serializeNulls,
+                autoGsonAnnotation.rootField,
+                gsonFieldValidationType,
+                autoGsonAnnotation.fieldNamingPolicy,
+                pathSubstitutions)
     }
 
 }

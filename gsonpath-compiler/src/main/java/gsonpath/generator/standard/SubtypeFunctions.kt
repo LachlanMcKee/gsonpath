@@ -28,10 +28,11 @@ val arrayTypeAdapterClassName: ClassName = ClassName.get(StrictArrayTypeAdapter:
 /**
  * Creates the code required for subtype adapters for any fields that use the GsonSubtype annotation.
  */
-fun addSubTypeTypeAdapters(typeHandler: TypeHandler,
-                           gsonObjectTreeFactory: GsonObjectTreeFactory,
-                           typeSpecBuilder: TypeSpec.Builder,
-                           rootElements: GsonObject) {
+fun addSubTypeTypeAdapters(
+        typeHandler: TypeHandler,
+        gsonObjectTreeFactory: GsonObjectTreeFactory,
+        typeSpecBuilder: TypeSpec.Builder,
+        rootElements: GsonObject) {
 
     gsonObjectTreeFactory
             .getFlattenedFieldsFromGsonObject(rootElements)
@@ -50,8 +51,11 @@ fun addSubTypeTypeAdapters(typeHandler: TypeHandler,
  * Creates the getter for the type adapter.
  * This implementration lazily loads, and then cached the result for subsequent usages.
  */
-private fun createGetter(typeHandler: TypeHandler, typeSpecBuilder: TypeSpec.Builder, gsonField: GsonField,
-                         subTypeMetadata: SubTypeMetadata) {
+private fun createGetter(
+        typeHandler: TypeHandler,
+        typeSpecBuilder: TypeSpec.Builder,
+        gsonField: GsonField,
+        subTypeMetadata: SubTypeMetadata) {
 
     val variableName = subTypeMetadata.variableName
     val typeAdapterDetails = getTypeAdapterDetails(typeHandler, gsonField)
@@ -83,7 +87,10 @@ private fun createGetter(typeHandler: TypeHandler, typeSpecBuilder: TypeSpec.Bui
 /**
  * Creates a collection type adapter class name and uses the fields type as the generic parameter.
  */
-private fun getTypeAdapterDetails(typeHandler: TypeHandler, gsonField: GsonField): TypeAdapterDetails {
+private fun getTypeAdapterDetails(
+        typeHandler: TypeHandler,
+        gsonField: GsonField): TypeAdapterDetails {
+
     return if (isArrayType(typeHandler, gsonField)) {
         TypeAdapterDetails.ArrayTypeAdapter
     } else {
@@ -101,8 +108,11 @@ private fun getRawTypeName(gsonField: GsonField): TypeName {
  * <p>
  * Only gson fields that are annotated with 'GsonSubtype' should invoke this method
  */
-private fun createSubTypeAdapter(typeHandler: TypeHandler, typeSpecBuilder: TypeSpec.Builder, gsonField: GsonField,
-                                 subTypeMetadata: SubTypeMetadata) {
+private fun createSubTypeAdapter(
+        typeHandler: TypeHandler,
+        typeSpecBuilder: TypeSpec.Builder,
+        gsonField: GsonField,
+        subTypeMetadata: SubTypeMetadata) {
 
     val rawTypeName = getRawTypeName(gsonField)
 

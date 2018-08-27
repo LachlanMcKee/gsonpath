@@ -19,7 +19,7 @@ open class BaseGsonObjectFactoryTest {
     val exception: ExpectedException = ExpectedException.none()
 
     @JvmOverloads
-    internal fun mockFieldInfo(fieldName: String, jsonPath: String? = null): FieldInfo {
+    fun mockFieldInfo(fieldName: String, jsonPath: String? = null): FieldInfo {
         val fieldInfo = mock(FieldInfo::class.java)
         `when`(fieldInfo.typeName).thenReturn(TypeName.INT)
         `when`(fieldInfo.annotationNames).thenReturn(emptyList())
@@ -37,7 +37,7 @@ open class BaseGsonObjectFactoryTest {
 
     @Throws(ProcessingException::class)
     @JvmOverloads
-    internal fun executeAddGsonType(arguments: GsonTypeArguments, outputGsonObject: GsonObject = GsonObject()): GsonObject {
+    fun executeAddGsonType(arguments: GsonTypeArguments, outputGsonObject: GsonObject = GsonObject()): GsonObject {
         GsonObjectFactory(mock(SubTypeMetadataFactory::class.java)).addGsonType(
                 outputGsonObject,
                 arguments.fieldInfo,
@@ -51,14 +51,15 @@ open class BaseGsonObjectFactoryTest {
         return outputGsonObject
     }
 
-    internal class GsonTypeArguments(val fieldInfo: FieldInfo,
-                                     val gsonFieldValidationType: GsonFieldValidationType = GsonFieldValidationType.NO_VALIDATION,
-                                     val pathSubstitutions: Array<PathSubstitution> = emptyArray(),
-                                     val fieldInfoIndex: Int = 0,
-                                     val flattenDelimiter: Char = '.',
-                                     val gsonFieldNamingPolicy: FieldNamingPolicy = FieldNamingPolicy.IDENTITY)
+    class GsonTypeArguments(
+            val fieldInfo: FieldInfo,
+            val gsonFieldValidationType: GsonFieldValidationType = GsonFieldValidationType.NO_VALIDATION,
+            val pathSubstitutions: Array<PathSubstitution> = emptyArray(),
+            val fieldInfoIndex: Int = 0,
+            val flattenDelimiter: Char = '.',
+            val gsonFieldNamingPolicy: FieldNamingPolicy = FieldNamingPolicy.IDENTITY)
 
     companion object {
-        internal val DEFAULT_VARIABLE_NAME = "variableName"
+        const val DEFAULT_VARIABLE_NAME = "variableName"
     }
 }

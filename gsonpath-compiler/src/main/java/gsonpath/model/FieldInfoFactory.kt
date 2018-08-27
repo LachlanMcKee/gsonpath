@@ -1,6 +1,7 @@
 package gsonpath.model
 
 import com.google.gson.annotations.SerializedName
+import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import gsonpath.ExcludeField
 import gsonpath.ProcessingException
@@ -13,10 +14,30 @@ import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.TypeMirror
 
-class FieldInfoFactory(private val typeHandler: TypeHandler,
-                       private val fieldGetterFinder: FieldGetterFinder,
-                       private val annotationFetcher: AnnotationFetcher,
-                       private val defaultValueDetector: DefaultValueDetector) {
+class FieldInfoFactory(
+        private val typeHandler: TypeHandler,
+        private val fieldGetterFinder: FieldGetterFinder,
+        private val annotationFetcher: AnnotationFetcher,
+        private val defaultValueDetector: DefaultValueDetector) {
+
+    class InterfaceInfo(
+            val parentClassName: ClassName,
+            val fieldInfo: List<InterfaceFieldInfo>)
+
+    class InterfaceFieldInfo(
+            val elementInfo: ElementInfo,
+            val typeName: TypeName,
+            val typeMirror: TypeMirror,
+            val fieldName: String,
+            val getterMethodName: String)
+
+    interface ElementInfo {
+        val underlyingElement: Element
+
+        fun <T : Annotation> getAnnotation(annotationClass: Class<T>): T?
+
+        val annotationNames: List<String>
+    }
 
     /**
      * Obtain all possible elements contained within the annotated class, including inherited fields.

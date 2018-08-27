@@ -14,7 +14,9 @@ import gsonpath.util.Logger
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 
-class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter, private val logger: Logger) {
+class TypeAdapterFactoryGenerator(
+        private val fileWriter: FileWriter,
+        private val logger: Logger) {
 
     fun generate(factoryElement: TypeElement, generatedGsonAdapters: List<HandleResult>): Boolean {
         if (generatedGsonAdapters.isEmpty()) {
@@ -57,7 +59,10 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter, private va
     /**
      * Create the GsonPathLoader which is used by the GsonPathTypeAdapterFactory class.
      */
-    private fun createGsonTypeFactoryImpl(factoryElement: TypeElement, packageLocalHandleResults: Map<String, List<HandleResult>>): Boolean {
+    private fun createGsonTypeFactoryImpl(
+            factoryElement: TypeElement,
+            packageLocalHandleResults: Map<String, List<HandleResult>>): Boolean {
+
         val factoryClassName = ClassName.get(factoryElement)
 
         val typeBuilder = TypeSpec.classBuilder(factoryClassName.simpleName() + "Impl")
@@ -110,7 +115,10 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter, private va
         return typeBuilder.writeFile(fileWriter, logger, factoryClassName.packageName())
     }
 
-    private fun createPackageLocalTypeAdapterLoaders(packageName: String, packageLocalGsonAdapters: List<HandleResult>): Boolean {
+    private fun createPackageLocalTypeAdapterLoaders(
+            packageName: String,
+            packageLocalGsonAdapters: List<HandleResult>): Boolean {
+        
         val typeBuilder = TypeSpec.classBuilder(ClassName.get(packageName, PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addSuperinterface(TypeAdapterFactory::class.java)

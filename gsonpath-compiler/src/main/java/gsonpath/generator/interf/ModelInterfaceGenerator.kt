@@ -7,8 +7,9 @@ import gsonpath.ProcessingException
 import gsonpath.compiler.addNewLine
 import gsonpath.compiler.generateClassName
 import gsonpath.generator.writeFile
-import gsonpath.model.InterfaceFieldInfo
-import gsonpath.model.InterfaceInfo
+import gsonpath.model.FieldInfoFactory
+import gsonpath.model.FieldInfoFactory.InterfaceFieldInfo
+import gsonpath.model.FieldInfoFactory.InterfaceInfo
 import gsonpath.util.FileWriter
 import gsonpath.util.Logger
 import gsonpath.util.TypeHandler
@@ -21,9 +22,10 @@ import javax.lang.model.element.TypeElement
 import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.TypeMirror
 
-internal class ModelInterfaceGenerator(private val typeHandler: TypeHandler,
-                                       private val fileWriter: FileWriter,
-                                       private val logger: Logger) {
+class ModelInterfaceGenerator(
+        private val typeHandler: TypeHandler,
+        private val fileWriter: FileWriter,
+        private val logger: Logger) {
 
     @Throws(ProcessingException::class)
     fun handle(element: TypeElement): InterfaceInfo {
@@ -249,7 +251,7 @@ internal class ModelInterfaceGenerator(private val typeHandler: TypeHandler,
                 }
     }
 
-    private class StandardElementInfo constructor(override val underlyingElement: Element) : InterfaceFieldInfo.ElementInfo {
+    private class StandardElementInfo(override val underlyingElement: Element) : FieldInfoFactory.ElementInfo {
 
         override fun <T : Annotation> getAnnotation(annotationClass: Class<T>): T? {
             return underlyingElement.getAnnotation(annotationClass)

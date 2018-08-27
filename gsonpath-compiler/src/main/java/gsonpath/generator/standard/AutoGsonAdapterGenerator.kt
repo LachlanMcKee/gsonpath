@@ -26,11 +26,12 @@ import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.ExecutableType
 
-class AutoGsonAdapterGenerator(private val fieldInfoFactory: FieldInfoFactory,
-                               private val typeHandler: TypeHandler,
-                               private val fileWriter: FileWriter,
-                               private val gsonObjectTreeFactory: GsonObjectTreeFactory,
-                               private val logger: Logger) {
+class AutoGsonAdapterGenerator(
+        private val fieldInfoFactory: FieldInfoFactory,
+        private val typeHandler: TypeHandler,
+        private val fileWriter: FileWriter,
+        private val gsonObjectTreeFactory: GsonObjectTreeFactory,
+        private val logger: Logger) {
 
     @Throws(ProcessingException::class)
     fun handle(modelElement: TypeElement,

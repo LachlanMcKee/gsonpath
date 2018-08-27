@@ -12,7 +12,7 @@ import gsonpath.compiler.*
 import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
 import gsonpath.model.GsonObjectTreeFactory
-import gsonpath.model.MandatoryFieldInfo
+import gsonpath.model.MandatoryFieldInfoFactory.MandatoryFieldInfo
 import gsonpath.util.ExtensionsHandler
 import java.io.IOException
 import javax.lang.model.element.Modifier
@@ -23,13 +23,14 @@ val CLASS_NAME_JSON_ELEMENT: ClassName = ClassName.get(JsonElement::class.java)
  * public T read(JsonReader in) throws IOException {
  */
 @Throws(ProcessingException::class)
-fun createReadMethod(gsonObjectTreeFactory: GsonObjectTreeFactory,
-                     baseElement: ClassName,
-                     concreteElement: ClassName,
-                     requiresConstructorInjection: Boolean,
-                     mandatoryInfoMap: Map<String, MandatoryFieldInfo>,
-                     rootElements: GsonObject,
-                     extensionsHandler: ExtensionsHandler): MethodSpec {
+fun createReadMethod(
+        gsonObjectTreeFactory: GsonObjectTreeFactory,
+        baseElement: ClassName,
+        concreteElement: ClassName,
+        requiresConstructorInjection: Boolean,
+        mandatoryInfoMap: Map<String, MandatoryFieldInfo>,
+        rootElements: GsonObject,
+        extensionsHandler: ExtensionsHandler): MethodSpec {
 
     // Create a flat list of the variables and ensure they are ordered by their original field index within the POJO
     val flattenedFields = gsonObjectTreeFactory
@@ -109,12 +110,13 @@ fun createReadMethod(gsonObjectTreeFactory: GsonObjectTreeFactory,
  * This is a recursive function.
  */
 @Throws(ProcessingException::class)
-private fun addReadCodeForElements(codeBlock: CodeBlock.Builder,
-                                   jsonMapping: GsonObject,
-                                   requiresConstructorInjection: Boolean,
-                                   mandatoryInfoMap: Map<String, MandatoryFieldInfo>,
-                                   extensionsHandler: ExtensionsHandler,
-                                   recursionCount: Int = 0): Int {
+private fun addReadCodeForElements(
+        codeBlock: CodeBlock.Builder,
+        jsonMapping: GsonObject,
+        requiresConstructorInjection: Boolean,
+        mandatoryInfoMap: Map<String, MandatoryFieldInfo>,
+        extensionsHandler: ExtensionsHandler,
+        recursionCount: Int = 0): Int {
 
     val jsonMappingSize = jsonMapping.size()
     if (jsonMappingSize == 0) {
@@ -191,11 +193,12 @@ private fun addReadCodeForElements(codeBlock: CodeBlock.Builder,
 }
 
 @Throws(ProcessingException::class)
-private fun writeGsonFieldReader(gsonField: GsonField,
-                                 codeBlock: CodeBlock.Builder,
-                                 requiresConstructorInjection: Boolean,
-                                 mandatoryFieldInfo: MandatoryFieldInfo?,
-                                 extensionsHandler: ExtensionsHandler) {
+private fun writeGsonFieldReader(
+        gsonField: GsonField,
+        codeBlock: CodeBlock.Builder,
+        requiresConstructorInjection: Boolean,
+        mandatoryFieldInfo: MandatoryFieldInfo?,
+        extensionsHandler: ExtensionsHandler) {
 
     val fieldInfo = gsonField.fieldInfo
     val fieldTypeName = fieldInfo.typeName
@@ -259,7 +262,10 @@ private fun writeGsonFieldReader(gsonField: GsonField,
     }
 }
 
-private data class FieldReaderResult(val variableName: String, val checkIfNull: Boolean, val callToString: Boolean = false)
+private data class FieldReaderResult(
+        val variableName: String,
+        val checkIfNull: Boolean,
+        val callToString: Boolean = false)
 
 private fun getVariableName(gsonField: GsonField, requiresConstructorInjection: Boolean): String {
     return if (gsonField.isRequired && requiresConstructorInjection)
@@ -275,7 +281,11 @@ private fun isCheckIfNullApplicable(gsonField: GsonField, requiresConstructorInj
 /**
  * Writes the Java code for field reading that is not supported by Gson.
  */
-private fun writeGsonFieldReading(codeBlock: CodeBlock.Builder, gsonField: GsonField, requiresConstructorInjection: Boolean): FieldReaderResult {
+private fun writeGsonFieldReading(
+        codeBlock: CodeBlock.Builder,
+        gsonField: GsonField,
+        requiresConstructorInjection: Boolean): FieldReaderResult {
+
     val fieldInfo = gsonField.fieldInfo
     val fieldTypeName = fieldInfo.typeName.box()
 
@@ -337,9 +347,10 @@ private fun writeGsonFieldReading(codeBlock: CodeBlock.Builder, gsonField: GsonF
 /**
  * If there are any mandatory fields, we now check if any values have been missed. If there are, an exception will be raised here.
  */
-private fun addMandatoryValuesCheck(codeBlock: CodeBlock.Builder,
-                                    mandatoryInfoMap: Map<String, MandatoryFieldInfo>,
-                                    concreteElement: ClassName) {
+private fun addMandatoryValuesCheck(
+        codeBlock: CodeBlock.Builder,
+        mandatoryInfoMap: Map<String, MandatoryFieldInfo>,
+        concreteElement: ClassName) {
 
     if (mandatoryInfoMap.isEmpty()) {
         return

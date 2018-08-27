@@ -6,10 +6,11 @@ import gsonpath.util.FileWriter
 import gsonpath.util.Logger
 import java.io.IOException
 
-fun TypeSpec.Builder.writeFile(fileWriter: FileWriter,
-                               logger: Logger,
-                               packageName: String,
-                               fileBuiltFunc: (builder: JavaFile.Builder) -> Unit = {}): Boolean {
+fun TypeSpec.Builder.writeFile(
+        fileWriter: FileWriter,
+        logger: Logger,
+        packageName: String,
+        fileBuiltFunc: (builder: JavaFile.Builder) -> Unit = {}): Boolean {
 
     return try {
         JavaFile.builder(packageName, build()).apply {
