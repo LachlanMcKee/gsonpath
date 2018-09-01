@@ -28,7 +28,10 @@ class MandatoryFieldInfoFactory {
      * For all required fields we add an index field so we can easily check whether the
      * value has been assigned after the json has been parsed.
      */
-    private fun handleField(gsonModel: GsonField, map: Map<String, MandatoryFieldInfo>): Map<String, MandatoryFieldInfo> {
+    private fun handleField(
+            gsonModel: GsonField,
+            map: Map<String, MandatoryFieldInfo>): Map<String, MandatoryFieldInfo> {
+
         return when {
             gsonModel.isRequired -> {
                 val fieldName = gsonModel.fieldInfo.fieldName

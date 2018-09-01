@@ -8,12 +8,13 @@ import java.util.regex.Pattern
 
 class GsonObjectTreeFactory(private val gsonObjectFactory: GsonObjectFactory) {
     @Throws(ProcessingException::class)
-    fun createGsonObject(fieldInfoList: List<FieldInfo>,
-                         rootField: String,
-                         flattenDelimiter: Char,
-                         gsonFieldNamingPolicy: FieldNamingPolicy,
-                         gsonFieldValidationType: GsonFieldValidationType,
-                         pathSubstitutions: Array<PathSubstitution>): GsonObject {
+    fun createGsonObject(
+            fieldInfoList: List<FieldInfo>,
+            rootField: String,
+            flattenDelimiter: Char,
+            gsonFieldNamingPolicy: FieldNamingPolicy,
+            gsonFieldValidationType: GsonFieldValidationType,
+            pathSubstitutions: Array<PathSubstitution>): GsonObject {
 
         // Obtain the correct mapping structure beforehand.
         val absoluteRootObject = GsonObject()
@@ -33,7 +34,11 @@ class GsonObjectTreeFactory(private val gsonObjectFactory: GsonObjectFactory) {
         return absoluteRootObject
     }
 
-    private fun createGsonObjectFromRootField(rootObject: GsonObject, rootField: String, flattenDelimiter: Char): GsonObject {
+    private fun createGsonObjectFromRootField(
+            rootObject: GsonObject,
+            rootField: String,
+            flattenDelimiter: Char): GsonObject {
+
         if (rootField.isEmpty()) {
             return rootObject
         }
