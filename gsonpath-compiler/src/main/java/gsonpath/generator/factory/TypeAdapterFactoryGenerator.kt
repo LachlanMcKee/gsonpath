@@ -118,7 +118,7 @@ class TypeAdapterFactoryGenerator(
     private fun createPackageLocalTypeAdapterLoaders(
             packageName: String,
             packageLocalGsonAdapters: List<HandleResult>): Boolean {
-        
+
         val typeBuilder = TypeSpec.classBuilder(ClassName.get(packageName, PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addSuperinterface(TypeAdapterFactory::class.java)
@@ -156,7 +156,7 @@ class TypeAdapterFactoryGenerator(
         return typeBuilder.writeFile(fileWriter, logger, packageName)
     }
 
-    companion object {
+    private companion object {
         private const val PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME = "PackagePrivateTypeAdapterLoader"
     }
 

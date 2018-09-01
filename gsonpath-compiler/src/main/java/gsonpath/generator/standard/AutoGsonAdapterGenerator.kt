@@ -34,9 +34,10 @@ class AutoGsonAdapterGenerator(
         private val logger: Logger) {
 
     @Throws(ProcessingException::class)
-    fun handle(modelElement: TypeElement,
-               autoGsonAnnotation: AutoGsonAdapter,
-               extensionsHandler: ExtensionsHandler): HandleResult {
+    fun handle(
+            modelElement: TypeElement,
+            autoGsonAnnotation: AutoGsonAdapter,
+            extensionsHandler: ExtensionsHandler): HandleResult {
 
         val modelClassName = ClassName.get(modelElement)
         val adapterClassName = ClassName.get(modelClassName.packageName(),

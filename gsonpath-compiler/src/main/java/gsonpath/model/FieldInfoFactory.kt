@@ -90,18 +90,14 @@ class FieldInfoFactory(
                         override val annotationNames: List<String>
                             get() {
                                 return annotationFetcher.getAnnotationMirrors(modelElement, memberElement)
-                                        .map { it ->
-                                            it.annotationType.asElement().simpleName.toString()
-                                        }
+                                        .map { it.annotationType.asElement().simpleName.toString() }
                             }
 
                         override val element: Element
                             get() = memberElement
 
                         override val hasDefaultValue: Boolean
-                            get() {
-                                return defaultValueDetector.hasDefaultValue(memberElement)
-                            }
+                            get() = defaultValueDetector.hasDefaultValue(memberElement)
                     }
                 }
     }

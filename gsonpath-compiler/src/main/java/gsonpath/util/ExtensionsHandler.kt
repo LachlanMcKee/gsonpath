@@ -6,18 +6,23 @@ import gsonpath.compiler.GsonPathExtension
 import gsonpath.model.GsonField
 import javax.annotation.processing.ProcessingEnvironment
 
-class ExtensionsHandler(private val processingEnvironment: ProcessingEnvironment,
-                        private val extensions: List<GsonPathExtension>) {
+class ExtensionsHandler(
+        private val processingEnvironment: ProcessingEnvironment,
+        private val extensions: List<GsonPathExtension>) {
 
     fun handle(gsonField: GsonField, variableName: String, handleFunc: (String, CodeBlock) -> Unit) {
-        extensions.forEach { extension ->
-            val validationCodeBlock: CodeBlock? = extension.createFieldReadCodeBlock(processingEnvironment,
-                    ExtensionFieldMetadata(gsonField.fieldInfo, variableName, gsonField.jsonPath, gsonField.isRequired))
-
-            if (validationCodeBlock != null && !validationCodeBlock.isEmpty) {
-                handleFunc(extension.extensionName, validationCodeBlock)
-            }
-        }
+        extensions.forEach { executeExtension(it, gsonField, variableName, handleFunc) }
     }
 
+    private fun executeExtension(extension: GsonPathExtension, gsonField: GsonField, variableName: String, handleFunc: (String, CodeBlock) -> Unit) {
+        extension.createFieldReadCodeBlock(processingEnvironment, createMetadata(gsonField, variableName))
+                ?.let {
+                    if (it.isEmpty) {
+                        handleFunc(extension.extensionName, it)
+                    }
+                }
+    }
+
+    private fun createMetadata(gsonField: GsonField, variableName: String) =
+            ExtensionFieldMetadata(gsonField.fieldInfo, variableName, gsonField.jsonPath, gsonField.isRequired)
 }
