@@ -9,6 +9,19 @@ import gsonpath.util.TypeHandler
 import javax.lang.model.element.Element
 import javax.lang.model.type.TypeMirror
 
+/**
+ * The type of value used when determining the correct subtype
+ */
+enum class SubTypeKeyType {
+    STRING, INTEGER, BOOLEAN
+}
+
+/**
+ * A data class that is used to convert the annotation 'stringValueSubtypes' 'booleanValueSubtypes' and 'integerValueSubtypes'
+ * into a common reusable structure.
+ */
+data class GsonSubTypeKeyAndClass(val key: String, val clazzTypeMirror: TypeMirror)
+
 data class SubTypeMetadata(
         val className: String,
         val variableName: String,

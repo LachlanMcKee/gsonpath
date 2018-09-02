@@ -11,9 +11,9 @@ import gsonpath.compiler.generateClassName
 import gsonpath.generator.HandleResult
 import gsonpath.generator.interf.ModelInterfaceGenerator
 import gsonpath.generator.standard.properties.AutoGsonAdapterPropertiesFactory
-import gsonpath.generator.standard.read.createReadMethod
-import gsonpath.generator.standard.subtype.addSubTypeTypeAdapters
-import gsonpath.generator.standard.write.createWriteMethod
+import gsonpath.generator.standard.read.ReadFunctions
+import gsonpath.generator.standard.subtype.SubtypeFunctions
+import gsonpath.generator.standard.write.WriteFunctions
 import gsonpath.generator.writeFile
 import gsonpath.model.*
 import gsonpath.util.ExtensionsHandler
@@ -32,6 +32,9 @@ class AutoGsonAdapterGenerator(
         private val typeHandler: TypeHandler,
         private val fileWriter: FileWriter,
         private val gsonObjectTreeFactory: GsonObjectTreeFactory,
+        private val readFunctions: ReadFunctions,
+        private val writeFunctions: WriteFunctions,
+        private val subtypeFunctions: SubtypeFunctions,
         private val logger: Logger) {
 
     @Throws(ProcessingException::class)
@@ -115,11 +118,11 @@ class AutoGsonAdapterGenerator(
                     .build())
         }
 
-        adapterTypeBuilder.addMethod(createReadMethod(gsonObjectTreeFactory, modelClassName, concreteClassName,
+        adapterTypeBuilder.addMethod(readFunctions.createReadMethod(modelClassName, concreteClassName,
                 requiresConstructorInjection, mandatoryInfoMap, rootGsonObject, extensionsHandler))
 
         if (!isModelInterface) {
-            adapterTypeBuilder.addMethod(createWriteMethod(modelClassName, rootGsonObject, properties.serializeNulls))
+            adapterTypeBuilder.addMethod(writeFunctions.createWriteMethod(modelClassName, rootGsonObject, properties.serializeNulls))
 
         } else {
             // Create an empty method for the write, since we do not support writing for interfaces.
@@ -134,7 +137,7 @@ class AutoGsonAdapterGenerator(
         }
 
         // Adds any required subtype type adapters depending on the usage of the GsonSubtype annotation.
-        addSubTypeTypeAdapters(typeHandler, gsonObjectTreeFactory, adapterTypeBuilder, rootGsonObject)
+        subtypeFunctions.addSubTypeTypeAdapters(adapterTypeBuilder, rootGsonObject)
 
         if (adapterTypeBuilder.writeFile(fileWriter, logger, adapterClassName.packageName(), this::onJavaFileBuilt)) {
             return HandleResult(modelClassName, adapterClassName)

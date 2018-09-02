@@ -6,7 +6,10 @@ import gsonpath.compiler.GsonPathExtension
 import gsonpath.generator.HandleResult
 import gsonpath.generator.factory.TypeAdapterFactoryGenerator
 import gsonpath.generator.standard.AutoGsonAdapterGenerator
+import gsonpath.generator.standard.read.ReadFunctions
 import gsonpath.generator.standard.subtype.SubTypeMetadataFactoryImpl
+import gsonpath.generator.standard.subtype.SubtypeFunctions
+import gsonpath.generator.standard.write.WriteFunctions
 import gsonpath.model.FieldInfoFactory
 import gsonpath.model.GsonObjectFactory
 import gsonpath.model.GsonObjectTreeFactory
@@ -53,6 +56,9 @@ open class GsonProcessorImpl : AbstractProcessor() {
         val fieldGetterFinder = FieldGetterFinder(typeHandler)
         val annotationFetcher = AnnotationFetcher(typeHandler, fieldGetterFinder)
         val gsonObjectTreeFactory = GsonObjectTreeFactory(GsonObjectFactory(SubTypeMetadataFactoryImpl(typeHandler)))
+        val readFunctions = ReadFunctions(gsonObjectTreeFactory)
+        val writeFunctions = WriteFunctions()
+        val subtypeFunctions = SubtypeFunctions(typeHandler, gsonObjectTreeFactory)
 
         // Handle the standard type adapters.
         val adapterGenerator = AutoGsonAdapterGenerator(
@@ -61,7 +67,7 @@ open class GsonProcessorImpl : AbstractProcessor() {
                         fieldGetterFinder,
                         annotationFetcher,
                         defaultValueDetector),
-                typeHandler, fileWriter, gsonObjectTreeFactory, logger)
+                typeHandler, fileWriter, gsonObjectTreeFactory, readFunctions, writeFunctions, subtypeFunctions, logger)
 
         val autoGsonAdapterResults: List<HandleResult> =
                 getAnnotatedModelElements(env, customAnnotations)
