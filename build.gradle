@@ -1,6 +1,6 @@
 buildscript {
     ext.kotlin_version = '1.2.31'
-    ext.javapoet_version = '1.7.0'
+    ext.javapoet_version = '1.11.1'
     ext.gson_version = '2.8.1'
     ext.junit_version = '4.12'
 

@@ -5,7 +5,6 @@ import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import com.squareup.javapoet.*
-import gsonpath.ProcessingException
 import gsonpath.compiler.addNewLine
 import gsonpath.generator.HandleResult
 import gsonpath.generator.writeFile
@@ -19,32 +18,8 @@ class TypeAdapterFactoryGenerator(
         private val logger: Logger) {
 
     fun generate(factoryElement: TypeElement, generatedGsonAdapters: List<HandleResult>): Boolean {
-        if (generatedGsonAdapters.isEmpty()) {
-            return false
-        }
-
-        // Only interfaces are accepted (for simplicity)
-        if (!factoryElement.kind.isInterface) {
-            throw ProcessingException("Types annotated with @AutoGsonAdapterFactory must be an interface " +
-                    "that directly extends com.google.gson.TypeAdapterFactory.", factoryElement)
-        }
-
-        // Ensure that the factory element only extends TypeAdapterFactory
-        val factoryInterfaces = factoryElement.interfaces
-        if (factoryInterfaces.size != 1 || TypeName.get(factoryInterfaces[0]) != TypeName.get(TypeAdapterFactory::class.java)) {
-            throw ProcessingException("Interfaces annotated with @AutoGsonAdapterFactory must extend " +
-                    "com.google.gson.TypeAdapterFactory and no other interfaces.", factoryElement)
-        }
-
-        val packageLocalHandleResults: Map<String, List<HandleResult>> =
-                generatedGsonAdapters.fold(emptyMap()) { map, generatedGsonAdapter ->
-                    val packageName = generatedGsonAdapter.generatedClassName.packageName()
-
-                    val newList: List<HandleResult> =
-                            map[packageName]?.plus(generatedGsonAdapter) ?: listOf(generatedGsonAdapter)
-
-                    return@fold map.plus(Pair(packageName, newList))
-                }
+        val packageLocalHandleResults = TypeAdapterFactoryHandlersFactory
+                .createResults(factoryElement, generatedGsonAdapters)
 
         for ((packageName, list) in packageLocalHandleResults) {
             if (!createPackageLocalTypeAdapterLoaders(packageName, list)) {
