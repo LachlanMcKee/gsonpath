@@ -22,7 +22,7 @@ class ExtensionsHandler(
 
         extension.createFieldReadCodeBlock(processingEnvironment, createMetadata(gsonField, variableName))
                 ?.let {
-                    if (it.isEmpty) {
+                    if (!it.isEmpty) {
                         handleFunc(extension.extensionName, it)
                     }
                 }
