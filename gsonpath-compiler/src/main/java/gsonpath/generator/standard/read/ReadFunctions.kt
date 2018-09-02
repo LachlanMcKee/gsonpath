@@ -36,38 +36,15 @@ class ReadFunctions(private val gsonObjectTreeFactory: GsonObjectTreeFactory) {
                 .returns(baseElement)
                 .addParameter(JsonReader::class.java, "in")
                 .addException(IOException::class.java)
-                .addCode(
-                        createReadCodeBlock(concreteElement,
-                                requiresConstructorInjection,
-                                mandatoryInfoMap,
-                                rootElements,
-                                extensionsHandler))
-                .build()
-    }
+                .code {
+                    // Create a flat list of the variables and ensure they are ordered by their original field index within the POJO
+                    val flattenedFields = gsonObjectTreeFactory
+                            .getFlattenedFieldsFromGsonObject(rootElements)
 
-    private fun createReadCodeBlock(
-            concreteElement: ClassName,
-            requiresConstructorInjection: Boolean,
-            mandatoryInfoMap: Map<String, MandatoryFieldInfo>,
-            rootElements: GsonObject,
-            extensionsHandler: ExtensionsHandler): CodeBlock {
-
-        // Create a flat list of the variables and ensure they are ordered by their original field index within the POJO
-        val flattenedFields = gsonObjectTreeFactory
-                .getFlattenedFieldsFromGsonObject(rootElements)
-
-        return CodeBlock.builder()
-                .apply {
                     addValidValueCheck(true)
-
-                    addInitialisationBlock(concreteElement, requiresConstructorInjection, flattenedFields,
-                            mandatoryInfoMap)
-
-                    addReadCodeForElements(rootElements, requiresConstructorInjection,
-                            mandatoryInfoMap, extensionsHandler)
-
+                    addInitialisationBlock(concreteElement, requiresConstructorInjection, flattenedFields, mandatoryInfoMap)
+                    addReadCodeForElements(rootElements, requiresConstructorInjection, mandatoryInfoMap, extensionsHandler)
                     addMandatoryValuesCheck(mandatoryInfoMap, concreteElement)
-
                     addReturnBlock(concreteElement, requiresConstructorInjection, flattenedFields)
                 }
                 .build()
