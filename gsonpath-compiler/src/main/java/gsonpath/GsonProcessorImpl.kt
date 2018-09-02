@@ -6,7 +6,7 @@ import gsonpath.compiler.GsonPathExtension
 import gsonpath.generator.HandleResult
 import gsonpath.generator.factory.TypeAdapterFactoryGenerator
 import gsonpath.generator.standard.AutoGsonAdapterGenerator
-import gsonpath.generator.standard.SubTypeMetadataFactoryImpl
+import gsonpath.generator.standard.subtype.SubTypeMetadataFactoryImpl
 import gsonpath.model.FieldInfoFactory
 import gsonpath.model.GsonObjectFactory
 import gsonpath.model.GsonObjectTreeFactory

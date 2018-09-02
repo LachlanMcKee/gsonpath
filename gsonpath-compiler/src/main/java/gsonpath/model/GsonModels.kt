@@ -1,6 +1,6 @@
 package gsonpath.model
 
-import gsonpath.generator.standard.SubTypeMetadata
+import gsonpath.generator.standard.subtype.SubTypeMetadata
 import java.util.*
 
 sealed class GsonModel

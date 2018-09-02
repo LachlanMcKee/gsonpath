@@ -1,4 +1,4 @@
-package gsonpath.generator.standard
+package gsonpath.generator.standard.read
 
 import com.google.gson.JsonElement
 import com.google.gson.stream.JsonReader
@@ -9,6 +9,7 @@ import com.squareup.javapoet.ParameterizedTypeName
 import gsonpath.FlattenJson
 import gsonpath.ProcessingException
 import gsonpath.compiler.*
+import gsonpath.generator.standard.SharedFunctions
 import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
 import gsonpath.model.GsonObjectTreeFactory

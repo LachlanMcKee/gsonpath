@@ -1,4 +1,4 @@
-package gsonpath.generator.standard
+package gsonpath.generator.standard.properties
 
 import com.google.gson.FieldNamingPolicy
 import gsonpath.GsonFieldValidationType

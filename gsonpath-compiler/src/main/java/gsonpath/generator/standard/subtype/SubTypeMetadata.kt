@@ -1,4 +1,4 @@
-package gsonpath.generator.standard
+package gsonpath.generator.standard.subtype
 
 import gsonpath.GsonSubTypeFailureOutcome
 import javax.lang.model.type.TypeMirror

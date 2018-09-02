@@ -1,8 +1,9 @@
-package gsonpath.generator.standard
+package gsonpath.generator.standard.subtype
 
 import gsonpath.GsonSubTypeFailureOutcome
 import gsonpath.GsonSubtype
 import gsonpath.ProcessingException
+import gsonpath.generator.standard.SharedFunctions
 import gsonpath.model.FieldInfo
 import gsonpath.util.TypeHandler
 import javax.lang.model.element.Element

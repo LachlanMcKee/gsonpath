@@ -1,4 +1,4 @@
-package gsonpath.generator.standard
+package gsonpath.generator.standard.write
 
 import com.google.gson.stream.JsonWriter
 import com.squareup.javapoet.ClassName
@@ -9,6 +9,7 @@ import gsonpath.ProcessingException
 import gsonpath.compiler.addComment
 import gsonpath.compiler.addEscapedStatement
 import gsonpath.compiler.addNewLine
+import gsonpath.generator.standard.SharedFunctions
 import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
 import java.io.IOException

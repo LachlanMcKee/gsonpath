@@ -10,6 +10,10 @@ import gsonpath.ProcessingException
 import gsonpath.compiler.generateClassName
 import gsonpath.generator.HandleResult
 import gsonpath.generator.interf.ModelInterfaceGenerator
+import gsonpath.generator.standard.properties.AutoGsonAdapterPropertiesFactory
+import gsonpath.generator.standard.read.createReadMethod
+import gsonpath.generator.standard.subtype.addSubTypeTypeAdapters
+import gsonpath.generator.standard.write.createWriteMethod
 import gsonpath.generator.writeFile
 import gsonpath.model.*
 import gsonpath.util.ExtensionsHandler

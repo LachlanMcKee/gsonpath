@@ -1,4 +1,4 @@
-package gsonpath.generator.standard
+package gsonpath.generator.standard.subtype
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
