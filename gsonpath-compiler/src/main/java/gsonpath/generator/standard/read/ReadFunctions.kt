@@ -8,15 +8,15 @@ import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterizedTypeName
 import gsonpath.FlattenJson
 import gsonpath.ProcessingException
-import gsonpath.compiler.*
+import gsonpath.compiler.CLASS_NAME_STRING
+import gsonpath.compiler.createDefaultVariableValueForTypeName
 import gsonpath.generator.standard.SharedFunctions
 import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
 import gsonpath.model.GsonObjectTreeFactory
 import gsonpath.model.MandatoryFieldInfoFactory.MandatoryFieldInfo
-import gsonpath.util.ExtensionsHandler
+import gsonpath.util.*
 import java.io.IOException
-import javax.lang.model.element.Modifier
 
 class ReadFunctions(private val gsonObjectTreeFactory: GsonObjectTreeFactory) {
 
@@ -36,9 +36,7 @@ class ReadFunctions(private val gsonObjectTreeFactory: GsonObjectTreeFactory) {
         val flattenedFields = gsonObjectTreeFactory
                 .getFlattenedFieldsFromGsonObject(rootElements)
 
-        val readMethod = MethodSpec.methodBuilder("read")
-                .addAnnotation(Override::class.java)
-                .addModifiers(Modifier.PUBLIC)
+        val readMethod = MethodSpecExt.interfaceMethodBuilder("read")
                 .returns(baseElement)
                 .addParameter(JsonReader::class.java, "in")
                 .addException(IOException::class.java)

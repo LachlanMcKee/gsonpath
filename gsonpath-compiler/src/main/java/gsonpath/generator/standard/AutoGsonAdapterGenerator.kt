@@ -16,10 +16,7 @@ import gsonpath.generator.standard.subtype.SubtypeFunctions
 import gsonpath.generator.standard.write.WriteFunctions
 import gsonpath.generator.writeFile
 import gsonpath.model.*
-import gsonpath.util.ExtensionsHandler
-import gsonpath.util.FileWriter
-import gsonpath.util.Logger
-import gsonpath.util.TypeHandler
+import gsonpath.util.*
 import java.io.IOException
 import javax.annotation.Generated
 import javax.lang.model.element.ElementKind
@@ -126,9 +123,7 @@ class AutoGsonAdapterGenerator(
 
         } else {
             // Create an empty method for the write, since we do not support writing for interfaces.
-            val writeMethod = MethodSpec.methodBuilder("write")
-                    .addAnnotation(Override::class.java)
-                    .addModifiers(Modifier.PUBLIC)
+            val writeMethod = MethodSpecExt.interfaceMethodBuilder("write")
                     .addParameter(JsonWriter::class.java, "out")
                     .addParameter(modelClassName, "value")
                     .addException(IOException::class.java)

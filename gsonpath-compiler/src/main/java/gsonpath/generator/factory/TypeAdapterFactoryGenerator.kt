@@ -5,11 +5,12 @@ import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import com.squareup.javapoet.*
-import gsonpath.compiler.addNewLine
 import gsonpath.generator.HandleResult
 import gsonpath.generator.writeFile
 import gsonpath.util.FileWriter
 import gsonpath.util.Logger
+import gsonpath.util.MethodSpecExt
+import gsonpath.util.addNewLine
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 
@@ -65,9 +66,7 @@ class TypeAdapterFactoryGenerator(
         //
         // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
         //
-        val createMethod = MethodSpec.methodBuilder("create")
-                .addAnnotation(Override::class.java)
-                .addModifiers(Modifier.PUBLIC)
+        val createMethod = MethodSpecExt.interfaceMethodBuilder("create")
                 .returns(TypeAdapter::class.java)
                 .addParameter(Gson::class.java, "gson")
                 .addParameter(TypeToken::class.java, "type")
@@ -101,9 +100,7 @@ class TypeAdapterFactoryGenerator(
         //
         // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
         //
-        val createMethod = MethodSpec.methodBuilder("create")
-                .addAnnotation(Override::class.java)
-                .addModifiers(Modifier.PUBLIC)
+        val createMethod = MethodSpecExt.interfaceMethodBuilder("create")
                 .returns(TypeAdapter::class.java)
                 .addParameter(Gson::class.java, "gson")
                 .addParameter(TypeToken::class.java, "type")

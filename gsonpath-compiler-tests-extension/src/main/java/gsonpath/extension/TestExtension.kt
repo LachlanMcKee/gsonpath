@@ -5,7 +5,7 @@ import com.squareup.javapoet.CodeBlock
 import gsonpath.ProcessingException
 import gsonpath.compiler.ExtensionFieldMetadata
 import gsonpath.compiler.GsonPathExtension
-import gsonpath.compiler.addEscapedStatement
+import gsonpath.util.addEscapedStatement
 
 import javax.annotation.processing.ProcessingEnvironment
 

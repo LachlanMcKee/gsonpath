@@ -6,14 +6,14 @@ import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterizedTypeName
 import gsonpath.ProcessingException
-import gsonpath.compiler.addComment
-import gsonpath.compiler.addEscapedStatement
-import gsonpath.compiler.addNewLine
 import gsonpath.generator.standard.SharedFunctions
 import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
+import gsonpath.util.MethodSpecExt
+import gsonpath.util.addComment
+import gsonpath.util.addEscapedStatement
+import gsonpath.util.addNewLine
 import java.io.IOException
-import javax.lang.model.element.Modifier
 
 class WriteFunctions {
     /**
@@ -25,9 +25,7 @@ class WriteFunctions {
             rootElements: GsonObject,
             serializeNulls: Boolean): MethodSpec {
 
-        val writeMethod = MethodSpec.methodBuilder("write")
-                .addAnnotation(Override::class.java)
-                .addModifiers(Modifier.PUBLIC)
+        val writeMethod = MethodSpecExt.interfaceMethodBuilder("write")
                 .addParameter(JsonWriter::class.java, "out")
                 .addParameter(elementClassName, "value")
                 .addException(IOException::class.java)

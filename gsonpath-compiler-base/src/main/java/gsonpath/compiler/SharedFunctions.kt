@@ -1,7 +1,6 @@
 package gsonpath.compiler
 
 import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.TypeName
 
 val CLASS_NAME_STRING: ClassName = ClassName.get(String::class.java)
@@ -42,25 +41,4 @@ fun generateClassName(className: ClassName, classNameSuffix: String): String {
 
     // Make sure no '.' managed to sneak through!
     return fileName.replace(".", "_") + "_" + classNameSuffix
-}
-
-fun CodeBlock.Builder.addWithNewLine(format: String, vararg args: Any): CodeBlock.Builder {
-    this.add(format, *args)
-    this.addNewLine()
-    return this
-}
-
-fun CodeBlock.Builder.addNewLine(): CodeBlock.Builder {
-    this.add("\n")
-    return this
-}
-
-fun CodeBlock.Builder.addComment(comment: String): CodeBlock.Builder {
-    this.add("// $comment\n")
-    return this
-}
-
-fun CodeBlock.Builder.addEscapedStatement(format: String): CodeBlock.Builder {
-    this.addStatement(format.replace("$", "$$"))
-    return this
 }

@@ -10,7 +10,6 @@ import com.google.gson.stream.JsonWriter
 import com.squareup.javapoet.*
 import gsonpath.GsonSubTypeFailureException
 import gsonpath.GsonSubTypeFailureOutcome
-import gsonpath.compiler.addComment
 import gsonpath.generator.standard.SharedFunctions.getRawType
 import gsonpath.generator.standard.SharedFunctions.isArrayType
 import gsonpath.internal.CollectionTypeAdapter
@@ -18,7 +17,9 @@ import gsonpath.internal.StrictArrayTypeAdapter
 import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
 import gsonpath.model.GsonObjectTreeFactory
+import gsonpath.util.MethodSpecExt
 import gsonpath.util.TypeHandler
+import gsonpath.util.addComment
 import java.io.IOException
 import javax.lang.model.element.Modifier
 
@@ -174,9 +175,7 @@ class SubtypeFunctions(
         subTypeAdapterBuilder.addMethod(constructorBuilder.build())
 
         // Add the read method.
-        val readMethod = MethodSpec.methodBuilder("read")
-                .addAnnotation(Override::class.java)
-                .addModifiers(Modifier.PUBLIC)
+        val readMethod = MethodSpecExt.interfaceMethodBuilder("read")
                 .returns(rawTypeName)
                 .addParameter(JsonReader::class.java, "in")
                 .addException(IOException::class.java)
@@ -237,9 +236,7 @@ class SubtypeFunctions(
         // Add the write method
         // The write method is substantially simpler, as we do not to consume an entire json object.
         //
-        val writeMethodBuilder = MethodSpec.methodBuilder("write")
-                .addAnnotation(Override::class.java)
-                .addModifiers(Modifier.PUBLIC)
+        val writeMethodBuilder = MethodSpecExt.interfaceMethodBuilder("write")
                 .addParameter(JsonWriter::class.java, "out")
                 .addParameter(rawTypeName, "value")
                 .addException(IOException::class.java)
