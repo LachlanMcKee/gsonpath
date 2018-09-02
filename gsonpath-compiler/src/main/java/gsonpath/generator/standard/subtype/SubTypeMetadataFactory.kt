@@ -9,6 +9,16 @@ import gsonpath.util.TypeHandler
 import javax.lang.model.element.Element
 import javax.lang.model.type.TypeMirror
 
+data class SubTypeMetadata(
+        val className: String,
+        val variableName: String,
+        val getterName: String,
+        val fieldName: String,
+        val keyType: SubTypeKeyType,
+        val gsonSubTypeKeys: List<GsonSubTypeKeyAndClass>,
+        val defaultType: TypeMirror?,
+        val failureOutcome: GsonSubTypeFailureOutcome)
+
 interface SubTypeMetadataFactory {
     fun getGsonSubType(fieldInfo: FieldInfo): SubTypeMetadata?
 }
