@@ -34,8 +34,7 @@ class ModelInterfaceGenerator(
                 .addMember("comments", "\"https://github.com/LachlanMcKee/gsonpath\"")
                 .build()
 
-        val typeBuilder = TypeSpec.classBuilder(outputClassName)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+        val typeBuilder = TypeSpecExt.finalClassBuilder(outputClassName)
                 .addSuperinterface(modelClassName)
                 .addAnnotation(generatedJavaPoetAnnotation)
 

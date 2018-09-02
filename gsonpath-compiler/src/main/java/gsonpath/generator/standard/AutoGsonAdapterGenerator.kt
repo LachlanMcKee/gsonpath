@@ -49,8 +49,7 @@ class AutoGsonAdapterGenerator(
                 .addMember("comments", "\"https://github.com/LachlanMcKee/gsonpath\"")
                 .build()
 
-        val adapterTypeBuilder = TypeSpec.classBuilder(adapterClassName)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+        val adapterTypeBuilder = TypeSpecExt.finalClassBuilder(adapterClassName)
                 .superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), modelClassName))
                 .addAnnotation(generatedJavaPoetAnnotation)
                 .addField(Gson::class.java, "mGson", Modifier.PRIVATE, Modifier.FINAL)

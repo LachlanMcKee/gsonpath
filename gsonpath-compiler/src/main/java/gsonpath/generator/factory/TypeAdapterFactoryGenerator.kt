@@ -7,10 +7,7 @@ import com.google.gson.reflect.TypeToken
 import com.squareup.javapoet.*
 import gsonpath.generator.HandleResult
 import gsonpath.generator.writeFile
-import gsonpath.util.FileWriter
-import gsonpath.util.Logger
-import gsonpath.util.MethodSpecExt
-import gsonpath.util.addNewLine
+import gsonpath.util.*
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 
@@ -41,8 +38,7 @@ class TypeAdapterFactoryGenerator(
 
         val factoryClassName = ClassName.get(factoryElement)
 
-        val typeBuilder = TypeSpec.classBuilder(factoryClassName.simpleName() + "Impl")
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+        val typeBuilder = TypeSpecExt.finalClassBuilder(factoryClassName.simpleName() + "Impl")
                 .addSuperinterface(factoryClassName)
 
         typeBuilder.addField(FieldSpec.builder(ArrayTypeName.of(TypeAdapterFactory::class.java), "mPackagePrivateLoaders")
@@ -93,8 +89,7 @@ class TypeAdapterFactoryGenerator(
             packageName: String,
             packageLocalGsonAdapters: List<HandleResult>): Boolean {
 
-        val typeBuilder = TypeSpec.classBuilder(ClassName.get(packageName, PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME))
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+        val typeBuilder = TypeSpecExt.finalClassBuilder(ClassName.get(packageName, PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME))
                 .addSuperinterface(TypeAdapterFactory::class.java)
 
         //
