@@ -1,8 +1,5 @@
 package gsonpath.model
 
-import com.google.gson.FieldNamingPolicy
-import gsonpath.GsonFieldValidationType
-import gsonpath.PathSubstitution
 import gsonpath.ProcessingException
 import java.util.regex.Pattern
 
@@ -11,25 +8,21 @@ class GsonObjectTreeFactory(private val gsonObjectFactory: GsonObjectFactory) {
     fun createGsonObject(
             fieldInfoList: List<FieldInfo>,
             rootField: String,
-            flattenDelimiter: Char,
-            gsonFieldNamingPolicy: FieldNamingPolicy,
-            gsonFieldValidationType: GsonFieldValidationType,
-            pathSubstitutions: Array<PathSubstitution>): GsonObject {
+            metadata: GsonObjectMetadata): GsonObject {
 
         // Obtain the correct mapping structure beforehand.
         val absoluteRootObject = GsonObject()
 
         val gsonPathObject =
                 if (rootField.isNotEmpty()) {
-                    createGsonObjectFromRootField(absoluteRootObject, rootField, flattenDelimiter)
+                    createGsonObjectFromRootField(absoluteRootObject, rootField, metadata.flattenDelimiter)
 
                 } else {
                     absoluteRootObject
                 }
 
         for (fieldInfoIndex in fieldInfoList.indices) {
-            gsonObjectFactory.addGsonType(gsonPathObject, fieldInfoList[fieldInfoIndex], fieldInfoIndex,
-                    flattenDelimiter, gsonFieldNamingPolicy, gsonFieldValidationType, pathSubstitutions)
+            gsonObjectFactory.addGsonType(gsonPathObject, fieldInfoList[fieldInfoIndex], fieldInfoIndex, metadata)
         }
         return absoluteRootObject
     }

@@ -42,10 +42,10 @@ open class BaseGsonObjectFactoryTest {
                 outputGsonObject,
                 arguments.fieldInfo,
                 arguments.fieldInfoIndex,
-                arguments.flattenDelimiter,
-                arguments.gsonFieldNamingPolicy,
-                arguments.gsonFieldValidationType,
-                arguments.pathSubstitutions
+                GsonObjectMetadata(arguments.flattenDelimiter,
+                        arguments.gsonFieldNamingPolicy,
+                        arguments.gsonFieldValidationType,
+                        arguments.pathSubstitutions)
         )
 
         return outputGsonObject

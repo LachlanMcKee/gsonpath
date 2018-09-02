@@ -11,10 +11,7 @@ import gsonpath.compiler.generateClassName
 import gsonpath.generator.HandleResult
 import gsonpath.generator.interf.ModelInterfaceGenerator
 import gsonpath.generator.writeFile
-import gsonpath.model.FieldInfo
-import gsonpath.model.FieldInfoFactory
-import gsonpath.model.GsonObjectTreeFactory
-import gsonpath.model.MandatoryFieldInfoFactory
+import gsonpath.model.*
 import gsonpath.util.ExtensionsHandler
 import gsonpath.util.FileWriter
 import gsonpath.util.Logger
@@ -91,8 +88,10 @@ class AutoGsonAdapterGenerator(
 
         val rootGsonObject = gsonObjectTreeFactory
                 .createGsonObject(fieldInfoList, properties.rootField,
-                        properties.flattenDelimiter, properties.gsonFieldNamingPolicy, properties.gsonFieldValidationType,
-                        properties.pathSubstitutions)
+                        GsonObjectMetadata(properties.flattenDelimiter,
+                                properties.gsonFieldNamingPolicy,
+                                properties.gsonFieldValidationType,
+                                properties.pathSubstitutions))
 
         // Adds the mandatory field index constants and also populates the mandatoryInfoMap values.
         val mandatoryInfoMap = MandatoryFieldInfoFactory().createMandatoryFieldsFromGsonObject(rootGsonObject)

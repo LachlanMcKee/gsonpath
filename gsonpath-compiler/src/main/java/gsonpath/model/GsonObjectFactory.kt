@@ -1,10 +1,8 @@
 package gsonpath.model
 
-import com.google.gson.FieldNamingPolicy
 import com.google.gson.annotations.SerializedName
 import com.squareup.javapoet.TypeName
 import gsonpath.GsonFieldValidationType
-import gsonpath.PathSubstitution
 import gsonpath.ProcessingException
 import gsonpath.generator.standard.SubTypeMetadata
 import gsonpath.generator.standard.SubTypeMetadataFactory
@@ -14,13 +12,11 @@ import javax.lang.model.element.Element
 class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFactory) {
 
     @Throws(ProcessingException::class)
-    fun addGsonType(gsonPathObject: GsonObject,
-                    fieldInfo: FieldInfo,
-                    fieldInfoIndex: Int,
-                    flattenDelimiter: Char,
-                    gsonFieldNamingPolicy: FieldNamingPolicy,
-                    gsonFieldValidationType: GsonFieldValidationType,
-                    pathSubstitutions: Array<PathSubstitution>) {
+    fun addGsonType(
+            gsonPathObject: GsonObject,
+            fieldInfo: FieldInfo,
+            fieldInfoIndex: Int,
+            metadata: GsonObjectMetadata) {
 
         val fieldTypeName = fieldInfo.typeName
 
@@ -40,10 +36,10 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
         val fieldName = fieldInfo.fieldName
         val jsonFieldPath: String =
                 if (serializedNameAnnotation != null && serializedNameAnnotation.value.isNotEmpty()) {
-                    if (pathSubstitutions.isNotEmpty()) {
+                    if (metadata.pathSubstitutions.isNotEmpty()) {
 
                         // Check if the serialized name needs any values to be substituted
-                        pathSubstitutions.fold(serializedNameAnnotation.value) { fieldPath, substitution ->
+                        metadata.pathSubstitutions.fold(serializedNameAnnotation.value) { fieldPath, substitution ->
                             fieldPath.replace("{${substitution.original}}", substitution.replacement)
                         }
 
@@ -53,7 +49,7 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
 
                 } else {
                     // Since the serialized annotation wasn't specified, we need to apply the naming policy instead.
-                    FieldNamingPolicyMapper.applyFieldNamingPolicy(gsonFieldNamingPolicy, fieldName)
+                    FieldNamingPolicyMapper.applyFieldNamingPolicy(metadata.gsonFieldNamingPolicy, fieldName)
                 }
 
         // Attempt to find a Nullable or NonNull annotation type.
@@ -78,15 +74,15 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
                 // Optionals will never fail regardless of the policy.
                 false
 
-            gsonFieldValidationType == GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE ->
+            metadata.gsonFieldValidationType == GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE ->
                 // Using this policy everything is mandatory except for optionals.
                 !fieldInfo.hasDefaultValue
 
-            gsonFieldValidationType == GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL && isPrimitive ->
+            metadata.gsonFieldValidationType == GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL && isPrimitive ->
                 // Primitives are treated as non-null implicitly.
                 !fieldInfo.hasDefaultValue
 
-            gsonFieldValidationType == GsonFieldValidationType.NO_VALIDATION ->
+            metadata.gsonFieldValidationType == GsonFieldValidationType.NO_VALIDATION ->
                 false
 
             else ->
@@ -95,9 +91,9 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
 
         val gsonSubTypeMetadata = subTypeMetadataFactory.getGsonSubType(fieldInfo)
 
-        if (jsonFieldPath.contains(flattenDelimiter.toString())) {
-            addNestedType(gsonPathObject, fieldInfo, jsonFieldPath, flattenDelimiter, fieldInfoIndex, isRequired,
-                    fieldName, gsonSubTypeMetadata)
+        if (jsonFieldPath.contains(metadata.flattenDelimiter.toString())) {
+            addNestedType(gsonPathObject, fieldInfo, jsonFieldPath, metadata.flattenDelimiter, fieldInfoIndex,
+                    isRequired, fieldName, gsonSubTypeMetadata)
 
         } else {
             addStandardType(gsonPathObject, fieldInfo, jsonFieldPath, fieldInfoIndex, isRequired, gsonSubTypeMetadata)
@@ -105,14 +101,15 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
     }
 
     @Throws(ProcessingException::class)
-    private fun addNestedType(gsonPathObject: GsonObject,
-                              fieldInfo: FieldInfo,
-                              initialJsonFieldPath: String,
-                              flattenDelimiter: Char,
-                              fieldInfoIndex: Int,
-                              isRequired: Boolean,
-                              fieldName: String,
-                              gsonSubTypeMetadata: SubTypeMetadata?) {
+    private fun addNestedType(
+            gsonPathObject: GsonObject,
+            fieldInfo: FieldInfo,
+            initialJsonFieldPath: String,
+            flattenDelimiter: Char,
+            fieldInfoIndex: Int,
+            isRequired: Boolean,
+            fieldName: String,
+            gsonSubTypeMetadata: SubTypeMetadata?) {
 
         val jsonFieldPath =
         //
@@ -173,12 +170,13 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
     }
 
     @Throws(ProcessingException::class)
-    private fun addStandardType(gsonPathObject: GsonObject,
-                                fieldInfo: FieldInfo,
-                                jsonFieldPath: String,
-                                fieldInfoIndex: Int,
-                                isRequired: Boolean,
-                                gsonSubTypeMetadata: SubTypeMetadata?) {
+    private fun addStandardType(
+            gsonPathObject: GsonObject,
+            fieldInfo: FieldInfo,
+            jsonFieldPath: String,
+            fieldInfoIndex: Int,
+            isRequired: Boolean,
+            gsonSubTypeMetadata: SubTypeMetadata?) {
 
         if (!gsonPathObject.containsKey(jsonFieldPath)) {
             gsonPathObject.addField(jsonFieldPath,

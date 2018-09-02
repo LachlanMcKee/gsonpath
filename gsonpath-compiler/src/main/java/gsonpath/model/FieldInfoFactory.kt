@@ -42,7 +42,11 @@ class FieldInfoFactory(
     /**
      * Obtain all possible elements contained within the annotated class, including inherited fields.
      */
-    fun getModelFieldsFromElement(modelElement: TypeElement, fieldsRequireAnnotation: Boolean, useConstructor: Boolean): List<FieldInfo> {
+    fun getModelFieldsFromElement(
+            modelElement: TypeElement,
+            fieldsRequireAnnotation: Boolean,
+            useConstructor: Boolean): List<FieldInfo> {
+
         val filterFunc: (Element) -> Boolean = {
 
             // Ignore static and transient fields.

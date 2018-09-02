@@ -14,7 +14,12 @@ class ExtensionsHandler(
         extensions.forEach { executeExtension(it, gsonField, variableName, handleFunc) }
     }
 
-    private fun executeExtension(extension: GsonPathExtension, gsonField: GsonField, variableName: String, handleFunc: (String, CodeBlock) -> Unit) {
+    private fun executeExtension(
+            extension: GsonPathExtension,
+            gsonField: GsonField,
+            variableName: String,
+            handleFunc: (String, CodeBlock) -> Unit) {
+
         extension.createFieldReadCodeBlock(processingEnvironment, createMetadata(gsonField, variableName))
                 ?.let {
                     if (it.isEmpty) {
