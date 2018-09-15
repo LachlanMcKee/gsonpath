@@ -22,24 +22,22 @@ class WriteFunctions {
             rootElements: GsonObject,
             serializeNulls: Boolean): MethodSpec {
 
-        return MethodSpecExt.interfaceMethodBuilder("write")
-                .addParameter(JsonWriter::class.java, "out")
-                .addParameter(elementClassName, "value")
-                .addException(IOException::class.java)
-                .code {
-                    // Initial block which prevents nulls being accessed.
-                    ifBlock("value == null") {
-                        addStatement("out.nullValue()")
-                        addStatement("return")
-                    }
-
-                    addNewLine()
-                    addComment("Begin")
-                    apply {
-                        writeGsonFieldWriter(rootElements, "", serializeNulls, 0)
-                    }
+        return MethodSpecExt.interfaceMethodBuilder("write").applyAndBuild {
+            addParameter(JsonWriter::class.java, "out")
+            addParameter(elementClassName, "value")
+            addException(IOException::class.java)
+            code {
+                // Initial block which prevents nulls being accessed.
+                ifBlock("value == null") {
+                    addStatement("out.nullValue()")
+                    addStatement("return")
                 }
-                .build()
+
+                addNewLine()
+                addComment("Begin")
+                writeGsonFieldWriter(rootElements, "", serializeNulls, 0)
+            }
+        }
     }
 
     @Throws(ProcessingException::class)

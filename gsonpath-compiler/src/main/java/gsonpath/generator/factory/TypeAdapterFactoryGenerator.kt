@@ -4,7 +4,10 @@ import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
-import com.squareup.javapoet.*
+import com.squareup.javapoet.ArrayTypeName
+import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.FieldSpec
+import com.squareup.javapoet.MethodSpec
 import gsonpath.generator.HandleResult
 import gsonpath.generator.writeFile
 import gsonpath.util.*
@@ -45,42 +48,41 @@ class TypeAdapterFactoryGenerator(
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                 .build())
 
-        val constructorBuilder = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
+        val constructor = MethodSpec.constructorBuilder().applyAndBuild {
+            addModifiers(Modifier.PUBLIC)
+            code {
+                addStatement("mPackagePrivateLoaders = new \$T[${packageLocalHandleResults.size}]", TypeAdapterFactory::class.java)
 
-        val constructorCodeBlock = CodeBlock.builder()
-        constructorCodeBlock.addStatement("mPackagePrivateLoaders = new \$T[${packageLocalHandleResults.size}]", TypeAdapterFactory::class.java)
-
-        // Add the package local type adapter loaders to the hash map.
-        for ((index, packageName) in packageLocalHandleResults.keys.withIndex()) {
-            constructorCodeBlock.addStatement("mPackagePrivateLoaders[$index] = new $packageName.$PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME()")
+                // Add the package local type adapter loaders to the hash map.
+                for ((index, packageName) in packageLocalHandleResults.keys.withIndex()) {
+                    addStatement("mPackagePrivateLoaders[$index] = new $packageName.$PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME()")
+                }
+            }
         }
 
-        constructorBuilder.addCode(constructorCodeBlock.build())
-        typeBuilder.addMethod(constructorBuilder.build())
+        typeBuilder.addMethod(constructor)
 
         //
         // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
         //
-        val createMethod = MethodSpecExt.interfaceMethodBuilder("create")
-                .returns(TypeAdapter::class.java)
-                .addParameter(Gson::class.java, "gson")
-                .addParameter(TypeToken::class.java, "type")
+        val createMethod = MethodSpecExt.interfaceMethodBuilder("create").applyAndBuild {
+            returns(TypeAdapter::class.java)
+            addParameter(Gson::class.java, "gson")
+            addParameter(TypeToken::class.java, "type")
 
-        val codeBlock = CodeBlock.builder()
-                .forBlock("int i = 0; i < mPackagePrivateLoaders.length; i++") {
+            code {
+                forBlock("int i = 0; i < mPackagePrivateLoaders.length; i++") {
                     addStatement("TypeAdapter typeAdapter = mPackagePrivateLoaders[i].create(gson, type)")
                     addNewLine()
 
                     ifBlock("typeAdapter != null") {
                         addStatement("return typeAdapter")
                     }
-
                 }
-                .addStatement("return null")
-
-        createMethod.addCode(codeBlock.build())
-        typeBuilder.addMethod(createMethod.build())
+                addStatement("return null")
+            }
+        }
+        typeBuilder.addMethod(createMethod)
 
         return typeBuilder.writeFile(fileWriter, logger, factoryClassName.packageName())
     }
@@ -95,7 +97,7 @@ class TypeAdapterFactoryGenerator(
         //
         // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
         //
-        val createMethod = MethodSpecExt.interfaceMethodBuilder("create").apply {
+        val createMethod = MethodSpecExt.interfaceMethodBuilder("create").applyAndBuild {
             returns(TypeAdapter::class.java)
             addParameter(Gson::class.java, "gson")
             addParameter(TypeToken::class.java, "type")
@@ -117,7 +119,7 @@ class TypeAdapterFactoryGenerator(
                 addStatement("return null")
             }
         }
-        typeBuilder.addMethod(createMethod.build())
+        typeBuilder.addMethod(createMethod)
 
         return typeBuilder.writeFile(fileWriter, logger, packageName)
     }

@@ -56,11 +56,11 @@ class AutoGsonAdapterGenerator(
                 .addField(Gson::class.java, "mGson", Modifier.PRIVATE, Modifier.FINAL)
 
         // Add the constructor which takes a gson instance for future use.
-        adapterTypeBuilder.addMethod(MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(Gson::class.java, "gson")
-                .addStatement("this.\$N = \$N", "mGson", "gson")
-                .build())
+        adapterTypeBuilder.addMethod(MethodSpec.constructorBuilder().applyAndBuild {
+            addModifiers(Modifier.PUBLIC)
+            addParameter(Gson::class.java, "gson")
+            addStatement("this.\$N = \$N", "mGson", "gson")
+        })
 
         val concreteClassName: ClassName
         val fieldInfoList: List<FieldInfo>
@@ -102,17 +102,17 @@ class AutoGsonAdapterGenerator(
         if (mandatoryInfoMap.isNotEmpty()) {
             mandatoryInfoMap.values
                     .mapIndexed { mandatoryIndex, mandatoryField ->
-                        FieldSpec.builder(TypeName.INT, mandatoryField.indexVariableName)
-                                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                                .initializer("" + mandatoryIndex)
-                                .build()
+                        FieldSpec.builder(TypeName.INT, mandatoryField.indexVariableName).applyAndBuild {
+                            addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                            initializer("" + mandatoryIndex)
+                        }
                     }
                     .forEach { adapterTypeBuilder.addField(it) }
 
-            adapterTypeBuilder.addField(FieldSpec.builder(TypeName.INT, "MANDATORY_FIELDS_SIZE")
-                    .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                    .initializer("" + mandatoryInfoMap.size)
-                    .build())
+            adapterTypeBuilder.addField(FieldSpec.builder(TypeName.INT, "MANDATORY_FIELDS_SIZE").applyAndBuild {
+                addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                initializer("" + mandatoryInfoMap.size)
+            })
         }
 
         val readParams = ReadParams(
@@ -130,12 +130,11 @@ class AutoGsonAdapterGenerator(
 
         } else {
             // Create an empty method for the write, since we do not support writing for interfaces.
-            val writeMethod = MethodSpecExt.interfaceMethodBuilder("write")
-                    .addParameter(JsonWriter::class.java, "out")
-                    .addParameter(modelClassName, "value")
-                    .addException(IOException::class.java)
-
-            adapterTypeBuilder.addMethod(writeMethod.build())
+            adapterTypeBuilder.addMethod(MethodSpecExt.interfaceMethodBuilder("write").applyAndBuild {
+                addParameter(JsonWriter::class.java, "out")
+                addParameter(modelClassName, "value")
+                addException(IOException::class.java)
+            })
         }
 
         // Adds any required subtype type adapters depending on the usage of the GsonSubtype annotation.

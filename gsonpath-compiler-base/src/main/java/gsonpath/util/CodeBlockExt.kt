@@ -2,6 +2,14 @@ package gsonpath.util
 
 import com.squareup.javapoet.CodeBlock
 
+fun CodeBlock.Builder.applyAndBuild(func: CodeBlock.Builder.() -> Unit): CodeBlock {
+    return apply(func).build()
+}
+
+fun codeBlock(func: CodeBlock.Builder.() -> Unit): CodeBlock {
+    return CodeBlock.builder().applyAndBuild(func)
+}
+
 fun CodeBlock.Builder.addWithNewLine(format: String, vararg args: Any): CodeBlock.Builder {
     this.add(format, *args)
     this.addNewLine()
@@ -15,6 +23,11 @@ fun CodeBlock.Builder.addNewLine(): CodeBlock.Builder {
 
 fun CodeBlock.Builder.addComment(comment: String): CodeBlock.Builder {
     this.add("// $comment\n")
+    return this
+}
+
+fun CodeBlock.Builder.addEscaped(format: String): CodeBlock.Builder {
+    this.add(format.replace("$", "$$"))
     return this
 }
 

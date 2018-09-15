@@ -25,18 +25,18 @@ class ReadFunctions {
      */
     @Throws(ProcessingException::class)
     fun createReadMethod(params: ReadParams, extensionsHandler: ExtensionsHandler): MethodSpec {
-        return MethodSpecExt.interfaceMethodBuilder("read")
-                .returns(params.baseElement)
-                .addParameter(JsonReader::class.java, "in")
-                .addException(IOException::class.java)
-                .code {
-                    addValidValueCheck(true)
-                    addInitialisationBlock(params)
-                    addReadCodeForElements(params.rootElements, params, extensionsHandler)
-                    addMandatoryValuesCheck(params)
-                    addReturnBlock(params)
-                }
-                .build()
+        return MethodSpecExt.interfaceMethodBuilder("read").applyAndBuild {
+            returns(params.baseElement)
+            addParameter(JsonReader::class.java, "in")
+            addException(IOException::class.java)
+            code {
+                addValidValueCheck(true)
+                addInitialisationBlock(params)
+                addReadCodeForElements(params.rootElements, params, extensionsHandler)
+                addMandatoryValuesCheck(params)
+                addReturnBlock(params)
+            }
+        }
     }
 
     /**
@@ -45,7 +45,11 @@ class ReadFunctions {
     private fun CodeBlock.Builder.addValidValueCheck(addReturn: Boolean) {
         addComment("Ensure the object is not null.")
         ifBlock("!isValidValue(in)") {
-            addStatement(if (addReturn) "return null" else "break")
+            if (addReturn) {
+                addStatement("return null")
+            } else {
+                addStatement("break")
+            }
         }
     }
 
@@ -198,7 +202,11 @@ class ReadFunctions {
                     gsonField.variableName
                 }
 
-                addStatement("$assignmentBlock = ${result.variableName}${if (result.callToString) ".toString()" else ""}")
+                if (result.callToString) {
+                    addStatement("$assignmentBlock = ${result.variableName}.toString()")
+                } else {
+                    addStatement("$assignmentBlock = ${result.variableName}")
+                }
 
                 // When a field has been assigned, if it is a mandatory value, we note this down.
                 if (mandatoryFieldInfo != null) {
@@ -213,16 +221,16 @@ class ReadFunctions {
         }
 
         // Execute any extensions and add the code blocks if they exist.
-        val extensionsCodeBlockBuilder = CodeBlock.builder()
-        extensionsHandler.handle(gsonField, result.variableName) { extensionName, validationCodeBlock ->
-            extensionsCodeBlockBuilder.addNewLine()
-                    .addComment("Extension - $extensionName")
-                    .add(validationCodeBlock)
-                    .addNewLine()
+        val extensionsCodeBlock = codeBlock {
+            extensionsHandler.handle(gsonField, result.variableName) { extensionName, validationCodeBlock ->
+                addNewLine()
+                addComment("Extension - $extensionName")
+                add(validationCodeBlock)
+                addNewLine()
+            }
         }
 
         // Wrap all of the extensions inside a block and potentially wrap it with a null-check.
-        val extensionsCodeBlock = extensionsCodeBlockBuilder.build()
         if (!extensionsCodeBlock.isEmpty) {
             addNewLine()
             addComment("Gsonpath Extensions")
@@ -347,29 +355,24 @@ class ReadFunctions {
 
         } else {
             // Create the class using the constructor.
-            val returnCodeBlock = CodeBlock.builder()
-                    .addWithNewLine("return new \$T(", params.concreteElement)
-                    .indent()
+            add(codeBlock {
+                addWithNewLine("return new \$T(", params.concreteElement)
+                indent()
 
-            for (i in params.flattenedFields.indices) {
-                returnCodeBlock.add(params.flattenedFields[i].variableName)
+                for (i in params.flattenedFields.indices) {
+                    add(params.flattenedFields[i].variableName)
 
-                if (i < params.flattenedFields.size - 1) {
-                    returnCodeBlock.add(",")
+                    if (i < params.flattenedFields.size - 1) {
+                        add(",")
+                    }
+
+                    addNewLine()
                 }
 
-                returnCodeBlock.addNewLine()
-            }
-
-            add(returnCodeBlock.unindent()
-                    .addStatement(")")
-                    .build())
+                unindent()
+                addStatement(")")
+            })
         }
-    }
-
-    private fun CodeBlock.Builder.addEscaped(format: String): CodeBlock.Builder {
-        this.add(format.replace("$", "$$"))
-        return this
     }
 
     private fun getVariableName(gsonField: GsonField, requiresConstructorInjection: Boolean): String {

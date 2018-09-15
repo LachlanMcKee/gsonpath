@@ -1,7 +1,10 @@
 package gsonpath.generator.interf
 
-import com.squareup.javapoet.*
+import com.squareup.javapoet.AnnotationSpec
+import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.CodeBlock
+import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
 import gsonpath.compiler.generateClassName
@@ -105,17 +108,18 @@ class ModelInterfaceGenerator(
 
             typeBuilder.addField(typeName, fieldName, Modifier.PRIVATE, Modifier.FINAL)
 
-            val accessorMethod = MethodSpecExt.interfaceMethodBuilder(methodName)
-                    .returns(typeName)
-                    .addStatement("return $fieldName")
+            val accessorMethod = MethodSpecExt.interfaceMethodBuilder(methodName).applyAndBuild {
+                returns(typeName)
+                addStatement("return $fieldName")
 
-            // Copy all annotations from the interface accessor method to the implementing classes accessor.
-            val annotationMirrors = enclosedElement.annotationMirrors
-            for (annotationMirror in annotationMirrors) {
-                accessorMethod.addAnnotation(AnnotationSpec.get(annotationMirror))
+                // Copy all annotations from the interface accessor method to the implementing classes accessor.
+                val annotationMirrors = enclosedElement.annotationMirrors
+                for (annotationMirror in annotationMirrors) {
+                    addAnnotation(AnnotationSpec.get(annotationMirror))
+                }
             }
 
-            typeBuilder.addMethod(accessorMethod.build())
+            typeBuilder.addMethod(accessorMethod)
 
             // Add the parameter to the constructor
             constructorBuilder.addParameter(typeName, fieldName)

@@ -13,7 +13,9 @@ object MethodSpecExt {
 }
 
 fun MethodSpec.Builder.code(func: CodeBlock.Builder.() -> Unit): MethodSpec.Builder {
-    return addCode(CodeBlock.builder()
-            .apply(func)
-            .build())
+    return addCode(CodeBlock.builder().applyAndBuild(func))
+}
+
+fun MethodSpec.Builder.applyAndBuild(func: MethodSpec.Builder.() -> Unit): MethodSpec {
+    return apply(func).build()
 }
