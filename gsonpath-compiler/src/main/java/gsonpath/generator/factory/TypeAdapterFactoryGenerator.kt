@@ -68,15 +68,15 @@ class TypeAdapterFactoryGenerator(
                 .addParameter(TypeToken::class.java, "type")
 
         val codeBlock = CodeBlock.builder()
-                .beginControlFlow("for (int i = 0; i < mPackagePrivateLoaders.length; i++)")
-                .addStatement("TypeAdapter typeAdapter = mPackagePrivateLoaders[i].create(gson, type)")
-                .addNewLine()
+                .forStatement("int i = 0; i < mPackagePrivateLoaders.length; i++") {
+                    addStatement("TypeAdapter typeAdapter = mPackagePrivateLoaders[i].create(gson, type)")
+                    addNewLine()
 
-                .beginControlFlow("if (typeAdapter != null)")
-                .addStatement("return typeAdapter")
-                .endControlFlow()
+                    ifStatement("typeAdapter != null") {
+                        addStatement("return typeAdapter")
+                    }
 
-                .endControlFlow()
+                }
                 .addStatement("return null")
 
         createMethod.addCode(codeBlock.build())
@@ -95,29 +95,28 @@ class TypeAdapterFactoryGenerator(
         //
         // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
         //
-        val createMethod = MethodSpecExt.interfaceMethodBuilder("create")
-                .returns(TypeAdapter::class.java)
-                .addParameter(Gson::class.java, "gson")
-                .addParameter(TypeToken::class.java, "type")
+        val createMethod = MethodSpecExt.interfaceMethodBuilder("create").apply {
+            returns(TypeAdapter::class.java)
+            addParameter(Gson::class.java, "gson")
+            addParameter(TypeToken::class.java, "type")
+            code {
+                addStatement("Class rawType = type.getRawType()")
 
-        val codeBlock = CodeBlock.builder()
-                .addStatement("Class rawType = type.getRawType()")
+                for ((currentAdapterIndex, result) in packageLocalGsonAdapters.withIndex()) {
+                    if (currentAdapterIndex == 0) {
+                        beginControlFlow("if (rawType.equals(\$T.class))", result.originalClassName)
+                    } else {
+                        addNewLine() // New line for easier readability.
+                        nextControlFlow("else if (rawType.equals(\$T.class))", result.originalClassName)
+                    }
+                    addStatement("return new \$T(gson)", result.generatedClassName)
+                }
 
-        for ((currentAdapterIndex, result) in packageLocalGsonAdapters.withIndex()) {
-            if (currentAdapterIndex == 0) {
-                codeBlock.beginControlFlow("if (rawType.equals(\$T.class))", result.originalClassName)
-            } else {
-                codeBlock.addNewLine() // New line for easier readability.
-                        .nextControlFlow("else if (rawType.equals(\$T.class))", result.originalClassName)
+                endControlFlow()
+                addNewLine()
+                addStatement("return null")
             }
-            codeBlock.addStatement("return new \$T(gson)", result.generatedClassName)
         }
-
-        codeBlock.endControlFlow()
-                .addNewLine()
-                .addStatement("return null")
-
-        createMethod.addCode(codeBlock.build())
         typeBuilder.addMethod(createMethod.build())
 
         return typeBuilder.writeFile(fileWriter, logger, packageName)

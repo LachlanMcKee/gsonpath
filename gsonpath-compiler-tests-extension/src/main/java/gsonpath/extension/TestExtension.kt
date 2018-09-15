@@ -6,6 +6,7 @@ import gsonpath.ProcessingException
 import gsonpath.compiler.ExtensionFieldMetadata
 import gsonpath.compiler.GsonPathExtension
 import gsonpath.util.addEscapedStatement
+import gsonpath.util.ifStatement
 
 import javax.annotation.processing.ProcessingEnvironment
 
@@ -32,8 +33,7 @@ class TestExtension : GsonPathExtension {
         }
 
         return CodeBlock.builder()
-                .beginControlFlow("if ($variableName.trim().length() == 0)")
-                .apply {
+                .ifStatement("$variableName.trim().length() == 0") {
                     if (isRequired) {
                         addEscapedStatement("throw new com.google.gson.JsonParseException(" +
                                 "\"JSON element '$jsonPath' cannot be blank\")")
@@ -41,7 +41,6 @@ class TestExtension : GsonPathExtension {
                         addStatement("$variableName = null")
                     }
                 }
-                .endControlFlow()
                 .build()
     }
 }

@@ -43,10 +43,9 @@ class ReadFunctions {
      */
     private fun CodeBlock.Builder.addValidValueCheck(addReturn: Boolean) {
         addComment("Ensure the object is not null.")
-                .beginControlFlow("if (!isValidValue(in))")
-
-                .addStatement(if (addReturn) "return null" else "break")
-                .endControlFlow() // if
+        ifStatement("!isValidValue(in)") {
+            addStatement(if (addReturn) "return null" else "break")
+        }
     }
 
     private fun CodeBlock.Builder.addInitialisationBlock(params: ReadParams) {
@@ -92,62 +91,64 @@ class ReadFunctions {
         addStatement("int $counterVariableName = 0")
         addStatement("in.beginObject()")
         addNewLine()
-        beginControlFlow("while (in.hasNext())")
 
-        //
-        // Since all the required fields have been mapped, we can avoid calling 'nextName'.
-        // This ends up yielding performance improvements on large datasets depending on
-        // the ordering of the fields within the JSON.
-        //
-        beginControlFlow("if ($counterVariableName == $jsonMappingSize)")
-        addStatement("in.skipValue()")
-        addStatement("continue")
-        endControlFlow() // if
-        addNewLine()
+        var overallRecursionCount = 0
+        whileStatement("in.hasNext()") {
 
-        beginControlFlow("switch (in.nextName())")
-
-        val overallRecursionCount = jsonMapping.entries().fold(recursionCount + 1) { currentOverallRecursionCount, (key, value) ->
-            addEscaped("""case "$key":""")
+            //
+            // Since all the required fields have been mapped, we can avoid calling 'nextName'.
+            // This ends up yielding performance improvements on large datasets depending on
+            // the ordering of the fields within the JSON.
+            //
+            ifStatement("$counterVariableName == $jsonMappingSize") {
+                addStatement("in.skipValue()")
+                addStatement("continue")
+            }
             addNewLine()
-            indent()
 
-            // Increment the counter to ensure we track how many fields we have mapped.
-            addStatement("$counterVariableName++")
+            switchStatement("in.nextName()") {
 
-            val recursionCountForModel: Int =
-                    when (value) {
-                        is GsonField -> {
-                            writeGsonFieldReader(value, params.requiresConstructorInjection,
-                                    params.mandatoryInfoMap[value.fieldInfo.fieldName], extensionsHandler)
+                overallRecursionCount = jsonMapping.entries().fold(recursionCount + 1) { currentOverallRecursionCount, (key, value) ->
+                    addEscaped("""case "$key":""")
+                    addNewLine()
+                    indent()
 
-                            // No extra recursion has happened.
-                            currentOverallRecursionCount
-                        }
+                    // Increment the counter to ensure we track how many fields we have mapped.
+                    addStatement("$counterVariableName++")
 
-                        is GsonObject -> {
-                            addNewLine()
-                            addValidValueCheck(false)
+                    val recursionCountForModel: Int =
+                            when (value) {
+                                is GsonField -> {
+                                    writeGsonFieldReader(value, params.requiresConstructorInjection,
+                                            params.mandatoryInfoMap[value.fieldInfo.fieldName], extensionsHandler)
 
-                            addReadCodeForElements(value, params, extensionsHandler, currentOverallRecursionCount)
-                        }
-                    }
+                                    // No extra recursion has happened.
+                                    currentOverallRecursionCount
+                                }
 
-            addStatement("break")
-            addNewLine()
-            unindent()
+                                is GsonObject -> {
+                                    addNewLine()
+                                    addValidValueCheck(false)
 
-            return@fold recursionCountForModel
+                                    addReadCodeForElements(value, params, extensionsHandler, currentOverallRecursionCount)
+                                }
+                            }
+
+                    addStatement("break")
+                    addNewLine()
+                    unindent()
+
+                    return@fold recursionCountForModel
+                }
+
+                addWithNewLine("default:")
+                indent()
+                addStatement("in.skipValue()")
+                addStatement("break")
+                unindent()
+            }
+
         }
-
-        addWithNewLine("default:")
-        indent()
-        addStatement("in.skipValue()")
-        addStatement("break")
-        unindent()
-
-        endControlFlow() // switch
-        endControlFlow() // while
         addNewLine()
 
         addStatement("in.endObject()")
@@ -174,26 +175,26 @@ class ReadFunctions {
         val result = writeGsonFieldReading(gsonField, requiresConstructorInjection)
 
         if (result.checkIfNull) {
-            beginControlFlow("if (${result.variableName} != null)")
+            ifStatement("${result.variableName} != null") {
 
-            val assignmentBlock: String = if (!requiresConstructorInjection) {
-                "result." + fieldInfo.fieldName
-            } else {
-                gsonField.variableName
+                val assignmentBlock: String = if (!requiresConstructorInjection) {
+                    "result." + fieldInfo.fieldName
+                } else {
+                    gsonField.variableName
+                }
+
+                addStatement("$assignmentBlock = ${result.variableName}${if (result.callToString) ".toString()" else ""}")
+
+                // When a field has been assigned, if it is a mandatory value, we note this down.
+                if (mandatoryFieldInfo != null) {
+                    addStatement("mandatoryFieldsCheckList[${mandatoryFieldInfo.indexVariableName}] = true")
+                    addNewLine()
+
+                    nextControlFlow("else")
+                    addEscapedStatement("""throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '${gsonField.jsonPath}' was null for class '${fieldInfo.parentClassName}'")""")
+                }
+
             }
-
-            addStatement("$assignmentBlock = ${result.variableName}${if (result.callToString) ".toString()" else ""}")
-
-            // When a field has been assigned, if it is a mandatory value, we note this down.
-            if (mandatoryFieldInfo != null) {
-                addStatement("mandatoryFieldsCheckList[${mandatoryFieldInfo.indexVariableName}] = true")
-                addNewLine()
-
-                nextControlFlow("else")
-                addEscapedStatement("""throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '${gsonField.jsonPath}' was null for class '${fieldInfo.parentClassName}'")""")
-            }
-
-            endControlFlow() // if
         }
 
         // Execute any extensions and add the code blocks if they exist.
@@ -213,13 +214,11 @@ class ReadFunctions {
 
             // Handle the null-checking for the extensions to avoid repetition inside the extension implementations.
             if (!fieldTypeName.isPrimitive) {
-                beginControlFlow("if (${result.variableName} != null)")
-            }
-
-            add(extensionsCodeBlock)
-
-            if (!fieldTypeName.isPrimitive) {
-                endControlFlow()
+                ifStatement("${result.variableName} != null") {
+                    add(extensionsCodeBlock)
+                }
+            } else {
+                add(extensionsCodeBlock)
             }
         }
     }
@@ -299,31 +298,31 @@ class ReadFunctions {
 
         addNewLine()
         addComment("Mandatory object validation")
-        beginControlFlow("for (int mandatoryFieldIndex = 0; mandatoryFieldIndex < MANDATORY_FIELDS_SIZE; mandatoryFieldIndex++)")
+        forStatement("int mandatoryFieldIndex = 0; mandatoryFieldIndex < MANDATORY_FIELDS_SIZE; mandatoryFieldIndex++") {
 
-        addNewLine()
-        addComment("Check if a mandatory value is missing.")
-        beginControlFlow("if (!mandatoryFieldsCheckList[mandatoryFieldIndex])")
-
-        // The code must figure out the correct field name to insert into the error message.
-        addNewLine()
-        addComment("Find the field name of the missing json value.")
-        addStatement("String fieldName = null")
-        beginControlFlow("switch (mandatoryFieldIndex)")
-
-        for ((_, mandatoryFieldInfo) in params.mandatoryInfoMap) {
-            addWithNewLine("case ${mandatoryFieldInfo.indexVariableName}:")
-            indent()
-            addEscapedStatement("""fieldName = "${mandatoryFieldInfo.gsonField.jsonPath}"""")
-            addStatement("break")
-            unindent()
             addNewLine()
-        }
+            addComment("Check if a mandatory value is missing.")
+            ifStatement("!mandatoryFieldsCheckList[mandatoryFieldIndex]") {
 
-        endControlFlow() // Switch
-        addStatement("""throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class '${params.concreteElement}'")""")
-        endControlFlow() // If
-        endControlFlow() // For
+                // The code must figure out the correct field name to insert into the error message.
+                addNewLine()
+                addComment("Find the field name of the missing json value.")
+                addStatement("String fieldName = null")
+                switchStatement("mandatoryFieldIndex") {
+
+                    for ((_, mandatoryFieldInfo) in params.mandatoryInfoMap) {
+                        addWithNewLine("case ${mandatoryFieldInfo.indexVariableName}:")
+                        indent()
+                        addEscapedStatement("""fieldName = "${mandatoryFieldInfo.gsonField.jsonPath}"""")
+                        addStatement("break")
+                        unindent()
+                        addNewLine()
+                    }
+
+                }
+                addStatement("""throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class '${params.concreteElement}'")""")
+            }
+        }
     }
 
     private fun CodeBlock.Builder.addReturnBlock(params: ReadParams) {

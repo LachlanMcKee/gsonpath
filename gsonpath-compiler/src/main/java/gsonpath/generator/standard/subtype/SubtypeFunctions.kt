@@ -17,9 +17,7 @@ import gsonpath.internal.StrictArrayTypeAdapter
 import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
 import gsonpath.model.GsonObjectTreeFactory
-import gsonpath.util.MethodSpecExt
-import gsonpath.util.TypeHandler
-import gsonpath.util.addComment
+import gsonpath.util.*
 import java.io.IOException
 import javax.lang.model.element.Modifier
 
@@ -61,19 +59,17 @@ class SubtypeFunctions(
         val typeAdapterDetails = getTypeAdapterDetails(typeHandler, gsonField)
 
         val getterCodeBuilder = CodeBlock.builder()
-                .beginControlFlow("if ($variableName == null)")
+                .ifStatement("$variableName == null") {
+                    val filterNulls = (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.REMOVE_ELEMENT)
 
-        val filterNulls = (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.REMOVE_ELEMENT)
-
-        if (typeAdapterDetails === TypeAdapterDetails.ArrayTypeAdapter) {
-            getterCodeBuilder.addStatement("$variableName = new \$T<>(new ${subTypeMetadata.className}(mGson), \$T.class, $filterNulls)",
-                    typeAdapterDetails.typeName, getRawTypeName(gsonField))
-        } else {
-            getterCodeBuilder.addStatement("$variableName = new \$T(new ${subTypeMetadata.className}(mGson), $filterNulls)",
-                    typeAdapterDetails.typeName)
-        }
-
-        getterCodeBuilder.endControlFlow()
+                    if (typeAdapterDetails === TypeAdapterDetails.ArrayTypeAdapter) {
+                        addStatement("$variableName = new \$T<>(new ${subTypeMetadata.className}(mGson), \$T.class, $filterNulls)",
+                                typeAdapterDetails.typeName, getRawTypeName(gsonField))
+                    } else {
+                        addStatement("$variableName = new \$T(new ${subTypeMetadata.className}(mGson), $filterNulls)",
+                                typeAdapterDetails.typeName)
+                    }
+                }
                 .addStatement("return $variableName")
 
         typeSpecBuilder.addMethod(MethodSpec.methodBuilder(subTypeMetadata.getterName)
@@ -192,11 +188,10 @@ class SubtypeFunctions(
         readMethodCodeBuilder.addStatement("\$T jsonElement = \$T.parse(in)", JsonElement::class.java, Streams::class.java)
                 .addStatement("\$T typeValueJsonElement = jsonElement.getAsJsonObject().remove(\"${subTypeMetadata.fieldName}\")", JsonElement::class.java)
 
-                .beginControlFlow("if (typeValueJsonElement == null || typeValueJsonElement.isJsonNull())")
-                .addStatement("throw new \$T(\"cannot deserialize $rawTypeName because the subtype field '${subTypeMetadata.fieldName}' is either null or does not exist.\")",
-                        JsonParseException::class.java)
-
-                .endControlFlow()
+                .ifStatement("typeValueJsonElement == null || typeValueJsonElement.isJsonNull()") {
+                    addStatement("throw new \$T(\"cannot deserialize $rawTypeName because the subtype field '${subTypeMetadata.fieldName}' is either null or does not exist.\")",
+                            JsonParseException::class.java)
+                }
 
         // Obtain the value using the correct type.
         when (subTypeMetadata.keyType) {
@@ -206,26 +201,24 @@ class SubtypeFunctions(
         }
 
         readMethodCodeBuilder.addStatement("\$T<? extends \$T> delegate = typeAdaptersDelegatedByValueMap.get(value)", TypeAdapter::class.java, rawTypeName)
-                .beginControlFlow("if (delegate == null)")
-
-        if (subTypeMetadata.defaultType != null) {
-            readMethodCodeBuilder.addComment("Use the default type adapter if the type is unknown.")
-            readMethodCodeBuilder.addStatement("delegate = defaultTypeAdapterDelegate")
-        } else {
-            if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
-                readMethodCodeBuilder.addStatement("throw new \$T(\"Failed to find subtype for value: \" + value)", GsonSubTypeFailureException::class.java)
-            } else {
-                readMethodCodeBuilder.addStatement("return null")
-            }
-        }
-
-        readMethodCodeBuilder.endControlFlow()
+                .ifStatement("delegate == null") {
+                    if (subTypeMetadata.defaultType != null) {
+                        readMethodCodeBuilder.addComment("Use the default type adapter if the type is unknown.")
+                        readMethodCodeBuilder.addStatement("delegate = defaultTypeAdapterDelegate")
+                    } else {
+                        if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
+                            readMethodCodeBuilder.addStatement("throw new \$T(\"Failed to find subtype for value: \" + value)", GsonSubTypeFailureException::class.java)
+                        } else {
+                            readMethodCodeBuilder.addStatement("return null")
+                        }
+                    }
+                }
                 .addStatement("\$T result = delegate.fromJsonTree(jsonElement)", rawTypeName)
 
         if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
-            readMethodCodeBuilder.beginControlFlow("if (result == null)")
-                    .addStatement("throw new \$T(\"Failed to deserailize subtype for object: \" + jsonElement)", GsonSubTypeFailureException::class.java)
-                    .endControlFlow()
+            readMethodCodeBuilder.ifStatement("result == null") {
+                addStatement("throw new \$T(\"Failed to deserailize subtype for object: \" + jsonElement)", GsonSubTypeFailureException::class.java)
+            }
         }
 
         readMethodCodeBuilder.addStatement("return result")
@@ -240,18 +233,20 @@ class SubtypeFunctions(
                 .addParameter(JsonWriter::class.java, "out")
                 .addParameter(rawTypeName, "value")
                 .addException(IOException::class.java)
-
-                .beginControlFlow("if (value == null)")
-                .addStatement("out.nullValue()")
-                .addStatement("return")
-                .endControlFlow()
-
-                .addStatement("\$T delegate = typeAdaptersDelegatedByClassMap.get(value.getClass())", TypeAdapter::class.java)
+                .code {
+                    ifStatement("value == null") {
+                        addStatement("out.nullValue()")
+                        addStatement("return")
+                    }
+                    addStatement("\$T delegate = typeAdaptersDelegatedByClassMap.get(value.getClass())", TypeAdapter::class.java)
+                }
 
         if (subTypeMetadata.defaultType != null) {
-            writeMethodBuilder.beginControlFlow("if (delegate == null)")
-            writeMethodBuilder.addStatement("delegate = defaultTypeAdapterDelegate")
-            writeMethodBuilder.endControlFlow()
+            writeMethodBuilder.code {
+                ifStatement("delegate == null") {
+                    addStatement("delegate = defaultTypeAdapterDelegate")
+                }
+            }
         }
 
         writeMethodBuilder.addStatement("delegate.write(out, value)", typeAdapterType)

@@ -28,10 +28,10 @@ class WriteFunctions {
                 .addException(IOException::class.java)
                 .code {
                     // Initial block which prevents nulls being accessed.
-                    beginControlFlow("if (value == null)")
-                    addStatement("out.nullValue()")
-                    addStatement("return")
-                    endControlFlow()
+                    ifStatement("value == null") {
+                        addStatement("out.nullValue()")
+                        addStatement("return")
+                    }
 
                     addNewLine()
                     addComment("Begin")

@@ -22,3 +22,30 @@ fun CodeBlock.Builder.addEscapedStatement(format: String): CodeBlock.Builder {
     this.addStatement(format.replace("$", "$$"))
     return this
 }
+
+fun CodeBlock.Builder.autoControlFlow(controlFlow: String, vararg args: Any, func: CodeBlock.Builder.() -> Unit): CodeBlock.Builder {
+    beginControlFlow(controlFlow, *args)
+    func(this)
+    endControlFlow()
+    return this
+}
+
+fun CodeBlock.Builder.ifStatement(
+        condition: String,
+        vararg args: Any,
+        func: CodeBlock.Builder.() -> Unit): CodeBlock.Builder = autoControlFlow("if ($condition)", *args, func = func)
+
+fun CodeBlock.Builder.whileStatement(
+        condition: String,
+        vararg args: Any,
+        func: CodeBlock.Builder.() -> Unit): CodeBlock.Builder = autoControlFlow("while ($condition)", *args, func = func)
+
+fun CodeBlock.Builder.switchStatement(
+        condition: String,
+        vararg args: Any,
+        func: CodeBlock.Builder.() -> Unit): CodeBlock.Builder = autoControlFlow("switch ($condition)", *args, func = func)
+
+fun CodeBlock.Builder.forStatement(
+        condition: String,
+        vararg args: Any,
+        func: CodeBlock.Builder.() -> Unit): CodeBlock.Builder = autoControlFlow("for ($condition)", *args, func = func)
