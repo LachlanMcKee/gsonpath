@@ -38,6 +38,17 @@ class ReadFunctions {
                 .build()
     }
 
+    /**
+     * Ensure a Json object exists begin attempting to read it.
+     */
+    private fun CodeBlock.Builder.addValidValueCheck(addReturn: Boolean) {
+        addComment("Ensure the object is not null.")
+                .beginControlFlow("if (!isValidValue(in))")
+
+                .addStatement(if (addReturn) "return null" else "break")
+                .endControlFlow() // if
+    }
+
     private fun CodeBlock.Builder.addInitialisationBlock(params: ReadParams) {
         if (!params.requiresConstructorInjection) {
             addStatement("\$T result = new \$T()", params.concreteElement, params.concreteElement)
@@ -340,17 +351,6 @@ class ReadFunctions {
                     .addStatement(")")
                     .build())
         }
-    }
-
-    /**
-     * Ensure a Json object exists begin attempting to read it.
-     */
-    private fun CodeBlock.Builder.addValidValueCheck(addReturn: Boolean) {
-        addComment("Ensure the object is not null.")
-                .beginControlFlow("if (!isValidValue(in))")
-
-                .addStatement(if (addReturn) "return null" else "break")
-                .endControlFlow() // if
     }
 
     private fun CodeBlock.Builder.addEscaped(format: String): CodeBlock.Builder {
