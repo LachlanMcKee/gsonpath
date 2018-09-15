@@ -12,6 +12,7 @@ import gsonpath.compiler.CLASS_NAME_STRING
 import gsonpath.compiler.createDefaultVariableValueForTypeName
 import gsonpath.generator.standard.SharedFunctions
 import gsonpath.model.GsonField
+import gsonpath.model.GsonModel
 import gsonpath.model.GsonObject
 import gsonpath.model.MandatoryFieldInfoFactory.MandatoryFieldInfo
 import gsonpath.util.*
@@ -107,39 +108,16 @@ class ReadFunctions {
             addNewLine()
 
             switchStatement("in.nextName()") {
-
-                overallRecursionCount = jsonMapping.entries().fold(recursionCount + 1) { currentOverallRecursionCount, (key, value) ->
-                    addEscaped("""case "$key":""")
-                    addNewLine()
-                    indent()
-
-                    // Increment the counter to ensure we track how many fields we have mapped.
-                    addStatement("$counterVariableName++")
-
-                    val recursionCountForModel: Int =
-                            when (value) {
-                                is GsonField -> {
-                                    writeGsonFieldReader(value, params.requiresConstructorInjection,
-                                            params.mandatoryInfoMap[value.fieldInfo.fieldName], extensionsHandler)
-
-                                    // No extra recursion has happened.
-                                    currentOverallRecursionCount
-                                }
-
-                                is GsonObject -> {
-                                    addNewLine()
-                                    addValidValueCheck(false)
-
-                                    addReadCodeForElements(value, params, extensionsHandler, currentOverallRecursionCount)
-                                }
-                            }
-
-                    addStatement("break")
-                    addNewLine()
-                    unindent()
-
-                    return@fold recursionCountForModel
-                }
+                overallRecursionCount = jsonMapping.entries()
+                        .fold(recursionCount + 1) { currentOverallRecursionCount, entry ->
+                            addReadCodeForModel(
+                                    params = params,
+                                    extensionsHandler = extensionsHandler,
+                                    key = entry.key,
+                                    value = entry.value,
+                                    counterVariableName = counterVariableName,
+                                    currentOverallRecursionCount = currentOverallRecursionCount)
+                        }
 
                 addWithNewLine("default:")
                 indent()
@@ -147,13 +125,50 @@ class ReadFunctions {
                 addStatement("break")
                 unindent()
             }
-
         }
         addNewLine()
-
         addStatement("in.endObject()")
 
         return overallRecursionCount
+    }
+
+    private fun CodeBlock.Builder.addReadCodeForModel(
+            params: ReadParams,
+            extensionsHandler: ExtensionsHandler,
+            key: String,
+            value: GsonModel,
+            counterVariableName: String,
+            currentOverallRecursionCount: Int): Int {
+
+        addEscaped("""case "$key":""")
+        addNewLine()
+        indent()
+
+        // Increment the counter to ensure we track how many fields we have mapped.
+        addStatement("$counterVariableName++")
+
+        val recursionCountForModel: Int =
+                when (value) {
+                    is GsonField -> {
+                        writeGsonFieldReader(value, params.requiresConstructorInjection,
+                                params.mandatoryInfoMap[value.fieldInfo.fieldName], extensionsHandler)
+
+                        // No extra recursion has happened.
+                        currentOverallRecursionCount
+                    }
+
+                    is GsonObject -> {
+                        addNewLine()
+                        addValidValueCheck(false)
+                        addReadCodeForElements(value, params, extensionsHandler, currentOverallRecursionCount)
+                    }
+                }
+
+        addStatement("break")
+        addNewLine()
+        unindent()
+
+        return recursionCountForModel
     }
 
     @Throws(ProcessingException::class)
