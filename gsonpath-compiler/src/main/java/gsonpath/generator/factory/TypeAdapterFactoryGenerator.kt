@@ -68,11 +68,11 @@ class TypeAdapterFactoryGenerator(
                 .addParameter(TypeToken::class.java, "type")
 
         val codeBlock = CodeBlock.builder()
-                .forStatement("int i = 0; i < mPackagePrivateLoaders.length; i++") {
+                .forBlock("int i = 0; i < mPackagePrivateLoaders.length; i++") {
                     addStatement("TypeAdapter typeAdapter = mPackagePrivateLoaders[i].create(gson, type)")
                     addNewLine()
 
-                    ifStatement("typeAdapter != null") {
+                    ifBlock("typeAdapter != null") {
                         addStatement("return typeAdapter")
                     }
 

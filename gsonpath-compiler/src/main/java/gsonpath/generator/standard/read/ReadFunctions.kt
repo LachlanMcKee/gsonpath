@@ -44,7 +44,7 @@ class ReadFunctions {
      */
     private fun CodeBlock.Builder.addValidValueCheck(addReturn: Boolean) {
         addComment("Ensure the object is not null.")
-        ifStatement("!isValidValue(in)") {
+        ifBlock("!isValidValue(in)") {
             addStatement(if (addReturn) "return null" else "break")
         }
     }
@@ -94,20 +94,20 @@ class ReadFunctions {
         addNewLine()
 
         var overallRecursionCount = 0
-        whileStatement("in.hasNext()") {
+        whileBlock("in.hasNext()") {
 
             //
             // Since all the required fields have been mapped, we can avoid calling 'nextName'.
             // This ends up yielding performance improvements on large datasets depending on
             // the ordering of the fields within the JSON.
             //
-            ifStatement("$counterVariableName == $jsonMappingSize") {
+            ifBlock("$counterVariableName == $jsonMappingSize") {
                 addStatement("in.skipValue()")
                 addStatement("continue")
             }
             addNewLine()
 
-            switchStatement("in.nextName()") {
+            switchBlock("in.nextName()") {
                 overallRecursionCount = jsonMapping.entries()
                         .fold(recursionCount + 1) { currentOverallRecursionCount, entry ->
                             addReadCodeForModel(
@@ -190,7 +190,7 @@ class ReadFunctions {
         val result = writeGsonFieldReading(gsonField, requiresConstructorInjection)
 
         if (result.checkIfNull) {
-            ifStatement("${result.variableName} != null") {
+            ifBlock("${result.variableName} != null") {
 
                 val assignmentBlock: String = if (!requiresConstructorInjection) {
                     "result." + fieldInfo.fieldName
@@ -229,7 +229,7 @@ class ReadFunctions {
 
             // Handle the null-checking for the extensions to avoid repetition inside the extension implementations.
             if (!fieldTypeName.isPrimitive) {
-                ifStatement("${result.variableName} != null") {
+                ifBlock("${result.variableName} != null") {
                     add(extensionsCodeBlock)
                 }
             } else {
@@ -313,17 +313,17 @@ class ReadFunctions {
 
         addNewLine()
         addComment("Mandatory object validation")
-        forStatement("int mandatoryFieldIndex = 0; mandatoryFieldIndex < MANDATORY_FIELDS_SIZE; mandatoryFieldIndex++") {
+        forBlock("int mandatoryFieldIndex = 0; mandatoryFieldIndex < MANDATORY_FIELDS_SIZE; mandatoryFieldIndex++") {
 
             addNewLine()
             addComment("Check if a mandatory value is missing.")
-            ifStatement("!mandatoryFieldsCheckList[mandatoryFieldIndex]") {
+            ifBlock("!mandatoryFieldsCheckList[mandatoryFieldIndex]") {
 
                 // The code must figure out the correct field name to insert into the error message.
                 addNewLine()
                 addComment("Find the field name of the missing json value.")
                 addStatement("String fieldName = null")
-                switchStatement("mandatoryFieldIndex") {
+                switchBlock("mandatoryFieldIndex") {
 
                     for ((_, mandatoryFieldInfo) in params.mandatoryInfoMap) {
                         addWithNewLine("case ${mandatoryFieldInfo.indexVariableName}:")

@@ -30,22 +30,22 @@ fun CodeBlock.Builder.autoControlFlow(controlFlow: String, vararg args: Any, fun
     return this
 }
 
-fun CodeBlock.Builder.ifStatement(
+fun CodeBlock.Builder.ifBlock(
         condition: String,
         vararg args: Any,
         func: CodeBlock.Builder.() -> Unit): CodeBlock.Builder = autoControlFlow("if ($condition)", *args, func = func)
 
-fun CodeBlock.Builder.whileStatement(
+fun CodeBlock.Builder.whileBlock(
         condition: String,
         vararg args: Any,
         func: CodeBlock.Builder.() -> Unit): CodeBlock.Builder = autoControlFlow("while ($condition)", *args, func = func)
 
-fun CodeBlock.Builder.switchStatement(
+fun CodeBlock.Builder.switchBlock(
         condition: String,
         vararg args: Any,
         func: CodeBlock.Builder.() -> Unit): CodeBlock.Builder = autoControlFlow("switch ($condition)", *args, func = func)
 
-fun CodeBlock.Builder.forStatement(
+fun CodeBlock.Builder.forBlock(
         condition: String,
         vararg args: Any,
         func: CodeBlock.Builder.() -> Unit): CodeBlock.Builder = autoControlFlow("for ($condition)", *args, func = func)

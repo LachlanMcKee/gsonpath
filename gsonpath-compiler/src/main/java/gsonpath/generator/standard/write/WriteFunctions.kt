@@ -28,7 +28,7 @@ class WriteFunctions {
                 .addException(IOException::class.java)
                 .code {
                     // Initial block which prevents nulls being accessed.
-                    ifStatement("value == null") {
+                    ifBlock("value == null") {
                         addStatement("out.nullValue()")
                         addStatement("return")
                     }
