@@ -12,6 +12,7 @@ import gsonpath.generator.HandleResult
 import gsonpath.generator.interf.ModelInterfaceGenerator
 import gsonpath.generator.standard.properties.AutoGsonAdapterPropertiesFactory
 import gsonpath.generator.standard.read.ReadFunctions
+import gsonpath.generator.standard.read.ReadParams
 import gsonpath.generator.standard.subtype.SubtypeFunctions
 import gsonpath.generator.standard.write.WriteFunctions
 import gsonpath.generator.writeFile
@@ -114,8 +115,15 @@ class AutoGsonAdapterGenerator(
                     .build())
         }
 
-        adapterTypeBuilder.addMethod(readFunctions.createReadMethod(modelClassName, concreteClassName,
-                requiresConstructorInjection, mandatoryInfoMap, rootGsonObject, extensionsHandler))
+        val readParams = ReadParams(
+                baseElement = modelClassName,
+                concreteElement = concreteClassName,
+                requiresConstructorInjection = requiresConstructorInjection,
+                mandatoryInfoMap = mandatoryInfoMap,
+                rootElements = rootGsonObject,
+                flattenedFields = gsonObjectTreeFactory.getFlattenedFieldsFromGsonObject(rootGsonObject))
+
+        adapterTypeBuilder.addMethod(readFunctions.createReadMethod(readParams, extensionsHandler))
 
         if (!isModelInterface) {
             adapterTypeBuilder.addMethod(writeFunctions.createWriteMethod(modelClassName, rootGsonObject, properties.serializeNulls))

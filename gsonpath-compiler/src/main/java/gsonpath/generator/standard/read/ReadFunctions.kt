@@ -13,54 +13,37 @@ import gsonpath.compiler.createDefaultVariableValueForTypeName
 import gsonpath.generator.standard.SharedFunctions
 import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
-import gsonpath.model.GsonObjectTreeFactory
 import gsonpath.model.MandatoryFieldInfoFactory.MandatoryFieldInfo
 import gsonpath.util.*
 import java.io.IOException
 
-class ReadFunctions(private val gsonObjectTreeFactory: GsonObjectTreeFactory) {
+class ReadFunctions {
 
     /**
      * public T read(JsonReader in) throws IOException {
      */
     @Throws(ProcessingException::class)
-    fun createReadMethod(
-            baseElement: ClassName,
-            concreteElement: ClassName,
-            requiresConstructorInjection: Boolean,
-            mandatoryInfoMap: Map<String, MandatoryFieldInfo>,
-            rootElements: GsonObject,
-            extensionsHandler: ExtensionsHandler): MethodSpec {
-
+    fun createReadMethod(params: ReadParams, extensionsHandler: ExtensionsHandler): MethodSpec {
         return MethodSpecExt.interfaceMethodBuilder("read")
-                .returns(baseElement)
+                .returns(params.baseElement)
                 .addParameter(JsonReader::class.java, "in")
                 .addException(IOException::class.java)
                 .code {
-                    // Create a flat list of the variables and ensure they are ordered by their original field index within the POJO
-                    val flattenedFields = gsonObjectTreeFactory
-                            .getFlattenedFieldsFromGsonObject(rootElements)
-
                     addValidValueCheck(true)
-                    addInitialisationBlock(concreteElement, requiresConstructorInjection, flattenedFields, mandatoryInfoMap)
-                    addReadCodeForElements(rootElements, requiresConstructorInjection, mandatoryInfoMap, extensionsHandler)
-                    addMandatoryValuesCheck(mandatoryInfoMap, concreteElement)
-                    addReturnBlock(concreteElement, requiresConstructorInjection, flattenedFields)
+                    addInitialisationBlock(params)
+                    addReadCodeForElements(params.rootElements, params, extensionsHandler)
+                    addMandatoryValuesCheck(params)
+                    addReturnBlock(params)
                 }
                 .build()
     }
 
-    private fun CodeBlock.Builder.addInitialisationBlock(
-            concreteElement: ClassName,
-            requiresConstructorInjection: Boolean,
-            flattenedFields: List<GsonField>,
-            mandatoryInfoMap: Map<String, MandatoryFieldInfo>) {
-
-        if (!requiresConstructorInjection) {
-            addStatement("\$T result = new \$T()", concreteElement, concreteElement)
+    private fun CodeBlock.Builder.addInitialisationBlock(params: ReadParams) {
+        if (!params.requiresConstructorInjection) {
+            addStatement("\$T result = new \$T()", params.concreteElement, params.concreteElement)
 
         } else {
-            for (gsonField in flattenedFields) {
+            for (gsonField in params.flattenedFields) {
                 // Don't initialise primitives, we rely on validation to throw an exception if the value does not exist.
                 val typeName = gsonField.fieldInfo.typeName
                 val defaultValue = createDefaultVariableValueForTypeName(typeName)
@@ -70,7 +53,7 @@ class ReadFunctions(private val gsonObjectTreeFactory: GsonObjectTreeFactory) {
         }
 
         // If we have any mandatory fields, we need to keep track of what has been assigned.
-        if (mandatoryInfoMap.isNotEmpty()) {
+        if (params.mandatoryInfoMap.isNotEmpty()) {
             addStatement("boolean[] mandatoryFieldsCheckList = new boolean[MANDATORY_FIELDS_SIZE]")
         }
 
@@ -84,8 +67,7 @@ class ReadFunctions(private val gsonObjectTreeFactory: GsonObjectTreeFactory) {
     @Throws(ProcessingException::class)
     private fun CodeBlock.Builder.addReadCodeForElements(
             jsonMapping: GsonObject,
-            requiresConstructorInjection: Boolean,
-            mandatoryInfoMap: Map<String, MandatoryFieldInfo>,
+            params: ReadParams,
             extensionsHandler: ExtensionsHandler,
             recursionCount: Int = 0): Int {
 
@@ -125,8 +107,8 @@ class ReadFunctions(private val gsonObjectTreeFactory: GsonObjectTreeFactory) {
             val recursionCountForModel: Int =
                     when (value) {
                         is GsonField -> {
-                            writeGsonFieldReader(value, requiresConstructorInjection,
-                                    mandatoryInfoMap[value.fieldInfo.fieldName], extensionsHandler)
+                            writeGsonFieldReader(value, params.requiresConstructorInjection,
+                                    params.mandatoryInfoMap[value.fieldInfo.fieldName], extensionsHandler)
 
                             // No extra recursion has happened.
                             currentOverallRecursionCount
@@ -136,8 +118,7 @@ class ReadFunctions(private val gsonObjectTreeFactory: GsonObjectTreeFactory) {
                             addNewLine()
                             addValidValueCheck(false)
 
-                            addReadCodeForElements(value, requiresConstructorInjection, mandatoryInfoMap,
-                                    extensionsHandler, currentOverallRecursionCount)
+                            addReadCodeForElements(value, params, extensionsHandler, currentOverallRecursionCount)
                         }
                     }
 
@@ -300,11 +281,8 @@ class ReadFunctions(private val gsonObjectTreeFactory: GsonObjectTreeFactory) {
     /**
      * If there are any mandatory fields, we now check if any values have been missed. If there are, an exception will be raised here.
      */
-    private fun CodeBlock.Builder.addMandatoryValuesCheck(
-            mandatoryInfoMap: Map<String, MandatoryFieldInfo>,
-            concreteElement: ClassName) {
-
-        if (mandatoryInfoMap.isEmpty()) {
+    private fun CodeBlock.Builder.addMandatoryValuesCheck(params: ReadParams) {
+        if (params.mandatoryInfoMap.isEmpty()) {
             return
         }
 
@@ -322,7 +300,7 @@ class ReadFunctions(private val gsonObjectTreeFactory: GsonObjectTreeFactory) {
         addStatement("String fieldName = null")
         beginControlFlow("switch (mandatoryFieldIndex)")
 
-        for ((_, mandatoryFieldInfo) in mandatoryInfoMap) {
+        for ((_, mandatoryFieldInfo) in params.mandatoryInfoMap) {
             addWithNewLine("case ${mandatoryFieldInfo.indexVariableName}:")
             indent()
             addEscapedStatement("""fieldName = "${mandatoryFieldInfo.gsonField.jsonPath}"""")
@@ -332,30 +310,26 @@ class ReadFunctions(private val gsonObjectTreeFactory: GsonObjectTreeFactory) {
         }
 
         endControlFlow() // Switch
-        addStatement("""throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class '$concreteElement'")""")
+        addStatement("""throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class '${params.concreteElement}'")""")
         endControlFlow() // If
         endControlFlow() // For
     }
 
-    private fun CodeBlock.Builder.addReturnBlock(
-            concreteElement: ClassName,
-            requiresConstructorInjection: Boolean,
-            flattenedFields: List<GsonField>) {
-
-        if (!requiresConstructorInjection) {
+    private fun CodeBlock.Builder.addReturnBlock(params: ReadParams) {
+        if (!params.requiresConstructorInjection) {
             // If the class was already defined, return it now.
             addStatement("return result")
 
         } else {
             // Create the class using the constructor.
             val returnCodeBlock = CodeBlock.builder()
-                    .addWithNewLine("return new \$T(", concreteElement)
+                    .addWithNewLine("return new \$T(", params.concreteElement)
                     .indent()
 
-            for (i in flattenedFields.indices) {
-                returnCodeBlock.add(flattenedFields[i].variableName)
+            for (i in params.flattenedFields.indices) {
+                returnCodeBlock.add(params.flattenedFields[i].variableName)
 
-                if (i < flattenedFields.size - 1) {
+                if (i < params.flattenedFields.size - 1) {
                     returnCodeBlock.add(",")
                 }
 
