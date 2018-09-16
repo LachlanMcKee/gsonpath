@@ -111,7 +111,7 @@ class ReadFunctions {
             newLine()
 
             switch("in.nextName()") {
-                val foo = jsonMapping.entries()
+                val recursionTemp = jsonMapping.entries()
                         .fold(recursionCount + 1) { currentOverallRecursionCount, entry ->
                             addReadCodeForModel(
                                     params = params,
@@ -125,7 +125,7 @@ class ReadFunctions {
                 default {
                     addStatement("in.skipValue()")
                 }
-                return@switch foo
+                return@switch recursionTemp
             }
         }
         newLine()
