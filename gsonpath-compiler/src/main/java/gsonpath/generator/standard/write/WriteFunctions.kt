@@ -1,10 +1,7 @@
 package gsonpath.generator.standard.write
 
 import com.google.gson.stream.JsonWriter
-import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.CodeBlock
-import com.squareup.javapoet.MethodSpec
-import com.squareup.javapoet.ParameterizedTypeName
+import com.squareup.javapoet.*
 import gsonpath.ProcessingException
 import gsonpath.generator.standard.SharedFunctions
 import gsonpath.model.GsonField
@@ -106,16 +103,35 @@ class WriteFunctions {
 
         addStatement("\$T $objectName = value.${fieldInfo.fieldAccessor}", fieldTypeName)
 
-        // If we aren't serializing nulls, we need to prevent the 'out.name' code being executed.
-        if (!isPrimitive && !serializeNulls) {
-            beginControlFlow("if ($objectName != null)")
+        if (isPrimitive) {
+            addEscapedStatement("""out.name("$key")""")
+            writeField(value, objectName, fieldTypeName)
+        } else {
+            if (serializeNulls) {
+                // Since we are serializing nulls, we defer the if-statement until after the name is written.
+                addEscapedStatement("""out.name("$key")""")
+                ifWithoutClose("$objectName != null") {
+                    writeField(value, objectName, fieldTypeName)
+                }
+                `else` {
+                    addStatement("out.nullValue()")
+                }
+            } else {
+                `if`("$objectName != null") {
+                    addEscapedStatement("""out.name("$key")""")
+                    writeField(value, objectName, fieldTypeName)
+                }
+            }
         }
-        addEscapedStatement("""out.name("$key")""")
+        newLine()
 
-        // Since we are serializing nulls, we defer the if-statement until after the name is written.
-        if (!isPrimitive && serializeNulls) {
-            beginControlFlow("if ($objectName != null)")
-        }
+        return fieldCount + 1
+    }
+
+    private fun CodeBlock.Builder.writeField(
+            value: GsonField,
+            objectName: String,
+            fieldTypeName: TypeName) {
 
         val subTypeMetadata = value.subTypeMetadata
         val writeLine =
@@ -136,17 +152,5 @@ class WriteFunctions {
                 }
 
         addStatement(writeLine, fieldTypeName.box())
-
-        // If we are serializing nulls, we need to ensure we output it here.
-        if (!isPrimitive) {
-            if (serializeNulls) {
-                nextControlFlow("else")
-                addStatement("out.nullValue()")
-            }
-            endControlFlow()
-        }
-        newLine()
-
-        return fieldCount + 1
     }
 }

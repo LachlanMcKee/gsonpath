@@ -48,6 +48,22 @@ fun <T> CodeBlock.Builder.`if`(
         vararg args: Any,
         func: CodeBlock.Builder.() -> T): T = autoControlFlow("if ($condition)", *args, func = func)
 
+fun <T> CodeBlock.Builder.ifWithoutClose(
+        condition: String,
+        vararg args: Any,
+        func: CodeBlock.Builder.() -> T): T {
+
+    beginControlFlow("if ($condition)", *args)
+    return func(this)
+}
+
+fun <T> CodeBlock.Builder.`else`(func: CodeBlock.Builder.() -> T): T {
+    nextControlFlow("else")
+    val result = func(this)
+    endControlFlow()
+    return result
+}
+
 fun <T> CodeBlock.Builder.`while`(
         condition: String,
         vararg args: Any,

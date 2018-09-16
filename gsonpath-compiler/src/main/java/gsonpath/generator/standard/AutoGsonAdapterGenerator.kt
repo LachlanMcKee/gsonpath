@@ -50,16 +50,17 @@ class AutoGsonAdapterGenerator(
                 .addMember("comments", "\"https://github.com/LachlanMcKee/gsonpath\"")
                 .build()
 
-        val adapterTypeBuilder = TypeSpecExt.finalClassBuilder(adapterClassName)
-                .superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), modelClassName))
-                .addAnnotation(generatedJavaPoetAnnotation)
-                .addField(Gson::class.java, "mGson", Modifier.PRIVATE, Modifier.FINAL)
+        val adapterTypeBuilder = TypeSpecExt.finalClassBuilder(adapterClassName).apply {
+            superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), modelClassName))
+            addAnnotation(generatedJavaPoetAnnotation)
+            addField(Gson::class.java, "mGson", Modifier.PRIVATE, Modifier.FINAL)
 
-        // Add the constructor which takes a gson instance for future use.
-        adapterTypeBuilder.constructor {
-            addModifiers(Modifier.PUBLIC)
-            addParameter(Gson::class.java, "gson")
-            addStatement("this.\$N = \$N", "mGson", "gson")
+            // Add the constructor which takes a gson instance for future use.
+            constructor {
+                addModifiers(Modifier.PUBLIC)
+                addParameter(Gson::class.java, "gson")
+                addStatement("this.\$N = \$N", "mGson", "gson")
+            }
         }
 
         val concreteClassName: ClassName
