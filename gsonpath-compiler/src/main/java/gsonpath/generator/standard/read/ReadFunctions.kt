@@ -34,7 +34,7 @@ class ReadFunctions {
                 `if`("!isValidValue(in)") {
                     addStatement("return null")
                 }
-                
+
                 addInitialisationBlock(params)
                 addReadCodeForElements(params.rootElements, params, extensionsHandler)
                 addMandatoryValuesCheck(params)

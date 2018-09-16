@@ -145,15 +145,15 @@ class SubtypeFunctions(
                             .build())
         }
 
-        subTypeAdapterBuilder.addMethod(createConstructor(subTypeMetadata))
-        subTypeAdapterBuilder.addMethod(createReadMethod(subTypeMetadata, rawTypeName))
-        subTypeAdapterBuilder.addMethod(createWriteMethod(subTypeMetadata, rawTypeName, typeAdapterType))
+        subTypeAdapterBuilder.addSubTypeConstructor(subTypeMetadata)
+        subTypeAdapterBuilder.addReadMethod(subTypeMetadata, rawTypeName)
+        subTypeAdapterBuilder.addWriteMethod(subTypeMetadata, rawTypeName, typeAdapterType)
 
         // Add the new subtype type adapter to the root class.
         typeSpecBuilder.addType(subTypeAdapterBuilder.build())
     }
 
-    private fun createConstructor(subTypeMetadata: SubTypeMetadata) = MethodSpec.constructorBuilder().applyAndBuild {
+    private fun TypeSpec.Builder.addSubTypeConstructor(subTypeMetadata: SubTypeMetadata) = constructor {
         addModifiers(Modifier.PRIVATE)
         addParameter(Gson::class.java, "gson")
 
@@ -183,9 +183,9 @@ class SubtypeFunctions(
      * delegated to. If not, the deserializer may return null, use a default deserializer, or throw an exception
      * depending on the GsonSubtype annotation settings.
      */
-    private fun createReadMethod(
+    private fun TypeSpec.Builder.addReadMethod(
             subTypeMetadata: SubTypeMetadata,
-            rawTypeName: TypeName) = MethodSpecExt.interfaceMethodBuilder("read").applyAndBuild {
+            rawTypeName: TypeName) = interfaceMethod("read") {
 
         returns(rawTypeName)
         addParameter(JsonReader::class.java, "in")
@@ -239,10 +239,10 @@ class SubtypeFunctions(
     /**
      * The write method is substantially simpler, as we do not to consume an entire json object.
      */
-    private fun createWriteMethod(
+    private fun TypeSpec.Builder.addWriteMethod(
             subTypeMetadata: SubTypeMetadata,
             rawTypeName: TypeName,
-            typeAdapterType: TypeName) = MethodSpecExt.interfaceMethodBuilder("write").applyAndBuild {
+            typeAdapterType: TypeName) = interfaceMethod("write") {
 
         addParameter(JsonWriter::class.java, "out")
         addParameter(rawTypeName, "value")
