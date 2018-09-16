@@ -71,11 +71,11 @@ class TypeAdapterFactoryGenerator(
             addParameter(TypeToken::class.java, "type")
 
             code {
-                forBlock("int i = 0; i < mPackagePrivateLoaders.length; i++") {
+                `for`("int i = 0; i < mPackagePrivateLoaders.length; i++") {
                     addStatement("TypeAdapter typeAdapter = mPackagePrivateLoaders[i].create(gson, type)")
-                    addNewLine()
+                    newLine()
 
-                    ifBlock("typeAdapter != null") {
+                    `if`("typeAdapter != null") {
                         addStatement("return typeAdapter")
                     }
                 }
@@ -108,14 +108,14 @@ class TypeAdapterFactoryGenerator(
                     if (currentAdapterIndex == 0) {
                         beginControlFlow("if (rawType.equals(\$T.class))", result.originalClassName)
                     } else {
-                        addNewLine() // New line for easier readability.
+                        newLine() // New line for easier readability.
                         nextControlFlow("else if (rawType.equals(\$T.class))", result.originalClassName)
                     }
                     addStatement("return new \$T(gson)", result.generatedClassName)
                 }
 
                 endControlFlow()
-                addNewLine()
+                newLine()
                 addStatement("return null")
             }
         }

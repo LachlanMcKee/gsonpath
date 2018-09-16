@@ -28,13 +28,13 @@ class WriteFunctions {
             addException(IOException::class.java)
             code {
                 // Initial block which prevents nulls being accessed.
-                ifBlock("value == null") {
+                `if`("value == null") {
                     addStatement("out.nullValue()")
                     addStatement("return")
                 }
 
-                addNewLine()
-                addComment("Begin")
+                newLine()
+                comment("Begin")
                 writeGsonFieldWriter(rootElements, "", serializeNulls, 0)
             }
         }
@@ -57,7 +57,7 @@ class WriteFunctions {
                     }
                 }
 
-        addComment("End $currentPath")
+        comment("End $currentPath")
         addStatement("out.endObject()")
 
         return overallFieldCount
@@ -78,8 +78,8 @@ class WriteFunctions {
             }
 
             // Add a comment mentioning what nested object we are current pointing at.
-            addNewLine()
-            addComment("Begin $newPath")
+            newLine()
+            comment("Begin $newPath")
             addStatement("""out.name("$key")""")
 
             writeGsonFieldWriter(value, newPath, serializeNulls, fieldCount)
@@ -145,7 +145,7 @@ class WriteFunctions {
             }
             endControlFlow()
         }
-        addNewLine()
+        newLine()
 
         return fieldCount + 1
     }

@@ -63,7 +63,7 @@ class SubtypeFunctions(
             returns(typeAdapterDetails.typeName)
 
             code {
-                ifBlock("$variableName == null") {
+                `if`("$variableName == null") {
                     val filterNulls = (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.REMOVE_ELEMENT)
 
                     if (typeAdapterDetails === TypeAdapterDetails.ArrayTypeAdapter) {
@@ -195,7 +195,7 @@ class SubtypeFunctions(
             addStatement("\$T typeValueJsonElement = jsonElement.getAsJsonObject().remove(\"${subTypeMetadata.fieldName}\")",
                     JsonElement::class.java)
 
-            ifBlock("typeValueJsonElement == null || typeValueJsonElement.isJsonNull()") {
+            `if`("typeValueJsonElement == null || typeValueJsonElement.isJsonNull()") {
                 addStatement("throw new \$T(\"cannot deserialize $rawTypeName because the subtype field '${subTypeMetadata.fieldName}' is either null or does not exist.\")",
                         JsonParseException::class.java)
             }
@@ -210,9 +210,9 @@ class SubtypeFunctions(
             addStatement("\$T<? extends \$T> delegate = typeAdaptersDelegatedByValueMap.get(value)",
                     TypeAdapter::class.java, rawTypeName)
 
-            ifBlock("delegate == null") {
+            `if`("delegate == null") {
                 if (subTypeMetadata.defaultType != null) {
-                    addComment("Use the default type adapter if the type is unknown.")
+                    comment("Use the default type adapter if the type is unknown.")
                     addStatement("delegate = defaultTypeAdapterDelegate")
                 } else {
                     if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
@@ -226,7 +226,7 @@ class SubtypeFunctions(
             addStatement("\$T result = delegate.fromJsonTree(jsonElement)", rawTypeName)
 
             if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
-                ifBlock("result == null") {
+                `if`("result == null") {
                     addStatement("throw new \$T(\"Failed to deserailize subtype for object: \" + jsonElement)",
                             GsonSubTypeFailureException::class.java)
                 }
@@ -248,7 +248,7 @@ class SubtypeFunctions(
         addParameter(rawTypeName, "value")
         addException(IOException::class.java)
         code {
-            ifBlock("value == null") {
+            `if`("value == null") {
                 addStatement("out.nullValue()")
                 addStatement("return")
             }
@@ -257,7 +257,7 @@ class SubtypeFunctions(
 
         if (subTypeMetadata.defaultType != null) {
             code {
-                ifBlock("delegate == null") {
+                `if`("delegate == null") {
                     addStatement("delegate = defaultTypeAdapterDelegate")
                 }
             }

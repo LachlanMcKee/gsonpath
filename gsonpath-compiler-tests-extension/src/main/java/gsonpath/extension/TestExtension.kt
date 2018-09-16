@@ -7,7 +7,7 @@ import gsonpath.compiler.ExtensionFieldMetadata
 import gsonpath.compiler.GsonPathExtension
 import gsonpath.util.addEscapedStatement
 import gsonpath.util.codeBlock
-import gsonpath.util.ifBlock
+import gsonpath.util.`if`
 
 import javax.annotation.processing.ProcessingEnvironment
 
@@ -34,7 +34,7 @@ class TestExtension : GsonPathExtension {
         }
 
         return codeBlock {
-            ifBlock("$variableName.trim().length() == 0") {
+            `if`("$variableName.trim().length() == 0") {
                 if (isRequired) {
                     addEscapedStatement("throw new com.google.gson.JsonParseException(" +
                             "\"JSON element '$jsonPath' cannot be blank\")")

@@ -50,9 +50,9 @@ class ModelInterfaceGenerator(
         val equalsCodeBlock = CodeBlock.builder()
                 .addStatement("if (this == o) return true")
                 .addStatement("if (o == null || getClass() != o.getClass()) return false")
-                .addNewLine()
+                .newLine()
                 .addStatement("\$T equalsOtherType = (\$T) o", outputClassName, outputClassName)
-                .addNewLine()
+                .newLine()
 
         // Hash code method
         val hasCodeCodeBlock = CodeBlock.builder()
@@ -60,7 +60,7 @@ class ModelInterfaceGenerator(
         // ToString method
         val toStringCodeBlock = CodeBlock.builder()
                 .add("""return "${modelClassName.simpleName()}{" +""")
-                .addNewLine()
+                .newLine()
 
         // An optimisation for hash codes which prevents us creating too many temp long variables.
         val hasDoubleField = methodElements
@@ -179,7 +179,7 @@ class ModelInterfaceGenerator(
             } else {
                 toStringCodeBlock.add("""$fieldName=" + $fieldName +""")
             }
-            toStringCodeBlock.addNewLine()
+            toStringCodeBlock.newLine()
         }
 
         typeBuilder.addMethod(constructorBuilder.build())
@@ -189,7 +189,7 @@ class ModelInterfaceGenerator(
                 MethodSpecExt.interfaceMethodBuilder("equals")
                         .returns(TypeName.BOOLEAN)
                         .addParameter(TypeName.OBJECT, "o")
-                        .addCode(equalsCodeBlock.addNewLine()
+                        .addCode(equalsCodeBlock.newLine()
                                 .addStatement("return true")
                                 .build())
                         .build())
