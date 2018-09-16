@@ -110,47 +110,39 @@ class SubtypeFunctions(
 
         val rawTypeName = getRawTypeName(gsonField)
 
-        val subTypeAdapterBuilder = TypeSpec.classBuilder(subTypeMetadata.className)
-                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                .superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), rawTypeName))
+        typeSpecBuilder.addType(TypeSpec.classBuilder(subTypeMetadata.className).applyAndBuild {
+            addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+            superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), rawTypeName))
 
-        // Create the type adapter delegate map.
-        val typeAdapterType = ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), WildcardTypeName.subtypeOf(rawTypeName))
-        val classConstainedType = ParameterizedTypeName.get(ClassName.get(Class::class.java), WildcardTypeName.subtypeOf(rawTypeName))
+            // Create the type adapter delegate map.
+            val typeAdapterType = ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), WildcardTypeName.subtypeOf(rawTypeName))
+            val classConstainedType = ParameterizedTypeName.get(ClassName.get(Class::class.java), WildcardTypeName.subtypeOf(rawTypeName))
 
-        val valueMapClassName =
-                when (subTypeMetadata.keyType) {
-                    SubTypeKeyType.STRING -> ClassName.get(String::class.java)
-                    SubTypeKeyType.INTEGER -> TypeName.get(Int::class.java).box()
-                    SubTypeKeyType.BOOLEAN -> TypeName.get(Boolean::class.java).box()
+            val valueMapClassName =
+                    when (subTypeMetadata.keyType) {
+                        SubTypeKeyType.STRING -> ClassName.get(String::class.java)
+                        SubTypeKeyType.INTEGER -> TypeName.get(Int::class.java).box()
+                        SubTypeKeyType.BOOLEAN -> TypeName.get(Boolean::class.java).box()
+                    }
+
+            field("typeAdaptersDelegatedByValueMap", ParameterizedTypeName.get(ClassName.get(Map::class.java), valueMapClassName, typeAdapterType)) {
+                addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+            }
+
+            field("typeAdaptersDelegatedByClassMap", ParameterizedTypeName.get(ClassName.get(Map::class.java), classConstainedType, typeAdapterType)) {
+                addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+            }
+
+            if (subTypeMetadata.defaultType != null) {
+                field("defaultTypeAdapterDelegate", typeAdapterType) {
+                    addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                 }
+            }
 
-        subTypeAdapterBuilder.addField(
-                FieldSpec.builder(
-                        ParameterizedTypeName.get(ClassName.get(Map::class.java), valueMapClassName, typeAdapterType), "typeAdaptersDelegatedByValueMap")
-                        .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-                        .build())
-
-        subTypeAdapterBuilder.addField(
-                FieldSpec.builder(
-                        ParameterizedTypeName.get(ClassName.get(Map::class.java), classConstainedType, typeAdapterType), "typeAdaptersDelegatedByClassMap")
-                        .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-                        .build())
-
-        if (subTypeMetadata.defaultType != null) {
-            subTypeAdapterBuilder.addField(
-                    FieldSpec.builder(
-                            typeAdapterType, "defaultTypeAdapterDelegate")
-                            .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-                            .build())
-        }
-
-        subTypeAdapterBuilder.addSubTypeConstructor(subTypeMetadata)
-        subTypeAdapterBuilder.addReadMethod(subTypeMetadata, rawTypeName)
-        subTypeAdapterBuilder.addWriteMethod(subTypeMetadata, rawTypeName, typeAdapterType)
-
-        // Add the new subtype type adapter to the root class.
-        typeSpecBuilder.addType(subTypeAdapterBuilder.build())
+            addSubTypeConstructor(subTypeMetadata)
+            addReadMethod(subTypeMetadata, rawTypeName)
+            addWriteMethod(subTypeMetadata, rawTypeName, typeAdapterType)
+        })
     }
 
     private fun TypeSpec.Builder.addSubTypeConstructor(subTypeMetadata: SubTypeMetadata) = constructor {
