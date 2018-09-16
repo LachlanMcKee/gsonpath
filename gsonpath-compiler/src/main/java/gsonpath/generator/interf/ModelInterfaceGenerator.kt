@@ -1,11 +1,6 @@
 package gsonpath.generator.interf
 
-import com.squareup.javapoet.AnnotationSpec
-import com.squareup.javapoet.ArrayTypeName
-import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.CodeBlock
-import com.squareup.javapoet.MethodSpec
-import com.squareup.javapoet.TypeName
+import com.squareup.javapoet.*
 import gsonpath.ProcessingException
 import gsonpath.compiler.generateClassName
 import gsonpath.generator.writeFile
@@ -108,7 +103,8 @@ class ModelInterfaceGenerator(
 
             typeBuilder.addField(typeName, fieldName, Modifier.PRIVATE, Modifier.FINAL)
 
-            val accessorMethod = MethodSpecExt.interfaceMethodBuilder(methodName).applyAndBuild {
+            // Accessor method
+            typeBuilder.interfaceMethod(methodName) {
                 returns(typeName)
                 addStatement("return $fieldName")
 
@@ -118,8 +114,6 @@ class ModelInterfaceGenerator(
                     addAnnotation(AnnotationSpec.get(annotationMirror))
                 }
             }
-
-            typeBuilder.addMethod(accessorMethod)
 
             // Add the parameter to the constructor
             constructorBuilder.addParameter(typeName, fieldName)
@@ -185,14 +179,13 @@ class ModelInterfaceGenerator(
         typeBuilder.addMethod(constructorBuilder.build())
 
         // Add the equals method
-        typeBuilder.addMethod(
-                MethodSpecExt.interfaceMethodBuilder("equals")
-                        .returns(TypeName.BOOLEAN)
-                        .addParameter(TypeName.OBJECT, "o")
-                        .addCode(equalsCodeBlock.newLine()
-                                .addStatement("return true")
-                                .build())
-                        .build())
+        typeBuilder.interfaceMethod("equals") {
+            returns(TypeName.BOOLEAN)
+            addParameter(TypeName.OBJECT, "o")
+            addCode(equalsCodeBlock.newLine()
+                    .addStatement("return true")
+                    .build())
+        }
 
         // If we have no elements, 'hashCodeReturnValue' won't be initialised!
         if (methodElements.isNotEmpty()) {
@@ -202,19 +195,17 @@ class ModelInterfaceGenerator(
         }
 
         // Add the hashCode method
-        typeBuilder.addMethod(MethodSpecExt.interfaceMethodBuilder("hashCode")
-                .returns(TypeName.INT)
-
-                .addCode(hasCodeCodeBlock.build())
-                .build())
+        typeBuilder.interfaceMethod("hashCode") {
+            returns(TypeName.INT)
+            addCode(hasCodeCodeBlock.build())
+        }
 
         // Add the toString method
-        typeBuilder.addMethod(MethodSpecExt.interfaceMethodBuilder("toString")
-                .returns(TypeName.get(String::class.java))
-
-                .addCode(toStringCodeBlock.build())
-                .addStatement("\t\t'}'", modelClassName.simpleName())
-                .build())
+        typeBuilder.interfaceMethod("toString") {
+            returns(TypeName.get(String::class.java))
+            addCode(toStringCodeBlock.build())
+            addStatement("\t\t'}'", modelClassName.simpleName())
+        }
 
         if (!typeBuilder.writeFile(fileWriter, logger, outputClassName.packageName())) {
             throw ProcessingException("Failed to write generated file: " + outputClassName.simpleName())

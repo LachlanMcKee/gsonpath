@@ -7,7 +7,6 @@ import com.google.gson.reflect.TypeToken
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.FieldSpec
-import com.squareup.javapoet.MethodSpec
 import gsonpath.generator.HandleResult
 import gsonpath.generator.writeFile
 import gsonpath.util.*
@@ -48,7 +47,7 @@ class TypeAdapterFactoryGenerator(
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                 .build())
 
-        val constructor = MethodSpec.constructorBuilder().applyAndBuild {
+        typeBuilder.constructor {
             addModifiers(Modifier.PUBLIC)
             code {
                 addStatement("mPackagePrivateLoaders = new \$T[${packageLocalHandleResults.size}]", TypeAdapterFactory::class.java)
@@ -60,12 +59,10 @@ class TypeAdapterFactoryGenerator(
             }
         }
 
-        typeBuilder.addMethod(constructor)
-
         //
         // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
         //
-        val createMethod = MethodSpecExt.interfaceMethodBuilder("create").applyAndBuild {
+        typeBuilder.interfaceMethod("create") {
             returns(TypeAdapter::class.java)
             addParameter(Gson::class.java, "gson")
             addParameter(TypeToken::class.java, "type")
@@ -82,7 +79,6 @@ class TypeAdapterFactoryGenerator(
                 addStatement("return null")
             }
         }
-        typeBuilder.addMethod(createMethod)
 
         return typeBuilder.writeFile(fileWriter, logger, factoryClassName.packageName())
     }
@@ -97,7 +93,7 @@ class TypeAdapterFactoryGenerator(
         //
         // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
         //
-        val createMethod = MethodSpecExt.interfaceMethodBuilder("create").applyAndBuild {
+        typeBuilder.interfaceMethod("create") {
             returns(TypeAdapter::class.java)
             addParameter(Gson::class.java, "gson")
             addParameter(TypeToken::class.java, "type")
@@ -119,7 +115,6 @@ class TypeAdapterFactoryGenerator(
                 addStatement("return null")
             }
         }
-        typeBuilder.addMethod(createMethod)
 
         return typeBuilder.writeFile(fileWriter, logger, packageName)
     }

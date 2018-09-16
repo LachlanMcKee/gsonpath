@@ -56,11 +56,11 @@ class AutoGsonAdapterGenerator(
                 .addField(Gson::class.java, "mGson", Modifier.PRIVATE, Modifier.FINAL)
 
         // Add the constructor which takes a gson instance for future use.
-        adapterTypeBuilder.addMethod(MethodSpec.constructorBuilder().applyAndBuild {
+        adapterTypeBuilder.constructor {
             addModifiers(Modifier.PUBLIC)
             addParameter(Gson::class.java, "gson")
             addStatement("this.\$N = \$N", "mGson", "gson")
-        })
+        }
 
         val concreteClassName: ClassName
         val fieldInfoList: List<FieldInfo>
@@ -130,11 +130,11 @@ class AutoGsonAdapterGenerator(
 
         } else {
             // Create an empty method for the write, since we do not support writing for interfaces.
-            adapterTypeBuilder.addMethod(MethodSpecExt.interfaceMethodBuilder("write").applyAndBuild {
+            adapterTypeBuilder.interfaceMethod("write") {
                 addParameter(JsonWriter::class.java, "out")
                 addParameter(modelClassName, "value")
                 addException(IOException::class.java)
-            })
+            }
         }
 
         // Adds any required subtype type adapters depending on the usage of the GsonSubtype annotation.

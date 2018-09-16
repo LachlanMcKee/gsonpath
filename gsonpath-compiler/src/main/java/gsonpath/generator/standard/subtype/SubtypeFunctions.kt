@@ -58,7 +58,7 @@ class SubtypeFunctions(
         val variableName = subTypeMetadata.variableName
         val typeAdapterDetails = getTypeAdapterDetails(typeHandler, gsonField)
 
-        typeSpecBuilder.addMethod(MethodSpec.methodBuilder(subTypeMetadata.getterName).applyAndBuild {
+        typeSpecBuilder.method(subTypeMetadata.getterName) {
             addModifiers(Modifier.PRIVATE)
             returns(typeAdapterDetails.typeName)
 
@@ -76,7 +76,7 @@ class SubtypeFunctions(
                 }
                 addStatement("return $variableName")
             }
-        })
+        }
     }
 
     /**
