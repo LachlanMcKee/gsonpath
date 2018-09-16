@@ -1,6 +1,7 @@
 package gsonpath.util
 
 import com.squareup.javapoet.CodeBlock
+import com.squareup.javapoet.TypeName
 
 fun CodeBlock.Builder.applyAndBuild(func: CodeBlock.Builder.() -> Unit): CodeBlock {
     return apply(func).build()
@@ -29,6 +30,14 @@ fun CodeBlock.Builder.comment(comment: String): CodeBlock.Builder {
 fun CodeBlock.Builder.addEscaped(format: String): CodeBlock.Builder {
     this.add(format.replace("$", "$$"))
     return this
+}
+
+fun CodeBlock.Builder.multiLinedNewObject(typeName: TypeName, variables: List<String>) {
+    addWithNewLine("return new \$T(", typeName)
+    indent()
+    add(variables.joinToString(",\n"))
+    unindent()
+    addStatement(")")
 }
 
 fun CodeBlock.Builder.addEscapedStatement(format: String): CodeBlock.Builder {

@@ -30,25 +30,23 @@ class ReadFunctions {
             addParameter(JsonReader::class.java, "in")
             addException(IOException::class.java)
             code {
-                addValidValueCheck(true)
+                comment("Ensure the object is not null.")
+                `if`("!isValidValue(in)") {
+                    addStatement("return null")
+                }
+                
                 addInitialisationBlock(params)
                 addReadCodeForElements(params.rootElements, params, extensionsHandler)
                 addMandatoryValuesCheck(params)
-                addReturnBlock(params)
-            }
-        }
-    }
 
-    /**
-     * Ensure a Json object exists begin attempting to read it.
-     */
-    private fun CodeBlock.Builder.addValidValueCheck(addReturn: Boolean) {
-        comment("Ensure the object is not null.")
-        `if`("!isValidValue(in)") {
-            if (addReturn) {
-                addStatement("return null")
-            } else {
-                addStatement("break")
+                if (!params.requiresConstructorInjection) {
+                    // If the class was already defined, return it now.
+                    addStatement("return result")
+
+                } else {
+                    // Create the class using the constructor.
+                    multiLinedNewObject(params.concreteElement, params.flattenedFields.map { it.variableName })
+                }
             }
         }
     }
@@ -157,7 +155,10 @@ class ReadFunctions {
 
                 is GsonObject -> {
                     newLine()
-                    addValidValueCheck(false)
+                    comment("Ensure the object is not null.")
+                    `if`("!isValidValue(in)") {
+                        addStatement("break")
+                    }
                     addReadCodeForElements(value, params, extensionsHandler, currentOverallRecursionCount)
                 }
             }
@@ -331,33 +332,6 @@ class ReadFunctions {
                 }
                 addStatement("""throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class '${params.concreteElement}'")""")
             }
-        }
-    }
-
-    private fun CodeBlock.Builder.addReturnBlock(params: ReadParams) {
-        if (!params.requiresConstructorInjection) {
-            // If the class was already defined, return it now.
-            addStatement("return result")
-
-        } else {
-            // Create the class using the constructor.
-            add(codeBlock {
-                addWithNewLine("return new \$T(", params.concreteElement)
-                indent()
-
-                for (i in params.flattenedFields.indices) {
-                    add(params.flattenedFields[i].variableName)
-
-                    if (i < params.flattenedFields.size - 1) {
-                        add(",")
-                    }
-
-                    newLine()
-                }
-
-                unindent()
-                addStatement(")")
-            })
         }
     }
 
