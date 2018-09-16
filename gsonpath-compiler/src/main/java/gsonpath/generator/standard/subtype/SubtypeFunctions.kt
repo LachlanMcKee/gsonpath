@@ -41,7 +41,7 @@ class SubtypeFunctions(
                     typeSpecBuilder.addField(typeAdapterDetails.typeName, subTypeMetadata.variableName, Modifier.PRIVATE)
 
                     createGetter(typeHandler, typeSpecBuilder, gsonField, subTypeMetadata)
-                    createSubTypeAdapter(typeHandler, typeSpecBuilder, gsonField, subTypeMetadata)
+                    createSubTypeAdapter(typeSpecBuilder, gsonField, subTypeMetadata)
                 }
     }
 
@@ -104,7 +104,6 @@ class SubtypeFunctions(
      * Only gson fields that are annotated with 'GsonSubtype' should invoke this method
      */
     private fun createSubTypeAdapter(
-            typeHandler: TypeHandler,
             typeSpecBuilder: TypeSpec.Builder,
             gsonField: GsonField,
             subTypeMetadata: SubTypeMetadata) {
@@ -146,117 +145,125 @@ class SubtypeFunctions(
                             .build())
         }
 
-        // Add the constructor
-        val constructor = MethodSpec.constructorBuilder().applyAndBuild {
-            addModifiers(Modifier.PRIVATE)
-            addParameter(Gson::class.java, "gson")
-
-            addStatement("typeAdaptersDelegatedByValueMap = new java.util.HashMap<>()")
-            addStatement("typeAdaptersDelegatedByClassMap = new java.util.HashMap<>()")
-
-
-            // Instantiate each subtype delegated adapter
-            subTypeMetadata.gsonSubTypeKeys.forEach {
-                val subtypeElement = typeHandler.asElement(it.clazzTypeMirror)
-
-                addCode("\n")
-                addStatement("typeAdaptersDelegatedByValueMap.put(${it.key}, gson.getAdapter(\$T.class))", subtypeElement)
-                addStatement("typeAdaptersDelegatedByClassMap.put(\$T.class, gson.getAdapter(\$T.class))", subtypeElement, subtypeElement)
-            }
-
-            if (subTypeMetadata.defaultType != null) {
-                addStatement("defaultTypeAdapterDelegate = gson.getAdapter(\$T.class)", subTypeMetadata.defaultType)
-            }
-        }
-
-        subTypeAdapterBuilder.addMethod(constructor)
-
-        // Add the read method.
-        val readMethod = MethodSpecExt.interfaceMethodBuilder("read").applyAndBuild {
-            returns(rawTypeName)
-            addParameter(JsonReader::class.java, "in")
-            addException(IOException::class.java)
-            code {
-                //
-                // The read method deserializes the entire json object which is inefficient, however it unfortunately the only way
-                // to guarantee that the 'type' field is read early enough.
-                //
-                // Once the object is memory, the type field is located, and then the correct adapter is hopefully found and delegated
-                // to. If not, the deserializer may return null, use a default deserializer, or throw an exception depending on the
-                // GsonSubtype annotation settings.
-                //
-                addStatement("\$T jsonElement = \$T.parse(in)", JsonElement::class.java, Streams::class.java)
-                addStatement("\$T typeValueJsonElement = jsonElement.getAsJsonObject().remove(\"${subTypeMetadata.fieldName}\")", JsonElement::class.java)
-
-                ifBlock("typeValueJsonElement == null || typeValueJsonElement.isJsonNull()") {
-                    addStatement("throw new \$T(\"cannot deserialize $rawTypeName because the subtype field '${subTypeMetadata.fieldName}' is either null or does not exist.\")",
-                            JsonParseException::class.java)
-                }
-
-                // Obtain the value using the correct type.
-                addStatement(when (subTypeMetadata.keyType) {
-                    SubTypeKeyType.STRING -> "java.lang.String value = typeValueJsonElement.getAsString()"
-                    SubTypeKeyType.INTEGER -> "int value = typeValueJsonElement.getAsInt()"
-                    SubTypeKeyType.BOOLEAN -> "boolean value = typeValueJsonElement.getAsBoolean()"
-                })
-
-                addStatement("\$T<? extends \$T> delegate = typeAdaptersDelegatedByValueMap.get(value)", TypeAdapter::class.java, rawTypeName)
-                ifBlock("delegate == null") {
-                    if (subTypeMetadata.defaultType != null) {
-                        addComment("Use the default type adapter if the type is unknown.")
-                        addStatement("delegate = defaultTypeAdapterDelegate")
-                    } else {
-                        if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
-                            addStatement("throw new \$T(\"Failed to find subtype for value: \" + value)", GsonSubTypeFailureException::class.java)
-                        } else {
-                            addStatement("return null")
-                        }
-                    }
-                }
-                addStatement("\$T result = delegate.fromJsonTree(jsonElement)", rawTypeName)
-
-                if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
-                    ifBlock("result == null") {
-                        addStatement("throw new \$T(\"Failed to deserailize subtype for object: \" + jsonElement)", GsonSubTypeFailureException::class.java)
-                    }
-                }
-
-                addStatement("return result")
-            }
-        }
-
-        subTypeAdapterBuilder.addMethod(readMethod)
-
-        //
-        // Add the write method
-        // The write method is substantially simpler, as we do not to consume an entire json object.
-        //
-        val writeMethod = MethodSpecExt.interfaceMethodBuilder("write").applyAndBuild {
-            addParameter(JsonWriter::class.java, "out")
-            addParameter(rawTypeName, "value")
-            addException(IOException::class.java)
-            code {
-                ifBlock("value == null") {
-                    addStatement("out.nullValue()")
-                    addStatement("return")
-                }
-                addStatement("\$T delegate = typeAdaptersDelegatedByClassMap.get(value.getClass())", TypeAdapter::class.java)
-            }
-
-            if (subTypeMetadata.defaultType != null) {
-                code {
-                    ifBlock("delegate == null") {
-                        addStatement("delegate = defaultTypeAdapterDelegate")
-                    }
-                }
-            }
-
-            addStatement("delegate.write(out, value)", typeAdapterType)
-        }
-        subTypeAdapterBuilder.addMethod(writeMethod)
+        subTypeAdapterBuilder.addMethod(createConstructor(subTypeMetadata))
+        subTypeAdapterBuilder.addMethod(createReadMethod(subTypeMetadata, rawTypeName))
+        subTypeAdapterBuilder.addMethod(createWriteMethod(subTypeMetadata, rawTypeName, typeAdapterType))
 
         // Add the new subtype type adapter to the root class.
         typeSpecBuilder.addType(subTypeAdapterBuilder.build())
+    }
+
+    private fun createConstructor(subTypeMetadata: SubTypeMetadata) = MethodSpec.constructorBuilder().applyAndBuild {
+        addModifiers(Modifier.PRIVATE)
+        addParameter(Gson::class.java, "gson")
+
+        addStatement("typeAdaptersDelegatedByValueMap = new java.util.HashMap<>()")
+        addStatement("typeAdaptersDelegatedByClassMap = new java.util.HashMap<>()")
+
+        // Instantiate each subtype delegated adapter
+        subTypeMetadata.gsonSubTypeKeys.forEach {
+            val subtypeElement = typeHandler.asElement(it.clazzTypeMirror)
+
+            addCode("\n")
+            addStatement("typeAdaptersDelegatedByValueMap.put(${it.key}, gson.getAdapter(\$T.class))", subtypeElement)
+            addStatement("typeAdaptersDelegatedByClassMap.put(\$T.class, gson.getAdapter(\$T.class))",
+                    subtypeElement, subtypeElement)
+        }
+
+        if (subTypeMetadata.defaultType != null) {
+            addStatement("defaultTypeAdapterDelegate = gson.getAdapter(\$T.class)", subTypeMetadata.defaultType)
+        }
+    }
+
+    /**
+     * The read method deserializes the entire json object which is inefficient, however it unfortunately the only way
+     * to guarantee that the 'type' field is read early enough.
+     *
+     * Once the object is memory, the type field is located, and then the correct adapter is hopefully found and
+     * delegated to. If not, the deserializer may return null, use a default deserializer, or throw an exception
+     * depending on the GsonSubtype annotation settings.
+     */
+    private fun createReadMethod(
+            subTypeMetadata: SubTypeMetadata,
+            rawTypeName: TypeName) = MethodSpecExt.interfaceMethodBuilder("read").applyAndBuild {
+
+        returns(rawTypeName)
+        addParameter(JsonReader::class.java, "in")
+        addException(IOException::class.java)
+        code {
+            addStatement("\$T jsonElement = \$T.parse(in)", JsonElement::class.java, Streams::class.java)
+            addStatement("\$T typeValueJsonElement = jsonElement.getAsJsonObject().remove(\"${subTypeMetadata.fieldName}\")",
+                    JsonElement::class.java)
+
+            ifBlock("typeValueJsonElement == null || typeValueJsonElement.isJsonNull()") {
+                addStatement("throw new \$T(\"cannot deserialize $rawTypeName because the subtype field '${subTypeMetadata.fieldName}' is either null or does not exist.\")",
+                        JsonParseException::class.java)
+            }
+
+            // Obtain the value using the correct type.
+            addStatement(when (subTypeMetadata.keyType) {
+                SubTypeKeyType.STRING -> "java.lang.String value = typeValueJsonElement.getAsString()"
+                SubTypeKeyType.INTEGER -> "int value = typeValueJsonElement.getAsInt()"
+                SubTypeKeyType.BOOLEAN -> "boolean value = typeValueJsonElement.getAsBoolean()"
+            })
+
+            addStatement("\$T<? extends \$T> delegate = typeAdaptersDelegatedByValueMap.get(value)",
+                    TypeAdapter::class.java, rawTypeName)
+
+            ifBlock("delegate == null") {
+                if (subTypeMetadata.defaultType != null) {
+                    addComment("Use the default type adapter if the type is unknown.")
+                    addStatement("delegate = defaultTypeAdapterDelegate")
+                } else {
+                    if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
+                        addStatement("throw new \$T(\"Failed to find subtype for value: \" + value)",
+                                GsonSubTypeFailureException::class.java)
+                    } else {
+                        addStatement("return null")
+                    }
+                }
+            }
+            addStatement("\$T result = delegate.fromJsonTree(jsonElement)", rawTypeName)
+
+            if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
+                ifBlock("result == null") {
+                    addStatement("throw new \$T(\"Failed to deserailize subtype for object: \" + jsonElement)",
+                            GsonSubTypeFailureException::class.java)
+                }
+            }
+
+            addStatement("return result")
+        }
+    }
+
+    /**
+     * The write method is substantially simpler, as we do not to consume an entire json object.
+     */
+    private fun createWriteMethod(
+            subTypeMetadata: SubTypeMetadata,
+            rawTypeName: TypeName,
+            typeAdapterType: TypeName) = MethodSpecExt.interfaceMethodBuilder("write").applyAndBuild {
+
+        addParameter(JsonWriter::class.java, "out")
+        addParameter(rawTypeName, "value")
+        addException(IOException::class.java)
+        code {
+            ifBlock("value == null") {
+                addStatement("out.nullValue()")
+                addStatement("return")
+            }
+            addStatement("\$T delegate = typeAdaptersDelegatedByClassMap.get(value.getClass())", TypeAdapter::class.java)
+        }
+
+        if (subTypeMetadata.defaultType != null) {
+            code {
+                ifBlock("delegate == null") {
+                    addStatement("delegate = defaultTypeAdapterDelegate")
+                }
+            }
+        }
+
+        addStatement("delegate.write(out, value)", typeAdapterType)
     }
 
     private sealed class TypeAdapterDetails(val typeName: TypeName) {
