@@ -29,7 +29,7 @@ fun CodeBlock.Builder.comment(comment: String): CodeBlock.Builder {
 
 fun CodeBlock.Builder.`return`(format: String? = null, vararg args: Any): CodeBlock.Builder {
     if (format != null) {
-        this.addStatement("return $format", args)
+        this.addStatement("return $format", *args)
     } else {
         this.addStatement("return")
     }
@@ -80,6 +80,15 @@ fun <T> CodeBlock.Builder.`else`(func: CodeBlock.Builder.() -> T): T {
     val result = func(this)
     endControlFlow()
     return result
+}
+
+fun <T> CodeBlock.Builder.elseIf(
+        condition: String,
+        vararg args: Any,
+        func: CodeBlock.Builder.() -> T): T {
+
+    nextControlFlow("else if ($condition)", *args)
+    return func(this)
 }
 
 fun <T> CodeBlock.Builder.`while`(

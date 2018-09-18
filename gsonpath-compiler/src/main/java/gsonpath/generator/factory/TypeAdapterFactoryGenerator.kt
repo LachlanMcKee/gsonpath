@@ -102,12 +102,15 @@ class TypeAdapterFactoryGenerator(
 
                 for ((currentAdapterIndex, result) in packageLocalGsonAdapters.withIndex()) {
                     if (currentAdapterIndex == 0) {
-                        beginControlFlow("if (rawType.equals(\$T.class))", result.originalClassName)
+                        ifWithoutClose("rawType.equals(\$T.class)", result.originalClassName) {
+                            `return`("new \$T(gson)", result.generatedClassName)
+                        }
                     } else {
                         newLine() // New line for easier readability.
-                        nextControlFlow("else if (rawType.equals(\$T.class))", result.originalClassName)
+                        elseIf("rawType.equals(\$T.class)", result.originalClassName) {
+                            `return`("new \$T(gson)", result.generatedClassName)
+                        }
                     }
-                    `return`("new \$T(gson)", result.generatedClassName)
                 }
 
                 endControlFlow()
