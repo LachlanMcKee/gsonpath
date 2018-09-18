@@ -38,7 +38,9 @@ class SubtypeFunctions(
                 .forEach { (subTypeMetadata, gsonField) ->
                     val typeAdapterDetails = getTypeAdapterDetails(typeHandler, gsonField)
 
-                    typeSpecBuilder.addField(typeAdapterDetails.typeName, subTypeMetadata.variableName, Modifier.PRIVATE)
+                    typeSpecBuilder.field(subTypeMetadata.variableName, typeAdapterDetails.typeName) {
+                        addModifiers(Modifier.PRIVATE)
+                    }
 
                     createGetter(typeHandler, typeSpecBuilder, gsonField, subTypeMetadata)
                     createSubTypeAdapter(typeSpecBuilder, gsonField, subTypeMetadata)

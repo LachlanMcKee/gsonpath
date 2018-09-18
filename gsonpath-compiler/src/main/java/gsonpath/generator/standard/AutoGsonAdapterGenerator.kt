@@ -53,7 +53,10 @@ class AutoGsonAdapterGenerator(
         val adapterTypeBuilder = TypeSpecExt.finalClassBuilder(adapterClassName).apply {
             superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), modelClassName))
             addAnnotation(generatedJavaPoetAnnotation)
-            addField(Gson::class.java, "mGson", Modifier.PRIVATE, Modifier.FINAL)
+
+            field("mGson", Gson::class.java) {
+                addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+            }
 
             // Add the constructor which takes a gson instance for future use.
             constructor {
@@ -102,18 +105,17 @@ class AutoGsonAdapterGenerator(
         val mandatoryInfoMap = MandatoryFieldInfoFactory().createMandatoryFieldsFromGsonObject(rootGsonObject)
         if (mandatoryInfoMap.isNotEmpty()) {
             mandatoryInfoMap.values
-                    .mapIndexed { mandatoryIndex, mandatoryField ->
-                        FieldSpec.builder(TypeName.INT, mandatoryField.indexVariableName).applyAndBuild {
+                    .forEachIndexed { mandatoryIndex, mandatoryField ->
+                        adapterTypeBuilder.field(mandatoryField.indexVariableName, TypeName.INT) {
                             addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
                             initializer("" + mandatoryIndex)
                         }
                     }
-                    .forEach { adapterTypeBuilder.addField(it) }
 
-            adapterTypeBuilder.addField(FieldSpec.builder(TypeName.INT, "MANDATORY_FIELDS_SIZE").applyAndBuild {
+            adapterTypeBuilder.field("MANDATORY_FIELDS_SIZE", TypeName.INT) {
                 addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
                 initializer("" + mandatoryInfoMap.size)
-            })
+            }
         }
 
         val readParams = ReadParams(

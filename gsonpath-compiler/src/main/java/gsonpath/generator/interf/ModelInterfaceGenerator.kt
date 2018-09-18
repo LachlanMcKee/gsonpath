@@ -101,7 +101,9 @@ class ModelInterfaceGenerator(
                         }
                     }
 
-            typeBuilder.addField(typeName, fieldName, Modifier.PRIVATE, Modifier.FINAL)
+            typeBuilder.field(fieldName, typeName) {
+                addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+            }
 
             // Accessor method
             typeBuilder.overrideMethod(methodName) {
