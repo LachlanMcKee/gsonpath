@@ -32,7 +32,7 @@ class ReadFunctions {
             code {
                 comment("Ensure the object is not null.")
                 `if`("!isValidValue(in)") {
-                    addStatement("return null")
+                    `return`("null")
                 }
 
                 addInitialisationBlock(params)
@@ -41,7 +41,7 @@ class ReadFunctions {
 
                 if (!params.requiresConstructorInjection) {
                     // If the class was already defined, return it now.
-                    addStatement("return result")
+                    `return`("result")
 
                 } else {
                     // Create the class using the constructor.

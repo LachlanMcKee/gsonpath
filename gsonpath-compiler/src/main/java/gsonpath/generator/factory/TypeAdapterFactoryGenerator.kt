@@ -72,10 +72,10 @@ class TypeAdapterFactoryGenerator(
                         newLine()
 
                         `if`("typeAdapter != null") {
-                            addStatement("return typeAdapter")
+                            `return`("typeAdapter")
                         }
                     }
-                    addStatement("return null")
+                    `return`("null")
                 }
             }
         }
@@ -107,12 +107,12 @@ class TypeAdapterFactoryGenerator(
                         newLine() // New line for easier readability.
                         nextControlFlow("else if (rawType.equals(\$T.class))", result.originalClassName)
                     }
-                    addStatement("return new \$T(gson)", result.generatedClassName)
+                    `return`("new \$T(gson)", result.generatedClassName)
                 }
 
                 endControlFlow()
                 newLine()
-                addStatement("return null")
+                `return`("null")
             }
         }
 

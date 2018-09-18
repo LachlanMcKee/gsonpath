@@ -27,9 +27,8 @@ class WriteFunctions {
                 // Initial block which prevents nulls being accessed.
                 `if`("value == null") {
                     addStatement("out.nullValue()")
-                    addStatement("return")
+                    `return`()
                 }
-
                 newLine()
                 comment("Begin")
                 writeGsonFieldWriter(rootElements, "", serializeNulls, 0)

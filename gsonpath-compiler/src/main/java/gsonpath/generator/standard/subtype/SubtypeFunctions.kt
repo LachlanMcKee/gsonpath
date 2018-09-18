@@ -74,7 +74,7 @@ class SubtypeFunctions(
                                 typeAdapterDetails.typeName)
                     }
                 }
-                addStatement("return $variableName")
+                `return`(variableName)
             }
         }
     }
@@ -211,7 +211,7 @@ class SubtypeFunctions(
                         addStatement("throw new \$T(\"Failed to find subtype for value: \" + value)",
                                 GsonSubTypeFailureException::class.java)
                     } else {
-                        addStatement("return null")
+                        `return`("null")
                     }
                 }
             }
@@ -224,7 +224,7 @@ class SubtypeFunctions(
                 }
             }
 
-            addStatement("return result")
+            `return`("result")
         }
     }
 
@@ -242,7 +242,7 @@ class SubtypeFunctions(
         code {
             `if`("value == null") {
                 addStatement("out.nullValue()")
-                addStatement("return")
+                `return`()
             }
             addStatement("\$T delegate = typeAdaptersDelegatedByClassMap.get(value.getClass())", TypeAdapter::class.java)
         }

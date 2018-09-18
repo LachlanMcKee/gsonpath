@@ -106,7 +106,9 @@ class ModelInterfaceGenerator(
             // Accessor method
             typeBuilder.overrideMethod(methodName) {
                 returns(typeName)
-                addStatement("return $fieldName")
+                code {
+                    `return`(fieldName)
+                }
 
                 // Copy all annotations from the interface accessor method to the implementing classes accessor.
                 val annotationMirrors = enclosedElement.annotationMirrors
@@ -183,15 +185,15 @@ class ModelInterfaceGenerator(
             returns(TypeName.BOOLEAN)
             addParameter(TypeName.OBJECT, "o")
             addCode(equalsCodeBlock.newLine()
-                    .addStatement("return true")
+                    .`return`("true")
                     .build())
         }
 
         // If we have no elements, 'hashCodeReturnValue' won't be initialised!
         if (methodElements.isNotEmpty()) {
-            hasCodeCodeBlock.addStatement("return hashCodeReturnValue")
+            hasCodeCodeBlock.`return`("hashCodeReturnValue")
         } else {
-            hasCodeCodeBlock.addStatement("return 0")
+            hasCodeCodeBlock.`return`("0")
         }
 
         // Add the hashCode method

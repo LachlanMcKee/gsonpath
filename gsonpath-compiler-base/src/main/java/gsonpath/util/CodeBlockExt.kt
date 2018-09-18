@@ -27,6 +27,15 @@ fun CodeBlock.Builder.comment(comment: String): CodeBlock.Builder {
     return this
 }
 
+fun CodeBlock.Builder.`return`(format: String? = null, vararg args: Any): CodeBlock.Builder {
+    if (format != null) {
+        this.addStatement("return $format", args)
+    } else {
+        this.addStatement("return")
+    }
+    return this
+}
+
 fun CodeBlock.Builder.addEscaped(format: String): CodeBlock.Builder {
     this.add(format.replace("$", "$$"))
     return this
