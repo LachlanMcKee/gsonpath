@@ -6,6 +6,7 @@ import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.TypeSpec
 import gsonpath.generator.HandleResult
 import gsonpath.generator.writeFile
 import gsonpath.util.*
@@ -39,61 +40,72 @@ class TypeAdapterFactoryGenerator(
 
         val factoryClassName = ClassName.get(factoryElement)
 
-        val typeBuilder = TypeSpecExt.finalClassBuilder(factoryClassName.simpleName() + "Impl").apply {
-            addSuperinterface(factoryClassName)
+        return TypeSpecExt.finalClassBuilder(factoryClassName.simpleName() + "Impl")
+                .addSuperinterface(factoryClassName)
+                .gsonTypeFactoryImplContent(packageLocalHandleResults)
+                .writeFile(fileWriter, logger, factoryClassName.packageName())
+    }
 
-            field("mPackagePrivateLoaders", ArrayTypeName.of(TypeAdapterFactory::class.java)) {
-                addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-            }
+    private fun TypeSpec.Builder.gsonTypeFactoryImplContent(
+            packageLocalHandleResults: Map<String, List<HandleResult>>): TypeSpec.Builder {
 
-            constructor {
-                addModifiers(Modifier.PUBLIC)
-                code {
-                    assignNew("mPackagePrivateLoaders", "\$T[${packageLocalHandleResults.size}]", TypeAdapterFactory::class.java)
+        field("mPackagePrivateLoaders", ArrayTypeName.of(TypeAdapterFactory::class.java)) {
+            addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+        }
 
-                    // Add the package local type adapter loaders to the hash map.
-                    for ((index, packageName) in packageLocalHandleResults.keys.withIndex()) {
-                        assignNew("mPackagePrivateLoaders[$index]", "$packageName.$PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME()")
-                    }
-                }
-            }
+        constructor {
+            addModifiers(Modifier.PUBLIC)
+            code {
+                assignNew("mPackagePrivateLoaders", "\$T[${packageLocalHandleResults.size}]", TypeAdapterFactory::class.java)
 
-            //
-            // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
-            //
-            overrideMethod("create") {
-                returns(TypeAdapter::class.java)
-                addParameter(Gson::class.java, "gson")
-                addParameter(TypeToken::class.java, "type")
-
-                code {
-                    `for`("int i = 0; i < mPackagePrivateLoaders.length; i++") {
-                        addStatement("TypeAdapter typeAdapter = mPackagePrivateLoaders[i].create(gson, type)")
-                        newLine()
-
-                        `if`("typeAdapter != null") {
-                            `return`("typeAdapter")
-                        }
-                    }
-                    `return`("null")
+                // Add the package local type adapter loaders to the hash map.
+                for ((index, packageName) in packageLocalHandleResults.keys.withIndex()) {
+                    assignNew("mPackagePrivateLoaders[$index]", "$packageName.$PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME()")
                 }
             }
         }
 
-        return typeBuilder.writeFile(fileWriter, logger, factoryClassName.packageName())
+        //
+        // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
+        //
+        overrideMethod("create") {
+            returns(TypeAdapter::class.java)
+            addParameter(Gson::class.java, "gson")
+            addParameter(TypeToken::class.java, "type")
+
+            code {
+                `for`("int i = 0; i < mPackagePrivateLoaders.length; i++") {
+                    addStatement("TypeAdapter typeAdapter = mPackagePrivateLoaders[i].create(gson, type)")
+                    newLine()
+
+                    `if`("typeAdapter != null") {
+                        `return`("typeAdapter")
+                    }
+                }
+                `return`("null")
+            }
+        }
+
+        return this
     }
 
     private fun createPackageLocalTypeAdapterLoaders(
             packageName: String,
             packageLocalGsonAdapters: List<HandleResult>): Boolean {
 
-        val typeBuilder = TypeSpecExt.finalClassBuilder(ClassName.get(packageName, PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME))
+        return TypeSpecExt.finalClassBuilder(ClassName.get(packageName, PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME))
                 .addSuperinterface(TypeAdapterFactory::class.java)
+                .packagePrivateTypeAdapterLoaderContent(packageLocalGsonAdapters)
+                .writeFile(fileWriter, logger, packageName)
+    }
 
-        //
-        // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
-        //
-        typeBuilder.overrideMethod("create") {
+    //
+    // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
+    //
+    private fun TypeSpec.Builder.packagePrivateTypeAdapterLoaderContent(
+            packageLocalGsonAdapters: List<HandleResult>): TypeSpec.Builder {
+
+        overrideMethod("create") {
             returns(TypeAdapter::class.java)
             addParameter(Gson::class.java, "gson")
             addParameter(TypeToken::class.java, "type")
@@ -118,8 +130,7 @@ class TypeAdapterFactoryGenerator(
                 `return`("null")
             }
         }
-
-        return typeBuilder.writeFile(fileWriter, logger, packageName)
+        return this
     }
 
     private companion object {
