@@ -131,7 +131,7 @@ class AutoGsonAdapterGenerator(
 
         } else {
             // Create an empty method for the write, since we do not support writing for interfaces.
-            adapterTypeBuilder.interfaceMethod("write") {
+            adapterTypeBuilder.overrideMethod("write") {
                 addParameter(JsonWriter::class.java, "out")
                 addParameter(modelClassName, "value")
                 addException(IOException::class.java)

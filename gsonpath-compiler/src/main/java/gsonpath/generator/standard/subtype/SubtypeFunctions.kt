@@ -177,7 +177,7 @@ class SubtypeFunctions(
      */
     private fun TypeSpec.Builder.addReadMethod(
             subTypeMetadata: SubTypeMetadata,
-            rawTypeName: TypeName) = interfaceMethod("read") {
+            rawTypeName: TypeName) = overrideMethod("read") {
 
         returns(rawTypeName)
         addParameter(JsonReader::class.java, "in")
@@ -234,7 +234,7 @@ class SubtypeFunctions(
     private fun TypeSpec.Builder.addWriteMethod(
             subTypeMetadata: SubTypeMetadata,
             rawTypeName: TypeName,
-            typeAdapterType: TypeName) = interfaceMethod("write") {
+            typeAdapterType: TypeName) = overrideMethod("write") {
 
         addParameter(JsonWriter::class.java, "out")
         addParameter(rawTypeName, "value")

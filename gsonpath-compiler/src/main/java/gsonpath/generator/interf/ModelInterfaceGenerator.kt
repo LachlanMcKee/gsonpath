@@ -104,7 +104,7 @@ class ModelInterfaceGenerator(
             typeBuilder.addField(typeName, fieldName, Modifier.PRIVATE, Modifier.FINAL)
 
             // Accessor method
-            typeBuilder.interfaceMethod(methodName) {
+            typeBuilder.overrideMethod(methodName) {
                 returns(typeName)
                 addStatement("return $fieldName")
 
@@ -179,7 +179,7 @@ class ModelInterfaceGenerator(
         typeBuilder.addMethod(constructorBuilder.build())
 
         // Add the equals method
-        typeBuilder.interfaceMethod("equals") {
+        typeBuilder.overrideMethod("equals") {
             returns(TypeName.BOOLEAN)
             addParameter(TypeName.OBJECT, "o")
             addCode(equalsCodeBlock.newLine()
@@ -195,13 +195,13 @@ class ModelInterfaceGenerator(
         }
 
         // Add the hashCode method
-        typeBuilder.interfaceMethod("hashCode") {
+        typeBuilder.overrideMethod("hashCode") {
             returns(TypeName.INT)
             addCode(hasCodeCodeBlock.build())
         }
 
         // Add the toString method
-        typeBuilder.interfaceMethod("toString") {
+        typeBuilder.overrideMethod("toString") {
             returns(TypeName.get(String::class.java))
             addCode(toStringCodeBlock.build())
             addStatement("\t\t'}'", modelClassName.simpleName())

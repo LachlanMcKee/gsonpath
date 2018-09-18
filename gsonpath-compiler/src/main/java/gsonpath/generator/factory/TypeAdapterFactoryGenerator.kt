@@ -6,7 +6,6 @@ import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.FieldSpec
 import gsonpath.generator.HandleResult
 import gsonpath.generator.writeFile
 import gsonpath.util.*
@@ -40,43 +39,44 @@ class TypeAdapterFactoryGenerator(
 
         val factoryClassName = ClassName.get(factoryElement)
 
-        val typeBuilder = TypeSpecExt.finalClassBuilder(factoryClassName.simpleName() + "Impl")
-                .addSuperinterface(factoryClassName)
+        val typeBuilder = TypeSpecExt.finalClassBuilder(factoryClassName.simpleName() + "Impl").apply {
+            addSuperinterface(factoryClassName)
 
-        typeBuilder.addField(FieldSpec.builder(ArrayTypeName.of(TypeAdapterFactory::class.java), "mPackagePrivateLoaders")
-                .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-                .build())
-
-        typeBuilder.constructor {
-            addModifiers(Modifier.PUBLIC)
-            code {
-                addStatement("mPackagePrivateLoaders = new \$T[${packageLocalHandleResults.size}]", TypeAdapterFactory::class.java)
-
-                // Add the package local type adapter loaders to the hash map.
-                for ((index, packageName) in packageLocalHandleResults.keys.withIndex()) {
-                    addStatement("mPackagePrivateLoaders[$index] = new $packageName.$PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME()")
-                }
+            field("mPackagePrivateLoaders", ArrayTypeName.of(TypeAdapterFactory::class.java)) {
+                addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             }
-        }
 
-        //
-        // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
-        //
-        typeBuilder.interfaceMethod("create") {
-            returns(TypeAdapter::class.java)
-            addParameter(Gson::class.java, "gson")
-            addParameter(TypeToken::class.java, "type")
+            constructor {
+                addModifiers(Modifier.PUBLIC)
+                code {
+                    addStatement("mPackagePrivateLoaders = new \$T[${packageLocalHandleResults.size}]", TypeAdapterFactory::class.java)
 
-            code {
-                `for`("int i = 0; i < mPackagePrivateLoaders.length; i++") {
-                    addStatement("TypeAdapter typeAdapter = mPackagePrivateLoaders[i].create(gson, type)")
-                    newLine()
-
-                    `if`("typeAdapter != null") {
-                        addStatement("return typeAdapter")
+                    // Add the package local type adapter loaders to the hash map.
+                    for ((index, packageName) in packageLocalHandleResults.keys.withIndex()) {
+                        addStatement("mPackagePrivateLoaders[$index] = new $packageName.$PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME()")
                     }
                 }
-                addStatement("return null")
+            }
+
+            //
+            // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
+            //
+            overrideMethod("create") {
+                returns(TypeAdapter::class.java)
+                addParameter(Gson::class.java, "gson")
+                addParameter(TypeToken::class.java, "type")
+
+                code {
+                    `for`("int i = 0; i < mPackagePrivateLoaders.length; i++") {
+                        addStatement("TypeAdapter typeAdapter = mPackagePrivateLoaders[i].create(gson, type)")
+                        newLine()
+
+                        `if`("typeAdapter != null") {
+                            addStatement("return typeAdapter")
+                        }
+                    }
+                    addStatement("return null")
+                }
             }
         }
 
@@ -93,7 +93,7 @@ class TypeAdapterFactoryGenerator(
         //
         // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
         //
-        typeBuilder.interfaceMethod("create") {
+        typeBuilder.overrideMethod("create") {
             returns(TypeAdapter::class.java)
             addParameter(Gson::class.java, "gson")
             addParameter(TypeToken::class.java, "type")

@@ -25,7 +25,7 @@ class ReadFunctions {
      */
     @Throws(ProcessingException::class)
     fun createReadMethod(params: ReadParams, extensionsHandler: ExtensionsHandler): MethodSpec {
-        return MethodSpecExt.interfaceMethodBuilder("read").applyAndBuild {
+        return MethodSpecExt.overrideMethodBuilder("read").applyAndBuild {
             returns(params.baseElement)
             addParameter(JsonReader::class.java, "in")
             addException(IOException::class.java)

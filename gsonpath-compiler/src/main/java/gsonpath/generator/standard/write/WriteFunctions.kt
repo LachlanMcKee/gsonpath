@@ -19,7 +19,7 @@ class WriteFunctions {
             rootElements: GsonObject,
             serializeNulls: Boolean): MethodSpec {
 
-        return MethodSpecExt.interfaceMethodBuilder("write").applyAndBuild {
+        return MethodSpecExt.overrideMethodBuilder("write").applyAndBuild {
             addParameter(JsonWriter::class.java, "out")
             addParameter(elementClassName, "value")
             addException(IOException::class.java)

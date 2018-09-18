@@ -27,8 +27,8 @@ fun TypeSpec.Builder.method(name: String, func: MethodSpec.Builder.() -> Unit) {
     addMethod(MethodSpec.methodBuilder(name).applyAndBuild(func))
 }
 
-fun TypeSpec.Builder.interfaceMethod(name: String, func: MethodSpec.Builder.() -> Unit) {
-    addMethod(MethodSpecExt.interfaceMethodBuilder(name).applyAndBuild(func))
+fun TypeSpec.Builder.overrideMethod(name: String, func: MethodSpec.Builder.() -> Unit) {
+    addMethod(MethodSpecExt.overrideMethodBuilder(name).applyAndBuild(func))
 }
 
 fun TypeSpec.Builder.constructor(func: MethodSpec.Builder.() -> Unit) {
