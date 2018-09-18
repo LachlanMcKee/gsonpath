@@ -49,11 +49,11 @@ class TypeAdapterFactoryGenerator(
             constructor {
                 addModifiers(Modifier.PUBLIC)
                 code {
-                    addStatement("mPackagePrivateLoaders = new \$T[${packageLocalHandleResults.size}]", TypeAdapterFactory::class.java)
+                    assignNew("mPackagePrivateLoaders", "\$T[${packageLocalHandleResults.size}]", TypeAdapterFactory::class.java)
 
                     // Add the package local type adapter loaders to the hash map.
                     for ((index, packageName) in packageLocalHandleResults.keys.withIndex()) {
-                        addStatement("mPackagePrivateLoaders[$index] = new $packageName.$PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME()")
+                        assignNew("mPackagePrivateLoaders[$index]", "$packageName.$PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME()")
                     }
                 }
             }

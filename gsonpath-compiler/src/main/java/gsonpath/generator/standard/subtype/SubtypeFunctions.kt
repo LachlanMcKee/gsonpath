@@ -69,10 +69,10 @@ class SubtypeFunctions(
                     val filterNulls = (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.REMOVE_ELEMENT)
 
                     if (typeAdapterDetails === TypeAdapterDetails.ArrayTypeAdapter) {
-                        addStatement("$variableName = new \$T<>(new ${subTypeMetadata.className}(mGson), \$T.class, $filterNulls)",
+                        assignNew(variableName, "\$T<>(new ${subTypeMetadata.className}(mGson), \$T.class, $filterNulls)",
                                 typeAdapterDetails.typeName, getRawTypeName(gsonField))
                     } else {
-                        addStatement("$variableName = new \$T(new ${subTypeMetadata.className}(mGson), $filterNulls)",
+                        assignNew(variableName, "\$T(new ${subTypeMetadata.className}(mGson), $filterNulls)",
                                 typeAdapterDetails.typeName)
                     }
                 }
@@ -151,21 +151,23 @@ class SubtypeFunctions(
         addModifiers(Modifier.PRIVATE)
         addParameter(Gson::class.java, "gson")
 
-        addStatement("typeAdaptersDelegatedByValueMap = new java.util.HashMap<>()")
-        addStatement("typeAdaptersDelegatedByClassMap = new java.util.HashMap<>()")
+        code {
+            assignNew("typeAdaptersDelegatedByValueMap", "java.util.HashMap<>()")
+            assignNew("typeAdaptersDelegatedByClassMap", "java.util.HashMap<>()")
 
-        // Instantiate each subtype delegated adapter
-        subTypeMetadata.gsonSubTypeKeys.forEach {
-            val subtypeElement = typeHandler.asElement(it.clazzTypeMirror)
+            // Instantiate each subtype delegated adapter
+            subTypeMetadata.gsonSubTypeKeys.forEach {
+                val subtypeElement = typeHandler.asElement(it.clazzTypeMirror)
 
-            addCode("\n")
-            addStatement("typeAdaptersDelegatedByValueMap.put(${it.key}, gson.getAdapter(\$T.class))", subtypeElement)
-            addStatement("typeAdaptersDelegatedByClassMap.put(\$T.class, gson.getAdapter(\$T.class))",
-                    subtypeElement, subtypeElement)
-        }
+                newLine()
+                addStatement("typeAdaptersDelegatedByValueMap.put(${it.key}, gson.getAdapter(\$T.class))", subtypeElement)
+                addStatement("typeAdaptersDelegatedByClassMap.put(\$T.class, gson.getAdapter(\$T.class))",
+                        subtypeElement, subtypeElement)
+            }
 
-        if (subTypeMetadata.defaultType != null) {
-            addStatement("defaultTypeAdapterDelegate = gson.getAdapter(\$T.class)", subTypeMetadata.defaultType)
+            if (subTypeMetadata.defaultType != null) {
+                addStatement("defaultTypeAdapterDelegate = gson.getAdapter(\$T.class)", subTypeMetadata.defaultType)
+            }
         }
     }
 

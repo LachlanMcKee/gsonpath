@@ -54,6 +54,11 @@ fun CodeBlock.Builder.addEscapedStatement(format: String): CodeBlock.Builder {
     return this
 }
 
+fun CodeBlock.Builder.assignNew(name: String, assignment: String, vararg args: Any): CodeBlock.Builder {
+    addStatement("$name = new $assignment", *args)
+    return this
+}
+
 fun <T> CodeBlock.Builder.autoControlFlow(controlFlow: String, vararg args: Any, func: CodeBlock.Builder.() -> T): T {
     beginControlFlow(controlFlow, *args)
     val result = func(this)
