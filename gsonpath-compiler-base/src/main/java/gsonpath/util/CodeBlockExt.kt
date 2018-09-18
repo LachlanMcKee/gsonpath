@@ -54,6 +54,11 @@ fun CodeBlock.Builder.addEscapedStatement(format: String): CodeBlock.Builder {
     return this
 }
 
+fun CodeBlock.Builder.createVariable(type: String, name: String, assignment: String, vararg args: Any): CodeBlock.Builder {
+    addStatement("$type $name = new $assignment", *args)
+    return this
+}
+
 fun CodeBlock.Builder.assignNew(name: String, assignment: String, vararg args: Any): CodeBlock.Builder {
     addStatement("$name = new $assignment", *args)
     return this

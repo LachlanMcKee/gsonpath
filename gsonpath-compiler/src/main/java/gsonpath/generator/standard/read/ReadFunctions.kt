@@ -53,7 +53,7 @@ class ReadFunctions {
 
     private fun CodeBlock.Builder.addInitialisationBlock(params: ReadParams) {
         if (!params.requiresConstructorInjection) {
-            addStatement("\$T result = new \$T()", params.concreteElement, params.concreteElement)
+            createVariable("\$T", "result", "\$T()", params.concreteElement, params.concreteElement)
 
         } else {
             for (gsonField in params.flattenedFields) {
@@ -67,7 +67,7 @@ class ReadFunctions {
 
         // If we have any mandatory fields, we need to keep track of what has been assigned.
         if (params.mandatoryInfoMap.isNotEmpty()) {
-            addStatement("boolean[] mandatoryFieldsCheckList = new boolean[MANDATORY_FIELDS_SIZE]")
+            createVariable("boolean[]", "mandatoryFieldsCheckList", "boolean[MANDATORY_FIELDS_SIZE]")
         }
 
         newLine()
