@@ -8,7 +8,6 @@ import gsonpath.model.FieldInfoFactory
 import gsonpath.model.FieldInfoFactory.InterfaceFieldInfo
 import gsonpath.model.FieldInfoFactory.InterfaceInfo
 import gsonpath.util.*
-import java.util.*
 import javax.annotation.Generated
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
@@ -24,57 +23,217 @@ class ModelInterfaceGenerator(
 
     @Throws(ProcessingException::class)
     fun handle(element: TypeElement): InterfaceInfo {
-        val modelClassName = ClassName.get(element)
-        val outputClassName: ClassName = createOutputClassName(modelClassName)
+        return createOutputClassName(element).let { outputClassName ->
+            TypeSpecExt.finalClassBuilder(outputClassName)
+                    .addDetails(element, outputClassName)
+        }
+    }
 
-        val generatedJavaPoetAnnotation = AnnotationSpec.builder(Generated::class.java)
-                .addMember("value", "\"gsonpath.GsonProcessor\"")
-                .addMember("comments", "\"https://github.com/LachlanMcKee/gsonpath\"")
-                .build()
+    private fun TypeSpec.Builder.addDetails(element: TypeElement, outputClassName: ClassName): InterfaceInfo {
+        addSuperinterface(ClassName.get(element))
+        addAnnotation(AnnotationSpec.builder(Generated::class.java).run {
+            addMember("value", "\"gsonpath.GsonProcessor\"")
+            addMember("comments", "\"https://github.com/LachlanMcKee/gsonpath\"")
+            build()
+        })
 
-        val typeBuilder = TypeSpecExt.finalClassBuilder(outputClassName)
-                .addSuperinterface(modelClassName)
-                .addAnnotation(generatedJavaPoetAnnotation)
+        val modelElementDetails = createModelElementDetails(element, getMethodElements(element))
 
-        val constructorBuilder = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
+        addFields(modelElementDetails)
+        addConstructor(modelElementDetails)
+        addGetters(modelElementDetails)
+        addEqualsMethod(outputClassName, modelElementDetails)
+        addHashCodeMethod(modelElementDetails)
+        addToStringMethod(element, modelElementDetails)
 
-        val methodElements = getMethodElements(element)
-
-        // Equals method
-        val equalsCodeBlock = CodeBlock.builder()
-                .`if`("this == o") {
-                    `return`("true")
-                }
-                .`if`("o == null || getClass() != o.getClass()") {
-                    `return`("false")
-                }
-                .newLine()
-                .createVariable("\$T", "equalsOtherType", "(\$T) o", outputClassName, outputClassName)
-                .newLine()
-
-        // Hash code method
-        val hasCodeCodeBlock = CodeBlock.builder()
-
-        // ToString method
-        val toStringCodeBlock = CodeBlock.builder()
-                .add("""return "${modelClassName.simpleName()}{" +""")
-                .newLine()
-
-        // An optimisation for hash codes which prevents us creating too many temp long variables.
-        val hasDoubleField = methodElements
-                .map { it.asType() as ExecutableType }
-                .map { it.returnType }
-                .any { TypeName.get(it) == TypeName.DOUBLE }
-
-        if (hasDoubleField) {
-            hasCodeCodeBlock.addStatement("long temp")
+        if (!writeFile(fileWriter, logger, outputClassName.packageName())) {
+            throw ProcessingException("Failed to write generated file: " + outputClassName.simpleName())
         }
 
-        val interfaceInfoList = ArrayList<InterfaceFieldInfo>()
-        for (elementIndex in methodElements.indices) {
-            val enclosedElement = methodElements[elementIndex]
+        return InterfaceInfo(outputClassName, modelElementDetails.map {
+            InterfaceFieldInfo(StandardElementInfo(it.enclosedElement),
+                    it.typeName, it.returnTypeMirror, it.fieldName, it.methodName)
+        })
+    }
 
+    private fun TypeSpec.Builder.addFields(modelElementDetails: List<ModelElementDetails>) {
+        modelElementDetails.forEach {
+            field(it.fieldName, it.typeName) {
+                addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+            }
+        }
+    }
+
+    private fun TypeSpec.Builder.addConstructor(modelElementDetails: List<ModelElementDetails>) = constructor {
+        addModifiers(Modifier.PUBLIC)
+
+        modelElementDetails.forEach { (typeName, fieldName) ->
+            addParameter(typeName, fieldName)
+        }
+        code {
+            modelElementDetails.forEach { (_, fieldName) ->
+                assign("this.$fieldName", fieldName)
+            }
+        }
+    }
+
+    private fun TypeSpec.Builder.addGetters(modelElementDetails: List<ModelElementDetails>) {
+        modelElementDetails.forEach {
+            overrideMethod(it.methodName) {
+                returns(it.typeName)
+
+                // Copy all annotations from the interface accessor method to the implementing classes accessor.
+                val annotationMirrors = it.enclosedElement.annotationMirrors
+                for (annotationMirror in annotationMirrors) {
+                    addAnnotation(AnnotationSpec.get(annotationMirror))
+                }
+
+                code {
+                    `return`(it.fieldName)
+                }
+            }
+        }
+    }
+
+    private fun TypeSpec.Builder.addEqualsMethod(outputClassName: ClassName, modelElementDetails: List<ModelElementDetails>) = overrideMethod("equals") {
+        returns(TypeName.BOOLEAN)
+        addParameter(TypeName.OBJECT, "o")
+
+        code {
+            `if`("this == o") {
+                `return`("true")
+            }
+            `if`("o == null || getClass() != o.getClass()") {
+                `return`("false")
+            }
+            newLine()
+            createVariable("\$T", "equalsOtherType", "(\$T) o", outputClassName, outputClassName)
+            newLine()
+
+            modelElementDetails.forEach { (typeName, fieldName) ->
+                if (typeName.isPrimitive) {
+                    `if`("$fieldName != equalsOtherType.$fieldName") {
+                        `return`("false")
+                    }
+                } else {
+                    if (typeName is ArrayTypeName) {
+                        `if`("!java.util.Arrays.equals($fieldName, equalsOtherType.$fieldName)") {
+                            `return`("false")
+                        }
+
+                    } else {
+                        `if`("$fieldName != null ? !$fieldName.equals(equalsOtherType.$fieldName) : equalsOtherType.$fieldName != null") {
+                            `return`("false")
+                        }
+                    }
+                }
+            }
+
+            newLine()
+            `return`("true")
+        }
+    }
+
+    private fun TypeSpec.Builder.addHashCodeMethod(modelElementDetails: List<ModelElementDetails>) = overrideMethod("hashCode") {
+        returns(TypeName.INT)
+
+        code {
+            // An optimisation for hash codes which prevents us creating too many temp long variables.
+            if (modelElementDetails.any { it.typeName == TypeName.DOUBLE }) {
+                addStatement("long temp")
+            }
+
+            modelElementDetails.forEachIndexed { index, (typeName, fieldName) ->
+                val hashCodeLine: String = if (typeName.isPrimitive) {
+                    // The allowed primitive types are: int, long, double, boolean
+                    when (typeName) {
+                        TypeName.INT -> fieldName
+                        TypeName.LONG -> "(int) ($fieldName ^ ($fieldName >>> 32))"
+                        TypeName.DOUBLE -> {
+                            assign("temp", "java.lang.Double.doubleToLongBits($fieldName)")
+                            "(int) (temp ^ (temp >>> 32))"
+
+                        }
+                        else -> // Last possible outcome in a boolean.
+                            "($fieldName ? 1 : 0)"
+                    }
+                } else {
+                    if (typeName is ArrayTypeName) {
+                        "java.util.Arrays.hashCode($fieldName)"
+
+                    } else {
+                        "$fieldName != null ? $fieldName.hashCode() : 0"
+                    }
+                }
+
+                if (index == 0) {
+                    createVariable("int", "hashCodeReturnValue", hashCodeLine)
+                } else {
+                    assign("hashCodeReturnValue", "31 * hashCodeReturnValue + ($hashCodeLine)")
+                }
+            }
+
+            // If we have no elements, 'hashCodeReturnValue' won't be initialised!
+            if (modelElementDetails.isNotEmpty()) {
+                `return`("hashCodeReturnValue")
+            } else {
+                `return`("0")
+            }
+        }
+    }
+
+    private fun TypeSpec.Builder.addToStringMethod(element: TypeElement, modelElementDetails: List<ModelElementDetails>) = overrideMethod("toString") {
+        returns(TypeName.get(String::class.java))
+
+        code {
+            add("""return "${ClassName.get(element).simpleName()}{" +""")
+            newLine()
+
+            modelElementDetails.forEachIndexed { index, (typeName, fieldName) ->
+                // Add to the toString method.
+                add("\t\t\"")
+                if (index > 0) {
+                    add(", ")
+                }
+                if (typeName is ArrayTypeName) {
+                    add("""$fieldName=" + java.util.Arrays.toString($fieldName) +""")
+
+                } else {
+                    add("""$fieldName=" + $fieldName +""")
+                }
+                newLine()
+            }
+
+            addStatement("\t\t'}'")
+        }
+    }
+
+    private fun createOutputClassName(element: TypeElement): ClassName {
+        return ClassName.get(element).let {
+            ClassName.get(it.packageName(), generateClassName(it, "GsonPathModel"))
+        }
+    }
+
+    private fun getMethodElements(element: TypeElement): List<Element> {
+        return typeHandler.getAllMembers(element)
+                .asSequence()
+                .filter {
+                    // Ignore methods from the base Object class
+                    TypeName.get(it.enclosingElement.asType()) != TypeName.OBJECT
+                }
+                .filter {
+                    it.kind == ElementKind.METHOD
+                }
+                .filter {
+                    // Ignore Java 8 default/static interface methods.
+                    !it.modifiers.contains(Modifier.DEFAULT) &&
+                            !it.modifiers.contains(Modifier.STATIC)
+                }
+                .toList()
+    }
+
+    private fun createModelElementDetails(element: TypeElement, methodElements: List<Element>): List<ModelElementDetails> {
+        return methodElements.map { enclosedElement ->
             val methodType = enclosedElement.asType() as ExecutableType
 
             // Ensure that any generics have been converted into their actual return types.
@@ -105,148 +264,16 @@ class ModelInterfaceGenerator(
                         }
                     }
 
-            typeBuilder.field(fieldName, typeName) {
-                addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-            }
-
-            // Accessor method
-            typeBuilder.overrideMethod(methodName) {
-                returns(typeName)
-                code {
-                    `return`(fieldName)
-                }
-
-                // Copy all annotations from the interface accessor method to the implementing classes accessor.
-                val annotationMirrors = enclosedElement.annotationMirrors
-                for (annotationMirror in annotationMirrors) {
-                    addAnnotation(AnnotationSpec.get(annotationMirror))
-                }
-            }
-
-            // Add the parameter to the constructor
-            constructorBuilder.addParameter(typeName, fieldName)
-                    .code { assign("this.$fieldName", fieldName) }
-
-            interfaceInfoList.add(InterfaceFieldInfo(StandardElementInfo(enclosedElement), typeName, returnTypeMirror, fieldName, methodName))
-
-            // Add to the equals method
-            if (typeName.isPrimitive) {
-                equalsCodeBlock.`if`("$fieldName != equalsOtherType.$fieldName") {
-                    `return`("false")
-                }
-            } else {
-                if (typeName is ArrayTypeName) {
-                    equalsCodeBlock.`if`("!java.util.Arrays.equals($fieldName, equalsOtherType.$fieldName)") {
-                        `return`("false")
-                    }
-
-                } else {
-                    equalsCodeBlock.`if`("$fieldName != null ? !$fieldName.equals(equalsOtherType.$fieldName) : equalsOtherType.$fieldName != null") {
-                        `return`("false")
-                    }
-                }
-            }
-
-            // Add to the hash code method
-            val hashCodeLine: String = if (typeName.isPrimitive) {
-                // The allowed primitive types are: int, long, double, boolean
-                when (typeName) {
-                    TypeName.INT -> fieldName
-                    TypeName.LONG -> "(int) ($fieldName ^ ($fieldName >>> 32))"
-                    TypeName.DOUBLE -> {
-                        hasCodeCodeBlock.assign("temp", "java.lang.Double.doubleToLongBits($fieldName)")
-                        "(int) (temp ^ (temp >>> 32))"
-
-                    }
-                    else -> // Last possible outcome in a boolean.
-                        "($fieldName ? 1 : 0)"
-                }
-            } else {
-                if (typeName is ArrayTypeName) {
-                    "java.util.Arrays.hashCode($fieldName)"
-
-                } else {
-                    "$fieldName != null ? $fieldName.hashCode() : 0"
-                }
-            }
-
-            if (elementIndex == 0) {
-                hasCodeCodeBlock.createVariable("int", "hashCodeReturnValue", hashCodeLine)
-            } else {
-                hasCodeCodeBlock.assign("hashCodeReturnValue", "31 * hashCodeReturnValue + ($hashCodeLine)")
-            }
-
-            // Add to the toString method.
-            toStringCodeBlock.add("\t\t\"")
-            if (elementIndex > 0) {
-                toStringCodeBlock.add(", ")
-            }
-            if (typeName is ArrayTypeName) {
-                toStringCodeBlock.add("""$fieldName=" + java.util.Arrays.toString($fieldName) +""")
-
-            } else {
-                toStringCodeBlock.add("""$fieldName=" + $fieldName +""")
-            }
-            toStringCodeBlock.newLine()
+            ModelElementDetails(typeName, fieldName, enclosedElement, methodName, returnTypeMirror)
         }
-
-        typeBuilder.addMethod(constructorBuilder.build())
-
-        // Add the equals method
-        typeBuilder.overrideMethod("equals") {
-            returns(TypeName.BOOLEAN)
-            addParameter(TypeName.OBJECT, "o")
-            addCode(equalsCodeBlock.newLine()
-                    .`return`("true")
-                    .build())
-        }
-
-        // If we have no elements, 'hashCodeReturnValue' won't be initialised!
-        if (methodElements.isNotEmpty()) {
-            hasCodeCodeBlock.`return`("hashCodeReturnValue")
-        } else {
-            hasCodeCodeBlock.`return`("0")
-        }
-
-        // Add the hashCode method
-        typeBuilder.overrideMethod("hashCode") {
-            returns(TypeName.INT)
-            addCode(hasCodeCodeBlock.build())
-        }
-
-        // Add the toString method
-        typeBuilder.overrideMethod("toString") {
-            returns(TypeName.get(String::class.java))
-            addCode(toStringCodeBlock.build())
-            addStatement("\t\t'}'", modelClassName.simpleName())
-        }
-
-        if (!typeBuilder.writeFile(fileWriter, logger, outputClassName.packageName())) {
-            throw ProcessingException("Failed to write generated file: " + outputClassName.simpleName())
-        }
-
-        return InterfaceInfo(outputClassName, interfaceInfoList)
     }
 
-    private fun createOutputClassName(modelClassName: ClassName): ClassName {
-        return ClassName.get(modelClassName.packageName(), generateClassName(modelClassName, "GsonPathModel"))
-    }
-
-    private fun getMethodElements(element: TypeElement): List<Element> {
-        return typeHandler.getAllMembers(element)
-                .filter {
-                    // Ignore methods from the base Object class
-                    TypeName.get(it.enclosingElement.asType()) != TypeName.OBJECT
-                }
-                .filter {
-                    it.kind == ElementKind.METHOD
-                }
-                .filter {
-                    // Ignore Java 8 default/static interface methods.
-                    !it.modifiers.contains(Modifier.DEFAULT) &&
-                            !it.modifiers.contains(Modifier.STATIC)
-                }
-    }
+    data class ModelElementDetails(
+            val typeName: TypeName,
+            val fieldName: String,
+            val enclosedElement: Element,
+            val methodName: String,
+            val returnTypeMirror: TypeMirror)
 
     private class StandardElementInfo(override val underlyingElement: Element) : FieldInfoFactory.ElementInfo {
 
