@@ -3,7 +3,6 @@ package generator.interf.primitive;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-
 import javax.annotation.Generated;
 
 @Generated(
@@ -12,15 +11,24 @@ import javax.annotation.Generated;
 )
 public final class TestUsingPrimitives_GsonPathModel implements TestUsingPrimitives {
     private final int intExample;
+
     private final long longExample;
+
     private final double doubleExample;
+
     private final boolean booleanExample;
+
     private final int[] intArrayExample;
+
     private final long[] longArrayExample;
+
     private final double[] doubleArrayExample;
+
     private final boolean[] booleanArrayExample;
 
-    public TestUsingPrimitives_GsonPathModel(int intExample, long longExample, double doubleExample, boolean booleanExample, int[] intArrayExample, long[] longArrayExample, double[] doubleArrayExample, boolean[] booleanArrayExample) {
+    public TestUsingPrimitives_GsonPathModel(int intExample, long longExample, double doubleExample,
+                                             boolean booleanExample, int[] intArrayExample, long[] longArrayExample,
+                                             double[] doubleArrayExample, boolean[] booleanArrayExample) {
         this.intExample = intExample;
         this.longExample = longExample;
         this.doubleExample = doubleExample;
@@ -73,20 +81,39 @@ public final class TestUsingPrimitives_GsonPathModel implements TestUsingPrimiti
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         TestUsingPrimitives_GsonPathModel equalsOtherType = (TestUsingPrimitives_GsonPathModel) o;
 
-        if (intExample != equalsOtherType.intExample) return false;
-        if (longExample != equalsOtherType.longExample) return false;
-        if (doubleExample != equalsOtherType.doubleExample) return false;
-        if (booleanExample != equalsOtherType.booleanExample) return false;
-        if (!java.util.Arrays.equals(intArrayExample, equalsOtherType.intArrayExample)) return false;
-        if (!java.util.Arrays.equals(longArrayExample, equalsOtherType.longArrayExample)) return false;
-        if (!java.util.Arrays.equals(doubleArrayExample, equalsOtherType.doubleArrayExample)) return false;
-        if (!java.util.Arrays.equals(booleanArrayExample, equalsOtherType.booleanArrayExample)) return false;
+        if (intExample != equalsOtherType.intExample) {
+            return false;
+        }
+        if (longExample != equalsOtherType.longExample) {
+            return false;
+        }
+        if (doubleExample != equalsOtherType.doubleExample) {
+            return false;
+        }
+        if (booleanExample != equalsOtherType.booleanExample) {
+            return false;
+        }
+        if (!java.util.Arrays.equals(intArrayExample, equalsOtherType.intArrayExample)) {
+            return false;
+        }
+        if (!java.util.Arrays.equals(longArrayExample, equalsOtherType.longArrayExample)) {
+            return false;
+        }
+        if (!java.util.Arrays.equals(doubleArrayExample, equalsOtherType.doubleArrayExample)) {
+            return false;
+        }
+        if (!java.util.Arrays.equals(booleanArrayExample, equalsOtherType.booleanArrayExample)) {
+            return false;
+        }
 
         return true;
     }

@@ -4,7 +4,6 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-
 import javax.annotation.Generated;
 
 @Generated(
@@ -25,12 +24,18 @@ public final class TestJava8Interface_GsonPathModel implements TestJava8Interfac
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         TestJava8Interface_GsonPathModel equalsOtherType = (TestJava8Interface_GsonPathModel) o;
 
-        if (value1 != null ? !value1.equals(equalsOtherType.value1) : equalsOtherType.value1 != null) return false;
+        if (value1 != null ? !value1.equals(equalsOtherType.value1) : equalsOtherType.value1 != null) {
+            return false;
+        }
 
         return true;
     }

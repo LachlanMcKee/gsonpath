@@ -60,16 +60,30 @@ public final class TestValidInterface_GsonPathModel implements TestValidInterfac
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         TestValidInterface_GsonPathModel equalsOtherType = (TestValidInterface_GsonPathModel) o;
 
-        if (value1 != null ? !value1.equals(equalsOtherType.value1) : equalsOtherType.value1 != null) return false;
-        if (value2 != null ? !value2.equals(equalsOtherType.value2) : equalsOtherType.value2 != null) return false;
-        if (value3 != null ? !value3.equals(equalsOtherType.value3) : equalsOtherType.value3 != null) return false;
-        if (result != null ? !result.equals(equalsOtherType.result) : equalsOtherType.result != null) return false;
-        if (that != null ? !that.equals(equalsOtherType.that) : equalsOtherType.that != null) return false;
+        if (value1 != null ? !value1.equals(equalsOtherType.value1) : equalsOtherType.value1 != null) {
+            return false;
+        }
+        if (value2 != null ? !value2.equals(equalsOtherType.value2) : equalsOtherType.value2 != null) {
+            return false;
+        }
+        if (value3 != null ? !value3.equals(equalsOtherType.value3) : equalsOtherType.value3 != null) {
+            return false;
+        }
+        if (result != null ? !result.equals(equalsOtherType.result) : equalsOtherType.result != null) {
+            return false;
+        }
+        if (that != null ? !that.equals(equalsOtherType.that) : equalsOtherType.that != null) {
+            return false;
+        }
 
         return true;
     }

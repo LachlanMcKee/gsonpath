@@ -62,7 +62,9 @@ class AutoGsonAdapterGenerator(
             constructor {
                 addModifiers(Modifier.PUBLIC)
                 addParameter(Gson::class.java, "gson")
-                addStatement("this.\$N = \$N", "mGson", "gson")
+                code {
+                    assign("this.mGson", "gson")
+                }
             }
         }
 

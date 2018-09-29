@@ -75,7 +75,7 @@ class TypeAdapterFactoryGenerator(
 
             code {
                 `for`("int i = 0; i < mPackagePrivateLoaders.length; i++") {
-                    addStatement("TypeAdapter typeAdapter = mPackagePrivateLoaders[i].create(gson, type)")
+                    createVariable("TypeAdapter", "typeAdapter", "mPackagePrivateLoaders[i].create(gson, type)")
                     newLine()
 
                     `if`("typeAdapter != null") {
@@ -110,7 +110,7 @@ class TypeAdapterFactoryGenerator(
             addParameter(Gson::class.java, "gson")
             addParameter(TypeToken::class.java, "type")
             code {
-                addStatement("Class rawType = type.getRawType()")
+                createVariable("Class", "rawType", "type.getRawType()")
 
                 for ((currentAdapterIndex, result) in packageLocalGsonAdapters.withIndex()) {
                     if (currentAdapterIndex == 0) {

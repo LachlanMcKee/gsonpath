@@ -166,7 +166,7 @@ class SubtypeFunctions(
             }
 
             if (subTypeMetadata.defaultType != null) {
-                addStatement("defaultTypeAdapterDelegate = gson.getAdapter(\$T.class)", subTypeMetadata.defaultType)
+                assign("defaultTypeAdapterDelegate", "gson.getAdapter(\$T.class)", subTypeMetadata.defaultType)
             }
         }
     }
@@ -187,8 +187,8 @@ class SubtypeFunctions(
         addParameter(JsonReader::class.java, "in")
         addException(IOException::class.java)
         code {
-            addStatement("\$T jsonElement = \$T.parse(in)", JsonElement::class.java, Streams::class.java)
-            addStatement("\$T typeValueJsonElement = jsonElement.getAsJsonObject().remove(\"${subTypeMetadata.fieldName}\")",
+            createVariable("\$T", "jsonElement", "\$T.parse(in)", JsonElement::class.java, Streams::class.java)
+            createVariable("\$T", "typeValueJsonElement", "jsonElement.getAsJsonObject().remove(\"${subTypeMetadata.fieldName}\")",
                     JsonElement::class.java)
 
             `if`("typeValueJsonElement == null || typeValueJsonElement.isJsonNull()") {
@@ -203,13 +203,13 @@ class SubtypeFunctions(
                 SubTypeKeyType.BOOLEAN -> "boolean value = typeValueJsonElement.getAsBoolean()"
             })
 
-            addStatement("\$T<? extends \$T> delegate = typeAdaptersDelegatedByValueMap.get(value)",
+            createVariable("\$T<? extends \$T>", "delegate", "typeAdaptersDelegatedByValueMap.get(value)",
                     TypeAdapter::class.java, rawTypeName)
 
             `if`("delegate == null") {
                 if (subTypeMetadata.defaultType != null) {
                     comment("Use the default type adapter if the type is unknown.")
-                    addStatement("delegate = defaultTypeAdapterDelegate")
+                    assign("delegate", "defaultTypeAdapterDelegate")
                 } else {
                     if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
                         addStatement("throw new \$T(\"Failed to find subtype for value: \" + value)",
@@ -219,7 +219,7 @@ class SubtypeFunctions(
                     }
                 }
             }
-            addStatement("\$T result = delegate.fromJsonTree(jsonElement)", rawTypeName)
+            createVariable("\$T", "result", "delegate.fromJsonTree(jsonElement)", rawTypeName)
 
             if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
                 `if`("result == null") {
@@ -248,13 +248,13 @@ class SubtypeFunctions(
                 addStatement("out.nullValue()")
                 `return`()
             }
-            addStatement("\$T delegate = typeAdaptersDelegatedByClassMap.get(value.getClass())", TypeAdapter::class.java)
+            createVariable("\$T", "delegate", "typeAdaptersDelegatedByClassMap.get(value.getClass())", TypeAdapter::class.java)
         }
 
         if (subTypeMetadata.defaultType != null) {
             code {
                 `if`("delegate == null") {
-                    addStatement("delegate = defaultTypeAdapterDelegate")
+                    assign("delegate", "defaultTypeAdapterDelegate")
                 }
             }
         }

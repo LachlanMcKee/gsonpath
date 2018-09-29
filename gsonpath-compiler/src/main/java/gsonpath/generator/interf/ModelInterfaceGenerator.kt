@@ -43,10 +43,14 @@ class ModelInterfaceGenerator(
 
         // Equals method
         val equalsCodeBlock = CodeBlock.builder()
-                .addStatement("if (this == o) return true")
-                .addStatement("if (o == null || getClass() != o.getClass()) return false")
+                .`if`("this == o") {
+                    `return`("true")
+                }
+                .`if`("o == null || getClass() != o.getClass()") {
+                    `return`("false")
+                }
                 .newLine()
-                .addStatement("\$T equalsOtherType = (\$T) o", outputClassName, outputClassName)
+                .createVariable("\$T", "equalsOtherType", "(\$T) o", outputClassName, outputClassName)
                 .newLine()
 
         // Hash code method
@@ -121,19 +125,25 @@ class ModelInterfaceGenerator(
 
             // Add the parameter to the constructor
             constructorBuilder.addParameter(typeName, fieldName)
-                    .addStatement("this.$fieldName = $fieldName")
+                    .code { assign("this.$fieldName", fieldName) }
 
             interfaceInfoList.add(InterfaceFieldInfo(StandardElementInfo(enclosedElement), typeName, returnTypeMirror, fieldName, methodName))
 
             // Add to the equals method
             if (typeName.isPrimitive) {
-                equalsCodeBlock.addStatement("if ($fieldName != equalsOtherType.$fieldName) return false")
+                equalsCodeBlock.`if`("$fieldName != equalsOtherType.$fieldName") {
+                    `return`("false")
+                }
             } else {
                 if (typeName is ArrayTypeName) {
-                    equalsCodeBlock.addStatement("if (!java.util.Arrays.equals($fieldName, equalsOtherType.$fieldName)) return false")
+                    equalsCodeBlock.`if`("!java.util.Arrays.equals($fieldName, equalsOtherType.$fieldName)") {
+                        `return`("false")
+                    }
 
                 } else {
-                    equalsCodeBlock.addStatement("if ($fieldName != null ? !$fieldName.equals(equalsOtherType.$fieldName) : equalsOtherType.$fieldName != null) return false")
+                    equalsCodeBlock.`if`("$fieldName != null ? !$fieldName.equals(equalsOtherType.$fieldName) : equalsOtherType.$fieldName != null") {
+                        `return`("false")
+                    }
                 }
             }
 
@@ -144,7 +154,7 @@ class ModelInterfaceGenerator(
                     TypeName.INT -> fieldName
                     TypeName.LONG -> "(int) ($fieldName ^ ($fieldName >>> 32))"
                     TypeName.DOUBLE -> {
-                        hasCodeCodeBlock.addStatement("temp = java.lang.Double.doubleToLongBits($fieldName)")
+                        hasCodeCodeBlock.assign("temp", "java.lang.Double.doubleToLongBits($fieldName)")
                         "(int) (temp ^ (temp >>> 32))"
 
                     }
@@ -161,9 +171,9 @@ class ModelInterfaceGenerator(
             }
 
             if (elementIndex == 0) {
-                hasCodeCodeBlock.addStatement("int hashCodeReturnValue = $hashCodeLine")
+                hasCodeCodeBlock.createVariable("int", "hashCodeReturnValue", hashCodeLine)
             } else {
-                hasCodeCodeBlock.addStatement("hashCodeReturnValue = 31 * hashCodeReturnValue + ($hashCodeLine)")
+                hasCodeCodeBlock.assign("hashCodeReturnValue", "31 * hashCodeReturnValue + ($hashCodeLine)")
             }
 
             // Add to the toString method.

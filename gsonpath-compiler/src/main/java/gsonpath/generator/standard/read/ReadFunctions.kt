@@ -53,7 +53,7 @@ class ReadFunctions {
 
     private fun CodeBlock.Builder.addInitialisationBlock(params: ReadParams) {
         if (!params.requiresConstructorInjection) {
-            createVariable("\$T", "result", "\$T()", params.concreteElement, params.concreteElement)
+            createVariableNew("\$T", "result", "\$T()", params.concreteElement, params.concreteElement)
 
         } else {
             for (gsonField in params.flattenedFields) {
@@ -61,13 +61,13 @@ class ReadFunctions {
                 val typeName = gsonField.fieldInfo.typeName
                 val defaultValue = createDefaultVariableValueForTypeName(typeName)
 
-                addStatement("\$T ${gsonField.variableName} = $defaultValue", typeName)
+                createVariable("\$T", gsonField.variableName, defaultValue, typeName)
             }
         }
 
         // If we have any mandatory fields, we need to keep track of what has been assigned.
         if (params.mandatoryInfoMap.isNotEmpty()) {
-            createVariable("boolean[]", "mandatoryFieldsCheckList", "boolean[MANDATORY_FIELDS_SIZE]")
+            createVariableNew("boolean[]", "mandatoryFieldsCheckList", "boolean[MANDATORY_FIELDS_SIZE]")
         }
 
         newLine()
@@ -91,7 +91,7 @@ class ReadFunctions {
 
         val counterVariableName = "jsonFieldCounter$recursionCount"
 
-        addStatement("int $counterVariableName = 0")
+        createVariable("int", counterVariableName, "0")
         addStatement("in.beginObject()")
         newLine()
 
@@ -193,14 +193,14 @@ class ReadFunctions {
                 }
 
                 if (result.callToString) {
-                    addStatement("$assignmentBlock = ${result.variableName}.toString()")
+                    assign(assignmentBlock, "${result.variableName}.toString()")
                 } else {
-                    addStatement("$assignmentBlock = ${result.variableName}")
+                    assign(assignmentBlock, result.variableName)
                 }
 
                 // When a field has been assigned, if it is a mandatory value, we note this down.
                 if (mandatoryFieldInfo != null) {
-                    addStatement("mandatoryFieldsCheckList[${mandatoryFieldInfo.indexVariableName}] = true")
+                    assign("mandatoryFieldsCheckList[${mandatoryFieldInfo.indexVariableName}]", "true")
                     newLine()
 
                     nextControlFlow("else")
@@ -256,7 +256,7 @@ class ReadFunctions {
                         else
                             gsonField.variableName
 
-                addStatement("\$T $variableName = mGson.getAdapter(\$T.class).read(in)",
+                createVariable("\$T", variableName, "mGson.getAdapter(\$T.class).read(in)",
                         CLASS_NAME_JSON_ELEMENT,
                         CLASS_NAME_JSON_ELEMENT)
 
@@ -271,13 +271,11 @@ class ReadFunctions {
         val subTypeMetadata = gsonField.subTypeMetadata
         if (subTypeMetadata != null) {
             // If this field uses a subtype annotation, we use the type adapter subclasses instead of gson.
-            val variableAssignment = "$variableName = (\$T) ${subTypeMetadata.getterName}().read(in)"
-
             if (checkIfResultIsNull) {
-                addStatement("\$T $variableAssignment", fieldTypeName, fieldTypeName)
+                createVariable("\$T", variableName, "(\$T) ${subTypeMetadata.getterName}().read(in)", fieldTypeName, fieldTypeName)
 
             } else {
-                addStatement(variableAssignment, fieldTypeName)
+                assign(variableName, "(\$T) ${subTypeMetadata.getterName}().read(in)", fieldTypeName)
             }
 
         } else {
@@ -288,13 +286,11 @@ class ReadFunctions {
                     else
                         "\$T.class"
 
-            val variableAssignment = "$variableName = mGson.getAdapter($adapterName).read(in)"
-
             if (checkIfResultIsNull) {
-                addStatement("\$T $variableAssignment", fieldTypeName, fieldTypeName)
+                createVariable("\$T", variableName, "mGson.getAdapter($adapterName).read(in)", fieldTypeName, fieldTypeName)
 
             } else {
-                addStatement(variableAssignment, fieldTypeName)
+                assign(variableName, "mGson.getAdapter($adapterName).read(in)", fieldTypeName)
             }
         }
 
@@ -320,7 +316,7 @@ class ReadFunctions {
                 // The code must figure out the correct field name to insert into the error message.
                 newLine()
                 comment("Find the field name of the missing json value.")
-                addStatement("String fieldName = null")
+                createVariable("String", "fieldName", "null")
                 switch("mandatoryFieldIndex") {
 
                     for ((_, mandatoryFieldInfo) in params.mandatoryInfoMap) {
