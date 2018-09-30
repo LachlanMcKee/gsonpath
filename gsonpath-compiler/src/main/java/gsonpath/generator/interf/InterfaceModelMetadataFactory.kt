@@ -16,18 +16,19 @@ class InterfaceModelMetadataFactory(private val typeHandler: TypeHandler) {
 
     private fun createMetadata(methodElementContent: MethodElementContent): InterfaceModelMetadata {
         val methodElement = methodElementContent.element
-        val methodType = methodElement.asType() as ExecutableType
 
         // Ensure that any generics have been converted into their actual return types.
         val returnTypeMirror: TypeMirror = methodElementContent.generifiedElement.returnType
-        val typeName = TypeName.get(returnTypeMirror)
+        val typeName = typeHandler.getTypeName(returnTypeMirror)
 
         if (typeName == null || typeName == TypeName.VOID) {
             throw ProcessingException("Gson Path interface methods must have a return type", methodElement)
         }
 
-        if (methodType.parameterTypes.isNotEmpty()) {
-            throw ProcessingException("Gson Path interface methods must not have parameters", methodElement)
+        (methodElement.asType() as ExecutableType).let {
+            if (it.parameterTypes.isNotEmpty()) {
+                throw ProcessingException("Gson Path interface methods must not have parameters", methodElement)
+            }
         }
 
         val methodName = methodElement.simpleName.toString()

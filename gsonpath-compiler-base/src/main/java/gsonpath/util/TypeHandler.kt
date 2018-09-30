@@ -1,5 +1,6 @@
 package gsonpath.util
 
+import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
@@ -11,6 +12,8 @@ import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.TypeMirror
 
 interface TypeHandler {
+    fun getTypeName(typeMirror: TypeMirror): TypeName?
+    fun getClassName(typeMirror: TypeMirror): TypeName?
     fun isSubtype(t1: TypeMirror, t2: TypeMirror): Boolean
     fun asElement(t: TypeMirror): Element?
     fun getAllMembers(typeElement: TypeElement): List<Element>
@@ -30,6 +33,10 @@ data class MethodElementContent(
 )
 
 class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : TypeHandler {
+    override fun getTypeName(typeMirror: TypeMirror): TypeName? = TypeName.get(typeMirror)
+
+    override fun getClassName(typeMirror: TypeMirror): TypeName? = ClassName.get(typeMirror)
+
     override fun asElement(t: TypeMirror): Element? {
         return processingEnv.typeUtils.asElement(t)
     }
