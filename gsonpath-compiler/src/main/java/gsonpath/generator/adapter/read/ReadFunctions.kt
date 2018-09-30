@@ -1,4 +1,4 @@
-package gsonpath.generator.standard.read
+package gsonpath.generator.adapter.read
 
 import com.google.gson.JsonElement
 import com.google.gson.stream.JsonReader
@@ -10,7 +10,7 @@ import gsonpath.FlattenJson
 import gsonpath.ProcessingException
 import gsonpath.compiler.CLASS_NAME_STRING
 import gsonpath.compiler.createDefaultVariableValueForTypeName
-import gsonpath.generator.standard.SharedFunctions
+import gsonpath.generator.adapter.SharedFunctions
 import gsonpath.model.GsonField
 import gsonpath.model.GsonModel
 import gsonpath.model.GsonObject

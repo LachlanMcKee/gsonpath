@@ -1,4 +1,4 @@
-package gsonpath.generator.standard.read
+package gsonpath.generator.adapter.read
 
 import com.squareup.javapoet.ClassName
 import gsonpath.model.GsonField

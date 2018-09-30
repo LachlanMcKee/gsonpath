@@ -31,11 +31,13 @@ class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : T
 
     override fun getFields(typeElement: TypeElement, filterFunc: (Element) -> Boolean): List<Element> {
         return getAllMembers(typeElement)
+                .asSequence()
                 .filter {
                     // Ignore modelElement that are not fields.
                     it.kind == ElementKind.FIELD
                 }
                 .filter(filterFunc)
+                .toList()
     }
 
     override fun getGenerifiedTypeMirror(containing: TypeElement, element: Element): TypeMirror {

@@ -1,9 +1,9 @@
-package gsonpath.generator.standard.write
+package gsonpath.generator.adapter.write
 
 import com.google.gson.stream.JsonWriter
 import com.squareup.javapoet.*
 import gsonpath.ProcessingException
-import gsonpath.generator.standard.SharedFunctions
+import gsonpath.generator.adapter.SharedFunctions
 import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
 import gsonpath.util.*

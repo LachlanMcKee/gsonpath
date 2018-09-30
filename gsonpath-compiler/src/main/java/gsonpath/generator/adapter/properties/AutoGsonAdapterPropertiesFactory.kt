@@ -1,4 +1,4 @@
-package gsonpath.generator.standard.properties
+package gsonpath.generator.adapter.properties
 
 import gsonpath.AutoGsonAdapter
 import gsonpath.GsonFieldValidationType

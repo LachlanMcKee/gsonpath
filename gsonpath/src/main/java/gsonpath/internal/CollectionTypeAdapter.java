@@ -18,7 +18,7 @@ import java.util.List;
  */
 public final class CollectionTypeAdapter<E> extends TypeAdapter<Collection<E>> {
     private final TypeAdapter<E> componentTypeAdapter;
-    private boolean filterNulls;
+    private final boolean filterNulls;
 
     public CollectionTypeAdapter(TypeAdapter<E> componentTypeAdapter, boolean filterNulls) {
         this.componentTypeAdapter = componentTypeAdapter;

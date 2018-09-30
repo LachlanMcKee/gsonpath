@@ -45,7 +45,7 @@ public class PeopleModelTest {
     private Gson gsonPath;
 
     @Test
-    public void test() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    public void test() {
         vanillaGson = new GsonBuilder().create();
 
         GsonBuilder gsonPathBuilder = new GsonBuilder();

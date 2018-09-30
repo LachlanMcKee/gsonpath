@@ -6,7 +6,6 @@ import com.squareup.javapoet.TypeName
 import gsonpath.GsonFieldValidationType
 import gsonpath.PathSubstitution
 import gsonpath.ProcessingException
-import gsonpath.generator.standard.subtype.SubTypeMetadataFactory
 import org.junit.Rule
 import org.junit.rules.ExpectedException
 import org.mockito.Mockito.`when`

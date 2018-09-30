@@ -1,4 +1,4 @@
-package gsonpath.generator.standard
+package gsonpath.generator.adapter
 
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
@@ -9,12 +9,12 @@ import gsonpath.GsonUtil
 import gsonpath.ProcessingException
 import gsonpath.compiler.generateClassName
 import gsonpath.generator.HandleResult
+import gsonpath.generator.adapter.properties.AutoGsonAdapterPropertiesFactory
+import gsonpath.generator.adapter.read.ReadFunctions
+import gsonpath.generator.adapter.read.ReadParams
+import gsonpath.generator.adapter.subtype.SubtypeFunctions
+import gsonpath.generator.adapter.write.WriteFunctions
 import gsonpath.generator.interf.ModelInterfaceGenerator
-import gsonpath.generator.standard.properties.AutoGsonAdapterPropertiesFactory
-import gsonpath.generator.standard.read.ReadFunctions
-import gsonpath.generator.standard.read.ReadParams
-import gsonpath.generator.standard.subtype.SubtypeFunctions
-import gsonpath.generator.standard.write.WriteFunctions
 import gsonpath.generator.writeFile
 import gsonpath.model.*
 import gsonpath.util.*
@@ -163,6 +163,7 @@ class AutoGsonAdapterGenerator(
      */
     private fun findNonEmptyConstructor(modelElement: TypeElement): ExecutableType? {
         return typeHandler.getAllMembers(modelElement)
+                .asSequence()
                 .filter { it.kind == ElementKind.CONSTRUCTOR }
                 .map { (it.asType() as ExecutableType) }
                 .find { it.parameterTypes.size > 0 }

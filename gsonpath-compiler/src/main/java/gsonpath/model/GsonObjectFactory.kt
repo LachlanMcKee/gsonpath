@@ -4,8 +4,6 @@ import com.google.gson.annotations.SerializedName
 import com.squareup.javapoet.TypeName
 import gsonpath.GsonFieldValidationType
 import gsonpath.ProcessingException
-import gsonpath.generator.standard.subtype.SubTypeMetadata
-import gsonpath.generator.standard.subtype.SubTypeMetadataFactory
 import java.util.regex.Pattern
 import javax.lang.model.element.Element
 

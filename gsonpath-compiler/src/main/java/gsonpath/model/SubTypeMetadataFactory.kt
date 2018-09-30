@@ -1,36 +1,12 @@
-package gsonpath.generator.standard.subtype
+package gsonpath.model
 
 import gsonpath.GsonSubTypeFailureOutcome
 import gsonpath.GsonSubtype
 import gsonpath.ProcessingException
-import gsonpath.generator.standard.SharedFunctions
-import gsonpath.model.FieldInfo
+import gsonpath.generator.adapter.SharedFunctions
 import gsonpath.util.TypeHandler
 import javax.lang.model.element.Element
 import javax.lang.model.type.TypeMirror
-
-/**
- * The type of value used when determining the correct subtype
- */
-enum class SubTypeKeyType {
-    STRING, INTEGER, BOOLEAN
-}
-
-/**
- * A data class that is used to convert the annotation 'stringValueSubtypes' 'booleanValueSubtypes' and 'integerValueSubtypes'
- * into a common reusable structure.
- */
-data class GsonSubTypeKeyAndClass(val key: String, val clazzTypeMirror: TypeMirror)
-
-data class SubTypeMetadata(
-        val className: String,
-        val variableName: String,
-        val getterName: String,
-        val fieldName: String,
-        val keyType: SubTypeKeyType,
-        val gsonSubTypeKeys: List<GsonSubTypeKeyAndClass>,
-        val defaultType: TypeMirror?,
-        val failureOutcome: GsonSubTypeFailureOutcome)
 
 interface SubTypeMetadataFactory {
     fun getGsonSubType(fieldInfo: FieldInfo): SubTypeMetadata?

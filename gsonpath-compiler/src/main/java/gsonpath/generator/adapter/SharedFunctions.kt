@@ -1,4 +1,4 @@
-package gsonpath.generator.standard
+package gsonpath.generator.adapter
 
 import gsonpath.FlattenJson
 import gsonpath.ProcessingException

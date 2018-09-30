@@ -4,6 +4,7 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import gsonpath.FlattenJson
 import gsonpath.ProcessingException
+import gsonpath.generator.adapter.SharedFunctions
 import gsonpath.model.FieldInfo
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Description

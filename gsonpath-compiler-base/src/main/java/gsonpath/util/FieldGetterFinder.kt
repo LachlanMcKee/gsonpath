@@ -19,6 +19,7 @@ class FieldGetterFinder(private val typeHandler: TypeHandler) {
      */
     fun findGetter(parentElement: TypeElement, variableElement: Element): Element? {
         return typeHandler.getAllMembers(parentElement)
+                .asSequence()
                 .filter { it.kind == ElementKind.METHOD }
                 .filter { isMethodNameGetter(it, variableElement) }
                 .find { (it.asType() as ExecutableType).parameterTypes.size == 0 }

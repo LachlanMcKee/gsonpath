@@ -4,15 +4,15 @@ import com.google.common.collect.Sets
 import com.squareup.javapoet.ClassName
 import gsonpath.compiler.GsonPathExtension
 import gsonpath.generator.HandleResult
+import gsonpath.generator.adapter.AutoGsonAdapterGenerator
+import gsonpath.generator.adapter.read.ReadFunctions
+import gsonpath.generator.adapter.subtype.SubtypeFunctions
+import gsonpath.generator.adapter.write.WriteFunctions
 import gsonpath.generator.factory.TypeAdapterFactoryGenerator
-import gsonpath.generator.standard.AutoGsonAdapterGenerator
-import gsonpath.generator.standard.read.ReadFunctions
-import gsonpath.generator.standard.subtype.SubTypeMetadataFactoryImpl
-import gsonpath.generator.standard.subtype.SubtypeFunctions
-import gsonpath.generator.standard.write.WriteFunctions
 import gsonpath.model.FieldInfoFactory
 import gsonpath.model.GsonObjectFactory
 import gsonpath.model.GsonObjectTreeFactory
+import gsonpath.model.SubTypeMetadataFactoryImpl
 import gsonpath.util.*
 import java.util.*
 import javax.annotation.processing.AbstractProcessor
@@ -30,11 +30,13 @@ open class GsonProcessorImpl : AbstractProcessor() {
         }
 
         val supportedAnnotations = annotations
+                .asSequence()
                 .map { ClassName.get(it) }
                 .filter {
                     it == ClassName.get(AutoGsonAdapter::class.java) ||
                             it == ClassName.get(AutoGsonAdapterFactory::class.java)
                 }
+                .toList()
 
         val customAnnotations: List<TypeElement> = annotations
                 .filter { it.getAnnotation(AutoGsonAdapter::class.java) != null }
@@ -159,13 +161,13 @@ open class GsonProcessorImpl : AbstractProcessor() {
                                           customAnnotations: List<TypeElement>): Set<ElementAndAutoGson> {
         return env
                 .getElementsAnnotatedWith(AutoGsonAdapter::class.java)
+                .asSequence()
                 .map {
                     ElementAndAutoGson(it as TypeElement, it.getAnnotation(AutoGsonAdapter::class.java))
                 }
                 .filter {
                     !customAnnotations.contains(it.element)
                 }
-                .toSet()
                 .plus(
                         customAnnotations.flatMap { customAnnotation ->
                             env
@@ -175,6 +177,7 @@ open class GsonProcessorImpl : AbstractProcessor() {
                                     }
                         }
                 )
+                .toSet()
     }
 
     private data class ElementAndAutoGson(

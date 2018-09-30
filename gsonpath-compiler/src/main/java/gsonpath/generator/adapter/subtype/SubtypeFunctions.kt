@@ -1,4 +1,4 @@
-package gsonpath.generator.standard.subtype
+package gsonpath.generator.adapter.subtype
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -10,13 +10,11 @@ import com.google.gson.stream.JsonWriter
 import com.squareup.javapoet.*
 import gsonpath.GsonSubTypeFailureException
 import gsonpath.GsonSubTypeFailureOutcome
-import gsonpath.generator.standard.SharedFunctions.getRawType
-import gsonpath.generator.standard.SharedFunctions.isArrayType
+import gsonpath.generator.adapter.SharedFunctions.getRawType
+import gsonpath.generator.adapter.SharedFunctions.isArrayType
 import gsonpath.internal.CollectionTypeAdapter
 import gsonpath.internal.StrictArrayTypeAdapter
-import gsonpath.model.GsonField
-import gsonpath.model.GsonObject
-import gsonpath.model.GsonObjectTreeFactory
+import gsonpath.model.*
 import gsonpath.util.*
 import java.io.IOException
 import javax.lang.model.element.Modifier
