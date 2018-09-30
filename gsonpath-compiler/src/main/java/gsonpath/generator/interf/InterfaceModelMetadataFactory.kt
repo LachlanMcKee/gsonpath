@@ -2,8 +2,8 @@ package gsonpath.generator.interf
 
 import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
+import gsonpath.util.MethodElementContent
 import gsonpath.util.TypeHandler
-import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.TypeMirror
@@ -11,15 +11,15 @@ import javax.lang.model.type.TypeMirror
 class InterfaceModelMetadataFactory(private val typeHandler: TypeHandler) {
 
     fun createMetadata(classElement: TypeElement): List<InterfaceModelMetadata> {
-        return typeHandler.getMethods(classElement).map { createMetadata(classElement, it) }
+        return typeHandler.getMethods(classElement).map(::createMetadata)
     }
 
-    private fun createMetadata(classElement: TypeElement, methodElement: Element): InterfaceModelMetadata {
+    private fun createMetadata(methodElementContent: MethodElementContent): InterfaceModelMetadata {
+        val methodElement = methodElementContent.element
         val methodType = methodElement.asType() as ExecutableType
 
         // Ensure that any generics have been converted into their actual return types.
-        val returnTypeMirror: TypeMirror = (typeHandler.getGenerifiedTypeMirror(classElement, methodElement)
-                as ExecutableType).returnType
+        val returnTypeMirror: TypeMirror = methodElementContent.generifiedElement.returnType
         val typeName = TypeName.get(returnTypeMirror)
 
         if (typeName == null || typeName == TypeName.VOID) {

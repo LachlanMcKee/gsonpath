@@ -61,10 +61,7 @@ class FieldInfoFactory(
                     it.getAnnotation(ExcludeField::class.java) == null
         }
         return typeHandler.getFields(modelElement, filterFunc)
-                .map { memberElement ->
-                    // Ensure that any generics have been converted into their actual class.
-                    val generifiedElement = typeHandler.getGenerifiedTypeMirror(modelElement, memberElement)
-
+                .map { (memberElement, generifiedElement) ->
                     object : FieldInfo {
                         override val typeName: TypeName
                             get() = TypeName.get(generifiedElement)

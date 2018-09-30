@@ -7,17 +7,27 @@ import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.DeclaredType
+import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.TypeMirror
 
 interface TypeHandler {
     fun isSubtype(t1: TypeMirror, t2: TypeMirror): Boolean
     fun asElement(t: TypeMirror): Element?
     fun getAllMembers(typeElement: TypeElement): List<Element>
-    fun getFields(typeElement: TypeElement, filterFunc: ((Element) -> Boolean)): List<Element>
-    fun getMethods(element: TypeElement): List<Element>
-    fun getGenerifiedTypeMirror(containing: TypeElement, element: Element): TypeMirror
+    fun getFields(typeElement: TypeElement, filterFunc: ((Element) -> Boolean)): List<FieldElementContent>
+    fun getMethods(typeElement: TypeElement): List<MethodElementContent>
     fun isMirrorOfCollectionType(typeMirror: TypeMirror): Boolean
 }
+
+data class FieldElementContent(
+        val element: Element,
+        val generifiedElement: TypeMirror
+)
+
+data class MethodElementContent(
+        val element: Element,
+        val generifiedElement: ExecutableType
+)
 
 class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : TypeHandler {
     override fun asElement(t: TypeMirror): Element? {
@@ -32,7 +42,7 @@ class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : T
         return processingEnv.elementUtils.getAllMembers(typeElement)
     }
 
-    override fun getFields(typeElement: TypeElement, filterFunc: (Element) -> Boolean): List<Element> {
+    override fun getFields(typeElement: TypeElement, filterFunc: (Element) -> Boolean): List<FieldElementContent> {
         return getAllMembers(typeElement)
                 .asSequence()
                 .filter {
@@ -40,11 +50,12 @@ class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : T
                     it.kind == ElementKind.FIELD
                 }
                 .filter(filterFunc)
+                .map { FieldElementContent(it, getGenerifiedTypeMirror(typeElement, it)) }
                 .toList()
     }
 
-    override fun getMethods(element: TypeElement): List<Element> {
-        return getAllMembers(element)
+    override fun getMethods(typeElement: TypeElement): List<MethodElementContent> {
+        return getAllMembers(typeElement)
                 .asSequence()
                 .filter {
                     // Ignore methods from the base Object class
@@ -58,11 +69,8 @@ class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : T
                     !it.modifiers.contains(Modifier.DEFAULT) &&
                             !it.modifiers.contains(Modifier.STATIC)
                 }
+                .map { MethodElementContent(it, getGenerifiedTypeMirror(typeElement, it) as ExecutableType) }
                 .toList()
-    }
-
-    override fun getGenerifiedTypeMirror(containing: TypeElement, element: Element): TypeMirror {
-        return processingEnv.typeUtils.asMemberOf(containing.asType() as DeclaredType, element)
     }
 
     override fun isMirrorOfCollectionType(typeMirror: TypeMirror): Boolean {
@@ -76,5 +84,9 @@ class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : T
         val collectionType = processingEnv.typeUtils.getDeclaredType(collectionTypeElement, rawType)
 
         return processingEnv.typeUtils.isSubtype(typeMirror, collectionType)
+    }
+
+    private fun getGenerifiedTypeMirror(containing: TypeElement, element: Element): TypeMirror {
+        return processingEnv.typeUtils.asMemberOf(containing.asType() as DeclaredType, element)
     }
 }
