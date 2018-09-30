@@ -176,7 +176,11 @@ class GsonObjectFactoryTest {
     }
 
     @RunWith(Parameterized::class)
-    class RequiredAnnotationsTest(val requiredTypeAnnotation: String?, val gsonFieldValidationType: GsonFieldValidationType, val fieldTypeName: TypeName, val isRequired: Boolean) : BaseGsonObjectFactoryTest() {
+    class RequiredAnnotationsTest(
+            private val requiredTypeAnnotation: String?,
+            private val gsonFieldValidationType: GsonFieldValidationType,
+            private val fieldTypeName: TypeName,
+            private val isRequired: Boolean) : BaseGsonObjectFactoryTest() {
 
         @Test
         @Throws(ProcessingException::class)
@@ -204,14 +208,14 @@ class GsonObjectFactoryTest {
             fun data(): Collection<Array<Any?>> {
                 return listOf(
                         // Test 'NonNull' annotation permutations with a non-primitive type
-                        arrayOf<Any?>("NonNull", GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
-                        arrayOf<Any?>("NonNull", GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT.box(), true),
-                        arrayOf<Any?>("NonNull", GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT.box(), true),
+                        arrayOf("NonNull", GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
+                        arrayOf("NonNull", GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT.box(), true),
+                        arrayOf("NonNull", GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT.box(), true),
 
                         // Test 'Nullable' annotation permutations with a non-primitive type
-                        arrayOf<Any?>("Nullable", GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
-                        arrayOf<Any?>("Nullable", GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT.box(), false),
-                        arrayOf<Any?>("Nullable", GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT.box(), false),
+                        arrayOf("Nullable", GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
+                        arrayOf("Nullable", GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT.box(), false),
+                        arrayOf("Nullable", GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT.box(), false),
 
                         // Test no annotation permutations with a non-primitive type
                         arrayOf(null, GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
@@ -228,7 +232,7 @@ class GsonObjectFactoryTest {
     }
 
     @RunWith(Parameterized::class)
-    class MandatoryAnnotationsTest(val mandatoryAnnotation: String) : BaseGsonObjectFactoryTest() {
+    class MandatoryAnnotationsTest(private val mandatoryAnnotation: String) : BaseGsonObjectFactoryTest() {
 
         @Test
         @Throws(ProcessingException::class)

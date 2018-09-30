@@ -19,8 +19,8 @@ public class DataClassSampleTest {
         DataClassSample model = runTest("DataClassJson_all_values.json");
 
         Assert.assertEquals("test", model.getValue1());
-        Assert.assertEquals(false, model.isBooleanTest1());
-        Assert.assertEquals(null, model.isBooleanTest2());
+        Assert.assertFalse(model.isBooleanTest1());
+        Assert.assertNull(model.isBooleanTest2());
     }
 
     @Test
