@@ -10,14 +10,11 @@ import gsonpath.model.FieldInfoFactory.InterfaceInfo
 import gsonpath.util.*
 import javax.annotation.Generated
 import javax.lang.model.element.Element
-import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
-import javax.lang.model.type.ExecutableType
-import javax.lang.model.type.TypeMirror
 
 class ModelInterfaceGenerator(
-        private val typeHandler: TypeHandler,
+        private val interfaceModelMetadataFactory: InterfaceModelMetadataFactory,
         private val fileWriter: FileWriter,
         private val logger: Logger) {
 
@@ -37,7 +34,7 @@ class ModelInterfaceGenerator(
             build()
         })
 
-        val modelElementDetails = createModelElementDetails(element, getMethodElements(element))
+        val modelElementDetails = interfaceModelMetadataFactory.createMetadata(element)
 
         addFields(modelElementDetails)
         addConstructor(modelElementDetails)
@@ -56,7 +53,7 @@ class ModelInterfaceGenerator(
         })
     }
 
-    private fun TypeSpec.Builder.addFields(modelElementDetails: List<ModelElementDetails>) {
+    private fun TypeSpec.Builder.addFields(modelElementDetails: List<InterfaceModelMetadata>) {
         modelElementDetails.forEach {
             field(it.fieldName, it.typeName) {
                 addModifiers(Modifier.PRIVATE, Modifier.FINAL)
@@ -64,7 +61,7 @@ class ModelInterfaceGenerator(
         }
     }
 
-    private fun TypeSpec.Builder.addConstructor(modelElementDetails: List<ModelElementDetails>) = constructor {
+    private fun TypeSpec.Builder.addConstructor(modelElementDetails: List<InterfaceModelMetadata>) = constructor {
         addModifiers(Modifier.PUBLIC)
 
         modelElementDetails.forEach { (typeName, fieldName) ->
@@ -77,7 +74,7 @@ class ModelInterfaceGenerator(
         }
     }
 
-    private fun TypeSpec.Builder.addGetters(modelElementDetails: List<ModelElementDetails>) {
+    private fun TypeSpec.Builder.addGetters(modelElementDetails: List<InterfaceModelMetadata>) {
         modelElementDetails.forEach {
             overrideMethod(it.methodName) {
                 returns(it.typeName)
@@ -95,7 +92,7 @@ class ModelInterfaceGenerator(
         }
     }
 
-    private fun TypeSpec.Builder.addEqualsMethod(outputClassName: ClassName, modelElementDetails: List<ModelElementDetails>) = overrideMethod("equals") {
+    private fun TypeSpec.Builder.addEqualsMethod(outputClassName: ClassName, modelElementDetails: List<InterfaceModelMetadata>) = overrideMethod("equals") {
         returns(TypeName.BOOLEAN)
         addParameter(TypeName.OBJECT, "o")
 
@@ -134,7 +131,7 @@ class ModelInterfaceGenerator(
         }
     }
 
-    private fun TypeSpec.Builder.addHashCodeMethod(modelElementDetails: List<ModelElementDetails>) = overrideMethod("hashCode") {
+    private fun TypeSpec.Builder.addHashCodeMethod(modelElementDetails: List<InterfaceModelMetadata>) = overrideMethod("hashCode") {
         returns(TypeName.INT)
 
         code {
@@ -182,7 +179,7 @@ class ModelInterfaceGenerator(
         }
     }
 
-    private fun TypeSpec.Builder.addToStringMethod(element: TypeElement, modelElementDetails: List<ModelElementDetails>) = overrideMethod("toString") {
+    private fun TypeSpec.Builder.addToStringMethod(element: TypeElement, modelElementDetails: List<InterfaceModelMetadata>) = overrideMethod("toString") {
         returns(TypeName.get(String::class.java))
 
         code {
@@ -214,67 +211,6 @@ class ModelInterfaceGenerator(
         }
     }
 
-    private fun getMethodElements(element: TypeElement): List<Element> {
-        return typeHandler.getAllMembers(element)
-                .asSequence()
-                .filter {
-                    // Ignore methods from the base Object class
-                    TypeName.get(it.enclosingElement.asType()) != TypeName.OBJECT
-                }
-                .filter {
-                    it.kind == ElementKind.METHOD
-                }
-                .filter {
-                    // Ignore Java 8 default/static interface methods.
-                    !it.modifiers.contains(Modifier.DEFAULT) &&
-                            !it.modifiers.contains(Modifier.STATIC)
-                }
-                .toList()
-    }
-
-    private fun createModelElementDetails(element: TypeElement, methodElements: List<Element>): List<ModelElementDetails> {
-        return methodElements.map { enclosedElement ->
-            val methodType = enclosedElement.asType() as ExecutableType
-
-            // Ensure that any generics have been converted into their actual return types.
-            val returnTypeMirror: TypeMirror = (typeHandler.getGenerifiedTypeMirror(element, enclosedElement)
-                    as ExecutableType).returnType
-            val typeName = TypeName.get(returnTypeMirror)
-
-            if (typeName == null || typeName == TypeName.VOID) {
-                throw ProcessingException("Gson Path interface methods must have a return type", enclosedElement)
-            }
-
-            if (methodType.parameterTypes.isNotEmpty()) {
-                throw ProcessingException("Gson Path interface methods must not have parameters", enclosedElement)
-            }
-
-            val methodName = enclosedElement.simpleName.toString()
-
-            //
-            // Transform the method name into the field name by removing the first camel-cased portion.
-            // e.g. 'getName' becomes 'name'
-            //
-            val fieldName: String = methodName.indexOfFirst(Char::isUpperCase)
-                    .let { upperCaseIndex ->
-                        if (upperCaseIndex != -1) {
-                            methodName[upperCaseIndex].toLowerCase() + methodName.substring(upperCaseIndex + 1)
-                        } else {
-                            methodName
-                        }
-                    }
-
-            ModelElementDetails(typeName, fieldName, enclosedElement, methodName, returnTypeMirror)
-        }
-    }
-
-    data class ModelElementDetails(
-            val typeName: TypeName,
-            val fieldName: String,
-            val enclosedElement: Element,
-            val methodName: String,
-            val returnTypeMirror: TypeMirror)
-
     private class StandardElementInfo(override val underlyingElement: Element) : FieldInfoFactory.ElementInfo {
 
         override fun <T : Annotation> getAnnotation(annotationClass: Class<T>): T? {
@@ -288,5 +224,4 @@ class ModelInterfaceGenerator(
                 }
             }
     }
-
 }

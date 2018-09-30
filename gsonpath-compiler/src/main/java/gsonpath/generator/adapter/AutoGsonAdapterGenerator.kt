@@ -33,6 +33,7 @@ class AutoGsonAdapterGenerator(
         private val readFunctions: ReadFunctions,
         private val writeFunctions: WriteFunctions,
         private val subtypeFunctions: SubtypeFunctions,
+        private val modelInterfaceGenerator: ModelInterfaceGenerator,
         private val logger: Logger) {
 
     @Throws(ProcessingException::class)
@@ -90,7 +91,7 @@ class AutoGsonAdapterGenerator(
                     requiresConstructorInjection)
 
         } else {
-            val interfaceInfo = ModelInterfaceGenerator(typeHandler, fileWriter, logger).handle(modelElement)
+            val interfaceInfo = modelInterfaceGenerator.handle(modelElement)
             concreteClassName = interfaceInfo.parentClassName
 
             fieldInfoList = fieldInfoFactory.getModelFieldsFromInterface(interfaceInfo)

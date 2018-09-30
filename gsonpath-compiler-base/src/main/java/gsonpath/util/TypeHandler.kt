@@ -1,8 +1,10 @@
 package gsonpath.util
 
+import com.squareup.javapoet.TypeName
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
+import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.TypeMirror
@@ -12,6 +14,7 @@ interface TypeHandler {
     fun asElement(t: TypeMirror): Element?
     fun getAllMembers(typeElement: TypeElement): List<Element>
     fun getFields(typeElement: TypeElement, filterFunc: ((Element) -> Boolean)): List<Element>
+    fun getMethods(element: TypeElement): List<Element>
     fun getGenerifiedTypeMirror(containing: TypeElement, element: Element): TypeMirror
     fun isMirrorOfCollectionType(typeMirror: TypeMirror): Boolean
 }
@@ -37,6 +40,24 @@ class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : T
                     it.kind == ElementKind.FIELD
                 }
                 .filter(filterFunc)
+                .toList()
+    }
+
+    override fun getMethods(element: TypeElement): List<Element> {
+        return getAllMembers(element)
+                .asSequence()
+                .filter {
+                    // Ignore methods from the base Object class
+                    TypeName.get(it.enclosingElement.asType()) != TypeName.OBJECT
+                }
+                .filter {
+                    it.kind == ElementKind.METHOD
+                }
+                .filter {
+                    // Ignore Java 8 default/static interface methods.
+                    !it.modifiers.contains(Modifier.DEFAULT) &&
+                            !it.modifiers.contains(Modifier.STATIC)
+                }
                 .toList()
     }
 
