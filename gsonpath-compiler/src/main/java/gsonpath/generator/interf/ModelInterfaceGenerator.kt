@@ -34,48 +34,48 @@ class ModelInterfaceGenerator(
             build()
         })
 
-        val modelElementDetails = interfaceModelMetadataFactory.createMetadata(element)
+        val modelMetadataList = interfaceModelMetadataFactory.createMetadata(element)
 
-        addFields(modelElementDetails)
-        addConstructor(modelElementDetails)
-        addGetters(modelElementDetails)
-        addEqualsMethod(outputClassName, modelElementDetails)
-        addHashCodeMethod(modelElementDetails)
-        addToStringMethod(element, modelElementDetails)
+        addFields(modelMetadataList)
+        addConstructor(modelMetadataList)
+        addGetters(modelMetadataList)
+        addEqualsMethod(outputClassName, modelMetadataList)
+        addHashCodeMethod(modelMetadataList)
+        addToStringMethod(element, modelMetadataList)
 
         if (!writeFile(fileWriter, logger, outputClassName.packageName())) {
             throw ProcessingException("Failed to write generated file: " + outputClassName.simpleName())
         }
 
-        return InterfaceInfo(outputClassName, modelElementDetails.map {
+        return InterfaceInfo(outputClassName, modelMetadataList.map {
             InterfaceFieldInfo(StandardElementInfo(it.enclosedElement),
                     it.typeName, it.returnTypeMirror, it.fieldName, it.methodName)
         })
     }
 
-    private fun TypeSpec.Builder.addFields(modelElementDetails: List<InterfaceModelMetadata>) {
-        modelElementDetails.forEach {
+    private fun TypeSpec.Builder.addFields(modelMetadataList: List<InterfaceModelMetadata>) {
+        modelMetadataList.forEach {
             field(it.fieldName, it.typeName) {
                 addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             }
         }
     }
 
-    private fun TypeSpec.Builder.addConstructor(modelElementDetails: List<InterfaceModelMetadata>) = constructor {
+    private fun TypeSpec.Builder.addConstructor(modelMetadataList: List<InterfaceModelMetadata>) = constructor {
         addModifiers(Modifier.PUBLIC)
 
-        modelElementDetails.forEach { (typeName, fieldName) ->
+        modelMetadataList.forEach { (typeName, fieldName) ->
             addParameter(typeName, fieldName)
         }
         code {
-            modelElementDetails.forEach { (_, fieldName) ->
+            modelMetadataList.forEach { (_, fieldName) ->
                 assign("this.$fieldName", fieldName)
             }
         }
     }
 
-    private fun TypeSpec.Builder.addGetters(modelElementDetails: List<InterfaceModelMetadata>) {
-        modelElementDetails.forEach {
+    private fun TypeSpec.Builder.addGetters(modelMetadataList: List<InterfaceModelMetadata>) {
+        modelMetadataList.forEach {
             overrideMethod(it.methodName) {
                 returns(it.typeName)
 
@@ -92,7 +92,7 @@ class ModelInterfaceGenerator(
         }
     }
 
-    private fun TypeSpec.Builder.addEqualsMethod(outputClassName: ClassName, modelElementDetails: List<InterfaceModelMetadata>) = overrideMethod("equals") {
+    private fun TypeSpec.Builder.addEqualsMethod(outputClassName: ClassName, modelMetadataList: List<InterfaceModelMetadata>) = overrideMethod("equals") {
         returns(TypeName.BOOLEAN)
         addParameter(TypeName.OBJECT, "o")
 
@@ -107,7 +107,7 @@ class ModelInterfaceGenerator(
             createVariable("\$T", "equalsOtherType", "(\$T) o", outputClassName, outputClassName)
             newLine()
 
-            modelElementDetails.forEach { (typeName, fieldName) ->
+            modelMetadataList.forEach { (typeName, fieldName) ->
                 if (typeName.isPrimitive) {
                     `if`("$fieldName != equalsOtherType.$fieldName") {
                         `return`("false")
@@ -131,16 +131,16 @@ class ModelInterfaceGenerator(
         }
     }
 
-    private fun TypeSpec.Builder.addHashCodeMethod(modelElementDetails: List<InterfaceModelMetadata>) = overrideMethod("hashCode") {
+    private fun TypeSpec.Builder.addHashCodeMethod(modelMetadataList: List<InterfaceModelMetadata>) = overrideMethod("hashCode") {
         returns(TypeName.INT)
 
         code {
             // An optimisation for hash codes which prevents us creating too many temp long variables.
-            if (modelElementDetails.any { it.typeName == TypeName.DOUBLE }) {
+            if (modelMetadataList.any { it.typeName == TypeName.DOUBLE }) {
                 addStatement("long temp")
             }
 
-            modelElementDetails.forEachIndexed { index, (typeName, fieldName) ->
+            modelMetadataList.forEachIndexed { index, (typeName, fieldName) ->
                 val hashCodeLine: String = if (typeName.isPrimitive) {
                     // The allowed primitive types are: int, long, double, boolean
                     when (typeName) {
@@ -171,7 +171,7 @@ class ModelInterfaceGenerator(
             }
 
             // If we have no elements, 'hashCodeReturnValue' won't be initialised!
-            if (modelElementDetails.isNotEmpty()) {
+            if (modelMetadataList.isNotEmpty()) {
                 `return`("hashCodeReturnValue")
             } else {
                 `return`("0")
@@ -179,14 +179,14 @@ class ModelInterfaceGenerator(
         }
     }
 
-    private fun TypeSpec.Builder.addToStringMethod(element: TypeElement, modelElementDetails: List<InterfaceModelMetadata>) = overrideMethod("toString") {
+    private fun TypeSpec.Builder.addToStringMethod(element: TypeElement, modelMetadataList: List<InterfaceModelMetadata>) = overrideMethod("toString") {
         returns(TypeName.get(String::class.java))
 
         code {
             add("""return "${ClassName.get(element).simpleName()}{" +""")
             newLine()
 
-            modelElementDetails.forEachIndexed { index, (typeName, fieldName) ->
+            modelMetadataList.forEachIndexed { index, (typeName, fieldName) ->
                 // Add to the toString method.
                 add("\t\t\"")
                 if (index > 0) {
