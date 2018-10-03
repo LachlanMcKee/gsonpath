@@ -4,6 +4,7 @@ import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
 import gsonpath.util.MethodElementContent
 import gsonpath.util.TypeHandler
+import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.TypeMirror
@@ -31,21 +32,20 @@ class InterfaceModelMetadataFactory(private val typeHandler: TypeHandler) {
             }
         }
 
-        val methodName = methodElement.simpleName.toString()
+        return InterfaceModelMetadata(typeName, methodElement.getFieldName(), methodElement,
+                methodElement.getMethodName(), returnTypeMirror)
+    }
 
-        //
-        // Transform the method name into the field name by removing the first camel-cased portion.
-        // e.g. 'getName' becomes 'name'
-        //
-        val fieldName: String = methodName.indexOfFirst(Char::isUpperCase)
-                .let { upperCaseIndex ->
-                    if (upperCaseIndex != -1) {
-                        methodName[upperCaseIndex].toLowerCase() + methodName.substring(upperCaseIndex + 1)
-                    } else {
-                        methodName
-                    }
-                }
+    private fun Element.getMethodName() = simpleName.toString()
 
-        return InterfaceModelMetadata(typeName, fieldName, methodElement, methodName, returnTypeMirror)
+    /**
+     * Transform the method name into the field name by removing the first camel-cased portion.
+     * e.g. 'getName' becomes 'name'
+     */
+    private fun Element.getFieldName() = getMethodName().let { methodName ->
+        methodName.indexOfFirst(Char::isUpperCase)
+                .takeIf { it != -1 }
+                ?.let { methodName[it].toLowerCase() + methodName.substring(it + 1) }
+                ?: methodName
     }
 }
