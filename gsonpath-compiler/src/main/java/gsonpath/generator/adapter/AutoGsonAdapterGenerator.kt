@@ -32,28 +32,39 @@ class AutoGsonAdapterGenerator(
             autoGsonAnnotation: AutoGsonAdapter,
             extensionsHandler: ExtensionsHandler): HandleResult {
 
-        val generatedJavaPoetAnnotation = AnnotationSpec.builder(Generated::class.java)
+        val metadata = adapterModelMetadataFactory.createMetadata(modelElement, autoGsonAnnotation)
+        val adapterClassName = metadata.adapterClassName
+        return TypeSpecExt.finalClassBuilder(adapterClassName)
+                .addDetails(metadata, extensionsHandler)
+                .let {
+                    if (it.writeFile(fileWriter, logger, adapterClassName.packageName(), this::onJavaFileBuilt)) {
+                        HandleResult(metadata.modelClassName, adapterClassName)
+                    } else {
+                        throw ProcessingException("Failed to write generated file: " + adapterClassName.simpleName())
+                    }
+                }
+    }
+
+    private fun TypeSpec.Builder.addDetails(
+            metadata: AdapterModelMetadata,
+            extensionsHandler: ExtensionsHandler): TypeSpec.Builder {
+
+        superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), metadata.modelClassName))
+        addAnnotation(AnnotationSpec.builder(Generated::class.java)
                 .addMember("value", "\"gsonpath.GsonProcessor\"")
                 .addMember("comments", "\"https://github.com/LachlanMcKee/gsonpath\"")
-                .build()
+                .build())
 
-        val metadata = adapterModelMetadataFactory.createMetadata(modelElement, autoGsonAnnotation)
+        field("mGson", Gson::class.java) {
+            addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+        }
 
-        val adapterTypeBuilder = TypeSpecExt.finalClassBuilder(metadata.adapterClassName).apply {
-            superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), metadata.modelClassName))
-            addAnnotation(generatedJavaPoetAnnotation)
-
-            field("mGson", Gson::class.java) {
-                addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-            }
-
-            // Add the constructor which takes a gson instance for future use.
-            constructor {
-                addModifiers(Modifier.PUBLIC)
-                addParameter(Gson::class.java, "gson")
-                code {
-                    assign("this.mGson", "gson")
-                }
+        // Add the constructor which takes a gson instance for future use.
+        constructor {
+            addModifiers(Modifier.PUBLIC)
+            addParameter(Gson::class.java, "gson")
+            code {
+                assign("this.mGson", "gson")
             }
         }
 
@@ -61,27 +72,27 @@ class AutoGsonAdapterGenerator(
         metadata.mandatoryInfoMap.let {
             if (it.isNotEmpty()) {
                 it.values.forEachIndexed { mandatoryIndex, mandatoryField ->
-                    adapterTypeBuilder.field(mandatoryField.indexVariableName, TypeName.INT) {
+                    field(mandatoryField.indexVariableName, TypeName.INT) {
                         addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
                         initializer("" + mandatoryIndex)
                     }
                 }
 
-                adapterTypeBuilder.field("MANDATORY_FIELDS_SIZE", TypeName.INT) {
+                field("MANDATORY_FIELDS_SIZE", TypeName.INT) {
                     addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
                     initializer("" + it.size)
                 }
             }
         }
 
-        adapterTypeBuilder.addMethod(readFunctions.createReadMethod(metadata.readParams, extensionsHandler))
+        addMethod(readFunctions.createReadMethod(metadata.readParams, extensionsHandler))
 
         if (!metadata.isModelInterface) {
-            adapterTypeBuilder.addMethod(writeFunctions.createWriteMethod(metadata.writeParams))
+            addMethod(writeFunctions.createWriteMethod(metadata.writeParams))
 
         } else {
             // Create an empty method for the write, since we do not support writing for interfaces.
-            adapterTypeBuilder.overrideMethod("write") {
+            overrideMethod("write") {
                 addParameter(JsonWriter::class.java, "out")
                 addParameter(metadata.modelClassName, "value")
                 addException(IOException::class.java)
@@ -89,13 +100,8 @@ class AutoGsonAdapterGenerator(
         }
 
         // Adds any required subtype type adapters depending on the usage of the GsonSubtype annotation.
-        subtypeFunctions.addSubTypeTypeAdapters(adapterTypeBuilder, metadata.rootGsonObject)
-
-        if (adapterTypeBuilder.writeFile(fileWriter, logger, metadata.adapterClassName.packageName(), this::onJavaFileBuilt)) {
-            return HandleResult(metadata.modelClassName, metadata.adapterClassName)
-        }
-
-        throw ProcessingException("Failed to write generated file: " + metadata.adapterClassName.simpleName())
+        subtypeFunctions.addSubTypeTypeAdapters(this, metadata.rootGsonObject)
+        return this
     }
 
     private fun onJavaFileBuilt(builder: JavaFile.Builder) {
