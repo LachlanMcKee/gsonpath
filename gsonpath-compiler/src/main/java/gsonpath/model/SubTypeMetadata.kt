@@ -1,6 +1,7 @@
 package gsonpath.model
 
 import gsonpath.GsonSubTypeFailureOutcome
+import javax.lang.model.element.Element
 import javax.lang.model.type.TypeMirror
 
 data class SubTypeMetadata(
@@ -24,4 +25,4 @@ enum class SubTypeKeyType {
  * A data class that is used to convert the annotation 'stringValueSubtypes' 'booleanValueSubtypes' and 'integerValueSubtypes'
  * into a common reusable structure.
  */
-data class GsonSubTypeKeyAndClass(val key: String, val clazzTypeMirror: TypeMirror)
+data class GsonSubTypeKeyAndClass(val key: String, val classTypeMirror: TypeMirror, val classElement: Element)

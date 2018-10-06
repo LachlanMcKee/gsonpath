@@ -100,7 +100,7 @@ class AutoGsonAdapterGenerator(
         }
 
         // Adds any required subtype type adapters depending on the usage of the GsonSubtype annotation.
-        subtypeFunctions.addSubTypeTypeAdapters(this, metadata.rootGsonObject)
+        subtypeFunctions.addSubTypeTypeAdapters(this, metadata.subtypeParams)
         return this
     }
 

@@ -11,54 +11,53 @@ import com.squareup.javapoet.*
 import gsonpath.GsonSubTypeFailureException
 import gsonpath.GsonSubTypeFailureOutcome
 import gsonpath.generator.adapter.SharedFunctions.getRawType
-import gsonpath.generator.adapter.SharedFunctions.isArrayType
 import gsonpath.internal.CollectionTypeAdapter
 import gsonpath.internal.StrictArrayTypeAdapter
-import gsonpath.model.*
+import gsonpath.model.GsonField
+import gsonpath.model.SubTypeKeyType
+import gsonpath.model.SubTypeMetadata
 import gsonpath.util.*
 import java.io.IOException
 import javax.lang.model.element.Modifier
 
-class SubtypeFunctions(
-        private val typeHandler: TypeHandler,
-        private val gsonObjectTreeFactory: GsonObjectTreeFactory) {
-
+class SubtypeFunctions {
     /**
      * Creates the code required for subtype adapters for any fields that use the GsonSubtype annotation.
      */
-    fun addSubTypeTypeAdapters(
-            typeSpecBuilder: TypeSpec.Builder,
-            rootElements: GsonObject) {
-
-        gsonObjectTreeFactory
-                .getFlattenedFieldsFromGsonObject(rootElements)
-                .mapNotNull { it.subTypeMetadata?.to(it) }
-                .forEach { (subTypeMetadata, gsonField) ->
-                    val typeAdapterDetails = getTypeAdapterDetails(typeHandler, gsonField)
-
-                    typeSpecBuilder.field(subTypeMetadata.variableName, typeAdapterDetails.typeName) {
-                        addModifiers(Modifier.PRIVATE)
-                    }
-
-                    createGetter(typeHandler, typeSpecBuilder, gsonField, subTypeMetadata)
-                    createSubTypeAdapter(typeSpecBuilder, gsonField, subTypeMetadata)
+    fun addSubTypeTypeAdapters(typeSpecBuilder: TypeSpec.Builder, subtypeParams: SubtypeParams) {
+        subtypeParams.subTypedFields.forEach {
+            val gsonField = it.gsonField
+            val subTypeMetadata = it.subTypeMetadata
+            typeSpecBuilder.apply {
+                val typeAdapterDetails = if (it.isFieldArrayType) {
+                    TypeAdapterDetails.ArrayTypeAdapter
+                } else {
+                    TypeAdapterDetails.CollectionTypeAdapter(ParameterizedTypeName.get(
+                            ClassName.get(CollectionTypeAdapter::class.java), TypeName.get(getRawType(gsonField))))
                 }
+
+                field(subTypeMetadata.variableName, typeAdapterDetails.typeName) {
+                    addModifiers(Modifier.PRIVATE)
+                }
+
+                createGetter(typeAdapterDetails, gsonField, subTypeMetadata)
+                addType(createSubTypeAdapter(gsonField, subTypeMetadata))
+            }
+        }
     }
 
     /**
      * Creates the getter for the type adapter.
      * This implementration lazily loads, and then cached the result for subsequent usages.
      */
-    private fun createGetter(
-            typeHandler: TypeHandler,
-            typeSpecBuilder: TypeSpec.Builder,
+    private fun TypeSpec.Builder.createGetter(
+            typeAdapterDetails: TypeAdapterDetails,
             gsonField: GsonField,
             subTypeMetadata: SubTypeMetadata) {
 
         val variableName = subTypeMetadata.variableName
-        val typeAdapterDetails = getTypeAdapterDetails(typeHandler, gsonField)
 
-        typeSpecBuilder.method(subTypeMetadata.getterName) {
+        method(subTypeMetadata.getterName) {
             addModifiers(Modifier.PRIVATE)
             returns(typeAdapterDetails.typeName)
 
@@ -66,31 +65,21 @@ class SubtypeFunctions(
                 `if`("$variableName == null") {
                     val filterNulls = (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.REMOVE_ELEMENT)
 
-                    if (typeAdapterDetails === TypeAdapterDetails.ArrayTypeAdapter) {
-                        assignNew(variableName, "\$T<>(new ${subTypeMetadata.className}(mGson), \$T.class, $filterNulls)",
-                                typeAdapterDetails.typeName, getRawTypeName(gsonField))
-                    } else {
-                        assignNew(variableName, "\$T(new ${subTypeMetadata.className}(mGson), $filterNulls)",
-                                typeAdapterDetails.typeName)
+                    when (typeAdapterDetails) {
+                        is TypeAdapterDetails.ArrayTypeAdapter -> {
+                            assignNew(variableName,
+                                    "\$T<>(new ${subTypeMetadata.className}(mGson), \$T.class, $filterNulls)",
+                                    typeAdapterDetails.typeName, getRawTypeName(gsonField))
+                        }
+                        is TypeAdapterDetails.CollectionTypeAdapter -> {
+                            assignNew(variableName,
+                                    "\$T(new ${subTypeMetadata.className}(mGson), $filterNulls)",
+                                    typeAdapterDetails.typeName)
+                        }
                     }
                 }
                 `return`(variableName)
             }
-        }
-    }
-
-    /**
-     * Creates a collection type adapter class name and uses the fields type as the generic parameter.
-     */
-    private fun getTypeAdapterDetails(
-            typeHandler: TypeHandler,
-            gsonField: GsonField): TypeAdapterDetails {
-
-        return if (isArrayType(typeHandler, gsonField)) {
-            TypeAdapterDetails.ArrayTypeAdapter
-        } else {
-            TypeAdapterDetails.CollectionTypeAdapter(ParameterizedTypeName.get(
-                    ClassName.get(CollectionTypeAdapter::class.java), TypeName.get(getRawType(gsonField))))
         }
     }
 
@@ -103,14 +92,10 @@ class SubtypeFunctions(
      * <p>
      * Only gson fields that are annotated with 'GsonSubtype' should invoke this method
      */
-    private fun createSubTypeAdapter(
-            typeSpecBuilder: TypeSpec.Builder,
-            gsonField: GsonField,
-            subTypeMetadata: SubTypeMetadata) {
+    private fun createSubTypeAdapter(gsonField: GsonField, subTypeMetadata: SubTypeMetadata): TypeSpec {
+        return TypeSpec.classBuilder(subTypeMetadata.className).applyAndBuild {
+            val rawTypeName = getRawTypeName(gsonField)
 
-        val rawTypeName = getRawTypeName(gsonField)
-
-        typeSpecBuilder.addType(TypeSpec.classBuilder(subTypeMetadata.className).applyAndBuild {
             addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
             superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), rawTypeName))
 
@@ -125,11 +110,11 @@ class SubtypeFunctions(
                         SubTypeKeyType.BOOLEAN -> TypeName.get(Boolean::class.java).box()
                     }
 
-            field("typeAdaptersDelegatedByValueMap", ParameterizedTypeName.get(ClassName.get(Map::class.java), valueMapClassName, typeAdapterType)) {
+            field("typeAdaptersDelegatedByValueMap", TypeNameExt.createMap(valueMapClassName, typeAdapterType)) {
                 addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             }
 
-            field("typeAdaptersDelegatedByClassMap", ParameterizedTypeName.get(ClassName.get(Map::class.java), classConstainedType, typeAdapterType)) {
+            field("typeAdaptersDelegatedByClassMap", TypeNameExt.createMap(classConstainedType, typeAdapterType)) {
                 addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             }
 
@@ -142,7 +127,7 @@ class SubtypeFunctions(
             addSubTypeConstructor(subTypeMetadata)
             addReadMethod(subTypeMetadata, rawTypeName)
             addWriteMethod(subTypeMetadata, rawTypeName, typeAdapterType)
-        })
+        }
     }
 
     private fun TypeSpec.Builder.addSubTypeConstructor(subTypeMetadata: SubTypeMetadata) = constructor {
@@ -155,7 +140,7 @@ class SubtypeFunctions(
 
             // Instantiate each subtype delegated adapter
             subTypeMetadata.gsonSubTypeKeys.forEach {
-                val subtypeElement = typeHandler.asElement(it.clazzTypeMirror)
+                val subtypeElement = it.classElement
 
                 newLine()
                 addStatement("typeAdaptersDelegatedByValueMap.put(${it.key}, gson.getAdapter(\$T.class))", subtypeElement)
