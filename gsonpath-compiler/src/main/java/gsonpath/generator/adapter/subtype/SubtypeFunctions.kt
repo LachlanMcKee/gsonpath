@@ -14,6 +14,7 @@ import gsonpath.generator.Constants.GSON
 import gsonpath.generator.Constants.IN
 import gsonpath.generator.Constants.NULL
 import gsonpath.generator.Constants.OUT
+import gsonpath.generator.Constants.VALUE
 import gsonpath.generator.adapter.SharedFunctions.getRawType
 import gsonpath.internal.CollectionTypeAdapter
 import gsonpath.internal.StrictArrayTypeAdapter
@@ -278,7 +279,6 @@ class SubtypeFunctions {
         private const val JSON_ELEMENT = "jsonElement"
         private const val TYPE_VALUE_JSON_ELEMENT = "typeValueJsonElement"
         private const val DELEGATE = "delegate"
-        private const val VALUE = "value"
         private const val RESULT = "result"
     }
 }

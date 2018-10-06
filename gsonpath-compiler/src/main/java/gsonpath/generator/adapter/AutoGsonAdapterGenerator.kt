@@ -7,6 +7,7 @@ import com.squareup.javapoet.*
 import gsonpath.AutoGsonAdapter
 import gsonpath.GsonUtil
 import gsonpath.ProcessingException
+import gsonpath.generator.Constants.GENERATED_ANNOTATION
 import gsonpath.generator.HandleResult
 import gsonpath.generator.adapter.read.ReadFunctions
 import gsonpath.generator.adapter.subtype.SubtypeFunctions
@@ -14,7 +15,6 @@ import gsonpath.generator.adapter.write.WriteFunctions
 import gsonpath.generator.writeFile
 import gsonpath.util.*
 import java.io.IOException
-import javax.annotation.Generated
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 
@@ -50,10 +50,7 @@ class AutoGsonAdapterGenerator(
             extensionsHandler: ExtensionsHandler): TypeSpec.Builder {
 
         superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), metadata.modelClassName))
-        addAnnotation(AnnotationSpec.builder(Generated::class.java)
-                .addMember("value", "\"gsonpath.GsonProcessor\"")
-                .addMember("comments", "\"https://github.com/LachlanMcKee/gsonpath\"")
-                .build())
+        addAnnotation(GENERATED_ANNOTATION)
 
         field("mGson", Gson::class.java) {
             addModifiers(Modifier.PRIVATE, Modifier.FINAL)

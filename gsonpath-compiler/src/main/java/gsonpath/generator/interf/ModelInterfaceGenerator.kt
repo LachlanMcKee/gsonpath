@@ -3,12 +3,13 @@ package gsonpath.generator.interf
 import com.squareup.javapoet.*
 import gsonpath.ProcessingException
 import gsonpath.compiler.generateClassName
+import gsonpath.generator.Constants.GENERATED_ANNOTATION
+import gsonpath.generator.Constants.NULL
 import gsonpath.generator.writeFile
 import gsonpath.model.FieldInfoFactory
 import gsonpath.model.FieldInfoFactory.InterfaceFieldInfo
 import gsonpath.model.FieldInfoFactory.InterfaceInfo
 import gsonpath.util.*
-import javax.annotation.Generated
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
@@ -28,11 +29,7 @@ class ModelInterfaceGenerator(
 
     private fun TypeSpec.Builder.addDetails(element: TypeElement, outputClassName: ClassName): InterfaceInfo {
         addSuperinterface(ClassName.get(element))
-        addAnnotation(AnnotationSpec.builder(Generated::class.java).run {
-            addMember("value", "\"gsonpath.GsonProcessor\"")
-            addMember("comments", "\"https://github.com/LachlanMcKee/gsonpath\"")
-            build()
-        })
+        addAnnotation(GENERATED_ANNOTATION)
 
         val modelMetadataList = interfaceModelMetadataFactory.createMetadata(element)
 
@@ -98,36 +95,36 @@ class ModelInterfaceGenerator(
 
         code {
             `if`("this == o") {
-                `return`("true")
+                `return`(TRUE)
             }
             `if`("o == null || getClass() != o.getClass()") {
-                `return`("false")
+                `return`(FALSE)
             }
             newLine()
-            createVariable("\$T", "equalsOtherType", "(\$T) o", outputClassName, outputClassName)
+            createVariable("\$T", EQUALS_OTHER_TYPE, "(\$T) o", outputClassName, outputClassName)
             newLine()
 
             modelMetadataList.forEach { (typeName, fieldName) ->
                 if (typeName.isPrimitive) {
-                    `if`("$fieldName != equalsOtherType.$fieldName") {
-                        `return`("false")
+                    `if`("$fieldName != $EQUALS_OTHER_TYPE.$fieldName") {
+                        `return`(FALSE)
                     }
                 } else {
                     if (typeName is ArrayTypeName) {
-                        `if`("!java.util.Arrays.equals($fieldName, equalsOtherType.$fieldName)") {
-                            `return`("false")
+                        `if`("!java.util.Arrays.equals($fieldName, $EQUALS_OTHER_TYPE.$fieldName)") {
+                            `return`(FALSE)
                         }
 
                     } else {
-                        `if`("$fieldName != null ? !$fieldName.equals(equalsOtherType.$fieldName) : equalsOtherType.$fieldName != null") {
-                            `return`("false")
+                        `if`("$fieldName != $NULL ? !$fieldName.equals($EQUALS_OTHER_TYPE.$fieldName) : $EQUALS_OTHER_TYPE.$fieldName != $NULL") {
+                            `return`(FALSE)
                         }
                     }
                 }
             }
 
             newLine()
-            `return`("true")
+            `return`(TRUE)
         }
     }
 
@@ -137,7 +134,7 @@ class ModelInterfaceGenerator(
         code {
             // An optimisation for hash codes which prevents us creating too many temp long variables.
             if (modelMetadataList.any { it.typeName == TypeName.DOUBLE }) {
-                addStatement("long temp")
+                addStatement("long $TEMP")
             }
 
             modelMetadataList.forEachIndexed { index, (typeName, fieldName) ->
@@ -147,8 +144,8 @@ class ModelInterfaceGenerator(
                         TypeName.INT -> fieldName
                         TypeName.LONG -> "(int) ($fieldName ^ ($fieldName >>> 32))"
                         TypeName.DOUBLE -> {
-                            assign("temp", "java.lang.Double.doubleToLongBits($fieldName)")
-                            "(int) (temp ^ (temp >>> 32))"
+                            assign(TEMP, "java.lang.Double.doubleToLongBits($fieldName)")
+                            "(int) ($TEMP ^ ($TEMP >>> 32))"
 
                         }
                         else -> // Last possible outcome in a boolean.
@@ -159,20 +156,20 @@ class ModelInterfaceGenerator(
                         "java.util.Arrays.hashCode($fieldName)"
 
                     } else {
-                        "$fieldName != null ? $fieldName.hashCode() : 0"
+                        "$fieldName != $NULL ? $fieldName.hashCode() : 0"
                     }
                 }
 
                 if (index == 0) {
-                    createVariable("int", "hashCodeReturnValue", hashCodeLine)
+                    createVariable("int", HASH_CODE_RETURN_VALUE, hashCodeLine)
                 } else {
-                    assign("hashCodeReturnValue", "31 * hashCodeReturnValue + ($hashCodeLine)")
+                    assign(HASH_CODE_RETURN_VALUE, "31 * $HASH_CODE_RETURN_VALUE + ($hashCodeLine)")
                 }
             }
 
             // If we have no elements, 'hashCodeReturnValue' won't be initialised!
             if (modelMetadataList.isNotEmpty()) {
-                `return`("hashCodeReturnValue")
+                `return`(HASH_CODE_RETURN_VALUE)
             } else {
                 `return`("0")
             }
@@ -182,15 +179,17 @@ class ModelInterfaceGenerator(
     private fun TypeSpec.Builder.addToStringMethod(element: TypeElement, modelMetadataList: List<InterfaceModelMetadata>) = overrideMethod("toString") {
         returns(TypeName.get(String::class.java))
 
+        val className = ClassName.get(element).simpleName()
         code {
-            add("""return "${ClassName.get(element).simpleName()}{" +""")
+            add("""return "$className{" +""")
             newLine()
+            indent()
+            add("\"")
 
             modelMetadataList.forEachIndexed { index, (typeName, fieldName) ->
                 // Add to the toString method.
-                add("\t\t\"")
                 if (index > 0) {
-                    add(", ")
+                    add("\", ")
                 }
                 if (typeName is ArrayTypeName) {
                     add("""$fieldName=" + java.util.Arrays.toString($fieldName) +""")
@@ -201,7 +200,7 @@ class ModelInterfaceGenerator(
                 newLine()
             }
 
-            addStatement("\t\t'}'")
+            addStatement("'}'")
         }
     }
 
@@ -223,5 +222,13 @@ class ModelInterfaceGenerator(
                     it.annotationType.asElement().simpleName.toString()
                 }
             }
+    }
+
+    private companion object {
+        private const val TRUE = "true"
+        private const val FALSE = "false"
+        private const val TEMP = "temp"
+        private const val HASH_CODE_RETURN_VALUE = "hashCodeReturnValue"
+        private const val EQUALS_OTHER_TYPE = "equalsOtherType"
     }
 }

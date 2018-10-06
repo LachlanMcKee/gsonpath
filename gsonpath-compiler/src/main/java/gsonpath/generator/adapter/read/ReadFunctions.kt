@@ -10,6 +10,11 @@ import gsonpath.FlattenJson
 import gsonpath.ProcessingException
 import gsonpath.compiler.CLASS_NAME_STRING
 import gsonpath.compiler.createDefaultVariableValueForTypeName
+import gsonpath.generator.Constants.BREAK
+import gsonpath.generator.Constants.CONTINUE
+import gsonpath.generator.Constants.GET_ADAPTER
+import gsonpath.generator.Constants.IN
+import gsonpath.generator.Constants.NULL
 import gsonpath.model.GsonField
 import gsonpath.model.GsonModel
 import gsonpath.model.GsonObject
@@ -17,21 +22,21 @@ import gsonpath.model.MandatoryFieldInfoFactory.MandatoryFieldInfo
 import gsonpath.util.*
 import java.io.IOException
 
+/**
+ * public T read(JsonReader in) throws IOException {
+ */
 class ReadFunctions {
 
-    /**
-     * public T read(JsonReader in) throws IOException {
-     */
     @Throws(ProcessingException::class)
     fun createReadMethod(params: ReadParams, extensionsHandler: ExtensionsHandler): MethodSpec {
         return MethodSpecExt.overrideMethodBuilder("read").applyAndBuild {
             returns(params.baseElement)
-            addParameter(JsonReader::class.java, "in")
+            addParameter(JsonReader::class.java, IN)
             addException(IOException::class.java)
             code {
                 comment("Ensure the object is not null.")
-                `if`("!isValidValue(in)") {
-                    `return`("null")
+                `if`("!isValidValue($IN)") {
+                    `return`(NULL)
                 }
 
                 addInitialisationBlock(params)
@@ -40,7 +45,7 @@ class ReadFunctions {
 
                 if (!params.requiresConstructorInjection) {
                     // If the class was already defined, return it now.
-                    `return`("result")
+                    `return`(RESULT)
 
                 } else {
                     // Create the class using the constructor.
@@ -52,21 +57,20 @@ class ReadFunctions {
 
     private fun CodeBlock.Builder.addInitialisationBlock(params: ReadParams) {
         if (!params.requiresConstructorInjection) {
-            createVariableNew("\$T", "result", "\$T()", params.concreteElement, params.concreteElement)
+            createVariableNew("\$T", RESULT, "\$T()", params.concreteElement, params.concreteElement)
 
         } else {
-            for (gsonField in params.flattenedFields) {
-                // Don't initialise primitives, we rely on validation to throw an exception if the value does not exist.
-                val typeName = gsonField.fieldInfo.typeName
-                val defaultValue = createDefaultVariableValueForTypeName(typeName)
-
-                createVariable("\$T", gsonField.variableName, defaultValue, typeName)
+            params.flattenedFields.forEach {
+                createVariable("\$T",
+                        it.variableName,
+                        createDefaultVariableValueForTypeName(it.fieldInfo.typeName),
+                        it.fieldInfo.typeName)
             }
         }
 
         // If we have any mandatory fields, we need to keep track of what has been assigned.
         if (params.mandatoryInfoMap.isNotEmpty()) {
-            createVariableNew("boolean[]", "mandatoryFieldsCheckList", "boolean[MANDATORY_FIELDS_SIZE]")
+            createVariableNew("boolean[]", MANDATORY_FIELDS_CHECK_LIST, "boolean[$MANDATORY_FIELDS_SIZE]")
         }
 
         newLine()
@@ -91,10 +95,10 @@ class ReadFunctions {
         val counterVariableName = "jsonFieldCounter$recursionCount"
 
         createVariable("int", counterVariableName, "0")
-        addStatement("in.beginObject()")
+        addStatement("$IN.beginObject()")
         newLine()
 
-        val overallRecursionCount = `while`("in.hasNext()") {
+        val overallRecursionCount = `while`("$IN.hasNext()") {
 
             //
             // Since all the required fields have been mapped, we can avoid calling 'nextName'.
@@ -102,12 +106,12 @@ class ReadFunctions {
             // the ordering of the fields within the JSON.
             //
             `if`("$counterVariableName == $jsonMappingSize") {
-                addStatement("in.skipValue()")
-                addStatement("continue")
+                addStatement("$IN.skipValue()")
+                addStatement(CONTINUE)
             }
             newLine()
 
-            switch("in.nextName()") {
+            switch("$IN.nextName()") {
                 val recursionTemp = jsonMapping.entries()
                         .fold(recursionCount + 1) { currentOverallRecursionCount, entry ->
                             addReadCodeForModel(
@@ -120,13 +124,13 @@ class ReadFunctions {
                         }
 
                 default {
-                    addStatement("in.skipValue()")
+                    addStatement("$IN.skipValue()")
                 }
                 return@switch recursionTemp
             }
         }
         newLine()
-        addStatement("in.endObject()")
+        addStatement("$IN.endObject()")
 
         return overallRecursionCount
     }
@@ -155,8 +159,8 @@ class ReadFunctions {
                 is GsonObject -> {
                     newLine()
                     comment("Ensure the object is not null.")
-                    `if`("!isValidValue(in)") {
-                        addStatement("break")
+                    `if`("!isValidValue($IN)") {
+                        addStatement(BREAK)
                     }
                     addReadCodeForElements(value, params, extensionsHandler, currentOverallRecursionCount)
                 }
@@ -180,10 +184,10 @@ class ReadFunctions {
         val result = writeGsonFieldReading(gsonField, requiresConstructorInjection)
 
         if (result.checkIfNull) {
-            `if`("${result.variableName} != null") {
+            `if`("${result.variableName} != $NULL") {
 
                 val assignmentBlock: String = if (!requiresConstructorInjection) {
-                    "result." + fieldInfo.fieldName
+                    "$RESULT." + fieldInfo.fieldName
                 } else {
                     gsonField.variableName
                 }
@@ -196,11 +200,11 @@ class ReadFunctions {
 
                 // When a field has been assigned, if it is a mandatory value, we note this down.
                 if (mandatoryFieldInfo != null) {
-                    assign("mandatoryFieldsCheckList[${mandatoryFieldInfo.indexVariableName}]", "true")
+                    assign("$MANDATORY_FIELDS_CHECK_LIST[${mandatoryFieldInfo.indexVariableName}]", "true")
                     newLine()
 
                     nextControlFlow("else")
-                    addEscapedStatement("""throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '${gsonField.jsonPath}' was null for class '${fieldInfo.parentClassName}'")""")
+                    addEscapedStatement("""throw new $JSON_FIELD_MISSING_EXCEPTION("Mandatory JSON element '${gsonField.jsonPath}' was null for class '${fieldInfo.parentClassName}'")""")
                 }
 
             }
@@ -223,7 +227,7 @@ class ReadFunctions {
 
             // Handle the null-checking for the extensions to avoid repetition inside the extension implementations.
             if (!fieldTypeName.isPrimitive) {
-                `if`("${result.variableName} != null") {
+                `if`("${result.variableName} != $NULL") {
                     add(extensionsCodeBlock)
                 }
             } else {
@@ -252,7 +256,7 @@ class ReadFunctions {
                         else
                             gsonField.variableName
 
-                createVariable("\$T", variableName, "mGson.getAdapter(\$T.class).read(in)",
+                createVariable("\$T", variableName, "$GET_ADAPTER(\$T.class).read($IN)",
                         CLASS_NAME_JSON_ELEMENT,
                         CLASS_NAME_JSON_ELEMENT)
 
@@ -268,10 +272,10 @@ class ReadFunctions {
         if (subTypeMetadata != null) {
             // If this field uses a subtype annotation, we use the type adapter subclasses instead of gson.
             if (checkIfResultIsNull) {
-                createVariable("\$T", variableName, "(\$T) ${subTypeMetadata.getterName}().read(in)", fieldTypeName, fieldTypeName)
+                createVariable("\$T", variableName, "(\$T) ${subTypeMetadata.getterName}().read($IN)", fieldTypeName, fieldTypeName)
 
             } else {
-                assign(variableName, "(\$T) ${subTypeMetadata.getterName}().read(in)", fieldTypeName)
+                assign(variableName, "(\$T) ${subTypeMetadata.getterName}().read($IN)", fieldTypeName)
             }
 
         } else {
@@ -283,10 +287,10 @@ class ReadFunctions {
                         "\$T.class"
 
             if (checkIfResultIsNull) {
-                createVariable("\$T", variableName, "mGson.getAdapter($adapterName).read(in)", fieldTypeName, fieldTypeName)
+                createVariable("\$T", variableName, "$GET_ADAPTER($adapterName).read($IN)", fieldTypeName, fieldTypeName)
 
             } else {
-                assign(variableName, "mGson.getAdapter($adapterName).read(in)", fieldTypeName)
+                assign(variableName, "$GET_ADAPTER($adapterName).read($IN)", fieldTypeName)
             }
         }
 
@@ -303,26 +307,26 @@ class ReadFunctions {
 
         newLine()
         comment("Mandatory object validation")
-        `for`("int mandatoryFieldIndex = 0; mandatoryFieldIndex < MANDATORY_FIELDS_SIZE; mandatoryFieldIndex++") {
+        `for`("int $MANDATORY_FIELD_INDEX = 0; $MANDATORY_FIELD_INDEX < $MANDATORY_FIELDS_SIZE; $MANDATORY_FIELD_INDEX++") {
 
             newLine()
             comment("Check if a mandatory value is missing.")
-            `if`("!mandatoryFieldsCheckList[mandatoryFieldIndex]") {
+            `if`("!$MANDATORY_FIELDS_CHECK_LIST[$MANDATORY_FIELD_INDEX]") {
 
                 // The code must figure out the correct field name to insert into the error message.
                 newLine()
                 comment("Find the field name of the missing json value.")
-                createVariable("String", "fieldName", "null")
-                switch("mandatoryFieldIndex") {
+                createVariable("String", FIELD_NAME, NULL)
+                switch(MANDATORY_FIELD_INDEX) {
 
                     for ((_, mandatoryFieldInfo) in params.mandatoryInfoMap) {
                         case(mandatoryFieldInfo.indexVariableName) {
-                            addEscapedStatement("""fieldName = "${mandatoryFieldInfo.gsonField.jsonPath}"""")
+                            addEscapedStatement("""$FIELD_NAME = "${mandatoryFieldInfo.gsonField.jsonPath}"""")
                         }
                     }
 
                 }
-                addStatement("""throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class '${params.concreteElement}'")""")
+                addStatement("""throw new $JSON_FIELD_MISSING_EXCEPTION("Mandatory JSON element '" + $FIELD_NAME + "' was not found for class '${params.concreteElement}'")""")
             }
         }
     }
@@ -345,5 +349,11 @@ class ReadFunctions {
 
     private companion object {
         private val CLASS_NAME_JSON_ELEMENT: ClassName = ClassName.get(JsonElement::class.java)
+        private const val RESULT = "result"
+        private const val MANDATORY_FIELDS_CHECK_LIST = "mandatoryFieldsCheckList"
+        private const val MANDATORY_FIELDS_SIZE = "MANDATORY_FIELDS_SIZE"
+        private const val MANDATORY_FIELD_INDEX = "mandatoryFieldIndex"
+        private const val FIELD_NAME = "fieldName"
+        private const val JSON_FIELD_MISSING_EXCEPTION = "gsonpath.JsonFieldMissingException"
     }
 }
