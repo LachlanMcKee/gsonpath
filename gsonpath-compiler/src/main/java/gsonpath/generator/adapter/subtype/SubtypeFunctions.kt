@@ -10,6 +10,10 @@ import com.google.gson.stream.JsonWriter
 import com.squareup.javapoet.*
 import gsonpath.GsonSubTypeFailureException
 import gsonpath.GsonSubTypeFailureOutcome
+import gsonpath.generator.Constants.GSON
+import gsonpath.generator.Constants.IN
+import gsonpath.generator.Constants.NULL
+import gsonpath.generator.Constants.OUT
 import gsonpath.generator.adapter.SharedFunctions.getRawType
 import gsonpath.internal.CollectionTypeAdapter
 import gsonpath.internal.StrictArrayTypeAdapter
@@ -62,7 +66,7 @@ class SubtypeFunctions {
             returns(typeAdapterDetails.typeName)
 
             code {
-                `if`("$variableName == null") {
+                `if`("$variableName == $NULL") {
                     val filterNulls = (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.REMOVE_ELEMENT)
 
                     when (typeAdapterDetails) {
@@ -110,16 +114,16 @@ class SubtypeFunctions {
                         SubTypeKeyType.BOOLEAN -> TypeName.get(Boolean::class.java).box()
                     }
 
-            field("typeAdaptersDelegatedByValueMap", TypeNameExt.createMap(valueMapClassName, typeAdapterType)) {
+            field(DELEGATE_BY_VALUE_MAP, TypeNameExt.createMap(valueMapClassName, typeAdapterType)) {
                 addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             }
 
-            field("typeAdaptersDelegatedByClassMap", TypeNameExt.createMap(classConstainedType, typeAdapterType)) {
+            field(DELEGATE_BY_CLASS_MAP, TypeNameExt.createMap(classConstainedType, typeAdapterType)) {
                 addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             }
 
             if (subTypeMetadata.defaultType != null) {
-                field("defaultTypeAdapterDelegate", typeAdapterType) {
+                field(DEFAULT_ADAPTER, typeAdapterType) {
                     addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                 }
             }
@@ -132,24 +136,24 @@ class SubtypeFunctions {
 
     private fun TypeSpec.Builder.addSubTypeConstructor(subTypeMetadata: SubTypeMetadata) = constructor {
         addModifiers(Modifier.PRIVATE)
-        addParameter(Gson::class.java, "gson")
+        addParameter(Gson::class.java, GSON)
 
         code {
-            assignNew("typeAdaptersDelegatedByValueMap", "java.util.HashMap<>()")
-            assignNew("typeAdaptersDelegatedByClassMap", "java.util.HashMap<>()")
+            assignNew(DELEGATE_BY_VALUE_MAP, "java.util.HashMap<>()")
+            assignNew(DELEGATE_BY_CLASS_MAP, "java.util.HashMap<>()")
 
             // Instantiate each subtype delegated adapter
             subTypeMetadata.gsonSubTypeKeys.forEach {
                 val subtypeElement = it.classElement
 
                 newLine()
-                addStatement("typeAdaptersDelegatedByValueMap.put(${it.key}, gson.getAdapter(\$T.class))", subtypeElement)
-                addStatement("typeAdaptersDelegatedByClassMap.put(\$T.class, gson.getAdapter(\$T.class))",
+                addStatement("$DELEGATE_BY_VALUE_MAP.put(${it.key}, $GSON.getAdapter(\$T.class))", subtypeElement)
+                addStatement("$DELEGATE_BY_CLASS_MAP.put(\$T.class, $GSON.getAdapter(\$T.class))",
                         subtypeElement, subtypeElement)
             }
 
             if (subTypeMetadata.defaultType != null) {
-                assign("defaultTypeAdapterDelegate", "gson.getAdapter(\$T.class)", subTypeMetadata.defaultType)
+                assign(DEFAULT_ADAPTER, "$GSON.getAdapter(\$T.class)", subTypeMetadata.defaultType)
             }
         }
     }
@@ -167,51 +171,67 @@ class SubtypeFunctions {
             rawTypeName: TypeName) = overrideMethod("read") {
 
         returns(rawTypeName)
-        addParameter(JsonReader::class.java, "in")
+        addParameter(JsonReader::class.java, IN)
         addException(IOException::class.java)
         code {
-            createVariable("\$T", "jsonElement", "\$T.parse(in)", JsonElement::class.java, Streams::class.java)
-            createVariable("\$T", "typeValueJsonElement", "jsonElement.getAsJsonObject().remove(\"${subTypeMetadata.fieldName}\")",
+            val fieldName = subTypeMetadata.fieldName
+            createVariable("\$T",
+                    JSON_ELEMENT,
+                    "\$T.parse($IN)",
+                    JsonElement::class.java,
+                    Streams::class.java)
+
+            createVariable("\$T",
+                    TYPE_VALUE_JSON_ELEMENT,
+                    "$JSON_ELEMENT.getAsJsonObject().remove(\"$fieldName\")",
                     JsonElement::class.java)
 
-            `if`("typeValueJsonElement == null || typeValueJsonElement.isJsonNull()") {
-                addStatement("throw new \$T(\"cannot deserialize $rawTypeName because the subtype field '${subTypeMetadata.fieldName}' is either null or does not exist.\")",
+            `if`("$TYPE_VALUE_JSON_ELEMENT == $NULL || $TYPE_VALUE_JSON_ELEMENT.isJsonNull()") {
+                addStatement("throw new \$T(\"cannot deserialize $rawTypeName because the subtype field " +
+                        "'$fieldName' is either null or does not exist.\")",
                         JsonParseException::class.java)
             }
 
             // Obtain the value using the correct type.
-            addStatement(when (subTypeMetadata.keyType) {
-                SubTypeKeyType.STRING -> "java.lang.String value = typeValueJsonElement.getAsString()"
-                SubTypeKeyType.INTEGER -> "int value = typeValueJsonElement.getAsInt()"
-                SubTypeKeyType.BOOLEAN -> "boolean value = typeValueJsonElement.getAsBoolean()"
-            })
+            when (subTypeMetadata.keyType) {
+                SubTypeKeyType.STRING ->
+                    createVariable("java.lang.String", VALUE, "$TYPE_VALUE_JSON_ELEMENT.getAsString()")
 
-            createVariable("\$T<? extends \$T>", "delegate", "typeAdaptersDelegatedByValueMap.get(value)",
+                SubTypeKeyType.INTEGER ->
+                    createVariable("int", VALUE, "$TYPE_VALUE_JSON_ELEMENT.getAsInt()")
+
+                SubTypeKeyType.BOOLEAN ->
+                    createVariable("boolean", VALUE, "$TYPE_VALUE_JSON_ELEMENT.getAsBoolean()")
+            }
+
+            createVariable("\$T<? extends \$T>",
+                    DELEGATE,
+                    "$DELEGATE_BY_VALUE_MAP.get($VALUE)",
                     TypeAdapter::class.java, rawTypeName)
 
-            `if`("delegate == null") {
+            `if`("$DELEGATE == $NULL") {
                 if (subTypeMetadata.defaultType != null) {
                     comment("Use the default type adapter if the type is unknown.")
-                    assign("delegate", "defaultTypeAdapterDelegate")
+                    assign(DELEGATE, DEFAULT_ADAPTER)
                 } else {
                     if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
-                        addStatement("throw new \$T(\"Failed to find subtype for value: \" + value)",
+                        addStatement("throw new \$T(\"Failed to find subtype for value: \" + $VALUE)",
                                 GsonSubTypeFailureException::class.java)
                     } else {
-                        `return`("null")
+                        `return`(NULL)
                     }
                 }
             }
-            createVariable("\$T", "result", "delegate.fromJsonTree(jsonElement)", rawTypeName)
+            createVariable("\$T", RESULT, "$DELEGATE.fromJsonTree($JSON_ELEMENT)", rawTypeName)
 
             if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
-                `if`("result == null") {
-                    addStatement("throw new \$T(\"Failed to deserailize subtype for object: \" + jsonElement)",
+                `if`("$RESULT == $NULL") {
+                    addStatement("throw new \$T(\"Failed to deserailize subtype for object: \" + $JSON_ELEMENT)",
                             GsonSubTypeFailureException::class.java)
                 }
             }
 
-            `return`("result")
+            `return`(RESULT)
         }
     }
 
@@ -223,26 +243,26 @@ class SubtypeFunctions {
             rawTypeName: TypeName,
             typeAdapterType: TypeName) = overrideMethod("write") {
 
-        addParameter(JsonWriter::class.java, "out")
-        addParameter(rawTypeName, "value")
+        addParameter(JsonWriter::class.java, OUT)
+        addParameter(rawTypeName, VALUE)
         addException(IOException::class.java)
         code {
-            `if`("value == null") {
-                addStatement("out.nullValue()")
+            `if`("$VALUE == $NULL") {
+                addStatement("$OUT.nullValue()")
                 `return`()
             }
-            createVariable("\$T", "delegate", "typeAdaptersDelegatedByClassMap.get(value.getClass())", TypeAdapter::class.java)
+            createVariable("\$T", DELEGATE, "$DELEGATE_BY_CLASS_MAP.get($VALUE.getClass())", TypeAdapter::class.java)
         }
 
         if (subTypeMetadata.defaultType != null) {
             code {
-                `if`("delegate == null") {
-                    assign("delegate", "defaultTypeAdapterDelegate")
+                `if`("$DELEGATE == $NULL") {
+                    assign(DELEGATE, DEFAULT_ADAPTER)
                 }
             }
         }
 
-        addStatement("delegate.write(out, value)", typeAdapterType)
+        addStatement("$DELEGATE.write($OUT, $VALUE)", typeAdapterType)
     }
 
     private sealed class TypeAdapterDetails(val typeName: TypeName) {
@@ -252,5 +272,13 @@ class SubtypeFunctions {
 
     private companion object {
         private val arrayTypeAdapterClassName: ClassName = ClassName.get(StrictArrayTypeAdapter::class.java)
+        private const val DELEGATE_BY_VALUE_MAP = "typeAdaptersDelegatedByValueMap"
+        private const val DELEGATE_BY_CLASS_MAP = "typeAdaptersDelegatedByClassMap"
+        private const val DEFAULT_ADAPTER = "defaultTypeAdapterDelegate"
+        private const val JSON_ELEMENT = "jsonElement"
+        private const val TYPE_VALUE_JSON_ELEMENT = "typeValueJsonElement"
+        private const val DELEGATE = "delegate"
+        private const val VALUE = "value"
+        private const val RESULT = "result"
     }
 }
