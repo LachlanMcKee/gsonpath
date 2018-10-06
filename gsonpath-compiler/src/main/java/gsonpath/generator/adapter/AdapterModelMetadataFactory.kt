@@ -20,7 +20,7 @@ class AdapterModelMetadataFactory(
         private val modelInterfaceGenerator: ModelInterfaceGenerator) {
 
     fun createMetadata(modelElement: TypeElement,
-            autoGsonAnnotation: AutoGsonAdapter): AdapterModelMetadata {
+                       autoGsonAnnotation: AutoGsonAdapter): AdapterModelMetadata {
 
         val modelClassName = ClassName.get(modelElement)
         val adapterClassName = ClassName.get(modelClassName.packageName(),
@@ -61,6 +61,10 @@ class AdapterModelMetadataFactory(
                                 properties.gsonFieldValidationType,
                                 properties.pathSubstitutions))
 
+        val flattenedFields = gsonObjectTreeFactory.getFlattenedFieldsFromGsonObject(rootGsonObject)
+        flattenedFields.forEach {
+            AdapterAnnotationValidator.validateFieldAnnotations(it.fieldInfo)
+        }
         val mandatoryInfoMap = MandatoryFieldInfoFactory().createMandatoryFieldsFromGsonObject(rootGsonObject)
 
         val readParams = ReadParams(
@@ -69,7 +73,7 @@ class AdapterModelMetadataFactory(
                 requiresConstructorInjection = requiresConstructorInjection,
                 mandatoryInfoMap = mandatoryInfoMap,
                 rootElements = rootGsonObject,
-                flattenedFields = gsonObjectTreeFactory.getFlattenedFieldsFromGsonObject(rootGsonObject))
+                flattenedFields = flattenedFields)
 
         val writeParams = WriteParams(
                 elementClassName = modelClassName,

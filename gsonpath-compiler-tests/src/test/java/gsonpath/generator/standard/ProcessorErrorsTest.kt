@@ -54,4 +54,16 @@ class ProcessorErrorsTest {
                 .`in`(source)
                 .onLine(10)
     }
+
+    @Test
+    fun testUsingFlattenJsonOnWrongField() {
+        val source = JavaFileObjects.forResource("generator/standard/processor_errors/TestInvalidFlattenJsonError.java")
+
+        assertAbout(javaSource()).that(source)
+                .processedWith(GsonProcessorImpl())
+                .failsToCompile()
+                .withErrorContaining("FlattenObject can only be used on String variables")
+                .`in`(source)
+                .onLine(11)
+    }
 }

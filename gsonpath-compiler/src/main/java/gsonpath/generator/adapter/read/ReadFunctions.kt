@@ -10,7 +10,6 @@ import gsonpath.FlattenJson
 import gsonpath.ProcessingException
 import gsonpath.compiler.CLASS_NAME_STRING
 import gsonpath.compiler.createDefaultVariableValueForTypeName
-import gsonpath.generator.adapter.SharedFunctions
 import gsonpath.model.GsonField
 import gsonpath.model.GsonModel
 import gsonpath.model.GsonObject
@@ -174,9 +173,6 @@ class ReadFunctions {
 
         val fieldInfo = gsonField.fieldInfo
         val fieldTypeName = fieldInfo.typeName
-
-        // Make sure the field's annotations don't have any problems.
-        SharedFunctions.validateFieldAnnotations(fieldInfo)
 
         // Add a new line to improve readability for the multi-lined mapping.
         newLine()

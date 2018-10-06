@@ -5,7 +5,6 @@ import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
-import gsonpath.generator.adapter.SharedFunctions
 import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
 import gsonpath.util.*
@@ -87,10 +86,6 @@ class WriteFunctions {
             key: String): Int {
 
         val fieldInfo = value.fieldInfo
-
-        // Make sure the field's annotations don't have any problems.
-        SharedFunctions.validateFieldAnnotations(fieldInfo)
-
         val fieldTypeName = fieldInfo.typeName
         val isPrimitive = fieldTypeName.isPrimitive
 
