@@ -4,6 +4,7 @@ import com.google.common.collect.Sets
 import com.squareup.javapoet.ClassName
 import gsonpath.compiler.GsonPathExtension
 import gsonpath.generator.HandleResult
+import gsonpath.generator.adapter.AdapterModelMetadataFactory
 import gsonpath.generator.adapter.AutoGsonAdapterGenerator
 import gsonpath.generator.adapter.read.ReadFunctions
 import gsonpath.generator.adapter.subtype.SubtypeFunctions
@@ -64,21 +65,24 @@ open class GsonProcessorImpl : AbstractProcessor() {
         val writeFunctions = WriteFunctions()
         val subtypeFunctions = SubtypeFunctions(typeHandler, gsonObjectTreeFactory)
         val modelInterfaceGenerator = ModelInterfaceGenerator(InterfaceModelMetadataFactory(typeHandler), fileWriter, logger)
-
-        // Handle the standard type adapters.
-        val adapterGenerator = AutoGsonAdapterGenerator(
+        val adapterModelMetadataFactory = AdapterModelMetadataFactory(
                 FieldInfoFactory(
                         typeHandler,
                         fieldGetterFinder,
                         annotationFetcher,
                         defaultValueDetector),
-                typeHandler,
-                fileWriter,
                 gsonObjectTreeFactory,
+                typeHandler,
+                modelInterfaceGenerator
+        )
+
+        // Handle the standard type adapters.
+        val adapterGenerator = AutoGsonAdapterGenerator(
+                adapterModelMetadataFactory,
+                fileWriter,
                 readFunctions,
                 writeFunctions,
                 subtypeFunctions,
-                modelInterfaceGenerator,
                 logger)
 
         val autoGsonAdapterResults: List<HandleResult> =
