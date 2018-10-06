@@ -5,6 +5,7 @@ import gsonpath.AutoGsonAdapter
 import gsonpath.compiler.generateClassName
 import gsonpath.generator.adapter.properties.AutoGsonAdapterPropertiesFactory
 import gsonpath.generator.adapter.read.ReadParams
+import gsonpath.generator.adapter.write.WriteParams
 import gsonpath.generator.interf.ModelInterfaceGenerator
 import gsonpath.model.*
 import gsonpath.util.TypeHandler
@@ -18,7 +19,7 @@ class AdapterModelMetadataFactory(
         private val typeHandler: TypeHandler,
         private val modelInterfaceGenerator: ModelInterfaceGenerator) {
 
-    fun get(modelElement: TypeElement,
+    fun createMetadata(modelElement: TypeElement,
             autoGsonAnnotation: AutoGsonAdapter): AdapterModelMetadata {
 
         val modelClassName = ClassName.get(modelElement)
@@ -70,14 +71,19 @@ class AdapterModelMetadataFactory(
                 rootElements = rootGsonObject,
                 flattenedFields = gsonObjectTreeFactory.getFlattenedFieldsFromGsonObject(rootGsonObject))
 
+        val writeParams = WriteParams(
+                elementClassName = modelClassName,
+                rootElements = rootGsonObject,
+                serializeNulls = properties.serializeNulls)
+
         return AdapterModelMetadata(
                 modelClassName,
                 adapterClassName,
                 isModelInterface,
                 rootGsonObject,
-                properties.serializeNulls,
                 mandatoryInfoMap,
-                readParams)
+                readParams,
+                writeParams)
     }
 
     /**

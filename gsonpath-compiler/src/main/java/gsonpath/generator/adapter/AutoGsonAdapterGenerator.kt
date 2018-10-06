@@ -37,7 +37,7 @@ class AutoGsonAdapterGenerator(
                 .addMember("comments", "\"https://github.com/LachlanMcKee/gsonpath\"")
                 .build()
 
-        val metadata = adapterModelMetadataFactory.get(modelElement, autoGsonAnnotation)
+        val metadata = adapterModelMetadataFactory.createMetadata(modelElement, autoGsonAnnotation)
 
         val adapterTypeBuilder = TypeSpecExt.finalClassBuilder(metadata.adapterClassName).apply {
             superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), metadata.modelClassName))
@@ -77,8 +77,7 @@ class AutoGsonAdapterGenerator(
         adapterTypeBuilder.addMethod(readFunctions.createReadMethod(metadata.readParams, extensionsHandler))
 
         if (!metadata.isModelInterface) {
-            adapterTypeBuilder.addMethod(writeFunctions.createWriteMethod(
-                    metadata.modelClassName, metadata.rootGsonObject, metadata.serializeNulls))
+            adapterTypeBuilder.addMethod(writeFunctions.createWriteMethod(metadata.writeParams))
 
         } else {
             // Create an empty method for the write, since we do not support writing for interfaces.

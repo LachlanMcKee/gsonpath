@@ -1,7 +1,10 @@
 package gsonpath.generator.adapter.write
 
 import com.google.gson.stream.JsonWriter
-import com.squareup.javapoet.*
+import com.squareup.javapoet.CodeBlock
+import com.squareup.javapoet.MethodSpec
+import com.squareup.javapoet.ParameterizedTypeName
+import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
 import gsonpath.generator.adapter.SharedFunctions
 import gsonpath.model.GsonField
@@ -14,14 +17,10 @@ class WriteFunctions {
      * public void write(JsonWriter out, ImageSizes value) throws IOException {
      */
     @Throws(ProcessingException::class)
-    fun createWriteMethod(
-            elementClassName: ClassName,
-            rootElements: GsonObject,
-            serializeNulls: Boolean): MethodSpec {
-
+    fun createWriteMethod(params: WriteParams): MethodSpec {
         return MethodSpecExt.overrideMethodBuilder("write").applyAndBuild {
             addParameter(JsonWriter::class.java, "out")
-            addParameter(elementClassName, "value")
+            addParameter(params.elementClassName, "value")
             addException(IOException::class.java)
             code {
                 // Initial block which prevents nulls being accessed.
@@ -31,7 +30,7 @@ class WriteFunctions {
                 }
                 newLine()
                 comment("Begin")
-                writeGsonFieldWriter(rootElements, "", serializeNulls, 0)
+                writeGsonFieldWriter(params.rootElements, "", params.serializeNulls, 0)
             }
         }
     }
