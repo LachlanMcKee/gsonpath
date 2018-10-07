@@ -41,19 +41,19 @@ task codeCoverageReport(type: JacocoReport) {
     // Ignore extension code
     def excludes = ['gsonpath/compiler/ExtensionFieldMetadata.class']
 
-    classDirectories = fileTree(dir: "gsonpath-compiler/build/classes/main") +
-            fileTree(dir: "gsonpath-compiler/build/kotlin-classes/main") +
-            fileTree(dir: "gsonpath-compiler-base/build/classes/main", excludes: excludes) +
-            fileTree(dir: "gsonpath-compiler-base/build/kotlin-classes/main", excludes: excludes)
+    classDirectories = fileTree(dir: "gsonpath-compiler/build/classes/java/main") +
+            fileTree(dir: "gsonpath-compiler/build/classes/kotlin/main") +
+            fileTree(dir: "gsonpath-compiler-base/build/classes/java/main", excludes: excludes) +
+            fileTree(dir: "gsonpath-compiler-base/build/classes/kotlin/main", excludes: excludes)
 
     sourceDirectories = files('gsonpath-compiler/src/main/java',
             'gsonpath-compiler-base/src/main/java')
 
     reports {
-        xml.enabled true
-        xml.destination "${buildDir}/reports/jacoco/report.xml"
-        html.enabled false
-        csv.enabled false
+        xml.setEnabled(true)
+        xml.destination new File("${buildDir}/reports/jacoco/report.xml")
+        html.setEnabled(false)
+        csv.setEnabled(false)
     }
 }
 
