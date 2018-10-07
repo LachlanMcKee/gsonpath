@@ -56,7 +56,7 @@ class PolymorphismTest {
                         "generator/standard/polymorphism/Type2.java"),
 
                 relativeSourceNames = listOf(
-                        "Temp.java",
+                        "TypeGsonSubType.java",
                         "TypesList.java"),
 
                 relativeGeneratedNames = listOf(

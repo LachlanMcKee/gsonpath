@@ -6,6 +6,6 @@ import generator.standard.polymorphism.Type;
 
 @AutoGsonAdapter
 class TypesList {
-    @Temp
+    @TypeGsonSubType
     Type[] items;
 }

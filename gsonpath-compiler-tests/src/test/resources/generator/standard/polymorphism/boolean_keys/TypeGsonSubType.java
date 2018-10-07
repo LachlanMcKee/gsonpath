@@ -14,5 +14,5 @@ import generator.standard.polymorphism.Type2;
         @GsonSubtype.BooleanValueSubtype(value = false, subtype = Type2.class)
     }
 )
-public @interface Temp {
+public @interface TypeGsonSubType {
 }
