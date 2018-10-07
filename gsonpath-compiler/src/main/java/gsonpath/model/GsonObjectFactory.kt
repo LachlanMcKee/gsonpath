@@ -1,9 +1,7 @@
 package gsonpath.model
 
-import com.google.gson.annotations.SerializedName
 import com.squareup.javapoet.TypeName
 import gsonpath.GsonFieldValidationType
-import gsonpath.NestedJson
 import gsonpath.ProcessingException
 import java.util.regex.Pattern
 import javax.lang.model.element.Element
@@ -62,7 +60,7 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
 
         val gsonSubTypeMetadata = subTypeMetadataFactory.getGsonSubType(fieldInfo)
 
-        val jsonFieldPath = getJsonFieldPath(fieldInfo, metadata)
+        val jsonFieldPath = FieldPathFetcher.getJsonFieldPath(fieldInfo, metadata)
         when (jsonFieldPath) {
             is FieldPath.Nested -> {
                 addNestedType(gsonPathObject, fieldInfo, jsonFieldPath, metadata.flattenDelimiter,
@@ -156,71 +154,4 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
         throw ProcessingException("Unexpected duplicate field '" + jsonKey +
                 "' found. Each tree branch must use a unique value!", field)
     }
-
-    private fun getJsonFieldPath(fieldInfo: FieldInfo,
-                                 metadata: GsonObjectMetadata): FieldPath {
-
-        val serializedName = getSerializedName(fieldInfo, metadata.flattenDelimiter)
-        val path = if (serializedName != null && serializedName.isNotBlank()) {
-            if (metadata.pathSubstitutions.isNotEmpty()) {
-
-                // Check if the serialized name needs any values to be substituted
-                metadata.pathSubstitutions.fold(serializedName) { fieldPath, substitution ->
-                    fieldPath.replace("{${substitution.original}}", substitution.replacement)
-                }
-
-            } else {
-                serializedName
-            }
-
-        } else {
-            // Since the serialized annotation wasn't specified, we need to apply the naming policy instead.
-            FieldNamingPolicyMapper.applyFieldNamingPolicy(metadata.gsonFieldNamingPolicy, fieldInfo.fieldName)
-        }
-
-        return if (path.contains(metadata.flattenDelimiter)) {
-            FieldPath.Nested(
-                    if (path.last() == metadata.flattenDelimiter) {
-                        path + fieldInfo.fieldName
-                    } else {
-                        path
-                    }
-            )
-        } else {
-            FieldPath.Standard(path)
-        }
-    }
-
-    private fun getSerializedName(fieldInfo: FieldInfo, flattenDelimiter: Char): String? {
-        val serializedNameAnnotation = fieldInfo.getAnnotation(SerializedName::class.java)
-        val nestedJson = fieldInfo.getAnnotation(NestedJson::class.java)
-
-        // SerializedName 'alternate' is not supported and should fail fast.
-        serializedNameAnnotation?.let {
-            if (it.alternate.isNotEmpty()) {
-                throw ProcessingException("SerializedName 'alternate' feature is not supported", fieldInfo.element)
-            }
-        }
-
-        nestedJson?.let {
-            if (it.value.endsWith(flattenDelimiter)) {
-                throw ProcessingException("NestedJson path must not end with $flattenDelimiter", fieldInfo.element)
-            }
-        }
-
-        return when {
-            nestedJson != null && serializedNameAnnotation != null -> {
-                nestedJson.value + flattenDelimiter + serializedNameAnnotation.value
-            }
-            nestedJson != null -> nestedJson.value + flattenDelimiter
-            serializedNameAnnotation != null -> serializedNameAnnotation.value
-            else -> null
-        }
-    }
-
-    sealed class FieldPath {
-        class Standard(val path: String) : FieldPath()
-        class Nested(val path: String) : FieldPath()
-    }
-
 }
