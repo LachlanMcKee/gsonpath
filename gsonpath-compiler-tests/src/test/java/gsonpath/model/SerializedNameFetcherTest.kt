@@ -18,10 +18,10 @@ class SerializedNameFetcherTest {
     @Rule
     val expectedException: ExpectedException = ExpectedException.none()
 
-    val fieldInfo = mock(FieldInfo::class.java)
-    val serializedName = mock(SerializedName::class.java)
-    val nestedJson = mock(NestedJson::class.java)
-    val element = mock(Element::class.java)
+    private val fieldInfo = mock(FieldInfo::class.java)
+    private val serializedName = mock(SerializedName::class.java)
+    private val nestedJson = mock(NestedJson::class.java)
+    private val element = mock(Element::class.java)
 
     @Before
     fun setup() {

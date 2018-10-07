@@ -37,7 +37,7 @@ open class BaseGsonObjectFactoryTest {
     @Throws(ProcessingException::class)
     @JvmOverloads
     fun executeAddGsonType(arguments: GsonTypeArguments, outputGsonObject: GsonObject = GsonObject()): GsonObject {
-        GsonObjectFactory(mock(SubTypeMetadataFactory::class.java)).addGsonType(
+        GsonObjectFactory(mock(FieldPathFetcher::class.java), mock(SubTypeMetadataFactory::class.java)).addGsonType(
                 outputGsonObject,
                 arguments.fieldInfo,
                 arguments.fieldInfoIndex,

@@ -12,10 +12,7 @@ import gsonpath.generator.adapter.write.WriteFunctions
 import gsonpath.generator.factory.TypeAdapterFactoryGenerator
 import gsonpath.generator.interf.InterfaceModelMetadataFactory
 import gsonpath.generator.interf.ModelInterfaceGenerator
-import gsonpath.model.FieldInfoFactory
-import gsonpath.model.GsonObjectFactory
-import gsonpath.model.GsonObjectTreeFactory
-import gsonpath.model.SubTypeMetadataFactoryImpl
+import gsonpath.model.*
 import gsonpath.util.*
 import java.util.*
 import javax.annotation.processing.AbstractProcessor
@@ -60,7 +57,10 @@ open class GsonProcessorImpl : AbstractProcessor() {
         val defaultValueDetector = DefaultValueDetectorImpl(processingEnv)
         val fieldGetterFinder = FieldGetterFinder(typeHandler)
         val annotationFetcher = AnnotationFetcher(typeHandler, fieldGetterFinder)
-        val gsonObjectTreeFactory = GsonObjectTreeFactory(GsonObjectFactory(SubTypeMetadataFactoryImpl(typeHandler)))
+        val gsonObjectFactory = GsonObjectFactory(
+                FieldPathFetcher(SerializedNameFetcher, FieldNamingPolicyMapper()),
+                SubTypeMetadataFactoryImpl(typeHandler))
+        val gsonObjectTreeFactory = GsonObjectTreeFactory(gsonObjectFactory)
         val readFunctions = ReadFunctions()
         val writeFunctions = WriteFunctions()
         val subtypeFunctions = SubtypeFunctions()

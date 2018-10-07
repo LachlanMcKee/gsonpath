@@ -1,8 +1,11 @@
 package gsonpath.model
 
-object FieldPathFetcher {
+class FieldPathFetcher(
+        private val serializedNameFetcher: SerializedNameFetcher,
+        private val fieldNamingPolicyMapper: FieldNamingPolicyMapper) {
+
     fun getJsonFieldPath(fieldInfo: FieldInfo, metadata: GsonObjectMetadata): FieldPath {
-        val serializedName = SerializedNameFetcher.getSerializedName(fieldInfo, metadata.flattenDelimiter)
+        val serializedName = serializedNameFetcher.getSerializedName(fieldInfo, metadata.flattenDelimiter)
         val path = if (serializedName != null && serializedName.isNotBlank()) {
             if (metadata.pathSubstitutions.isNotEmpty()) {
 
@@ -17,7 +20,7 @@ object FieldPathFetcher {
 
         } else {
             // Since the serialized annotation wasn't specified, we need to apply the naming policy instead.
-            FieldNamingPolicyMapper.applyFieldNamingPolicy(metadata.gsonFieldNamingPolicy, fieldInfo.fieldName)
+            fieldNamingPolicyMapper.applyFieldNamingPolicy(metadata.gsonFieldNamingPolicy, fieldInfo.fieldName)
         }
 
         return if (path.contains(metadata.flattenDelimiter)) {

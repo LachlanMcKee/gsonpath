@@ -6,7 +6,9 @@ import gsonpath.ProcessingException
 import java.util.regex.Pattern
 import javax.lang.model.element.Element
 
-class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFactory) {
+class GsonObjectFactory(
+        private val fieldPathFetcher: FieldPathFetcher,
+        private val subTypeMetadataFactory: SubTypeMetadataFactory) {
 
     @Throws(ProcessingException::class)
     fun addGsonType(
@@ -60,7 +62,7 @@ class GsonObjectFactory(private val subTypeMetadataFactory: SubTypeMetadataFacto
 
         val gsonSubTypeMetadata = subTypeMetadataFactory.getGsonSubType(fieldInfo)
 
-        val jsonFieldPath = FieldPathFetcher.getJsonFieldPath(fieldInfo, metadata)
+        val jsonFieldPath = fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata)
         when (jsonFieldPath) {
             is FieldPath.Nested -> {
                 addNestedType(gsonPathObject, fieldInfo, jsonFieldPath, metadata.flattenDelimiter,

@@ -4,7 +4,7 @@ import com.google.gson.FieldNamingPolicy
 import gsonpath.ProcessingException
 import java.lang.reflect.Field
 
-object FieldNamingPolicyMapper {
+class FieldNamingPolicyMapper {
 
     /**
      * Applies the gson field naming policy using the given field name.

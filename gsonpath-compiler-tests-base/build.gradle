@@ -20,7 +20,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile project(":gsonpath-compiler")
     compile "junit:junit:$junit_version"
-    compile "org.mockito:mockito-core:1.10.19"
+    compile "org.mockito:mockito-core:2.18.0"
     compile "com.google.truth:truth:0.34"
     compile "com.google.testing.compile:compile-testing:0.11"
     compile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
