@@ -1,8 +1,6 @@
 package gsonpath.model
 
 import com.google.gson.FieldNamingPolicy
-import com.google.gson.annotations.SerializedName
-import com.squareup.javapoet.TypeName
 import gsonpath.GsonFieldValidationType
 import gsonpath.PathSubstitution
 import gsonpath.ProcessingException
@@ -17,29 +15,12 @@ open class BaseGsonObjectFactoryTest {
     @Rule
     val exception: ExpectedException = ExpectedException.none()
 
-    val fieldPathFetcher = mock(FieldPathFetcher::class.java)
-
-    @JvmOverloads
-    fun mockFieldInfo(fieldName: String, jsonPath: String? = null): FieldInfo {
-        val fieldInfo = mock(FieldInfo::class.java)
-        whenever(fieldInfo.typeName).thenReturn(TypeName.INT)
-        whenever(fieldInfo.annotationNames).thenReturn(emptyList())
-        whenever(fieldInfo.fieldName).thenReturn(fieldName)
-
-        if (jsonPath != null) {
-            val serializedName = mock(SerializedName::class.java)
-            whenever(serializedName.value).thenReturn(jsonPath)
-            whenever(serializedName.alternate).thenReturn(emptyArray())
-            whenever(fieldInfo.getAnnotation(SerializedName::class.java)).thenReturn(serializedName)
-        }
-
-        return fieldInfo
-    }
+    val gsonObjectValidator: GsonObjectValidator = mock(GsonObjectValidator::class.java)
+    val fieldPathFetcher: FieldPathFetcher = mock(FieldPathFetcher::class.java)
 
     @Throws(ProcessingException::class)
-    @JvmOverloads
     fun executeAddGsonType(arguments: GsonTypeArguments, metadata: GsonObjectMetadata, outputGsonObject: GsonObject = GsonObject()): GsonObject {
-        GsonObjectFactory(fieldPathFetcher, mock(SubTypeMetadataFactory::class.java)).addGsonType(
+        GsonObjectFactory(gsonObjectValidator, fieldPathFetcher, mock(SubTypeMetadataFactory::class.java)).addGsonType(
                 outputGsonObject,
                 arguments.fieldInfo,
                 arguments.fieldInfoIndex,

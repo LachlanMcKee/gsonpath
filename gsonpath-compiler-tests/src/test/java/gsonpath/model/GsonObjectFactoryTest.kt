@@ -1,9 +1,10 @@
 package gsonpath.model
 
-import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import gsonpath.GsonFieldValidationType
 import gsonpath.ProcessingException
+import gsonpath.model.FieldInfoTestFactory.mockFieldInfo
+import gsonpath.model.GsonObjectValidator.Result.*
 import org.junit.Assert
 import org.junit.Test
 import org.junit.experimental.runners.Enclosed
@@ -101,41 +102,6 @@ class GsonObjectFactoryTest {
 
         @Test
         @Throws(ProcessingException::class)
-        fun givenObjectType_whenAddGsonType_throwInvalidFieldTypeException() {
-            // given
-            val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
-            whenever(fieldInfo.typeName).thenReturn(TypeName.OBJECT)
-
-            val metadata = createMetadata()
-            whenever(fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata))
-                    .thenReturn(FieldPath.Standard(DEFAULT_VARIABLE_NAME))
-
-            // when / then
-            exception.expect(ProcessingException::class.java)
-            exception.expectMessage("Invalid field type: java.lang.Object")
-            executeAddGsonType(BaseGsonObjectFactoryTest.GsonTypeArguments(fieldInfo), metadata)
-        }
-
-        @Test
-        @Throws(ProcessingException::class)
-        fun givenBothNonNullAndNullableAnnotations_whenAddGsonType_throwIncorrectAnnotationsException() {
-            // given
-            val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
-            whenever(fieldInfo.typeName).thenReturn(TypeName.INT.box())
-            whenever(fieldInfo.annotationNames).thenReturn(listOf("NonNull", "Nullable"))
-
-            val metadata = createMetadata()
-            whenever(fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata))
-                    .thenReturn(FieldPath.Standard(DEFAULT_VARIABLE_NAME))
-
-            // when / then
-            exception.expect(ProcessingException::class.java)
-            exception.expectMessage("Field cannot have both Mandatory and Optional annotations")
-            executeAddGsonType(BaseGsonObjectFactoryTest.GsonTypeArguments(fieldInfo), metadata)
-        }
-
-        @Test
-        @Throws(ProcessingException::class)
         fun givenDuplicateChildFields_whenAddGsonType_throwDuplicateFieldException() {
             // given
             val existingGsonObject = GsonObject()
@@ -204,7 +170,7 @@ class GsonObjectFactoryTest {
 
     @RunWith(Parameterized::class)
     class RequiredAnnotationsTest(
-            private val requiredTypeAnnotation: String?,
+            private val validationResult: GsonObjectValidator.Result,
             private val gsonFieldValidationType: GsonFieldValidationType,
             private val fieldTypeName: TypeName,
             private val isRequired: Boolean) : BaseGsonObjectFactoryTest() {
@@ -216,9 +182,7 @@ class GsonObjectFactoryTest {
             val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
             whenever(fieldInfo.typeName).thenReturn(fieldTypeName)
 
-            if (requiredTypeAnnotation != null) {
-                whenever(fieldInfo.annotationNames).thenReturn(listOf(requiredTypeAnnotation))
-            }
+            whenever(gsonObjectValidator.validate(fieldInfo)).thenReturn(validationResult)
 
             val metadata = createMetadata(gsonFieldValidationType = gsonFieldValidationType)
             whenever(fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata))
@@ -239,79 +203,24 @@ class GsonObjectFactoryTest {
             fun data(): Collection<Array<Any?>> {
                 return listOf(
                         // Test 'NonNull' annotation permutations with a non-primitive type
-                        arrayOf("NonNull", GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
-                        arrayOf("NonNull", GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT.box(), true),
-                        arrayOf("NonNull", GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT.box(), true),
+                        arrayOf(Mandatory, GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
+                        arrayOf(Mandatory, GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT.box(), true),
+                        arrayOf(Mandatory, GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT.box(), true),
 
                         // Test 'Nullable' annotation permutations with a non-primitive type
-                        arrayOf("Nullable", GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
-                        arrayOf("Nullable", GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT.box(), false),
-                        arrayOf("Nullable", GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT.box(), false),
+                        arrayOf(Optional, GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
+                        arrayOf(Optional, GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT.box(), false),
+                        arrayOf(Optional, GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT.box(), false),
 
                         // Test no annotation permutations with a non-primitive type
-                        arrayOf(null, GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
-                        arrayOf(null, GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT.box(), true),
-                        arrayOf(null, GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT.box(), false),
+                        arrayOf(Standard, GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
+                        arrayOf(Standard, GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT.box(), true),
+                        arrayOf(Standard, GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT.box(), false),
 
                         // Test no annotation permutations with a primitive type
-                        arrayOf(null, GsonFieldValidationType.NO_VALIDATION, TypeName.INT, false),
-                        arrayOf(null, GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT, true),
-                        arrayOf(null, GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT, true)
-                )
-            }
-        }
-    }
-
-    @RunWith(Parameterized::class)
-    class MandatoryAnnotationsTest(private val mandatoryAnnotation: String) : BaseGsonObjectFactoryTest() {
-
-        @Test
-        @Throws(ProcessingException::class)
-        fun givenPrimitiveField_whenAddGsonType_throwProcessingException() {
-            // when
-            val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
-            whenever(fieldInfo.annotationNames).thenReturn(listOf(mandatoryAnnotation))
-
-            val metadata = createMetadata()
-            whenever(fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata))
-                    .thenReturn(FieldPath.Standard(DEFAULT_VARIABLE_NAME))
-
-            // when / then
-            exception.expect(ProcessingException::class.java)
-            exception.expectMessage("Primitives should not use NonNull or Nullable annotations")
-            executeAddGsonType(BaseGsonObjectFactoryTest.GsonTypeArguments(fieldInfo), metadata)
-        }
-
-        @Test
-        @Throws(ProcessingException::class)
-        fun givenNonPrimitiveFieldAndValidateNonNull_whenAddGsonType_expectIsRequired() {
-            // when
-            val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
-            whenever(fieldInfo.typeName).thenReturn(ClassName.INT.box())
-            whenever(fieldInfo.annotationNames).thenReturn(listOf(mandatoryAnnotation))
-
-            val metadata = createMetadata(gsonFieldValidationType = GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL)
-            whenever(fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata))
-                    .thenReturn(FieldPath.Standard(DEFAULT_VARIABLE_NAME))
-
-            // when
-            val outputGsonObject = executeAddGsonType(BaseGsonObjectFactoryTest.GsonTypeArguments(fieldInfo), metadata)
-
-            // then
-            val expectedGsonObject = GsonObject()
-            expectedGsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, true, null))
-            Assert.assertEquals(expectedGsonObject, outputGsonObject)
-        }
-
-        companion object {
-            @JvmStatic
-            @Parameterized.Parameters
-            fun data(): Collection<Array<Any>> {
-                return listOf(
-                        arrayOf<Any>("NonNull"),
-                        arrayOf<Any>("Nonnull"),
-                        arrayOf<Any>("NotNull"),
-                        arrayOf<Any>("Notnull")
+                        arrayOf(Standard, GsonFieldValidationType.NO_VALIDATION, TypeName.INT, false),
+                        arrayOf(Standard, GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT, true),
+                        arrayOf(Standard, GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT, true)
                 )
             }
         }
