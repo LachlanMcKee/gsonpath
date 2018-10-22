@@ -15,6 +15,7 @@ import gsonpath.generator.Constants.CONTINUE
 import gsonpath.generator.Constants.GET_ADAPTER
 import gsonpath.generator.Constants.IN
 import gsonpath.generator.Constants.NULL
+import gsonpath.model.GsonArray
 import gsonpath.model.GsonField
 import gsonpath.model.GsonModel
 import gsonpath.model.GsonObject
@@ -163,6 +164,54 @@ class ReadFunctions {
                         addStatement(BREAK)
                     }
                     addReadCodeForElements(value, params, extensionsHandler, currentOverallRecursionCount)
+                }
+
+                is GsonArray -> {
+                    val arrayIndexVariableName = key + "_arrayIndex"
+                    add("\n")
+                    add("// Ensure the array is not null.\n")
+                    beginControlFlow("if (!isValidValue(in))")
+                    addStatement("break")
+                    endControlFlow()
+                    addStatement("in.beginArray()")
+                    addStatement("int \$L = 0", arrayIndexVariableName)
+                    add("\n")
+                    add("// Iterate through the array.\n")
+                    beginControlFlow("while (in.hasNext())")
+                    beginControlFlow("switch (\$L)", arrayIndexVariableName)
+                    val recursionCountForArray: Int =
+                            value.entries().fold(currentOverallRecursionCount) { currentOverallRecursionCount, (arrayIndex, arrayItemValue) ->
+                                add("case \$L:", arrayIndex)
+                                newLine()
+                                indent()
+                                val recursionCountArrayCurrent =
+                                        when (arrayItemValue) {
+                                            is GsonField -> {
+                                                writeGsonFieldReader(arrayItemValue, params.requiresConstructorInjection,
+                                                        params.mandatoryInfoMap[arrayItemValue.fieldInfo.fieldName], extensionsHandler)
+
+                                                // No extra recursion has happened.
+                                                currentOverallRecursionCount
+                                            }
+                                            is GsonObject -> {
+                                                addReadCodeForElements(arrayItemValue, params, extensionsHandler, currentOverallRecursionCount)
+                                            }
+                                        }
+                                addStatement("break")
+                                unindent()
+                                add("\n")
+                                recursionCountArrayCurrent
+                            }
+                    add("default:\n")
+                    indent()
+                    addStatement("in.skipValue()")
+                    addStatement("break")
+                    unindent()
+                    endControlFlow()
+                    addStatement("\$L++", arrayIndexVariableName)
+                    endControlFlow()
+                    addStatement("in.endArray()")
+                    recursionCountForArray
                 }
             }
         }

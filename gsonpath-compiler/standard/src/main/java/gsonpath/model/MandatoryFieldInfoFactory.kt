@@ -19,6 +19,7 @@ class MandatoryFieldInfoFactory {
                     when (gsonModel) {
                         is GsonField -> handleField(gsonModel, map)
                         is GsonObject -> map.plus(createMandatoryFieldsFromGsonObject(gsonModel))
+                        is GsonArray -> handleArray(gsonModel, map)
                     }
                 }
     }
@@ -43,4 +44,18 @@ class MandatoryFieldInfoFactory {
         }
     }
 
+    private fun handleArray(
+            arrayModel: GsonArray,
+            map: Map<String, MandatoryFieldInfo>): Map<String, MandatoryFieldInfo> {
+
+        return arrayModel.entries()
+                .asSequence()
+                .map { it.value }
+                .fold(map) { arrayMap, arrayGsonModel ->
+                    when (arrayGsonModel) {
+                        is GsonField -> handleField(arrayGsonModel, arrayMap)
+                        is GsonObject -> arrayMap.plus(createMandatoryFieldsFromGsonObject(arrayGsonModel))
+                    }
+                }
+    }
 }
