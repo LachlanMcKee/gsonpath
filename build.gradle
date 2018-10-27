@@ -56,8 +56,8 @@ task integrationCodeCoverageReport(type: JacocoReport) {
         csv.setEnabled(false)
     }
 
-    dependsOn(':gsonpath-compiler:testing:integration-standard')
-    dependsOn(':gsonpath-compiler:testing:integration-extension')
+    dependsOn(':gsonpath-compiler:testing:integration-standard:test')
+    dependsOn(':gsonpath-compiler:testing:integration-extension:test')
 }
 
 task unitCodeCoverageReport(type: JacocoReport) {
@@ -81,5 +81,5 @@ task unitCodeCoverageReport(type: JacocoReport) {
         csv.setEnabled(false)
     }
 
-    dependsOn(':gsonpath-compiler:testing:unit-standard')
+    dependsOn(':gsonpath-compiler:testing:unit-standard:test')
 }
