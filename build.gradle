@@ -41,13 +41,13 @@ task codeCoverageReport(type: JacocoReport) {
     // Ignore extension code
     def excludes = ['gsonpath/compiler/ExtensionFieldMetadata.class']
 
-    classDirectories = fileTree(dir: "gsonpath-compiler/build/classes/java/main") +
-            fileTree(dir: "gsonpath-compiler/build/classes/kotlin/main") +
-            fileTree(dir: "gsonpath-compiler-base/build/classes/java/main", excludes: excludes) +
-            fileTree(dir: "gsonpath-compiler-base/build/classes/kotlin/main", excludes: excludes)
+    classDirectories = fileTree(dir: "gsonpath-compiler/standard/build/classes/java/main") +
+            fileTree(dir: "gsonpath-compiler/standard/build/classes/kotlin/main") +
+            fileTree(dir: "gsonpath-compiler/base/build/classes/java/main", excludes: excludes) +
+            fileTree(dir: "gsonpath-compiler/base/build/classes/kotlin/main", excludes: excludes)
 
-    sourceDirectories = files('gsonpath-compiler/src/main/java',
-            'gsonpath-compiler-base/src/main/java')
+    sourceDirectories = files('gsonpath-compiler/standard/src/main/java',
+            'gsonpath-compiler/base/src/main/java')
 
     reports {
         xml.setEnabled(true)
