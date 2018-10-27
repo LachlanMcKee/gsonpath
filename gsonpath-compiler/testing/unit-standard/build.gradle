@@ -23,4 +23,5 @@ buildscript {
 
 dependencies {
     testCompile project(":gsonpath-compiler:testing:base")
+    testCompile "org.mockito:mockito-core:2.18.0"
 }
