@@ -56,30 +56,31 @@ class AdapterModelMetadataFactory(
             fieldInfoList = fieldInfoFactory.getModelFieldsFromInterface(interfaceInfo)
         }
 
-        val rootGsonObject = gsonObjectTreeFactory
+        val gsonTreeResult = gsonObjectTreeFactory
                 .createGsonObject(fieldInfoList, properties.rootField,
                         GsonObjectMetadata(properties.flattenDelimiter,
                                 properties.gsonFieldNamingPolicy,
                                 properties.gsonFieldValidationType,
                                 properties.pathSubstitutions))
 
-        val flattenedFields = gsonObjectTreeFactory.getFlattenedFieldsFromGsonObject(rootGsonObject)
+        val rootObject = gsonTreeResult.rootObject
+        val flattenedFields = gsonTreeResult.flattenedFields
         flattenedFields.forEach {
             AdapterAnnotationValidator.validateFieldAnnotations(it.fieldInfo)
         }
-        val mandatoryInfoMap = MandatoryFieldInfoFactory().createMandatoryFieldsFromGsonObject(rootGsonObject)
+        val mandatoryInfoMap = MandatoryFieldInfoFactory().createMandatoryFieldsFromGsonObject(rootObject)
 
         val readParams = ReadParams(
                 baseElement = modelClassName,
                 concreteElement = concreteClassName,
                 requiresConstructorInjection = requiresConstructorInjection,
                 mandatoryInfoMap = mandatoryInfoMap,
-                rootElements = rootGsonObject,
+                rootElements = rootObject,
                 flattenedFields = flattenedFields)
 
         val writeParams = WriteParams(
                 elementClassName = modelClassName,
-                rootElements = rootGsonObject,
+                rootElements = rootObject,
                 serializeNulls = properties.serializeNulls)
 
         val subtypeParams = SubtypeParams(
@@ -95,7 +96,7 @@ class AdapterModelMetadataFactory(
                 modelClassName,
                 adapterClassName,
                 isModelInterface,
-                rootGsonObject,
+                rootObject,
                 mandatoryInfoMap,
                 readParams,
                 writeParams,

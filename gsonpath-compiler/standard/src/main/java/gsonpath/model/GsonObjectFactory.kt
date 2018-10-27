@@ -12,7 +12,7 @@ class GsonObjectFactory(
 
     @Throws(ProcessingException::class)
     fun addGsonType(
-            gsonPathObject: GsonObject,
+            gsonPathObject: MutableGsonObject,
             fieldInfo: FieldInfo,
             fieldInfoIndex: Int,
             metadata: GsonObjectMetadata) {
@@ -58,7 +58,7 @@ class GsonObjectFactory(
 
     @Throws(ProcessingException::class)
     private fun addNestedType(
-            gsonPathObject: GsonObject,
+            gsonPathObject: MutableGsonObject,
             fieldInfo: FieldInfo,
             jsonFieldPath: FieldPath.Nested,
             flattenDelimiter: Char,
@@ -72,16 +72,16 @@ class GsonObjectFactory(
 
         val lastPathIndex = pathSegments.size - 1
 
-        (0..lastPathIndex).fold(gsonPathObject as GsonModel) { current: GsonModel, index ->
+        (0..lastPathIndex).fold(gsonPathObject as MutableGsonModel) { current: MutableGsonModel, index ->
             val pathSegment = pathSegments[index]
 
             if (index < lastPathIndex) {
 
-                if (current is GsonObject) {
+                if (current is MutableGsonObject) {
                     val gsonType = current[pathSegment]
 
                     if (gsonType != null) {
-                        if (gsonType is GsonObject) {
+                        if (gsonType is MutableGsonObject) {
                             return@fold gsonType
 
                         } else {
@@ -90,7 +90,7 @@ class GsonObjectFactory(
                                     "' found. Each tree branch must use a unique value!", fieldInfo.element)
                         }
                     } else {
-                        val newMap = GsonObject()
+                        val newMap = MutableGsonObject()
                         current.addObject(pathSegment, newMap)
                         return@fold newMap
                     }
@@ -101,8 +101,8 @@ class GsonObjectFactory(
             } else {
                 // We have reached the end of this object branch, add the field at the end.
                 try {
-                    val field = GsonField(fieldInfoIndex, fieldInfo, jsonFieldPath.path, isRequired, gsonSubTypeMetadata)
-                    return@fold (current as GsonObject).addField(pathSegment, field)
+                    val field = MutableGsonField(fieldInfoIndex, fieldInfo, getVariableName(jsonFieldPath.path), jsonFieldPath.path, isRequired, gsonSubTypeMetadata)
+                    return@fold (current as MutableGsonObject).addField(pathSegment, field)
 
                 } catch (e: IllegalArgumentException) {
                     throw ProcessingException("Unexpected duplicate field '" + pathSegment +
@@ -115,7 +115,7 @@ class GsonObjectFactory(
 
     @Throws(ProcessingException::class)
     private fun addStandardType(
-            gsonPathObject: GsonObject,
+            gsonPathObject: MutableGsonObject,
             fieldInfo: FieldInfo,
             jsonFieldPath: FieldPath.Standard,
             fieldInfoIndex: Int,
@@ -123,12 +123,16 @@ class GsonObjectFactory(
             gsonSubTypeMetadata: SubTypeMetadata?) {
 
         val path = jsonFieldPath.path
-        if (!gsonPathObject.containsKey(path)) {
-            gsonPathObject.addField(path, GsonField(fieldInfoIndex, fieldInfo, path, isRequired, gsonSubTypeMetadata))
+        if (gsonPathObject[path] == null) {
+            gsonPathObject.addField(path, MutableGsonField(fieldInfoIndex, fieldInfo, getVariableName(path), path, isRequired, gsonSubTypeMetadata))
 
         } else {
             throwDuplicateFieldException(fieldInfo.element, path)
         }
+    }
+
+    private fun getVariableName(jsonPath: String) : String {
+        return "value_" + jsonPath.replace("[^A-Za-z0-9_]".toRegex(), "_")
     }
 
     @Throws(ProcessingException::class)

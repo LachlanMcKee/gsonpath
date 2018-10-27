@@ -19,7 +19,7 @@ open class BaseGsonObjectFactoryTest {
     val fieldPathFetcher: FieldPathFetcher = mock(FieldPathFetcher::class.java)
 
     @Throws(ProcessingException::class)
-    fun executeAddGsonType(arguments: GsonTypeArguments, metadata: GsonObjectMetadata, outputGsonObject: GsonObject = GsonObject()): GsonObject {
+    fun executeAddGsonType(arguments: GsonTypeArguments, metadata: GsonObjectMetadata, outputGsonObject: MutableGsonObject = MutableGsonObject()): MutableGsonObject {
         GsonObjectFactory(gsonObjectValidator, fieldPathFetcher, mock(SubTypeMetadataFactory::class.java)).addGsonType(
                 outputGsonObject,
                 arguments.fieldInfo,
@@ -47,6 +47,7 @@ open class BaseGsonObjectFactoryTest {
             val fieldInfoIndex: Int = 0)
 
     companion object {
+        const val DEFAULT_VARIABLE_NAME_2 = "value_variableName"
         const val DEFAULT_VARIABLE_NAME = "variableName"
     }
 }

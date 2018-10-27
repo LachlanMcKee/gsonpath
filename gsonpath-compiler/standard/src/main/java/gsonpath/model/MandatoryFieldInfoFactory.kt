@@ -15,9 +15,7 @@ class MandatoryFieldInfoFactory {
      */
     fun createMandatoryFieldsFromGsonObject(gsonObject: GsonObject): Map<String, MandatoryFieldInfo> {
         return gsonObject.entries()
-                .asSequence()
-                .map { it.value }
-                .fold(emptyMap()) { map, gsonModel ->
+                .fold(emptyMap()) { map, (_, gsonModel) ->
                     when (gsonModel) {
                         is GsonField -> handleField(gsonModel, map)
                         is GsonObject -> map.plus(createMandatoryFieldsFromGsonObject(gsonModel))
