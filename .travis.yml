@@ -17,7 +17,10 @@ script:
     then ./gradlew sonarqube -Dsonar.analysis.mode=preview -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=lachlanmckee-github -Dsonar.login=$SONAR_TOKEN -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST -Dsonar.github.repository=LachlanMcKee/gsonpath -Dsonar.github.oauth=$GITHUB_TOKEN;
     else ./gradlew sonarqube -Dsonar.analysis.mode=publish -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=lachlanmckee-github -Dsonar.login=$SONAR_TOKEN;
     fi
-  - ./gradlew codeCoverageReport
+  - ./gradlew integrationCodeCoverageReport
+  - bash <(curl -s https://codecov.io/bash) -c -F integration
+  - ./gradlew unitCodeCoverageReport
+  - bash <(curl -s https://codecov.io/bash) -c -F unittests
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -30,6 +33,3 @@ cache:
 before_install:
   - chmod +x gradlew
   - chmod +x gradle/wrapper/gradle-wrapper.jar
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
