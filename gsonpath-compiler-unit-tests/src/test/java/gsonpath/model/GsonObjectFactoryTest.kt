@@ -20,18 +20,18 @@ class GsonObjectFactoryTest {
         @Throws(ProcessingException::class)
         fun givenNoJsonPathAnnotation_whenAddGsonType_expectSingleGsonObject() {
             // when
-            val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
+            val fieldInfo = mockFieldInfo(DEFAULT_VARIABLE_NAME)
             val metadata = createMetadata()
 
             whenever(fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata))
                     .thenReturn(FieldPath.Standard(DEFAULT_VARIABLE_NAME))
 
             // when
-            val outputGsonObject = executeAddGsonType(BaseGsonObjectFactoryTest.GsonTypeArguments(fieldInfo), metadata)
+            val outputGsonObject = executeAddGsonType(GsonTypeArguments(fieldInfo), metadata)
 
             // then
             val expectedGsonObject = GsonObject()
-            expectedGsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, false, null))
+            expectedGsonObject.addField(DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, DEFAULT_VARIABLE_NAME, false, null))
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
 
@@ -39,14 +39,14 @@ class GsonObjectFactoryTest {
         @Throws(ProcessingException::class)
         fun givenJsonPath_whenAddGsonType_expectMultipleGsonObjects() {
             // when
-            val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, "root.child")
+            val fieldInfo = mockFieldInfo(DEFAULT_VARIABLE_NAME, "root.child")
             val metadata = createMetadata()
 
             whenever(fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata))
                     .thenReturn(FieldPath.Nested("root.child"))
 
             // when
-            val outputGsonObject = executeAddGsonType(BaseGsonObjectFactoryTest.GsonTypeArguments(fieldInfo), metadata)
+            val outputGsonObject = executeAddGsonType(GsonTypeArguments(fieldInfo), metadata)
 
             // then
             val expectedGsonObject = GsonObject()
@@ -61,19 +61,19 @@ class GsonObjectFactoryTest {
         @Throws(ProcessingException::class)
         fun givenJsonPathWithDanglingDelimiter_whenAddGsonType_expectMultipleGsonObjects() {
             // when
-            val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, "root.")
+            val fieldInfo = mockFieldInfo(DEFAULT_VARIABLE_NAME, "root.")
             val metadata = createMetadata()
 
             whenever(fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata))
                     .thenReturn(FieldPath.Nested("root.variableName"))
 
             // when
-            val outputGsonObject = executeAddGsonType(BaseGsonObjectFactoryTest.GsonTypeArguments(fieldInfo), metadata)
+            val outputGsonObject = executeAddGsonType(GsonTypeArguments(fieldInfo), metadata)
 
             // then
             val expectedGsonObject = GsonObject()
             val gsonObject = GsonObject()
-            gsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, "root." + BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, false, null))
+            gsonObject.addField(DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, "root." + DEFAULT_VARIABLE_NAME, false, null))
             expectedGsonObject.addObject("root", gsonObject)
 
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
@@ -83,14 +83,14 @@ class GsonObjectFactoryTest {
         @Throws(ProcessingException::class)
         fun givenPathSubstitution_whenAddGsonType_expectReplacedJsonPath() {
             // given
-            val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, "{REPLACE_ME_1}.{REPLACE_ME_2}")
+            val fieldInfo = mockFieldInfo(DEFAULT_VARIABLE_NAME, "{REPLACE_ME_1}.{REPLACE_ME_2}")
 
             val metadata = createMetadata()
             whenever(fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata))
                     .thenReturn(FieldPath.Nested("replacement.value"))
 
             // when
-            val outputGsonObject = executeAddGsonType(BaseGsonObjectFactoryTest.GsonTypeArguments(fieldInfo), metadata)
+            val outputGsonObject = executeAddGsonType(GsonTypeArguments(fieldInfo), metadata)
 
             // then
             val expectedGsonObject = GsonObject()
@@ -105,10 +105,10 @@ class GsonObjectFactoryTest {
         fun givenDuplicateChildFields_whenAddGsonType_throwDuplicateFieldException() {
             // given
             val existingGsonObject = GsonObject()
-            val existingField = GsonField(0, mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME), BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, false, null)
-            existingGsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, existingField)
+            val existingField = GsonField(0, mockFieldInfo(DEFAULT_VARIABLE_NAME), DEFAULT_VARIABLE_NAME, false, null)
+            existingGsonObject.addField(DEFAULT_VARIABLE_NAME, existingField)
 
-            val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
+            val fieldInfo = mockFieldInfo(DEFAULT_VARIABLE_NAME)
 
             val metadata = createMetadata()
             whenever(fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata))
@@ -117,7 +117,7 @@ class GsonObjectFactoryTest {
             // when / then
             exception.expect(ProcessingException::class.java)
             exception.expectMessage("Unexpected duplicate field 'variableName' found. Each tree branch must use a unique value!")
-            executeAddGsonType(BaseGsonObjectFactoryTest.GsonTypeArguments(fieldInfo), metadata, existingGsonObject)
+            executeAddGsonType(GsonTypeArguments(fieldInfo), metadata, existingGsonObject)
         }
 
         @Test
@@ -130,16 +130,16 @@ class GsonObjectFactoryTest {
             val existingField = GsonField(0, mockFieldInfo(duplicateBranchName), duplicateBranchName, false, null)
             existingGsonObject.addField(duplicateBranchName, existingField)
 
-            val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, duplicateBranchName + "." + BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
+            val fieldInfo = mockFieldInfo(DEFAULT_VARIABLE_NAME, duplicateBranchName + "." + DEFAULT_VARIABLE_NAME)
 
             val metadata = createMetadata()
             whenever(fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata))
-                    .thenReturn(FieldPath.Nested(duplicateBranchName + "." + BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME))
+                    .thenReturn(FieldPath.Nested(duplicateBranchName + "." + DEFAULT_VARIABLE_NAME))
 
             // when / then
             exception.expect(ProcessingException::class.java)
             exception.expectMessage("Unexpected duplicate field 'duplicate' found. Each tree branch must use a unique value!")
-            executeAddGsonType(BaseGsonObjectFactoryTest.GsonTypeArguments(fieldInfo), metadata, existingGsonObject)
+            executeAddGsonType(GsonTypeArguments(fieldInfo), metadata, existingGsonObject)
         }
 
         @Test
@@ -153,18 +153,18 @@ class GsonObjectFactoryTest {
 
             val childObject = GsonObject()
             childObject.addField(duplicateBranchName, existingField)
-            existingGsonObject.addObject(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, childObject)
+            existingGsonObject.addObject(DEFAULT_VARIABLE_NAME, childObject)
 
-            val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME + "." + duplicateBranchName)
+            val fieldInfo = mockFieldInfo(DEFAULT_VARIABLE_NAME, DEFAULT_VARIABLE_NAME + "." + duplicateBranchName)
 
             val metadata = createMetadata()
             whenever(fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata))
-                    .thenReturn(FieldPath.Nested(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME + "." + duplicateBranchName))
+                    .thenReturn(FieldPath.Nested(DEFAULT_VARIABLE_NAME + "." + duplicateBranchName))
 
             // when / then
             exception.expect(ProcessingException::class.java)
             exception.expectMessage("Unexpected duplicate field 'duplicate' found. Each tree branch must use a unique value!")
-            executeAddGsonType(BaseGsonObjectFactoryTest.GsonTypeArguments(fieldInfo), metadata, existingGsonObject)
+            executeAddGsonType(GsonTypeArguments(fieldInfo), metadata, existingGsonObject)
         }
     }
 
@@ -179,7 +179,7 @@ class GsonObjectFactoryTest {
         @Throws(ProcessingException::class)
         fun test() {
             // when
-            val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
+            val fieldInfo = mockFieldInfo(DEFAULT_VARIABLE_NAME)
             whenever(fieldInfo.typeName).thenReturn(fieldTypeName)
 
             whenever(gsonObjectValidator.validate(fieldInfo)).thenReturn(validationResult)
@@ -189,11 +189,11 @@ class GsonObjectFactoryTest {
                     .thenReturn(FieldPath.Standard(DEFAULT_VARIABLE_NAME))
 
             // when
-            val outputGsonObject = executeAddGsonType(BaseGsonObjectFactoryTest.GsonTypeArguments(fieldInfo), metadata)
+            val outputGsonObject = executeAddGsonType(GsonTypeArguments(fieldInfo), metadata)
 
             // then
             val expectedGsonObject = GsonObject()
-            expectedGsonObject.addField(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME, isRequired, null))
+            expectedGsonObject.addField(DEFAULT_VARIABLE_NAME, GsonField(0, fieldInfo, DEFAULT_VARIABLE_NAME, isRequired, null))
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
 
