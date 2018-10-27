@@ -36,7 +36,8 @@ sonarqube {
 }
 
 task integrationCodeCoverageReport(type: JacocoReport) {
-    executionData fileTree(dir: "gsonpath-compiler/testing/integration*").include("**/build/jacoco/*.exec")
+    executionData fileTree(dir: "gsonpath-compiler/testing/integration-standard").include("**/build/jacoco/*.exec"),
+            fileTree(dir: "gsonpath-compiler/testing/integration-extension").include("**/build/jacoco/*.exec")
 
     // Ignore extension code
     def excludes = ['gsonpath/compiler/ExtensionFieldMetadata.class']
@@ -61,7 +62,7 @@ task integrationCodeCoverageReport(type: JacocoReport) {
 }
 
 task unitCodeCoverageReport(type: JacocoReport) {
-    executionData fileTree(dir: "gsonpath-compiler/testing/unit*").include("**/build/jacoco/*.exec")
+    executionData fileTree(dir: "gsonpath-compiler/testing/unit-standard").include("**/build/jacoco/*.exec")
 
     // Ignore extension code
     def excludes = ['gsonpath/compiler/ExtensionFieldMetadata.class']
