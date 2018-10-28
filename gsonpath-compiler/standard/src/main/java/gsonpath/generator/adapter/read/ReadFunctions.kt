@@ -99,7 +99,7 @@ class ReadFunctions {
         addStatement("$IN.beginObject()")
         newLine()
 
-        val overallRecursionCount = `while`("$IN.hasNext()") {
+        return `while`("$IN.hasNext()") {
 
             //
             // Since all the required fields have been mapped, we can avoid calling 'nextName'.
@@ -113,7 +113,7 @@ class ReadFunctions {
             newLine()
 
             switch("$IN.nextName()") {
-                val recursionTemp = jsonMapping.entries()
+                jsonMapping.entries()
                         .fold(recursionCount + 1) { currentOverallRecursionCount, entry ->
                             addReadCodeForModel(
                                     params = params,
@@ -123,17 +123,16 @@ class ReadFunctions {
                                     counterVariableName = counterVariableName,
                                     currentOverallRecursionCount = currentOverallRecursionCount)
                         }
-
-                default {
-                    addStatement("$IN.skipValue()")
-                }
-                return@switch recursionTemp
+                        .also {
+                            default {
+                                addStatement("$IN.skipValue()")
+                            }
+                        }
             }
+        }.also {
+            newLine()
+            addStatement("$IN.endObject()")
         }
-        newLine()
-        addStatement("$IN.endObject()")
-
-        return overallRecursionCount
     }
 
     private fun CodeBlock.Builder.addReadCodeForModel(
@@ -167,51 +166,7 @@ class ReadFunctions {
                 }
 
                 is GsonArray -> {
-                    val arrayIndexVariableName = key + "_arrayIndex"
-                    add("\n")
-                    add("// Ensure the array is not null.\n")
-                    beginControlFlow("if (!isValidValue(in))")
-                    addStatement("break")
-                    endControlFlow()
-                    addStatement("in.beginArray()")
-                    addStatement("int \$L = 0", arrayIndexVariableName)
-                    add("\n")
-                    add("// Iterate through the array.\n")
-                    beginControlFlow("while (in.hasNext())")
-                    beginControlFlow("switch (\$L)", arrayIndexVariableName)
-                    val recursionCountForArray: Int =
-                            value.entries().fold(currentOverallRecursionCount) { currentOverallRecursionCount, (arrayIndex, arrayItemValue) ->
-                                add("case \$L:", arrayIndex)
-                                newLine()
-                                indent()
-                                val recursionCountArrayCurrent =
-                                        when (arrayItemValue) {
-                                            is GsonField -> {
-                                                writeGsonFieldReader(arrayItemValue, params.requiresConstructorInjection,
-                                                        params.mandatoryInfoMap[arrayItemValue.fieldInfo.fieldName], extensionsHandler)
-
-                                                // No extra recursion has happened.
-                                                currentOverallRecursionCount
-                                            }
-                                            is GsonObject -> {
-                                                addReadCodeForElements(arrayItemValue, params, extensionsHandler, currentOverallRecursionCount)
-                                            }
-                                        }
-                                addStatement("break")
-                                unindent()
-                                add("\n")
-                                recursionCountArrayCurrent
-                            }
-                    add("default:\n")
-                    indent()
-                    addStatement("in.skipValue()")
-                    addStatement("break")
-                    unindent()
-                    endControlFlow()
-                    addStatement("\$L++", arrayIndexVariableName)
-                    endControlFlow()
-                    addStatement("in.endArray()")
-                    recursionCountForArray
+                    writeGsonArrayReader(value, params, key, currentOverallRecursionCount, extensionsHandler)
                 }
             }
         }
@@ -344,6 +299,64 @@ class ReadFunctions {
         }
 
         return FieldReaderResult(variableName, checkIfResultIsNull)
+    }
+
+    private fun CodeBlock.Builder.writeGsonArrayReader(
+            value: GsonArray,
+            params: ReadParams,
+            key: String,
+            currentOverallRecursionCount: Int,
+            extensionsHandler: ExtensionsHandler): Int {
+
+        val arrayIndexVariableName = key + "_arrayIndex"
+        newLine()
+        comment("Ensure the array is not null.")
+        `if`("!isValidValue(in)") {
+            addStatement("break")
+        }
+        addStatement("in.beginArray()")
+        createVariable("int", arrayIndexVariableName, "0")
+        newLine()
+        comment("Iterate through the array.")
+
+        return `while`("in.hasNext()") {
+            switch("\$L", arrayIndexVariableName) {
+                writeGsonArrayReaderCases(value, params, currentOverallRecursionCount, extensionsHandler).also {
+                    default {
+                        addStatement("in.skipValue()")
+                    }
+                }
+            }.also {
+                addStatement("\$L++", arrayIndexVariableName)
+            }
+        }.also {
+            addStatement("in.endArray()")
+        }
+    }
+
+    private fun CodeBlock.Builder.writeGsonArrayReaderCases(
+            value: GsonArray,
+            params: ReadParams,
+            seedValue: Int,
+            extensionsHandler: ExtensionsHandler): Int {
+
+        return value.entries().fold(seedValue) { previousRecursionCount, entry ->
+            val (arrayIndex, arrayItemValue) = entry
+            case("$arrayIndex") {
+                when (arrayItemValue) {
+                    is GsonField -> {
+                        writeGsonFieldReader(arrayItemValue, params.requiresConstructorInjection,
+                                params.mandatoryInfoMap[arrayItemValue.fieldInfo.fieldName], extensionsHandler)
+
+                        // No extra recursion has happened.
+                        previousRecursionCount
+                    }
+                    is GsonObject -> {
+                        addReadCodeForElements(arrayItemValue, params, extensionsHandler, previousRecursionCount)
+                    }
+                }
+            }
+        }
     }
 
     /**

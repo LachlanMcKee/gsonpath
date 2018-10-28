@@ -56,7 +56,7 @@ data class MutableGsonArray(
 
     @Throws(IllegalArgumentException::class)
     fun addField(arrayIndex: Int, field: MutableGsonField) {
-        if (containsKey(arrayIndex)) {
+        if (arrayFields.containsKey(arrayIndex)) {
             throw IllegalArgumentException("Value already exists")
         }
         arrayFields[arrayIndex] = field
@@ -80,9 +80,5 @@ data class MutableGsonArray(
 
     operator fun get(arrayIndex: Int): Any? {
         return arrayFields[arrayIndex]
-    }
-
-    fun containsKey(arrayIndex: Int?): Boolean {
-        return arrayFields.containsKey(arrayIndex)
     }
 }
