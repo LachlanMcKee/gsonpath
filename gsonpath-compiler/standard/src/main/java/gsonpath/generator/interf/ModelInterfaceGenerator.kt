@@ -147,7 +147,6 @@ class ModelInterfaceGenerator(
                         TypeName.DOUBLE -> {
                             assign(TEMP, "java.lang.Double.doubleToLongBits($fieldName)")
                             "(int) ($TEMP ^ ($TEMP >>> 32))"
-
                         }
                         else -> // Last possible outcome in a boolean.
                             "($fieldName ? 1 : 0)"

@@ -5,31 +5,14 @@ import com.squareup.javapoet.TypeName
 
 val CLASS_NAME_STRING: ClassName = ClassName.get(String::class.java)
 
-fun createDefaultVariableValueForTypeName(typeName: TypeName): String {
-    when (typeName) {
-        TypeName.INT,
-        TypeName.BYTE,
-        TypeName.SHORT ->
-            return "0"
-
-        TypeName.LONG ->
-            return "0L"
-
-        TypeName.FLOAT ->
-            return "0f"
-
-        TypeName.DOUBLE ->
-            return "0d"
-
-        TypeName.CHAR ->
-            return "'\\u0000'"
-
-        TypeName.BOOLEAN ->
-            return "false"
-
-        else ->
-            return "null"
-    }
+fun createDefaultVariableValueForTypeName(typeName: TypeName) = when (typeName) {
+    TypeName.INT, TypeName.BYTE, TypeName.SHORT -> "0"
+    TypeName.LONG -> "0L"
+    TypeName.FLOAT -> "0f"
+    TypeName.DOUBLE -> "0d"
+    TypeName.CHAR -> "'\\u0000'"
+    TypeName.BOOLEAN -> "false"
+    else -> "null"
 }
 
 fun generateClassName(className: ClassName, classNameSuffix: String): String {

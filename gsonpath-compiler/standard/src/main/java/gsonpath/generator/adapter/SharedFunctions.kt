@@ -44,8 +44,7 @@ object SharedFunctions {
      * e.g. for 'String[]' or 'List<String>' the returned type name is 'String'
      */
     fun getRawType(fieldInfo: FieldInfo): TypeMirror {
-        val typeMirror = fieldInfo.typeMirror
-        return when (typeMirror) {
+        return when (val typeMirror = fieldInfo.typeMirror) {
             is ArrayType -> typeMirror.componentType
 
             is DeclaredType -> typeMirror.typeArguments.first()

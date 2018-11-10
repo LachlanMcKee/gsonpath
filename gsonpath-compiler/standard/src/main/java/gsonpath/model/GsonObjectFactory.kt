@@ -42,8 +42,7 @@ class GsonObjectFactory(
 
         val gsonSubTypeMetadata = subTypeMetadataFactory.getGsonSubType(fieldInfo)
 
-        val jsonFieldPath = fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata)
-        when (jsonFieldPath) {
+        when (val jsonFieldPath = fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata)) {
             is FieldPath.Nested -> {
                 addNestedType(gsonPathObject, fieldInfo, jsonFieldPath, metadata.flattenDelimiter,
                         fieldInfoIndex, isRequired, gsonSubTypeMetadata)
