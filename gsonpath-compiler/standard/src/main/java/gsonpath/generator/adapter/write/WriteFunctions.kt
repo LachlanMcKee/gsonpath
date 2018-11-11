@@ -146,10 +146,8 @@ class WriteFunctions {
         addStatement("out.beginArray()")
         newLine()
 
-        val newFieldCount =
-                (0..gsonArray.maxIndex).fold(currentFieldCount) { previousFieldCount, arrayIndex ->
-                    val arrayElement = gsonArray[arrayIndex]
-
+        return (0..gsonArray.maxIndex)
+                .fold(currentFieldCount) { previousFieldCount, arrayIndex ->
                     val newPath: String =
                             if (currentPath.isEmpty()) {
                                 "$key[$arrayIndex]"
@@ -157,33 +155,29 @@ class WriteFunctions {
                                 "$currentPath.$key[$arrayIndex]"
                             }
 
-                    if (arrayElement == null) {
-                        // Add any empty array items if required.
-                        add("out.nullValue(); // Set Value: '$newPath'")
-                        newLine()
-
-                        return@fold previousFieldCount
-                    }
-
-                    if (arrayElement is GsonField) {
-                        newLine()
-                        comment("Set Value: '$newPath'")
-
-                        return@fold handleField(arrayElement, previousFieldCount, serializeNulls, key, false)
-
-                    } else {
-                        newLine()
-                        comment("Begin Object: '$newPath'")
-
-                        return@fold writeGsonFieldWriter(arrayElement as GsonObject, serializeNulls, true, newPath, previousFieldCount)
+                    when (val arrayElement = gsonArray[arrayIndex]) {
+                        null -> {
+                            // Add any empty array items if required.
+                            add("out.nullValue(); // Set Value: '$newPath'")
+                            newLine()
+                            previousFieldCount
+                        }
+                        is GsonField -> {
+                            newLine()
+                            comment("Set Value: '$newPath'")
+                            handleField(arrayElement, previousFieldCount, serializeNulls, key, false)
+                        }
+                        is GsonObject -> {
+                            newLine()
+                            comment("Begin Object: '$newPath'")
+                            writeGsonFieldWriter(arrayElement, serializeNulls, true, newPath, previousFieldCount)
+                        }
                     }
                 }
-
-        comment("End Array: '$key'")
-        addStatement("out.endArray()")
-
-        return newFieldCount
-
+                .also {
+                    comment("End Array: '$key'")
+                    addStatement("out.endArray()")
+                }
     }
 
     private fun CodeBlock.Builder.writeField(value: GsonField, objectName: String, fieldTypeName: TypeName) {

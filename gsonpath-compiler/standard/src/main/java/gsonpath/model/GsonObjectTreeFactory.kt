@@ -70,8 +70,7 @@ class GsonObjectTreeFactory(private val gsonObjectFactory: GsonObjectFactory) {
                         is GsonObject -> getFlattenedFields(gsonType)
                         is GsonArray -> {
                             gsonType.entries()
-                                    .map { it.value }
-                                    .flatMap { arrayGsonType ->
+                                    .flatMap { (_, arrayGsonType) ->
                                         when (arrayGsonType) {
                                             is GsonField -> listOf(arrayGsonType)
                                             is GsonObject -> getFlattenedFields(arrayGsonType)

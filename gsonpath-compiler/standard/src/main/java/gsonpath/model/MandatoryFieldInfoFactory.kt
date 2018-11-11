@@ -49,9 +49,7 @@ class MandatoryFieldInfoFactory {
             map: Map<String, MandatoryFieldInfo>): Map<String, MandatoryFieldInfo> {
 
         return arrayModel.entries()
-                .asSequence()
-                .map { it.value }
-                .fold(map) { arrayMap, arrayGsonModel ->
+                .fold(map) { arrayMap, (_, arrayGsonModel) ->
                     when (arrayGsonModel) {
                         is GsonField -> handleField(arrayGsonModel, arrayMap)
                         is GsonObject -> arrayMap.plus(createMandatoryFieldsFromGsonObject(arrayGsonModel))
