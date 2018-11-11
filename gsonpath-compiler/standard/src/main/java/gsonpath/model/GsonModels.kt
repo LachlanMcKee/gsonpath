@@ -22,7 +22,9 @@ data class GsonObject(private val fieldMap: Map<String, GsonModel>) : GsonArrayE
     }
 }
 
-data class GsonArray(private val arrayFields: Map<Int, GsonArrayElement> = HashMap()) : GsonModel() {
+data class GsonArray(
+        private val arrayFields: Map<Int, GsonArrayElement> = HashMap(),
+        val maxIndex: Int) : GsonModel() {
 
     fun entries(): Set<Map.Entry<Int, GsonArrayElement>> {
         return arrayFields.entries

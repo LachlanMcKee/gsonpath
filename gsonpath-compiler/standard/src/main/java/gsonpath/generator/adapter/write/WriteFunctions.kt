@@ -146,10 +146,8 @@ class WriteFunctions {
         addStatement("out.beginArray()")
         newLine()
 
-        val maxIndex: Int = gsonArray.entries().asSequence().map { it.key }.max()!!
-
         val newFieldCount =
-                (0..maxIndex).fold(currentFieldCount) { previousFieldCount, arrayIndex ->
+                (0..gsonArray.maxIndex).fold(currentFieldCount) { previousFieldCount, arrayIndex ->
                     val arrayElement = gsonArray[arrayIndex]
 
                     val newPath: String =

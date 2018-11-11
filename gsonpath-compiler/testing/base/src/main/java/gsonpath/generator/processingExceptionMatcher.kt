@@ -5,7 +5,7 @@ import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import javax.lang.model.element.Element
 
-fun processingExceptionMatcher(element: Element, message: String): TypeSafeMatcher<ProcessingException> {
+fun processingExceptionMatcher(element: Element?, message: String): TypeSafeMatcher<ProcessingException> {
     return object : TypeSafeMatcher<ProcessingException>() {
         override fun describeTo(description: Description) {
         }

@@ -81,40 +81,4 @@ class GsonObjectTreeFactory(private val gsonObjectFactory: GsonObjectFactory) {
                     }
                 }
     }
-
-    private fun MutableGsonObject.toImmutable(): GsonObject {
-        return GsonObject(entries()
-                .asSequence()
-                .map { (key, value) ->
-                    when (value) {
-                        is MutableGsonField -> key to value.toImmutable()
-                        is MutableGsonObject -> key to value.toImmutable()
-                        is MutableGsonArray -> key to value.toImmutable()
-                    }
-                }
-                .toMap())
-    }
-
-    private fun MutableGsonField.toImmutable(): GsonField {
-        return GsonField(
-                fieldIndex = fieldIndex,
-                fieldInfo = fieldInfo,
-                variableName = variableName,
-                jsonPath = jsonPath,
-                isRequired = isRequired,
-                subTypeMetadata = subTypeMetadata
-        )
-    }
-
-    private fun MutableGsonArray.toImmutable(): GsonArray {
-        return GsonArray(entries()
-                .asSequence()
-                .map { (key, value) ->
-                    when (value) {
-                        is MutableGsonField -> key to value.toImmutable()
-                        is MutableGsonObject -> key to value.toImmutable()
-                    }
-                }
-                .toMap())
-    }
 }

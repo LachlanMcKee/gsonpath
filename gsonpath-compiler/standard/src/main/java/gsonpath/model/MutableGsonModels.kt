@@ -1,5 +1,6 @@
 package gsonpath.model
 
+import gsonpath.ProcessingException
 import java.util.*
 
 sealed class MutableGsonModel
@@ -11,7 +12,19 @@ data class MutableGsonField(
         val variableName: String,
         val jsonPath: String,
         val isRequired: Boolean,
-        val subTypeMetadata: SubTypeMetadata?) : MutableGsonArrayElement()
+        val subTypeMetadata: SubTypeMetadata?) : MutableGsonArrayElement() {
+
+    fun toImmutable(): GsonField {
+        return GsonField(
+                fieldIndex = fieldIndex,
+                fieldInfo = fieldInfo,
+                variableName = variableName,
+                jsonPath = jsonPath,
+                isRequired = isRequired,
+                subTypeMetadata = subTypeMetadata
+        )
+    }
+}
 
 data class MutableGsonObject(
         private val fieldMap: LinkedHashMap<String, MutableGsonModel> = LinkedHashMap()) : MutableGsonArrayElement() {
@@ -42,12 +55,21 @@ data class MutableGsonObject(
         return field
     }
 
-    fun entries(): Set<Map.Entry<String, MutableGsonModel>> {
-        return fieldMap.entries
-    }
-
     operator fun get(key: String): MutableGsonModel? {
         return fieldMap[key]
+    }
+
+    fun toImmutable(): GsonObject {
+        return GsonObject(fieldMap.entries
+                .asSequence()
+                .map { (key, value) ->
+                    when (value) {
+                        is MutableGsonField -> key to value.toImmutable()
+                        is MutableGsonObject -> key to value.toImmutable()
+                        is MutableGsonArray -> key to value.toImmutable()
+                    }
+                }
+                .toMap())
     }
 }
 
@@ -74,11 +96,26 @@ data class MutableGsonArray(
         return newGsonObject
     }
 
-    fun entries(): Set<Map.Entry<Int, MutableGsonArrayElement>> {
-        return arrayFields.entries
-    }
-
     operator fun get(arrayIndex: Int): Any? {
         return arrayFields[arrayIndex]
+    }
+
+    fun toImmutable(): GsonArray {
+        return arrayFields.entries.let { entries ->
+            val maxIndex = entries.maxBy { it.key }?.key
+                    ?: throw ProcessingException("Array should not be empty")
+
+            GsonArray(
+                    maxIndex = maxIndex,
+                    arrayFields = entries
+                            .asSequence()
+                            .map { (key, value) ->
+                                when (value) {
+                                    is MutableGsonField -> key to value.toImmutable()
+                                    is MutableGsonObject -> key to value.toImmutable()
+                                }
+                            }
+                            .toMap())
+        }
     }
 }
