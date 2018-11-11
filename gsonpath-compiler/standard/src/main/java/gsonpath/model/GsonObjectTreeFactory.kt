@@ -68,16 +68,6 @@ class GsonObjectTreeFactory(private val gsonObjectFactory: GsonObjectFactory) {
                     when (gsonType) {
                         is GsonField -> listOf(gsonType)
                         is GsonObject -> getFlattenedFields(gsonType)
-                        is GsonArray -> {
-                            gsonType.entries()
-                                    .map { it.value }
-                                    .flatMap { arrayGsonType ->
-                                        when (arrayGsonType) {
-                                            is GsonField -> listOf(arrayGsonType)
-                                            is GsonObject -> getFlattenedFields(arrayGsonType)
-                                        }
-                                    }
-                        }
                     }
                 }
     }
@@ -89,7 +79,6 @@ class GsonObjectTreeFactory(private val gsonObjectFactory: GsonObjectFactory) {
                     when (value) {
                         is MutableGsonField -> key to value.toImmutable()
                         is MutableGsonObject -> key to value.toImmutable()
-                        is MutableGsonArray -> key to value.toImmutable()
                     }
                 }
                 .toMap())
@@ -104,17 +93,5 @@ class GsonObjectTreeFactory(private val gsonObjectFactory: GsonObjectFactory) {
                 isRequired = isRequired,
                 subTypeMetadata = subTypeMetadata
         )
-    }
-
-    private fun MutableGsonArray.toImmutable(): GsonArray {
-        return GsonArray(entries()
-                .asSequence()
-                .map { (key, value) ->
-                    when (value) {
-                        is MutableGsonField -> key to value.toImmutable()
-                        is MutableGsonObject -> key to value.toImmutable()
-                    }
-                }
-                .toMap())
     }
 }

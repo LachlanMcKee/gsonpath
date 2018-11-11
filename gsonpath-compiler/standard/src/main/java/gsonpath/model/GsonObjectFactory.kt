@@ -70,22 +70,9 @@ class GsonObjectFactory(
         val pathSegments: List<String> = jsonFieldPath.path.split(regexSafeDelimiter)
 
         val lastPathIndex = pathSegments.size - 1
-        val arrayIndexes = IntArray(pathSegments.size)
 
         (0..lastPathIndex).fold(gsonPathObject as MutableGsonModel) { current: MutableGsonModel, index ->
             val pathSegment = pathSegments[index]
-
-            val isCurrentSegmentArray = pathSegment.contains("[")
-            val pathKey =
-                    if (isCurrentSegmentArray) {
-                        pathSegment.substring(0, pathSegment.indexOf("["))
-                    } else {
-                        pathSegment
-                    }
-            if (isCurrentSegmentArray) {
-                val arrayIndexString = pathSegment.substring(pathSegment.indexOf("[") + 1, pathSegment.indexOf("]"))
-                arrayIndexes[index] = Integer.parseInt(arrayIndexString)
-            }
 
             if (index < lastPathIndex) {
 
@@ -102,25 +89,10 @@ class GsonObjectFactory(
                                     "' found. Each tree branch must use a unique value!", fieldInfo.element)
                         }
                     } else {
-                        if (isCurrentSegmentArray) {
-                            return@fold current.addArray(pathKey)
-                        } else {
-                            val newMap = MutableGsonObject()
-                            current.addObject(pathSegment, newMap)
-                            return@fold newMap
-                        }
+                        val newMap = MutableGsonObject()
+                        current.addObject(pathSegment, newMap)
+                        return@fold newMap
                     }
-                } else if (current is MutableGsonArray) {
-                    // Now that it is established that the array contains an object, we add a container object.
-                    val previousArrayIndex = arrayIndexes[index - 1]
-                    val currentGsonType = current[previousArrayIndex]
-                    if (currentGsonType == null) {
-                        val gsonObject = current.getObjectAtIndex(previousArrayIndex)
-                        return@fold gsonObject.addObject(pathKey, MutableGsonObject())
-                    } else {
-                        return@fold (currentGsonType as MutableGsonObject)[pathKey]!!
-                    }
-
                 } else {
                     throw ProcessingException("This should not happen!", fieldInfo.element)
                 }
@@ -129,20 +101,7 @@ class GsonObjectFactory(
                 // We have reached the end of this object branch, add the field at the end.
                 try {
                     val field = MutableGsonField(fieldInfoIndex, fieldInfo, getVariableName(jsonFieldPath.path), jsonFieldPath.path, isRequired, gsonSubTypeMetadata)
-
-                    val temp =
-                            if (current is MutableGsonArray) {
-                                val previousArrayIndex = arrayIndexes[index - 1]
-                                current.getObjectAtIndex(previousArrayIndex)
-                            } else {
-                                current
-                            }
-                    if (isCurrentSegmentArray) {
-                        val gsonArray = (temp as MutableGsonObject).addArray(pathKey)
-                        gsonArray.addField(arrayIndexes[index], field)
-                    } else {
-                        (temp as MutableGsonObject).addField(pathSegment, field)
-                    }
+                    (current as MutableGsonObject).addField(pathSegment, field)
                     return@fold field
 
                 } catch (e: IllegalArgumentException) {
@@ -165,17 +124,7 @@ class GsonObjectFactory(
 
         val path = jsonFieldPath.path
 
-        val isArray = path.contains("[")
-        val arrayIndex: Int
         when {
-            isArray -> {
-                val nonArrayKey = path.substring(0, path.indexOf("["))
-                arrayIndex = Integer.parseInt(path.substring(path.indexOf("[") + 1, path.indexOf("]")))
-                val gsonArray = gsonPathObject.addArray(nonArrayKey)
-                gsonArray.addField(arrayIndex, MutableGsonField(fieldInfoIndex, fieldInfo, getVariableName(path),
-                        path, isRequired, gsonSubTypeMetadata))
-
-            }
             gsonPathObject[path] == null -> {
                 gsonPathObject.addField(path, MutableGsonField(fieldInfoIndex, fieldInfo, getVariableName(path),
                         path, isRequired, gsonSubTypeMetadata))
