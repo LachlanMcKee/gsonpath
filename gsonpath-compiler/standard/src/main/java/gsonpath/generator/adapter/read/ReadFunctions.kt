@@ -15,7 +15,6 @@ import gsonpath.generator.Constants.CONTINUE
 import gsonpath.generator.Constants.GET_ADAPTER
 import gsonpath.generator.Constants.IN
 import gsonpath.generator.Constants.NULL
-import gsonpath.model.GsonArray
 import gsonpath.model.GsonField
 import gsonpath.model.GsonModel
 import gsonpath.model.GsonObject
@@ -164,10 +163,6 @@ class ReadFunctions {
                     }
                     addReadCodeForElements(value, params, extensionsHandler, currentOverallRecursionCount)
                 }
-
-                is GsonArray -> {
-                    writeGsonArrayReader(value, params, key, extensionsHandler, currentOverallRecursionCount)
-                }
             }
         }
     }
@@ -299,64 +294,6 @@ class ReadFunctions {
         }
 
         return FieldReaderResult(variableName, checkIfResultIsNull)
-    }
-
-    private fun CodeBlock.Builder.writeGsonArrayReader(
-            value: GsonArray,
-            params: ReadParams,
-            key: String,
-            extensionsHandler: ExtensionsHandler,
-            currentOverallRecursionCount: Int): Int {
-
-        val arrayIndexVariableName = "${key}_arrayIndex"
-        newLine()
-        comment("Ensure the array is not null.")
-        `if`("!isValidValue(in)") {
-            addStatement("break")
-        }
-        addStatement("in.beginArray()")
-        createVariable("int", arrayIndexVariableName, "0")
-        newLine()
-        comment("Iterate through the array.")
-
-        return `while`("in.hasNext()") {
-            switch(arrayIndexVariableName) {
-                writeGsonArrayReaderCases(value, params, currentOverallRecursionCount, extensionsHandler)
-                        .also {
-                            default {
-                                addStatement("in.skipValue()")
-                            }
-                        }
-            }.also {
-                addStatement("$arrayIndexVariableName++")
-            }
-        }.also {
-            addStatement("in.endArray()")
-        }
-    }
-
-    private fun CodeBlock.Builder.writeGsonArrayReaderCases(
-            value: GsonArray,
-            params: ReadParams,
-            seedValue: Int,
-            extensionsHandler: ExtensionsHandler): Int {
-
-        return value.entries().fold(seedValue) { previousRecursionCount, (arrayIndex, arrayItemValue) ->
-            case("$arrayIndex") {
-                when (arrayItemValue) {
-                    is GsonField -> {
-                        writeGsonFieldReader(arrayItemValue, params.requiresConstructorInjection,
-                                params.mandatoryInfoMap[arrayItemValue.fieldInfo.fieldName], extensionsHandler)
-
-                        // No extra recursion has happened.
-                        previousRecursionCount
-                    }
-                    is GsonObject -> {
-                        addReadCodeForElements(arrayItemValue, params, extensionsHandler, previousRecursionCount)
-                    }
-                }
-            }
-        }
     }
 
     /**
