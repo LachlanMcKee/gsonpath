@@ -94,7 +94,7 @@ public final class InterfaceExample_GsonTypeAdapter extends TypeAdapter<Interfac
             return null;
         }
         
-        java.lang.Integer value_objectExample = null;
+        Integer value_objectExample = null;
         int value_primitiveExample = 0;
         
         boolean[] mandatoryFieldsCheckList = new boolean[MANDATORY_FIELDS_SIZE];
@@ -112,13 +112,13 @@ public final class InterfaceExample_GsonTypeAdapter extends TypeAdapter<Interfac
                 case "objectExample":
                     jsonFieldCounter0++;
                     
-                    value_objectExample = getIntegerSafely(in);
+                    value_objectExample = mGson.getAdapter(java.lang.Integer.class).read(in);
                     break;
                     
                 case "primitiveExample":
                     jsonFieldCounter0++;
                     
-                    Integer value_primitiveExample_safe = getIntegerSafely(in);
+                    Integer value_primitiveExample_safe = mGson.getAdapter(java.lang.Integer.class).read(in);
                     if (value_primitiveExample_safe != null) {
                         value_primitiveExample = value_primitiveExample_safe;
                         mandatoryFieldsCheckList[MANDATORY_INDEX_PRIMITIVEEXAMPLE] = true;

@@ -1,6 +1,7 @@
 # Compiled Folders
 Build/
 .gradle/
+out/
 
 # IntelliJ Files
 .idea/

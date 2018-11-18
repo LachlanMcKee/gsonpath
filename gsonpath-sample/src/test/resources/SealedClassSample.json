@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "type": "type1",
+      "common": {
+        "name": "Type1 Example"
+      },
+      "specific": {
+        "intTest": 1
+      }
+    },
+    {
+      "type": "type2",
+      "common": {
+        "name": "Type2 Example"
+      },
+      "specific": {
+        "doubleTest": 1.0
+      }
+    },
+    {
+      "type": "type3",
+      "common": {
+        "name": "Type3 Example"
+      },
+      "specific": {
+        "stringTest": "123"
+      }
+    }
+  ]
+}

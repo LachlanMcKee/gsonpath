@@ -1,5 +1,8 @@
 package gsonpath;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Provides a text substitution mechanism to the <i>com.google.gson.annotations.SerializedName</i> annotation
  * when used in conjunction with the {@link AutoGsonAdapter}.
@@ -11,6 +14,7 @@ package gsonpath;
  *
  * @author Lachlan McKee
  */
+@Retention(RetentionPolicy.RUNTIME)
 public @interface PathSubstitution {
     /**
      * The original text which will be replaced

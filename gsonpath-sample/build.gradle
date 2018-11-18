@@ -25,7 +25,7 @@ dependencies {
     compile "com.google.code.gson:gson:$gson_version"
 
     compile project(":gsonpath")
-    kapt project(":gsonpath-compiler")
+    kapt project(":gsonpath-compiler:standard")
 
     testCompile "junit:junit:$junit_version"
 }

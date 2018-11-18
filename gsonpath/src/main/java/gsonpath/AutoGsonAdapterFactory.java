@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
  * The annotation processor will throw a compilation error if there is no interfaces annotated with this, or if there
  * is more than one interface per project.
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface AutoGsonAdapterFactory {
 }

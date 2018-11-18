@@ -1,5 +1,49 @@
 Change Log
-==========
+===========
+
+Version 2.4.2 *(2018-07-30)*
+----------------------------
+
+* Improvement/Bug: Annotations are now also read from the POJO's getter method if it does not exist on the property. See issue [#132](../../issues/137) for details.
+     * Inherited method annotations are also used. This is very useful for abstract methods that do not duplicate their annotations when overriding the method.
+     * This behaviour was changed to provide better support for sealed classes within Kotlin.
+
+Version 2.4.1 *(2018-05-15)*
+----------------------------
+
+* Fix: Resolved a defect causing Kotlin classes to not respect `fieldValidationType`, as it incorrectly reports that the class has a default value. See issue [#132](../../issues/132) for details.
+
+Version 2.4.0 *(2018-05-14)*
+----------------------------
+
+* Improvement: Replaced `GsonPathDefaultConfiguration` with a much more useful annotation inheritance. See issue [#124](../../issues/124) for details.
+     * Note that this is a breaking change. If you were previously using `GsonPathDefaultConfiguration`, you will need to change your implementation.
+* Improvement: Passing more metadata to extensions to make their validation more useful.
+* Improvement: Annotations are now retained at runtime.
+     * This fixes an issue with Kotlin classes discarding the annotations.
+
+Version 2.3.2 *(2018-04-12)*
+----------------------------
+
+* Fix: Raise a compilation error when using SerializedName.alternate as it is not supported.
+* Fix: Fixed an issue causing 2.3.1 to not find `hasDefaultValue` in certain circumstances.
+
+Version 2.3.1 *(2018-03-07)*
+----------------------------
+
+* New: Added a `Generated` annotation to all generated type adapters.
+* New: Allowed annotated interfaces to use default and static methods (Java 8+).
+* New: Support for all primitive types.
+* Fix: Long, Float and Double now respect `longSerializationPolicy` and `serializeSpecialFloatingPointValues` from the gson instance.
+* Fix: Non-null fields with a default value will no longer throw an exception if the value is missing when deserializing. i.e:
+
+     ```java
+     @AutoGsonAdapter(fieldValidationType = GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL)
+     public class TestValidateWithDefaultValue {
+         @NonNull
+         public Integer mandatoryWithDefault = 0;
+     }
+     ```
 
 Version 2.3.0 *(2017-10-15)*
 ----------------------------

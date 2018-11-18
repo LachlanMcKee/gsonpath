@@ -1,0 +1,24 @@
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_7
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+dependencies {
+    compile project(":gsonpath-compiler:testing:base")
+    compile "com.google.truth:truth:0.34"
+    compile "com.google.testing.compile:compile-testing:0.11"
+    compile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
+}

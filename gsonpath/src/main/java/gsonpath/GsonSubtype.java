@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * Allows a developer to mark a gson field as heterogenous, and exposes the ability to map specific types to a value value
  * that is found within the field name defined within the model being deserialized.
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 public @interface GsonSubtype {
 

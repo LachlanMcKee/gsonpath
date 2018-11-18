@@ -17,7 +17,7 @@ import java.lang.annotation.*;
  * <p>
  * "{'value1': 1, 'value2': 2}"
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Inherited
 public @interface FlattenJson {

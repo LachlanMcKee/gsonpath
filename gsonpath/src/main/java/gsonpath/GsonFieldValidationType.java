@@ -8,13 +8,6 @@ package gsonpath;
  */
 public enum GsonFieldValidationType {
     /**
-     * Has the same logic as {@link #NO_VALIDATION}, however if you use a
-     * {@link GsonPathDefaultConfiguration} this enum value lets the library decide
-     * whether the default value should be used or not.
-     */
-    NO_VALIDATION_OR_INHERIT_DEFAULT_IF_AVAILABLE,
-
-    /**
      * No validation will be done on fields, regardless of whether they use
      * 'nullable' or 'nonnull' annotations.
      */
