@@ -20,6 +20,7 @@ class InterfaceTest {
                         "TestValidInterface.java"),
 
                 relativeGeneratedNames = listOf(
+                        "PackagePrivateTypeAdapterLoader.java",
                         "TestValidInterface_GsonPathModel.java",
                         "TestValidInterface_GsonTypeAdapter.java")
         ))
