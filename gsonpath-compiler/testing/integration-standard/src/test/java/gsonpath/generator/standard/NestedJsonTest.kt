@@ -49,4 +49,20 @@ class NestedJsonTest {
                         "TestFieldNestingAutocomplete_GsonTypeAdapter.java")
         ))
     }
+
+    @Test
+    fun testFlatteningUsingFieldAutoCompleteInheritance() {
+        assertGeneratedContent(TestCriteria("generator/standard/nested_json/field_nesting_autocomplete_inheritance",
+
+                absoluteSourceNames = listOf(
+                        "generator/standard/TestGsonTypeFactory.java"),
+
+                relativeSourceNames = listOf(
+                        "TestFieldNestingAutocompleteBase.java",
+                        "TestFieldNestingAutocomplete.java"),
+
+                relativeGeneratedNames = listOf(
+                        "TestFieldNestingAutocomplete_GsonTypeAdapter.java")
+        ))
+    }
 }
