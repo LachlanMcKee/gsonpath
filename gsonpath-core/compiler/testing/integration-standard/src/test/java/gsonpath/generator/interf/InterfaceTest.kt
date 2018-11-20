@@ -84,22 +84,6 @@ class InterfaceTest {
     }
 
     @Test
-    fun testFlattenJsonWithInterface() {
-        assertGeneratedContent(TestCriteria("generator/interf/flatten_json",
-
-                absoluteSourceNames = listOf(
-                        "generator/standard/TestGsonTypeFactory.java"),
-
-                relativeSourceNames = listOf(
-                        "TestFlattenJsonWithInterface.java"),
-
-                relativeGeneratedNames = listOf(
-                        "TestFlattenJsonWithInterface_GsonPathModel.java",
-                        "TestFlattenJsonWithInterface_GsonTypeAdapter.java")
-        ))
-    }
-
-    @Test
     fun testJava8Interface() {
         assertGeneratedContent(TestCriteria("generator/interf/java8",
 

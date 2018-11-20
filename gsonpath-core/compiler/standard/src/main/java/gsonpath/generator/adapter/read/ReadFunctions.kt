@@ -1,14 +1,10 @@
 package gsonpath.generator.adapter.read
 
-import com.google.gson.JsonElement
 import com.google.gson.stream.JsonReader
-import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterizedTypeName
-import gsonpath.FlattenJson
 import gsonpath.ProcessingException
-import gsonpath.compiler.CLASS_NAME_STRING
 import gsonpath.compiler.createDefaultVariableValueForTypeName
 import gsonpath.generator.Constants.BREAK
 import gsonpath.generator.Constants.CONTINUE
@@ -196,12 +192,7 @@ class ReadFunctions {
 
         if (result.checkIfNull) {
             `if`("${result.variableName} != $NULL") {
-
-                if (result.callToString) {
-                    assign(assignedVariable, "${result.variableName}.toString()")
-                } else {
-                    assign(assignedVariable, result.variableName)
-                }
+                assign(assignedVariable, result.variableName)
 
                 // When a field has been assigned, if it is a mandatory value, we note this down.
                 if (mandatoryFieldInfo != null) {
@@ -249,25 +240,6 @@ class ReadFunctions {
 
         val fieldInfo = gsonField.fieldInfo
         val fieldTypeName = fieldInfo.typeName.box()
-
-        // Special handling for strings.
-        if (fieldInfo.typeName == CLASS_NAME_STRING) {
-            val annotation = fieldInfo.getAnnotation(FlattenJson::class.java)
-            if (annotation != null) {
-                val variableName =
-                        if (requiresConstructorInjection)
-                            "${gsonField.variableName}_safe"
-                        else
-                            gsonField.variableName
-
-                createVariable("\$T", variableName, "$GET_ADAPTER(\$T.class).read($IN)",
-                        CLASS_NAME_JSON_ELEMENT,
-                        CLASS_NAME_JSON_ELEMENT)
-
-                // FlattenJson is a special case. We always need to ensure that the JsonObject is not null.
-                return FieldReaderResult(variableName, checkIfNull = true, callToString = true)
-            }
-        }
 
         val variableName = getVariableName(gsonField, requiresConstructorInjection)
         val checkIfResultIsNull = isCheckIfNullApplicable(gsonField, requiresConstructorInjection)
@@ -406,11 +378,9 @@ class ReadFunctions {
 
     private data class FieldReaderResult(
             val variableName: String,
-            val checkIfNull: Boolean,
-            val callToString: Boolean = false)
+            val checkIfNull: Boolean)
 
     private companion object {
-        private val CLASS_NAME_JSON_ELEMENT: ClassName = ClassName.get(JsonElement::class.java)
         private const val RESULT = "result"
         private const val MANDATORY_FIELDS_CHECK_LIST = "mandatoryFieldsCheckList"
         private const val MANDATORY_FIELDS_SIZE = "MANDATORY_FIELDS_SIZE"

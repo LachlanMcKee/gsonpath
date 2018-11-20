@@ -69,9 +69,6 @@ class AdapterModelMetadataFactory(
 
         val rootObject = gsonTreeResult.rootObject
         val flattenedFields = gsonTreeResult.flattenedFields
-        flattenedFields.forEach {
-            AdapterAnnotationValidator.validateFieldAnnotations(it.fieldInfo)
-        }
         val mandatoryInfoMap = MandatoryFieldInfoFactory().createMandatoryFieldsFromGsonObject(rootObject)
 
         val readParams = ReadParams(
