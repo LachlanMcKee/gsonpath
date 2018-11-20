@@ -26,7 +26,7 @@ class ExtensionsHandler(
         return supportedExtensions == 1
     }
 
-    fun executeFieldRead(gsonField: GsonField, variableName: String, handleFunc: (String, CodeBlock) -> Unit) {
+    fun executeFieldRead(gsonField: GsonField, variableName: String, checkIfResultIsNull: Boolean, handleFunc: (String, CodeBlock) -> Unit) {
         if (!canHandleFieldRead(gsonField, variableName)) {
             throw IllegalStateException("canHandleFieldRead must be checked before calling this method.")
         }
@@ -34,7 +34,7 @@ class ExtensionsHandler(
             val extensionFieldMetadata = createMetadata(gsonField, variableName)
             if (extension.canHandleFieldRead(processingEnvironment, extensionFieldMetadata)) {
                 handleFunc(extension.extensionName, extension.createCodeReadCodeBlock(
-                        processingEnvironment, extensionFieldMetadata))
+                        processingEnvironment, extensionFieldMetadata, checkIfResultIsNull))
             }
         }
     }

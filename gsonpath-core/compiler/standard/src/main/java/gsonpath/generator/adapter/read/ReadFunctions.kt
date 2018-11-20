@@ -266,8 +266,7 @@ class ReadFunctions {
 
         // Handle every other possible class by falling back onto the gson adapter.
         if (useExtensionForRead) {
-            extensionsHandler.executeFieldRead(gsonField, variableName) { extensionName, readCodeBlock ->
-                newLine()
+            extensionsHandler.executeFieldRead(gsonField, variableName, checkIfResultIsNull) { extensionName, readCodeBlock ->
                 comment("Extension (Read) - $extensionName")
                 add(readCodeBlock)
                 newLine()

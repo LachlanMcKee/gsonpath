@@ -44,7 +44,8 @@ interface GsonPathExtension {
 
     fun createCodeReadCodeBlock(
             processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock
+            extensionFieldMetadata: ExtensionFieldMetadata,
+            checkIfResultIsNull: Boolean): CodeBlock
 
     fun createCodePostReadCodeBlock(
             processingEnvironment: ProcessingEnvironment,

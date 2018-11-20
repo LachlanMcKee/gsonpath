@@ -24,7 +24,8 @@ class EmptyStringToNullExtension : GsonPathExtension {
 
     override fun createCodeReadCodeBlock(
             processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock {
+            extensionFieldMetadata: ExtensionFieldMetadata,
+            checkIfResultIsNull: Boolean): CodeBlock {
 
         throw UnsupportedOperationException("This extension does not handle reading")
     }
