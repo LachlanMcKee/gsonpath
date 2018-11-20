@@ -187,19 +187,20 @@ class ReadFunctions {
 
         val result = writeGsonFieldReading(gsonField, requiresConstructorInjection)
 
-        if (result.checkIfNull) {
-            `if`("${result.variableName} != $NULL") {
-
-                val assignmentBlock: String = if (!requiresConstructorInjection) {
+        val assignedVariable =
+                if (!requiresConstructorInjection) {
                     "$RESULT." + fieldInfo.fieldName
                 } else {
                     gsonField.variableName
                 }
 
+        if (result.checkIfNull) {
+            `if`("${result.variableName} != $NULL") {
+
                 if (result.callToString) {
-                    assign(assignmentBlock, "${result.variableName}.toString()")
+                    assign(assignedVariable, "${result.variableName}.toString()")
                 } else {
-                    assign(assignmentBlock, result.variableName)
+                    assign(assignedVariable, result.variableName)
                 }
 
                 // When a field has been assigned, if it is a mandatory value, we note this down.
@@ -210,13 +211,12 @@ class ReadFunctions {
                     nextControlFlow("else")
                     addEscapedStatement("""throw new $JSON_FIELD_MISSING_EXCEPTION("Mandatory JSON element '${gsonField.jsonPath}' was null for class '${fieldInfo.parentClassName}'")""")
                 }
-
             }
         }
 
         // Execute any extensions and add the code blocks if they exist.
         val extensionsCodeBlock = codeBlock {
-            extensionsHandler.handle(gsonField, result.variableName) { extensionName, validationCodeBlock ->
+            extensionsHandler.handle(gsonField, assignedVariable) { extensionName, validationCodeBlock ->
                 newLine()
                 comment("Extension - $extensionName")
                 add(validationCodeBlock)
@@ -231,7 +231,7 @@ class ReadFunctions {
 
             // Handle the null-checking for the extensions to avoid repetition inside the extension implementations.
             if (!fieldTypeName.isPrimitive) {
-                `if`("${result.variableName} != $NULL") {
+                `if`("$assignedVariable != $NULL") {
                     add(extensionsCodeBlock)
                 }
             } else {
