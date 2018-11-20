@@ -3,17 +3,17 @@ package gsonpath.generator
 import gsonpath.generator.GeneratorTester.assertGeneratedContent
 import org.junit.Test
 
-class ExtensionTest {
+class EmptyStringToNullExtensionTest {
 
     @Test
-    fun testExcludeFields() {
+    fun testEmptyStringToNull() {
         assertGeneratedContent(TestCriteria("generator/standard",
                 relativeSourceNames = listOf(
                         "TestGsonTypeFactory.java",
-                        "TestExtension.java"),
+                        "EmptyStringToNullObject.java"),
 
                 relativeGeneratedNames = listOf(
-                        "TestExtension_GsonTypeAdapter.java")
+                        "EmptyStringToNullObject_GsonTypeAdapter.java")
         ))
     }
 }

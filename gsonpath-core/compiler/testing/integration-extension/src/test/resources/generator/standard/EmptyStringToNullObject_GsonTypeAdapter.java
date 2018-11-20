@@ -16,20 +16,20 @@ import javax.annotation.Generated;
     value = "gsonpath.GsonProcessor",
     comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestExtension_GsonTypeAdapter extends TypeAdapter<TestExtension> {
+public final class EmptyStringToNullObject_GsonTypeAdapter extends TypeAdapter<EmptyStringToNullObject> {
     private final Gson mGson;
 
-    public TestExtension_GsonTypeAdapter(Gson gson) {
+    public EmptyStringToNullObject_GsonTypeAdapter(Gson gson) {
         this.mGson = gson;
     }
 
     @Override
-    public TestExtension read(JsonReader in) throws IOException {
+    public EmptyStringToNullObject read(JsonReader in) throws IOException {
         // Ensure the object is not null.
         if (!isValidValue(in)) {
             return null;
         }
-        TestExtension result = new TestExtension();
+        EmptyStringToNullObject result = new EmptyStringToNullObject();
 
         int jsonFieldCounter0 = 0;
         in.beginObject();
@@ -90,7 +90,7 @@ public final class TestExtension_GsonTypeAdapter extends TypeAdapter<TestExtensi
     }
 
     @Override
-    public void write(JsonWriter out, TestExtension value) throws IOException {
+    public void write(JsonWriter out, EmptyStringToNullObject value) throws IOException {
         if (value == null) {
             out.nullValue();
             return;

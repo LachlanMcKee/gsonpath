@@ -5,7 +5,7 @@ import gsonpath.FlattenJson;
 import gsonpath.extension.EmptyStringToNull;
 
 @AutoGsonAdapter
-public class TestExtension {
+public class EmptyStringToNullObject {
     @FlattenJson
     @EmptyStringToNull
     public String element1;

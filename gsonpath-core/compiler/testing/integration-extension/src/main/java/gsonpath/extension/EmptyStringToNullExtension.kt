@@ -11,10 +11,7 @@ import gsonpath.util.assign
 import gsonpath.util.codeBlock
 import javax.annotation.processing.ProcessingEnvironment
 
-/**
- * A {@link GsonPathExtension} that supports the '@Size' annotation.
- */
-class TestExtension : GsonPathExtension {
+class EmptyStringToNullExtension : GsonPathExtension {
 
     override val extensionName: String
         get() = "'EmptyStringToNull' Annotation"
