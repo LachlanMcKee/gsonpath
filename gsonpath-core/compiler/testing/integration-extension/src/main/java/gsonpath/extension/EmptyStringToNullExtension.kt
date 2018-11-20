@@ -12,12 +12,26 @@ import gsonpath.util.codeBlock
 import javax.annotation.processing.ProcessingEnvironment
 
 class EmptyStringToNullExtension : GsonPathExtension {
-
     override val extensionName: String
         get() = "'EmptyStringToNull' Annotation"
 
-    override fun createFieldReadCodeBlock(processingEnvironment: ProcessingEnvironment,
-                                          extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
+    override fun canHandleFieldRead(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata): Boolean {
+
+        return false
+    }
+
+    override fun createCodeReadCodeBlock(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock {
+
+        throw UnsupportedOperationException("This extension does not handle reading")
+    }
+
+    override fun createCodePostReadCodeBlock(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
 
         val (fieldInfo, variableName, jsonPath, isRequired) = extensionFieldMetadata
 

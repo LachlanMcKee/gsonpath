@@ -7,7 +7,4 @@ import gsonpath.extension.EmptyStringToNull;
 public class EmptyStringToNullObject {
     @EmptyStringToNull
     public String element1;
-
-    @EmptyStringToNull
-    public String element2;
 }

@@ -3,7 +3,6 @@ package generator.standard;
 import static gsonpath.GsonUtil.*;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -35,7 +34,7 @@ public final class EmptyStringToNullObject_GsonTypeAdapter extends TypeAdapter<E
         in.beginObject();
 
         while (in.hasNext()) {
-            if (jsonFieldCounter0 == 2) {
+            if (jsonFieldCounter0 == 1) {
                 in.skipValue();
                 continue;
             }
@@ -44,9 +43,9 @@ public final class EmptyStringToNullObject_GsonTypeAdapter extends TypeAdapter<E
                 case "element1":
                     jsonFieldCounter0++;
 
-                    JsonElement value_element1 = mGson.getAdapter(JsonElement.class).read(in);
+                    String value_element1 = mGson.getAdapter(String.class).read(in);
                     if (value_element1 != null) {
-                        result.element1 = value_element1.toString();
+                        result.element1 = value_element1;
                     }
 
                     // Gsonpath Extensions
@@ -55,25 +54,6 @@ public final class EmptyStringToNullObject_GsonTypeAdapter extends TypeAdapter<E
                         // Extension - 'EmptyStringToNull' Annotation
                         if (result.element1.trim().length() == 0) {
                             result.element1 = null;
-                        }
-
-                    }
-                    break;
-
-                case "element2":
-                    jsonFieldCounter0++;
-
-                    String value_element2 = mGson.getAdapter(String.class).read(in);
-                    if (value_element2 != null) {
-                        result.element2 = value_element2;
-                    }
-
-                    // Gsonpath Extensions
-                    if (result.element2 != null) {
-
-                        // Extension - 'EmptyStringToNull' Annotation
-                        if (result.element2.trim().length() == 0) {
-                            result.element2 = null;
                         }
 
                     }
@@ -102,12 +82,6 @@ public final class EmptyStringToNullObject_GsonTypeAdapter extends TypeAdapter<E
         if (obj0 != null) {
             out.name("element1");
             mGson.getAdapter(String.class).write(out, obj0);
-        }
-
-        String obj1 = value.element2;
-        if (obj1 != null) {
-            out.name("element2");
-            mGson.getAdapter(String.class).write(out, obj1);
         }
 
         // End

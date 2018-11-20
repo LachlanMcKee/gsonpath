@@ -38,6 +38,15 @@ interface GsonPathExtension {
      * @param extensionFieldMetadata metadata about the field being read by the parent processor.
      * @return a code block if applicable, can be null.
      */
-    fun createFieldReadCodeBlock(processingEnvironment: ProcessingEnvironment,
-                                 extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock?
+    fun canHandleFieldRead(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata): Boolean
+
+    fun createCodeReadCodeBlock(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock
+
+    fun createCodePostReadCodeBlock(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock?
 }
