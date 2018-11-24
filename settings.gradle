@@ -1,5 +1,5 @@
+// Core
 include ':gsonpath-core:library'
-include ':gsonpath-core:sample'
 include ':gsonpath-core:compiler:base'
 include ':gsonpath-core:compiler:standard'
 include ':gsonpath-core:compiler:testing:base'
@@ -7,3 +7,9 @@ include ':gsonpath-core:compiler:testing:unit-standard'
 include ':gsonpath-core:compiler:testing:integration-base'
 include ':gsonpath-core:compiler:testing:integration-standard'
 include ':gsonpath-core:compiler:testing:integration-extension'
+include ':gsonpath-core:sample'
+
+// Extension
+include ':gsonpath-extensions:library'
+include ':gsonpath-extensions:compiler'
+include ':gsonpath-extensions:sample'
