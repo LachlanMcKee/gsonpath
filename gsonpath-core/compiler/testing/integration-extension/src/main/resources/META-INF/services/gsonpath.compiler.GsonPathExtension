@@ -1,2 +1,3 @@
 gsonpath.extension.EmptyStringToNullExtension
 gsonpath.extension.RoundFloatUpToIntExtension
+gsonpath.extension.DoNothingExtension
