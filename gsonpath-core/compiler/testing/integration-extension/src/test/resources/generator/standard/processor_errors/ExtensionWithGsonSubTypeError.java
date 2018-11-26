@@ -2,7 +2,7 @@ package generator.standard;
 
 import gsonpath.AutoGsonAdapter;
 import gsonpath.GsonSubtype;
-import gsonpath.extension.DoNothing;
+import gsonpath.extension.GsonSubtypeCollision;
 
 @AutoGsonAdapter
 public class ExtensionWithGsonSubTypeError {
@@ -13,6 +13,6 @@ public class ExtensionWithGsonSubTypeError {
                     @GsonSubtype.StringValueSubtype(value = "type2", subtype = Long.class)
             }
     )
-    @DoNothing
+    @GsonSubtypeCollision
     public Number[] element1;
 }

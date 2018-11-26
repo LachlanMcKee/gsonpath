@@ -6,8 +6,8 @@ jacoco {
     toolVersion = "0.8.2"
 }
 
-targetCompatibility = JavaVersion.VERSION_1_7
-sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
 
 buildscript {
     repositories {
@@ -22,6 +22,7 @@ buildscript {
 }
 
 dependencies {
-    testCompile project(":gsonpath-core:compiler:testing:gsonpath-core-compiler-testing-integration-base")
-    testCompile "org.mockito:mockito-core:2.18.0"
+    compile project(":gsonpath-extensions:gsonpath-extensions-library")
+    compile project(":gsonpath-core:compiler:testing:gsonpath-core-compiler-testing-integration-base")
+    compile project(":gsonpath-extensions:compiler:gsonpath-extensions-compiler-standard")
 }

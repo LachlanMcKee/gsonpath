@@ -18,6 +18,6 @@ buildscript {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile project(":gsonpath-core:compiler:standard")
+    compile project(":gsonpath-core:compiler:gsonpath-core-compiler-standard")
     compile "junit:junit:$junit_version"
 }

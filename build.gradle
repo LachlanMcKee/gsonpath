@@ -62,8 +62,8 @@ task coreIntegrationCodeCoverageReport(type: JacocoReport) {
         csv.setEnabled(false)
     }
 
-    dependsOn(':gsonpath-core:compiler:testing:integration-standard:test')
-    dependsOn(':gsonpath-core:compiler:testing:integration-extension:test')
+    dependsOn(':gsonpath-core:compiler:testing:gsonpath-core-compiler-testing-integration-standard:test')
+    dependsOn(':gsonpath-core:compiler:testing:gsonpath-core-compiler-testing-integration-extension:test')
 }
 
 task coreUnitCodeCoverageReport(type: JacocoReport) {
@@ -87,16 +87,16 @@ task coreUnitCodeCoverageReport(type: JacocoReport) {
         csv.setEnabled(false)
     }
 
-    dependsOn(':gsonpath-core:compiler:testing:unit-standard:test')
+    dependsOn(':gsonpath-core:compiler:testing:gsonpath-core-compiler-testing-unit-standard:test')
 }
 
 task extensionsIntegrationCodeCoverageReport(type: JacocoReport) {
-    executionData fileTree(dir: "gsonpath-extensions/sample").include("**/build/jacoco/*.exec")
+    executionData fileTree(dir: "gsonpath-extensions/compiler/testing/integration").include("**/build/jacoco/*.exec")
 
-    classDirectories = fileTree(dir: "gsonpath-extensions/compiler/build/classes/java/main") +
-            fileTree(dir: "gsonpath-extensions/compiler/build/classes/kotlin/main")
+    classDirectories = fileTree(dir: "gsonpath-extensions/compiler/standard/build/classes/java/main") +
+            fileTree(dir: "gsonpath-extensions/compiler/standard/build/classes/kotlin/main")
 
-    sourceDirectories = files('gsonpath-extensions/compiler/src/main/java')
+    sourceDirectories = files('gsonpath-extensions/compiler/standard/src/main/java')
 
     reports {
         xml.setEnabled(true)
@@ -105,16 +105,16 @@ task extensionsIntegrationCodeCoverageReport(type: JacocoReport) {
         csv.setEnabled(false)
     }
 
-    dependsOn(':gsonpath-extensions:sample:test')
+    dependsOn(':gsonpath-extensions:compiler:testing:gsonpath-extensions-compiler-testing-integration:test')
 }
 
 task extensionsUnitCodeCoverageReport(type: JacocoReport) {
-    executionData fileTree(dir: "gsonpath-extensions/compiler").include("**/build/jacoco/*.exec")
+    executionData fileTree(dir: "gsonpath-extensions/compiler/standard").include("**/build/jacoco/*.exec")
 
-    classDirectories = fileTree(dir: "gsonpath-extensions/compiler/build/classes/java/main") +
-            fileTree(dir: "gsonpath-extensions/compiler/build/classes/kotlin/main")
+    classDirectories = fileTree(dir: "gsonpath-extensions/compiler/standard/build/classes/java/main") +
+            fileTree(dir: "gsonpath-extensions/compiler/standard/build/classes/kotlin/main")
 
-    sourceDirectories = files('gsonpath-extensions/compiler/src/main/java')
+    sourceDirectories = files('gsonpath-extensions/compiler/standard/src/main/java')
 
     reports {
         xml.setEnabled(true)

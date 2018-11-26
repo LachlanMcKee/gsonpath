@@ -29,8 +29,8 @@ dependencies {
     compile project(":gsonpath-core:gsonpath-core-library")
     compile project(":gsonpath-extensions:gsonpath-extensions-library")
     
-    kapt project(":gsonpath-core:compiler:standard")
-    kapt project(":gsonpath-extensions:compiler")
+    kapt project(":gsonpath-core:compiler:gsonpath-core-compiler-standard")
+    kapt project(":gsonpath-extensions:compiler:gsonpath-extensions-compiler-standard")
 
     testCompile "junit:junit:$junit_version"
 }

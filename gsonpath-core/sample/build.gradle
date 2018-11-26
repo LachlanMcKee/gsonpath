@@ -22,7 +22,7 @@ dependencies {
     compile "com.google.code.gson:gson:$gson_version"
 
     compile project(":gsonpath-core:gsonpath-core-library")
-    kapt project(":gsonpath-core:compiler:standard")
+    kapt project(":gsonpath-core:compiler:gsonpath-core-compiler-standard")
 
     testCompile "junit:junit:$junit_version"
 }

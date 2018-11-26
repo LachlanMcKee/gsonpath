@@ -22,7 +22,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     compile project(":gsonpath-core:gsonpath-core-library")
-    compile project(":gsonpath-core:compiler:base")
+    compile project(":gsonpath-core:compiler:gsonpath-core-compiler-base")
 
     compile "com.squareup:javapoet:$javapoet_version"
     compile "com.google.auto.service:auto-service:1.0-rc2"

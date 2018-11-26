@@ -11,14 +11,26 @@ include ':gsonpath-core:sample'
 
 // Extension
 include ':gsonpath-extensions:library'
-include ':gsonpath-extensions:compiler'
+include ':gsonpath-extensions:compiler:standard'
+include ':gsonpath-extensions:compiler:testing:integration'
 include ':gsonpath-extensions:sample'
 
 // Fix collision of the two library sub-modules.
-rootProject.children.each { p ->
-    p.children.each { module ->
-        if (module.name == "library") {
-            module.name = p.name + '-' + module.name
+findLastChild("", rootProject.children)
+
+def findLastChild(String currentName, Set<ProjectDescriptor> children) {
+    children.each { module ->
+        String newName
+        if (currentName.isEmpty()) {
+            newName = module.name
+        } else {
+            newName = currentName + '-' + module.name
+        }
+        if (module.children.size() == 0) {
+            module.name = newName
+            println(module.name)
+        } else {
+            findLastChild(newName, module.children)
         }
     }
 }
