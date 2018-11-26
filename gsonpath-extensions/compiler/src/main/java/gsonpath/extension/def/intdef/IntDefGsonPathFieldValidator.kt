@@ -21,8 +21,24 @@ class IntDefGsonPathFieldValidator : GsonPathExtension {
     override val extensionName: String
         get() = "'Int Def' Annotation"
 
-    override fun createFieldReadCodeBlock(processingEnvironment: ProcessingEnvironment,
-                                          extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
+    override fun canHandleFieldRead(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata): Boolean {
+
+        return false
+    }
+
+    override fun createCodeReadCodeBlock(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata,
+            checkIfResultIsNull: Boolean): CodeBlock {
+
+        throw UnsupportedOperationException("This extension does not handle reading")
+    }
+
+    override fun createCodePostReadCodeBlock(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
 
         val (fieldInfo, variableName) = extensionFieldMetadata
 

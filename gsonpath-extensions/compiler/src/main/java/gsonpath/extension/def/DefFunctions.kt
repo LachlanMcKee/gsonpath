@@ -28,7 +28,7 @@ fun getDefAnnotationMirrors(element: Element, packageName: String, className: St
 
     // Obtain the actual 'StringDef/IntDef' annotation mirror that annotates the annotation mirror above.
     val defAnnotationMirror = getAnnotationMirror(definitionAnnotation.annotationType.asElement(),
-        packageName, className) ?: return null
+            packageName, className) ?: return null
 
     return DefAnnotationMirrors(definitionAnnotation, defAnnotationMirror)
 }
