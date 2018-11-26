@@ -26,8 +26,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "com.google.code.gson:gson:$gson_version"
 
-    compile project(":gsonpath-core:library")
-    compile project(":gsonpath-extensions:library")
+    compile project(":gsonpath-core:gsonpath-core-library")
+    compile project(":gsonpath-extensions:gsonpath-extensions-library")
     
     kapt project(":gsonpath-core:compiler:standard")
     kapt project(":gsonpath-extensions:compiler")

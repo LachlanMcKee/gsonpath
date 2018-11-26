@@ -2,6 +2,9 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
+group = project_group
+version = extensions_version
+
 targetCompatibility = JavaVersion.VERSION_1_7
 sourceCompatibility = JavaVersion.VERSION_1_7
 
@@ -42,8 +45,6 @@ if (project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePass
                     authentication(userName: sonatypeUsername, password: sonatypePassword)
                 }
 
-                pom.version = '1.1.0'
-                pom.groupId = 'net.lachlanmckee'
                 pom.artifactId = 'gsonpath-extensions'
 
                 pom.project {

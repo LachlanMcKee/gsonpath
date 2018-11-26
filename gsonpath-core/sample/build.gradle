@@ -21,7 +21,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "com.google.code.gson:gson:$gson_version"
 
-    compile project(":gsonpath-core:library")
+    compile project(":gsonpath-core:gsonpath-core-library")
     kapt project(":gsonpath-core:compiler:standard")
 
     testCompile "junit:junit:$junit_version"

@@ -5,8 +5,8 @@ apply plugin: "kotlin"
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-group = 'net.lachlanmckee'
-version = '1.2.1' // This version is distinct from gsonpath/gsonpath-compiler as it is not public facing.
+group = project_group
+version = compiler_base_version // This version is distinct from gsonpath/gsonpath-compiler as it is not public facing.
 
 targetCompatibility = JavaVersion.VERSION_1_7
 sourceCompatibility = JavaVersion.VERSION_1_7

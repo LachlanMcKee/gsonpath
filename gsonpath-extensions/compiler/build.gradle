@@ -3,6 +3,9 @@ apply plugin: 'kotlin'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
+group = project_group
+version = extensions_version
+
 targetCompatibility = JavaVersion.VERSION_1_7
 sourceCompatibility = JavaVersion.VERSION_1_7
 
@@ -19,7 +22,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile project(":gsonpath-core:compiler:base")
     compile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
-    compile project(":gsonpath-extensions:library")
+    compile project(":gsonpath-extensions:gsonpath-extensions-library")
 
     testCompile "junit:junit:$junit_version"
 }
@@ -55,8 +58,6 @@ if (project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePass
                     authentication(userName: sonatypeUsername, password: sonatypePassword)
                 }
 
-                pom.version = '1.1.0'
-                pom.groupId = 'net.lachlanmckee'
                 pom.artifactId = 'gsonpath-extensions-compiler'
 
                 pom.project {

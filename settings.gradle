@@ -13,3 +13,12 @@ include ':gsonpath-core:sample'
 include ':gsonpath-extensions:library'
 include ':gsonpath-extensions:compiler'
 include ':gsonpath-extensions:sample'
+
+// Fix collision of the two library sub-modules.
+rootProject.children.each { p ->
+    p.children.each { module ->
+        if (module.name == "library") {
+            module.name = p.name + '-' + module.name
+        }
+    }
+}
