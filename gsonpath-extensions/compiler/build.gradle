@@ -23,6 +23,7 @@ dependencies {
     compile project(":gsonpath-core:compiler:base")
     compile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
     compile project(":gsonpath-extensions:gsonpath-extensions-library")
+    compile "com.google.code.gson:gson:$gson_version"
 
     testCompile "junit:junit:$junit_version"
 }
