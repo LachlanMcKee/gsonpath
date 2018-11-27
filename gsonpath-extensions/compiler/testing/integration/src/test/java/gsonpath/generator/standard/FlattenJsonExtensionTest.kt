@@ -8,7 +8,7 @@ import gsonpath.generator.GeneratorTester.assertGeneratedContent
 import gsonpath.generator.TestCriteria
 import org.junit.Test
 
-class FlattenJsonTest {
+class FlattenJsonExtensionTest {
     @Test
     fun testFlattenJsonInvalidType() {
         val source = JavaFileObjects.forResource("generator/standard/flatten/invalid/TestInvalidFlattenJson.java")
