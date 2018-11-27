@@ -60,13 +60,6 @@ class FlattenJsonExtension : GsonPathExtension {
         }
     }
 
-    override fun createCodePostReadCodeBlock(
-            processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
-
-        return null
-    }
-
     private companion object {
         private val CLASS_NAME_JSON_ELEMENT: ClassName = ClassName.get(JsonElement::class.java)
     }

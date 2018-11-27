@@ -23,21 +23,6 @@ class EmptyToNullGsonPathFieldValidator : GsonPathExtension {
     override val extensionName: String
         get() = "'EmptyToNull' Annotation"
 
-    override fun canHandleFieldRead(
-            processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata): Boolean {
-
-        return false
-    }
-
-    override fun createCodeReadCodeBlock(
-            processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata,
-            checkIfResultIsNull: Boolean): CodeBlock {
-
-        throw UnsupportedOperationException("This extension does not handle reading")
-    }
-
     override fun createCodePostReadCodeBlock(
             processingEnvironment: ProcessingEnvironment,
             extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {

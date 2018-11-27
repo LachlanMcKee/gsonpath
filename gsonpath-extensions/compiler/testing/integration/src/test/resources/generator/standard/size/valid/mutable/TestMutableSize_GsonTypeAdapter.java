@@ -52,14 +52,8 @@ public final class TestMutableSize_GsonTypeAdapter extends TypeAdapter<TestMutab
                     if (result.value1 != null) {
 
                         // Extension - 'Size' Annotation
-                        if (result.value1.length < 0) {
-                            throw new com.google.gson.JsonParseException("Invalid array length for JSON element 'value1'. Expected minimum: '0', actual minimum: '" + result.value1.length + "'");
-                        }
-                        if (result.value1.length > 6) {
-                            throw new com.google.gson.JsonParseException("Invalid array length for JSON element 'value1'. Expected maximum: '6', actual maximum: '" + result.value1.length + "'");
-                        }
-                        if (result.value1.length % 2 != 0) {
-                            throw new com.google.gson.JsonParseException("Invalid array length for JSON element 'value1'. length of '" + result.value1.length + "' is not a multiple of 2");
+                        if (result.value1.length != 1) {
+                            throw new com.google.gson.JsonParseException("Invalid array length for JSON element 'value1'. Expected length: '1', actual length: '" + result.value1.length + "'");
                         }
 
                     }
