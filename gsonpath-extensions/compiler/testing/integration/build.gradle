@@ -25,4 +25,6 @@ dependencies {
     compile project(":gsonpath-extensions:gsonpath-extensions-library")
     compile project(":gsonpath-core:compiler:testing:gsonpath-core-compiler-testing-integration-base")
     compile project(":gsonpath-extensions:compiler:gsonpath-extensions-compiler-standard")
+
+    testCompile 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0'
 }
