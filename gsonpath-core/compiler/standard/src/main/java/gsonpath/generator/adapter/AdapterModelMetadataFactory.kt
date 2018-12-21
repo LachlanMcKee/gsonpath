@@ -10,6 +10,7 @@ import gsonpath.generator.adapter.subtype.SubtypeParams
 import gsonpath.generator.adapter.write.WriteParams
 import gsonpath.generator.interf.ModelInterfaceGenerator
 import gsonpath.model.*
+import gsonpath.util.MultipleValuesFieldType
 import gsonpath.util.TypeHandler
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
@@ -88,7 +89,8 @@ class AdapterModelMetadataFactory(
                 subTypedFields = flattenedFields
                         .mapNotNull { field ->
                             field.subTypeMetadata?.let {
-                                SubTypedField(it, field, SharedFunctions.isArrayType(typeHandler, field))
+                                SubTypedField(it, field, typeHandler.getMultipleValuesFieldType(field.fieldInfo)
+                                        == MultipleValuesFieldType.ARRAY)
                             }
                         }
         )

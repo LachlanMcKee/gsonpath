@@ -64,7 +64,7 @@ open class GsonProcessorImpl : AbstractProcessor() {
         val gsonObjectTreeFactory = GsonObjectTreeFactory(gsonObjectFactory)
         val readFunctions = ReadFunctions()
         val writeFunctions = WriteFunctions()
-        val subtypeFunctions = SubtypeFunctions()
+        val subtypeFunctions = SubtypeFunctions(typeHandler)
         val modelInterfaceGenerator = ModelInterfaceGenerator(InterfaceModelMetadataFactory(typeHandler), fileWriter, logger)
         val adapterModelMetadataFactory = AdapterModelMetadataFactory(
                 FieldInfoFactory(

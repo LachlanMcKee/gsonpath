@@ -2,11 +2,14 @@ package gsonpath.util
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
+import gsonpath.ProcessingException
+import gsonpath.model.FieldInfo
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
+import javax.lang.model.type.ArrayType
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.TypeMirror
@@ -20,6 +23,14 @@ interface TypeHandler {
     fun getFields(typeElement: TypeElement, filterFunc: ((Element) -> Boolean)): List<FieldElementContent>
     fun getMethods(typeElement: TypeElement): List<MethodElementContent>
     fun isMirrorOfCollectionType(typeMirror: TypeMirror): Boolean
+
+    /**
+     * Obtains the actual type name that is either contained within the array or the list.
+     * e.g. for 'String[]' or 'List<String>' the returned type name is 'String'
+     */
+    fun getRawType(fieldInfo: FieldInfo): TypeMirror
+
+    fun getMultipleValuesFieldType(fieldInfo: FieldInfo): MultipleValuesFieldType
 }
 
 data class FieldElementContent(
@@ -31,6 +42,11 @@ data class MethodElementContent(
         val element: Element,
         val generifiedElement: ExecutableType
 )
+
+enum class MultipleValuesFieldType {
+    ARRAY,
+    COLLECTION
+}
 
 class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : TypeHandler {
     override fun getTypeName(typeMirror: TypeMirror): TypeName? = TypeName.get(typeMirror)
@@ -91,6 +107,35 @@ class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : T
         val collectionType = processingEnv.typeUtils.getDeclaredType(collectionTypeElement, rawType)
 
         return processingEnv.typeUtils.isSubtype(typeMirror, collectionType)
+    }
+
+    override fun getRawType(fieldInfo: FieldInfo): TypeMirror {
+        return when (val typeMirror = fieldInfo.typeMirror) {
+            is ArrayType -> typeMirror.componentType
+
+            is DeclaredType -> typeMirror.typeArguments.first()
+
+            else -> throw ProcessingException("Unexpected type found for field, ensure you either use " +
+                    "an array, or a List class.", fieldInfo.element)
+        }
+    }
+
+    override fun getMultipleValuesFieldType(fieldInfo: FieldInfo): MultipleValuesFieldType {
+        val fieldCollectionType: Boolean = try {
+            isMirrorOfCollectionType(fieldInfo.typeMirror)
+        } catch (e: Exception) {
+            false
+        }
+
+        return when {
+            (fieldInfo.typeMirror is ArrayType) -> MultipleValuesFieldType.ARRAY
+            fieldCollectionType -> MultipleValuesFieldType.COLLECTION
+
+            else ->
+                throw ProcessingException("Unexpected type found for field annotated with " +
+                        "'RemoveInvalidElements', only arrays or collection classes may be used.",
+                        fieldInfo.element)
+        }
     }
 
     private fun getGenerifiedTypeMirror(containing: TypeElement, element: Element): TypeMirror {

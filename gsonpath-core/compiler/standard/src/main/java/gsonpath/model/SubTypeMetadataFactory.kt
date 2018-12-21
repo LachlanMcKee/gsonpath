@@ -67,7 +67,7 @@ class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubType
                 }
 
         // Ensure that each subtype inherits from the annotated field.
-        val gsonFieldType = SharedFunctions.getRawType(fieldInfo)
+        val gsonFieldType = typeHandler.getRawType(fieldInfo)
         genericGsonSubTypeKeys.forEach {
             validateSubType(gsonFieldType, it.classTypeMirror, fieldInfo.element)
         }

@@ -15,7 +15,6 @@ import gsonpath.generator.Constants.IN
 import gsonpath.generator.Constants.NULL
 import gsonpath.generator.Constants.OUT
 import gsonpath.generator.Constants.VALUE
-import gsonpath.generator.adapter.SharedFunctions.getRawType
 import gsonpath.internal.CollectionTypeAdapter
 import gsonpath.internal.StrictArrayTypeAdapter
 import gsonpath.model.GsonField
@@ -25,7 +24,7 @@ import gsonpath.util.*
 import java.io.IOException
 import javax.lang.model.element.Modifier
 
-class SubtypeFunctions {
+class SubtypeFunctions(private val typeHandler: TypeHandler) {
     /**
      * Creates the code required for subtype adapters for any fields that use the GsonSubtype annotation.
      */
@@ -38,7 +37,7 @@ class SubtypeFunctions {
                     TypeAdapterDetails.ArrayTypeAdapter
                 } else {
                     TypeAdapterDetails.CollectionTypeAdapter(ParameterizedTypeName.get(
-                            ClassName.get(CollectionTypeAdapter::class.java), TypeName.get(getRawType(gsonField))))
+                            ClassName.get(CollectionTypeAdapter::class.java), TypeName.get(typeHandler.getRawType(gsonField.fieldInfo))))
                 }
 
                 field(subTypeMetadata.variableName, typeAdapterDetails.typeName) {
@@ -89,7 +88,7 @@ class SubtypeFunctions {
     }
 
     private fun getRawTypeName(gsonField: GsonField): TypeName {
-        return TypeName.get(getRawType(gsonField))
+        return TypeName.get(typeHandler.getRawType(gsonField.fieldInfo))
     }
 
     /**
