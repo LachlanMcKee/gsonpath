@@ -2,8 +2,8 @@ package gsonpath.generator.adapter.read
 
 import com.google.gson.stream.JsonReader
 import com.squareup.javapoet.CodeBlock
-import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterizedTypeName
+import com.squareup.javapoet.TypeSpec
 import gsonpath.ProcessingException
 import gsonpath.compiler.createDefaultVariableValueForTypeName
 import gsonpath.generator.Constants.BREAK
@@ -22,8 +22,8 @@ import java.io.IOException
 class ReadFunctions {
 
     @Throws(ProcessingException::class)
-    fun createReadMethod(params: ReadParams, extensionsHandler: ExtensionsHandler): MethodSpec {
-        return MethodSpecExt.overrideMethodBuilder("read").applyAndBuild {
+    fun handleRead(typeSpecBuilder: TypeSpec.Builder, params: ReadParams, extensionsHandler: ExtensionsHandler) {
+        typeSpecBuilder.overrideMethod("read") {
             returns(params.baseElement)
             addParameter(JsonReader::class.java, IN)
             addException(IOException::class.java)
@@ -34,7 +34,7 @@ class ReadFunctions {
                 }
 
                 addInitialisationBlock(params)
-                addReadCodeForElements(params.rootElements, params, extensionsHandler)
+                addReadCodeForElements(typeSpecBuilder, params.rootElements, params, extensionsHandler)
                 addMandatoryValuesCheck(params)
 
                 if (!params.requiresConstructorInjection) {
@@ -76,6 +76,7 @@ class ReadFunctions {
      */
     @Throws(ProcessingException::class)
     private fun CodeBlock.Builder.addReadCodeForElements(
+            typeSpecBuilder: TypeSpec.Builder,
             jsonMapping: GsonObject,
             params: ReadParams,
             extensionsHandler: ExtensionsHandler,
@@ -109,6 +110,7 @@ class ReadFunctions {
                 jsonMapping.entries()
                         .fold(recursionCount + 1) { currentOverallRecursionCount, entry ->
                             addReadCodeForModel(
+                                    typeSpecBuilder = typeSpecBuilder,
                                     params = params,
                                     extensionsHandler = extensionsHandler,
                                     key = entry.key,
@@ -129,6 +131,7 @@ class ReadFunctions {
     }
 
     private fun CodeBlock.Builder.addReadCodeForModel(
+            typeSpecBuilder: TypeSpec.Builder,
             params: ReadParams,
             extensionsHandler: ExtensionsHandler,
             key: String,
@@ -142,7 +145,7 @@ class ReadFunctions {
 
             when (value) {
                 is GsonField -> {
-                    writeGsonFieldReader(value, params.requiresConstructorInjection,
+                    writeGsonFieldReader(typeSpecBuilder, value, params.requiresConstructorInjection,
                             params.mandatoryInfoMap[value.fieldInfo.fieldName], extensionsHandler)
 
                     // No extra recursion has happened.
@@ -155,11 +158,11 @@ class ReadFunctions {
                     `if`("!isValidValue($IN)") {
                         addStatement(BREAK)
                     }
-                    addReadCodeForElements(value, params, extensionsHandler, currentOverallRecursionCount)
+                    addReadCodeForElements(typeSpecBuilder, value, params, extensionsHandler, currentOverallRecursionCount)
                 }
 
                 is GsonArray -> {
-                    writeGsonArrayReader(value, params, key, extensionsHandler, currentOverallRecursionCount)
+                    writeGsonArrayReader(typeSpecBuilder, value, params, key, extensionsHandler, currentOverallRecursionCount)
                 }
             }
         }
@@ -167,6 +170,7 @@ class ReadFunctions {
 
     @Throws(ProcessingException::class)
     private fun CodeBlock.Builder.writeGsonFieldReader(
+            typeSpecBuilder: TypeSpec.Builder,
             gsonField: GsonField,
             requiresConstructorInjection: Boolean,
             mandatoryFieldInfo: MandatoryFieldInfo?,
@@ -177,7 +181,7 @@ class ReadFunctions {
         // Add a new line to improve readability for the multi-lined mapping.
         newLine()
 
-        val result = writeGsonFieldReading(gsonField, requiresConstructorInjection, extensionsHandler)
+        val result = writeGsonFieldReading(typeSpecBuilder, gsonField, requiresConstructorInjection, extensionsHandler)
 
         val assignedVariable =
                 if (!requiresConstructorInjection) {
@@ -231,6 +235,7 @@ class ReadFunctions {
      * Writes the Java code for field reading that is not supported by Gson.
      */
     private fun CodeBlock.Builder.writeGsonFieldReading(
+            typeSpecBuilder: TypeSpec.Builder,
             gsonField: GsonField,
             requiresConstructorInjection: Boolean,
             extensionsHandler: ExtensionsHandler): FieldReaderResult {
@@ -243,6 +248,10 @@ class ReadFunctions {
                 comment("Extension (Read) - $extensionName")
                 add(readResult.codeBlock)
                 newLine()
+
+                typeSpecBuilder.addFields(readResult.fieldSpecs)
+                typeSpecBuilder.addMethods(readResult.methodSpecs)
+                typeSpecBuilder.addTypes(readResult.typeSpecs)
             }
 
         } else {
@@ -265,6 +274,7 @@ class ReadFunctions {
     }
 
     private fun CodeBlock.Builder.writeGsonArrayReader(
+            typeSpecBuilder: TypeSpec.Builder,
             value: GsonArray,
             params: ReadParams,
             key: String,
@@ -284,7 +294,7 @@ class ReadFunctions {
 
         return `while`("in.hasNext()") {
             switch(arrayIndexVariableName) {
-                writeGsonArrayReaderCases(value, params, currentOverallRecursionCount, extensionsHandler)
+                writeGsonArrayReaderCases(typeSpecBuilder, value, params, currentOverallRecursionCount, extensionsHandler)
                         .also {
                             default {
                                 addStatement("in.skipValue()")
@@ -299,6 +309,7 @@ class ReadFunctions {
     }
 
     private fun CodeBlock.Builder.writeGsonArrayReaderCases(
+            typeSpecBuilder: TypeSpec.Builder,
             value: GsonArray,
             params: ReadParams,
             seedValue: Int,
@@ -308,14 +319,14 @@ class ReadFunctions {
             case("$arrayIndex") {
                 when (arrayItemValue) {
                     is GsonField -> {
-                        writeGsonFieldReader(arrayItemValue, params.requiresConstructorInjection,
+                        writeGsonFieldReader(typeSpecBuilder, arrayItemValue, params.requiresConstructorInjection,
                                 params.mandatoryInfoMap[arrayItemValue.fieldInfo.fieldName], extensionsHandler)
 
                         // No extra recursion has happened.
                         previousRecursionCount
                     }
                     is GsonObject -> {
-                        addReadCodeForElements(arrayItemValue, params, extensionsHandler, previousRecursionCount)
+                        addReadCodeForElements(typeSpecBuilder, arrayItemValue, params, extensionsHandler, previousRecursionCount)
                     }
                 }
             }

@@ -9,7 +9,6 @@ import gsonpath.ProcessingException
 import gsonpath.generator.Constants.GENERATED_ANNOTATION
 import gsonpath.generator.HandleResult
 import gsonpath.generator.adapter.read.ReadFunctions
-import gsonpath.generator.adapter.subtype.SubtypeFunctions
 import gsonpath.generator.adapter.write.WriteFunctions
 import gsonpath.generator.writeFile
 import gsonpath.util.*
@@ -79,7 +78,7 @@ class AutoGsonAdapterGenerator(
             }
         }
 
-        addMethod(readFunctions.createReadMethod(metadata.readParams, extensionsHandler))
+        readFunctions.handleRead(this, metadata.readParams, extensionsHandler)
         addMethod(writeFunctions.createWriteMethod(metadata.writeParams))
 
         return this

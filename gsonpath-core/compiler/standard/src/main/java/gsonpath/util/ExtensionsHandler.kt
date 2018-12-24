@@ -39,7 +39,12 @@ class ExtensionsHandler(
         }
     }
 
-    fun executeFieldRead(gsonField: GsonField, variableName: String, checkIfResultIsNull: Boolean, handleFunc: (String, GsonPathExtension.ExtensionResult) -> Unit) {
+    fun executeFieldRead(
+            gsonField: GsonField,
+            variableName: String,
+            checkIfResultIsNull: Boolean,
+            handleFunc: (String, GsonPathExtension.ExtensionResult) -> Unit) {
+
         if (!canHandleFieldRead(gsonField, variableName)) {
             throw IllegalStateException("canHandleFieldRead must be checked before calling this method.")
         }
