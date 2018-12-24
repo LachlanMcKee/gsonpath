@@ -17,6 +17,7 @@ import gsonpath.generator.Constants.OUT
 import gsonpath.generator.Constants.VALUE
 import gsonpath.internal.CollectionTypeAdapter
 import gsonpath.internal.StrictArrayTypeAdapter
+import gsonpath.model.FieldType
 import gsonpath.model.GsonField
 import gsonpath.model.SubTypeKeyType
 import gsonpath.model.SubTypeMetadata
@@ -33,11 +34,12 @@ class SubtypeFunctions(private val typeHandler: TypeHandler) {
             val gsonField = it.gsonField
             val subTypeMetadata = it.subTypeMetadata
             typeSpecBuilder.apply {
-                val typeAdapterDetails = if (it.isFieldArrayType) {
-                    TypeAdapterDetails.ArrayTypeAdapter
-                } else {
-                    TypeAdapterDetails.CollectionTypeAdapter(ParameterizedTypeName.get(
-                            ClassName.get(CollectionTypeAdapter::class.java), TypeName.get(typeHandler.getRawType(gsonField.fieldInfo))))
+                val typeAdapterDetails = when (it.fieldType) {
+                    is FieldType.MultipleValues.Array -> TypeAdapterDetails.ArrayTypeAdapter
+                    is FieldType.MultipleValues.Collection -> {
+                        TypeAdapterDetails.CollectionTypeAdapter(ParameterizedTypeName.get(
+                                ClassName.get(CollectionTypeAdapter::class.java), TypeName.get(typeHandler.getRawType(gsonField.fieldInfo))))
+                    }
                 }
 
                 field(subTypeMetadata.variableName, typeAdapterDetails.typeName) {

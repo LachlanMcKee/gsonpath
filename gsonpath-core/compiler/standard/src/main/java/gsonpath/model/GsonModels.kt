@@ -8,8 +8,7 @@ data class GsonField(
         val fieldInfo: FieldInfo,
         val variableName: String,
         val jsonPath: String,
-        val isRequired: Boolean,
-        val subTypeMetadata: SubTypeMetadata?) : GsonArrayElement()
+        val isRequired: Boolean) : GsonArrayElement()
 
 data class GsonObject(private val fieldMap: Map<String, GsonModel>) : GsonArrayElement() {
 

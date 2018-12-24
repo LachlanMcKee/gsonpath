@@ -7,7 +7,7 @@ class GsonObjectValidator {
 
     @Throws(ProcessingException::class)
     fun validate(fieldInfo: FieldInfo): Result {
-        val fieldTypeName = fieldInfo.typeName
+        val fieldTypeName = fieldInfo.fieldType.typeName
 
         if (fieldTypeName == TypeName.OBJECT) {
             throw ProcessingException("Invalid field type: $fieldTypeName", fieldInfo.element)
@@ -25,8 +25,7 @@ class GsonObjectValidator {
         }
 
         // Primitives should not use either annotation.
-        val isPrimitive = fieldTypeName.isPrimitive
-        if (isPrimitive && (isMandatory || isOptional)) {
+        if ((fieldInfo.fieldType is FieldType.Primitive) && (isMandatory || isOptional)) {
             throw ProcessingException("Primitives should not use NonNull or Nullable annotations", fieldInfo.element)
         }
 

@@ -57,8 +57,8 @@ class ReadFunctions {
             params.flattenedFields.forEach {
                 createVariable("\$T",
                         it.variableName,
-                        createDefaultVariableValueForTypeName(it.fieldInfo.typeName),
-                        it.fieldInfo.typeName)
+                        createDefaultVariableValueForTypeName(it.fieldInfo.fieldType.typeName),
+                        it.fieldInfo.fieldType.typeName)
             }
         }
 
@@ -173,7 +173,6 @@ class ReadFunctions {
             extensionsHandler: ExtensionsHandler) {
 
         val fieldInfo = gsonField.fieldInfo
-        val fieldTypeName = fieldInfo.typeName
 
         // Add a new line to improve readability for the multi-lined mapping.
         newLine()
@@ -218,7 +217,7 @@ class ReadFunctions {
             comment("Gsonpath Extensions")
 
             // Handle the null-checking for the extensions to avoid repetition inside the extension implementations.
-            if (!fieldTypeName.isPrimitive) {
+            if (fieldInfo.fieldType !is FieldType.Primitive) {
                 `if`("$assignedVariable != $NULL") {
                     add(extensionsCodeBlock)
                 }
@@ -239,28 +238,8 @@ class ReadFunctions {
         val variableName = getVariableName(gsonField, requiresConstructorInjection)
         val checkIfResultIsNull = isCheckIfNullApplicable(gsonField, requiresConstructorInjection)
 
-        val subTypeMetadata = gsonField.subTypeMetadata
-        if (subTypeMetadata != null) {
-            writeGsonFieldReadingSubType(
-                    gsonField, variableName, checkIfResultIsNull, subTypeMetadata, extensionsHandler)
-
-        } else {
-            writeGsonFieldReadingStandard(
-                    gsonField, variableName, checkIfResultIsNull, extensionsHandler)
-
-        }
-
-        return FieldReaderResult(variableName, checkIfResultIsNull)
-    }
-
-    private fun CodeBlock.Builder.writeGsonFieldReadingStandard(
-            gsonField: GsonField,
-            variableName: String,
-            checkIfResultIsNull: Boolean,
-            extensionsHandler: ExtensionsHandler) {
-
         val fieldInfo = gsonField.fieldInfo
-        val fieldTypeName = fieldInfo.typeName.box()
+        val fieldTypeName = fieldInfo.fieldType.typeName.box()
 
         val useExtensionForRead = extensionsHandler.canHandleFieldRead(gsonField, variableName)
 
@@ -286,30 +265,8 @@ class ReadFunctions {
                 assign(variableName, "$GET_ADAPTER($adapterName).read($IN)", fieldTypeName)
             }
         }
-    }
 
-    private fun CodeBlock.Builder.writeGsonFieldReadingSubType(
-            gsonField: GsonField,
-            variableName: String,
-            checkIfResultIsNull: Boolean,
-            subTypeMetadata: SubTypeMetadata,
-            extensionsHandler: ExtensionsHandler) {
-
-        val fieldInfo = gsonField.fieldInfo
-        val fieldTypeName = fieldInfo.typeName.box()
-
-        val useExtensionForRead = extensionsHandler.canHandleFieldRead(gsonField, variableName)
-        if (useExtensionForRead) {
-            throw ProcessingException("It is not possible to use extension functions with GsonSubtype", fieldInfo.element)
-        }
-
-        // If this field uses a subtype annotation, we use the type adapter subclasses instead of gson.
-        if (checkIfResultIsNull) {
-            createVariable("\$T", variableName, "(\$T) ${subTypeMetadata.getterName}().read($IN)", fieldTypeName, fieldTypeName)
-
-        } else {
-            assign(variableName, "(\$T) ${subTypeMetadata.getterName}().read($IN)", fieldTypeName)
-        }
+        return FieldReaderResult(variableName, checkIfResultIsNull)
     }
 
     private fun CodeBlock.Builder.writeGsonArrayReader(

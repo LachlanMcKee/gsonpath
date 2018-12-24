@@ -24,7 +24,7 @@ class FlattenJsonExtension : GsonPathExtension {
             return false
         }
 
-        if (fieldInfo.typeName != CLASS_NAME_STRING) {
+        if (fieldInfo.fieldType.typeName != CLASS_NAME_STRING) {
             throw ProcessingException("FlattenObject can only be used on String variables", fieldInfo.element)
         }
 

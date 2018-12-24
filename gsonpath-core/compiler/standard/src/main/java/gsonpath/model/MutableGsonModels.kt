@@ -20,8 +20,7 @@ data class MutableGsonField(
                 fieldInfo = fieldInfo,
                 variableName = variableName,
                 jsonPath = jsonPath,
-                isRequired = isRequired,
-                subTypeMetadata = subTypeMetadata
+                isRequired = isRequired
         )
     }
 }

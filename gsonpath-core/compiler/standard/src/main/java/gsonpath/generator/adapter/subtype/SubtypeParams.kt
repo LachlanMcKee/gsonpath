@@ -1,5 +1,6 @@
 package gsonpath.generator.adapter.subtype
 
+import gsonpath.model.FieldType
 import gsonpath.model.GsonField
 import gsonpath.model.SubTypeMetadata
 
@@ -10,5 +11,5 @@ data class SubtypeParams(
 data class SubTypedField(
         val subTypeMetadata: SubTypeMetadata,
         val gsonField: GsonField,
-        val isFieldArrayType: Boolean
+        val fieldType: FieldType.MultipleValues
 )

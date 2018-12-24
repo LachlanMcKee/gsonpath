@@ -21,7 +21,6 @@ class AutoGsonAdapterGenerator(
         private val fileWriter: FileWriter,
         private val readFunctions: ReadFunctions,
         private val writeFunctions: WriteFunctions,
-        private val subtypeFunctions: SubtypeFunctions,
         private val logger: Logger) {
 
     @Throws(ProcessingException::class)
@@ -83,8 +82,6 @@ class AutoGsonAdapterGenerator(
         addMethod(readFunctions.createReadMethod(metadata.readParams, extensionsHandler))
         addMethod(writeFunctions.createWriteMethod(metadata.writeParams))
 
-        // Adds any required subtype type adapters depending on the usage of the GsonSubtype annotation.
-        subtypeFunctions.addSubTypeTypeAdapters(this, metadata.subtypeParams)
         return this
     }
 

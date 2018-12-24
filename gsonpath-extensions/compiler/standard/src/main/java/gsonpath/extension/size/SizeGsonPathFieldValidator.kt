@@ -8,12 +8,11 @@ import gsonpath.compiler.GsonPathExtension
 import gsonpath.extension.addException
 import gsonpath.extension.getAnnotationMirror
 import gsonpath.extension.getAnnotationValueObject
-import gsonpath.util.ProcessorTypeHandler
+import gsonpath.model.FieldType
 import gsonpath.util.`if`
 import gsonpath.util.codeBlock
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.AnnotationMirror
-import javax.lang.model.type.ArrayType
 
 /**
  * A {@link GsonPathExtension} that supports the '@Size' annotation.
@@ -34,18 +33,11 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
                         ?: getAnnotationMirror(fieldInfo.element, "gsonpath.extension.annotation", "Size")
                         ?: return null
 
-        // Ensure that the field is either an array, string or a collection.
-        val fieldCollectionType: Boolean =
-                try {
-                    ProcessorTypeHandler(processingEnvironment).isMirrorOfCollectionType(fieldInfo.typeMirror)
-                } catch (e: Exception) {
-                    false
-                }
-        val fieldType: FieldType =
+        val sizeFieldType: SizeFieldType =
                 when {
-                    (fieldInfo.typeMirror is ArrayType) -> FieldType.ARRAY
-                    fieldCollectionType -> FieldType.COLLECTION
-                    (fieldInfo.typeName == ClassName.get(String::class.java)) -> FieldType.STRING
+                    fieldInfo.fieldType is FieldType.MultipleValues.Array -> SizeFieldType.ARRAY
+                    fieldInfo.fieldType is FieldType.MultipleValues.Collection -> SizeFieldType.COLLECTION
+                    (fieldInfo.fieldType.typeName == ClassName.get(String::class.java)) -> SizeFieldType.STRING
 
                     else ->
                         throw ProcessingException("Unexpected type found for field annotated with 'Size', only " +
@@ -53,10 +45,10 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
                 }
 
         val validationCodeBlock = codeBlock {
-            handleExactLength(sizeAnnotation, jsonPath, variableName, fieldType)
-            handleMin(sizeAnnotation, jsonPath, variableName, fieldType)
-            handleMax(sizeAnnotation, jsonPath, variableName, fieldType)
-            handleMultiple(sizeAnnotation, jsonPath, variableName, fieldType)
+            handleExactLength(sizeAnnotation, jsonPath, variableName, sizeFieldType)
+            handleMin(sizeAnnotation, jsonPath, variableName, sizeFieldType)
+            handleMax(sizeAnnotation, jsonPath, variableName, sizeFieldType)
+            handleMultiple(sizeAnnotation, jsonPath, variableName, sizeFieldType)
         }
         if (!validationCodeBlock.isEmpty) {
             return validationCodeBlock
@@ -72,7 +64,7 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
      * @param variableName the name of the variable that is assigned back to the fieldName
      */
     private fun CodeBlock.Builder.handleMin(sizeAnnotation: AnnotationMirror, jsonPath: String,
-                                            variableName: String, fieldType: FieldType): CodeBlock.Builder {
+                                            variableName: String, sizeFieldType: SizeFieldType): CodeBlock.Builder {
 
         val minValue: Long = getAnnotationValueObject(sizeAnnotation, "min") as Long? ?: return this
 
@@ -80,9 +72,9 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
             return this
         }
 
-        val lengthProperty = fieldType.lengthProperty
+        val lengthProperty = sizeFieldType.lengthProperty
         return `if`("$variableName.$lengthProperty < $minValue") {
-            addSizeException(fieldType, jsonPath,
+            addSizeException(sizeFieldType, jsonPath,
                     """Expected minimum: '$minValue', actual minimum: '" + $variableName.$lengthProperty + "'""")
         }
     }
@@ -95,7 +87,7 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
      * @param variableName the name of the variable that is assigned back to the fieldName
      */
     private fun CodeBlock.Builder.handleMax(sizeAnnotation: AnnotationMirror, jsonPath: String, variableName: String,
-                                            fieldType: FieldType): CodeBlock.Builder {
+                                            sizeFieldType: SizeFieldType): CodeBlock.Builder {
 
         val maxValue: Long = getAnnotationValueObject(sizeAnnotation, "max") as Long? ?: return this
 
@@ -103,9 +95,9 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
             return this
         }
 
-        val lengthProperty = fieldType.lengthProperty
+        val lengthProperty = sizeFieldType.lengthProperty
         return `if`("$variableName.$lengthProperty > $maxValue", variableName, maxValue) {
-            addSizeException(fieldType, jsonPath,
+            addSizeException(sizeFieldType, jsonPath,
                     """Expected maximum: '$maxValue', actual maximum: '" + $variableName.$lengthProperty + "'""")
         }
     }
@@ -120,7 +112,7 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
      * @param variableName the name of the variable that is assigned back to the fieldName
      */
     private fun CodeBlock.Builder.handleMultiple(sizeAnnotation: AnnotationMirror, jsonPath: String,
-                                                 variableName: String, fieldType: FieldType): CodeBlock.Builder {
+                                                 variableName: String, sizeFieldType: SizeFieldType): CodeBlock.Builder {
 
         val multipleValue: Long = getAnnotationValueObject(sizeAnnotation, "multiple") as Long? ?: return this
 
@@ -128,9 +120,9 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
             return this
         }
 
-        val lengthProperty = fieldType.lengthProperty
+        val lengthProperty = sizeFieldType.lengthProperty
         return `if`("$variableName.$lengthProperty % $multipleValue != 0", variableName, multipleValue) {
-            addSizeException(fieldType, jsonPath,
+            addSizeException(sizeFieldType, jsonPath,
                     """$lengthProperty of '" + $variableName.$lengthProperty + "' is not a multiple of $multipleValue""")
         }
     }
@@ -145,7 +137,7 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
      * @param variableName the name of the variable that is assigned back to the fieldName
      */
     private fun CodeBlock.Builder.handleExactLength(sizeAnnotation: AnnotationMirror, jsonPath: String,
-                                                    variableName: String, fieldType: FieldType): CodeBlock.Builder {
+                                                    variableName: String, sizeFieldType: SizeFieldType): CodeBlock.Builder {
 
         val exactLengthValue: Long = getAnnotationValueObject(sizeAnnotation, "value") as Long? ?: return this
 
@@ -153,9 +145,9 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
             return this
         }
 
-        val lengthProperty = fieldType.lengthProperty
+        val lengthProperty = sizeFieldType.lengthProperty
         return `if`("$variableName.$lengthProperty != $exactLengthValue", variableName, exactLengthValue) {
-            addSizeException(fieldType, jsonPath, "Expected $lengthProperty: '$exactLengthValue', " +
+            addSizeException(sizeFieldType, jsonPath, "Expected $lengthProperty: '$exactLengthValue', " +
                     """actual $lengthProperty: '" + $variableName.$lengthProperty + "'""")
         }
     }
@@ -163,10 +155,10 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
     /**
      * Adds an exception that prepends an error message that is common across all of the 'Size' validations.
      */
-    private fun CodeBlock.Builder.addSizeException(fieldType: FieldType, jsonPath: String,
+    private fun CodeBlock.Builder.addSizeException(sizeFieldType: SizeFieldType, jsonPath: String,
                                                    exceptionText: String): CodeBlock.Builder {
 
-        return addException("Invalid ${fieldType.label} ${fieldType.lengthProperty} for JSON element '$jsonPath'. " +
+        return addException("Invalid ${sizeFieldType.label} ${sizeFieldType.lengthProperty} for JSON element '$jsonPath'. " +
                 exceptionText)
     }
 
@@ -176,7 +168,7 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
      * The 'Size' annotation supports arrays and collections, and the generated code syntax must change depending
      * on which type is used.
      */
-    enum class FieldType(val label: String, val lengthProperty: String) {
+    enum class SizeFieldType(val label: String, val lengthProperty: String) {
         ARRAY("array", "length"),
         COLLECTION("collection", "size()"),
         STRING("string", "length()");

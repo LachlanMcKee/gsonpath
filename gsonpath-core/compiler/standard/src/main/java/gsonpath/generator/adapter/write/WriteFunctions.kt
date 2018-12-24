@@ -9,6 +9,7 @@ import gsonpath.generator.Constants.GET_ADAPTER
 import gsonpath.generator.Constants.NULL
 import gsonpath.generator.Constants.OUT
 import gsonpath.generator.Constants.VALUE
+import gsonpath.model.FieldType
 import gsonpath.model.GsonArray
 import gsonpath.model.GsonField
 import gsonpath.model.GsonObject
@@ -95,8 +96,8 @@ class WriteFunctions {
             writeKeyName: Boolean): Int {
 
         val fieldInfo = value.fieldInfo
-        val fieldTypeName = fieldInfo.typeName
-        val isPrimitive = fieldTypeName.isPrimitive
+        val fieldTypeName = fieldInfo.fieldType.typeName
+        val isPrimitive = fieldInfo.fieldType is FieldType.Primitive
         val fieldAccessor = fieldInfo.fieldAccessor
         val objectName = "obj$fieldCount"
 
@@ -181,13 +182,8 @@ class WriteFunctions {
     }
 
     private fun CodeBlock.Builder.writeField(value: GsonField, objectName: String, fieldTypeName: TypeName) {
-        val subTypeMetadata = value.subTypeMetadata
-        val writeLine = when {
-            subTypeMetadata != null -> {
-                // If this field uses a subtype annotation, we use the type adapter subclasses instead of gson.
-                "${subTypeMetadata.getterName}().write($OUT, $objectName)"
-            }
-            fieldTypeName is ParameterizedTypeName -> {
+        val writeLine = when (fieldTypeName) {
+            is ParameterizedTypeName -> {
                 "$GET_ADAPTER(new com.google.gson.reflect.TypeToken<\$T>(){}).write($OUT, $objectName)"
             }
             else -> {

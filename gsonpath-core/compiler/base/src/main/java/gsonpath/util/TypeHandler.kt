@@ -13,6 +13,7 @@ import javax.lang.model.type.ArrayType
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.TypeMirror
+import kotlin.reflect.KClass
 
 interface TypeHandler {
     fun getTypeName(typeMirror: TypeMirror): TypeName?
@@ -22,7 +23,6 @@ interface TypeHandler {
     fun getAllMembers(typeElement: TypeElement): List<Element>
     fun getFields(typeElement: TypeElement, filterFunc: ((Element) -> Boolean)): List<FieldElementContent>
     fun getMethods(typeElement: TypeElement): List<MethodElementContent>
-    fun isMirrorOfCollectionType(typeMirror: TypeMirror): Boolean
 
     /**
      * Obtains the actual type name that is either contained within the array or the list.
@@ -30,7 +30,7 @@ interface TypeHandler {
      */
     fun getRawType(fieldInfo: FieldInfo): TypeMirror
 
-    fun getMultipleValuesFieldType(fieldInfo: FieldInfo): MultipleValuesFieldType
+    fun getDeclaredType(clazz: KClass<*>, vararg typeMirrors: TypeMirror): TypeMirror
 }
 
 data class FieldElementContent(
@@ -96,17 +96,9 @@ class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : T
                 .toList()
     }
 
-    override fun isMirrorOfCollectionType(typeMirror: TypeMirror): Boolean {
-        val rawType: TypeMirror = when (typeMirror) {
-            is DeclaredType -> typeMirror.typeArguments.first()
-
-            else -> return false
-        }
-
-        val collectionTypeElement = processingEnv.elementUtils.getTypeElement(Collection::class.java.name)
-        val collectionType = processingEnv.typeUtils.getDeclaredType(collectionTypeElement, rawType)
-
-        return processingEnv.typeUtils.isSubtype(typeMirror, collectionType)
+    override fun getDeclaredType(clazz: KClass<*>, vararg typeMirrors: TypeMirror): TypeMirror {
+        val typeElement = processingEnv.elementUtils.getTypeElement(clazz.java.name)
+        return processingEnv.typeUtils.getDeclaredType(typeElement, *typeMirrors)
     }
 
     override fun getRawType(fieldInfo: FieldInfo): TypeMirror {
@@ -117,24 +109,6 @@ class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : T
 
             else -> throw ProcessingException("Unexpected type found for field, ensure you either use " +
                     "an array, or a List class.", fieldInfo.element)
-        }
-    }
-
-    override fun getMultipleValuesFieldType(fieldInfo: FieldInfo): MultipleValuesFieldType {
-        val fieldCollectionType: Boolean = try {
-            isMirrorOfCollectionType(fieldInfo.typeMirror)
-        } catch (e: Exception) {
-            false
-        }
-
-        return when {
-            (fieldInfo.typeMirror is ArrayType) -> MultipleValuesFieldType.ARRAY
-            fieldCollectionType -> MultipleValuesFieldType.COLLECTION
-
-            else ->
-                throw ProcessingException("Unexpected type found for field annotated with " +
-                        "'RemoveInvalidElements', only arrays or collection classes may be used.",
-                        fieldInfo.element)
         }
     }
 

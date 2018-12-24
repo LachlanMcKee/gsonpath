@@ -1,7 +1,5 @@
 package gsonpath.model
 
-import com.squareup.javapoet.TypeName
-
 import javax.lang.model.element.Element
 import javax.lang.model.type.TypeMirror
 
@@ -9,7 +7,7 @@ import javax.lang.model.type.TypeMirror
  * Contains important information about a class field within a class annotated with the AutoGsonAdapter annotation.
  */
 interface FieldInfo {
-    val typeName: TypeName
+    val fieldType: FieldType
 
     val typeMirror: TypeMirror
 

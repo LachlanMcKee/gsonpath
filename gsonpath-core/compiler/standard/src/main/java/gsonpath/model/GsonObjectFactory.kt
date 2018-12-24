@@ -19,7 +19,7 @@ class GsonObjectFactory(
 
         val validationResult = gsonObjectValidator.validate(fieldInfo)
 
-        val isPrimitive = fieldInfo.typeName.isPrimitive
+        val isPrimitive = fieldInfo.fieldType is FieldType.Primitive
         val isRequired = when {
             validationResult == GsonObjectValidator.Result.Optional ->
                 // Optionals will never fail regardless of the policy.

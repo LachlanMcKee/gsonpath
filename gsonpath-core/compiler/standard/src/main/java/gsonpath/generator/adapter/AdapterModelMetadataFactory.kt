@@ -5,12 +5,9 @@ import gsonpath.AutoGsonAdapter
 import gsonpath.compiler.generateClassName
 import gsonpath.generator.adapter.properties.AutoGsonAdapterPropertiesFactory
 import gsonpath.generator.adapter.read.ReadParams
-import gsonpath.generator.adapter.subtype.SubTypedField
-import gsonpath.generator.adapter.subtype.SubtypeParams
 import gsonpath.generator.adapter.write.WriteParams
 import gsonpath.generator.interf.ModelInterfaceGenerator
 import gsonpath.model.*
-import gsonpath.util.MultipleValuesFieldType
 import gsonpath.util.TypeHandler
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
@@ -85,16 +82,6 @@ class AdapterModelMetadataFactory(
                 rootElements = rootObject,
                 serializeNulls = properties.serializeNulls)
 
-        val subtypeParams = SubtypeParams(
-                subTypedFields = flattenedFields
-                        .mapNotNull { field ->
-                            field.subTypeMetadata?.let {
-                                SubTypedField(it, field, typeHandler.getMultipleValuesFieldType(field.fieldInfo)
-                                        == MultipleValuesFieldType.ARRAY)
-                            }
-                        }
-        )
-
         return AdapterModelMetadata(
                 modelClassName,
                 adapterGenericTypeClassNames,
@@ -103,8 +90,7 @@ class AdapterModelMetadataFactory(
                 rootObject,
                 mandatoryInfoMap,
                 readParams,
-                writeParams,
-                subtypeParams)
+                writeParams)
     }
 
     /**

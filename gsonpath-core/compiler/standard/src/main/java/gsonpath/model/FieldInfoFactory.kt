@@ -14,6 +14,7 @@ import javax.lang.model.type.TypeMirror
 
 class FieldInfoFactory(
         private val typeHandler: TypeHandler,
+        private val fieldTypeFactory: FieldTypeFactory,
         private val fieldGetterFinder: FieldGetterFinder,
         private val annotationFetcher: AnnotationFetcher,
         private val defaultValueDetector: DefaultValueDetector) {
@@ -62,8 +63,8 @@ class FieldInfoFactory(
         return typeHandler.getFields(modelElement, filterFunc)
                 .map { (memberElement, generifiedElement) ->
                     object : FieldInfo {
-                        override val typeName: TypeName
-                            get() = TypeName.get(generifiedElement)
+                        override val fieldType: FieldType
+                            get() = fieldTypeFactory.createFieldType(TypeName.get(generifiedElement), generifiedElement)
 
                         override val typeMirror: TypeMirror
                             get() = generifiedElement
@@ -118,8 +119,8 @@ class FieldInfoFactory(
     fun getModelFieldsFromInterface(interfaceInfo: InterfaceInfo): List<FieldInfo> {
         return interfaceInfo.fieldInfo.map {
             object : FieldInfo {
-                override val typeName: TypeName
-                    get() = it.typeName
+                override val fieldType: FieldType
+                    get() = fieldTypeFactory.createFieldType(it.typeName, it.typeMirror)
 
                 override val typeMirror: TypeMirror
                     get() = it.typeMirror

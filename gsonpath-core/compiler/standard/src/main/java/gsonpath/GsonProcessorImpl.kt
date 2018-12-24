@@ -64,11 +64,11 @@ open class GsonProcessorImpl : AbstractProcessor() {
         val gsonObjectTreeFactory = GsonObjectTreeFactory(gsonObjectFactory)
         val readFunctions = ReadFunctions()
         val writeFunctions = WriteFunctions()
-        val subtypeFunctions = SubtypeFunctions(typeHandler)
         val modelInterfaceGenerator = ModelInterfaceGenerator(InterfaceModelMetadataFactory(typeHandler), fileWriter, logger)
         val adapterModelMetadataFactory = AdapterModelMetadataFactory(
                 FieldInfoFactory(
                         typeHandler,
+                        FieldTypeFactory(typeHandler),
                         fieldGetterFinder,
                         annotationFetcher,
                         defaultValueDetector),
@@ -83,7 +83,6 @@ open class GsonProcessorImpl : AbstractProcessor() {
                 fileWriter,
                 readFunctions,
                 writeFunctions,
-                subtypeFunctions,
                 logger)
 
         val autoGsonAdapterResults: List<HandleResult> =

@@ -8,6 +8,7 @@ import gsonpath.compiler.GsonPathExtension
 import gsonpath.extension.getAnnotationMirror
 import gsonpath.extension.getAnnotationValueObject
 import gsonpath.extension.range.handleRangeValue
+import gsonpath.model.FieldType
 import gsonpath.util.codeBlock
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.AnnotationMirror
@@ -34,12 +35,13 @@ class FloatRangeGsonPathFieldValidator : GsonPathExtension {
                         ?: return null
 
         // Ensure that the field is either a float, or a double.
-        val typeName =
-                if (fieldInfo.typeName.isPrimitive) {
-                    fieldInfo.typeName.box()
-                } else {
-                    fieldInfo.typeName
-                }
+        val typeName = fieldInfo.fieldType.typeName.let {
+            if (fieldInfo.fieldType is FieldType.Primitive) {
+                it.box()
+            } else {
+                it
+            }
+        }
 
         if (typeName != BOXED_DOUBLE && typeName != BOXED_FLOAT) {
             throw ProcessingException("Unexpected type found for field annotated with 'FloatRange', only " +
