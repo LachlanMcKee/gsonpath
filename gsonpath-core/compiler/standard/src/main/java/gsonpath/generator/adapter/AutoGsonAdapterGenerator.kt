@@ -25,13 +25,12 @@ class AutoGsonAdapterGenerator(
     @Throws(ProcessingException::class)
     fun handle(
             modelElement: TypeElement,
-            autoGsonAnnotation: AutoGsonAdapter,
-            extensionsHandler: ExtensionsHandler): HandleResult {
+            autoGsonAnnotation: AutoGsonAdapter): HandleResult {
 
         val metadata = adapterModelMetadataFactory.createMetadata(modelElement, autoGsonAnnotation)
         val adapterClassName = metadata.adapterClassName
         return TypeSpecExt.finalClassBuilder(adapterClassName)
-                .addDetails(metadata, extensionsHandler)
+                .addDetails(metadata)
                 .let {
                     if (it.writeFile(fileWriter, logger, adapterClassName.packageName(), this::onJavaFileBuilt)) {
                         HandleResult(metadata.adapterGenericTypeClassNames.toTypedArray(), adapterClassName)
@@ -41,10 +40,7 @@ class AutoGsonAdapterGenerator(
                 }
     }
 
-    private fun TypeSpec.Builder.addDetails(
-            metadata: AdapterModelMetadata,
-            extensionsHandler: ExtensionsHandler): TypeSpec.Builder {
-
+    private fun TypeSpec.Builder.addDetails(metadata: AdapterModelMetadata): TypeSpec.Builder {
         superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), metadata.modelClassName))
         addAnnotation(GENERATED_ANNOTATION)
 
@@ -78,7 +74,7 @@ class AutoGsonAdapterGenerator(
             }
         }
 
-        readFunctions.handleRead(this, metadata.readParams, extensionsHandler)
+        readFunctions.handleRead(this, metadata.readParams)
         addMethod(writeFunctions.createWriteMethod(metadata.writeParams))
 
         return this

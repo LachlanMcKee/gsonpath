@@ -1,23 +1,22 @@
-package gsonpath.model
+package gsonpath.generator.extension.subtype
 
 import gsonpath.GsonSubTypeFailureOutcome
 import gsonpath.GsonSubtype
 import gsonpath.ProcessingException
 import gsonpath.generator.adapter.SharedFunctions
+import gsonpath.model.FieldInfo
 import gsonpath.util.TypeHandler
 import javax.lang.model.element.Element
 import javax.lang.model.type.TypeMirror
 
 interface SubTypeMetadataFactory {
-    fun getGsonSubType(fieldInfo: FieldInfo): SubTypeMetadata?
+    fun getGsonSubType(gsonSubType: GsonSubtype, fieldInfo: FieldInfo): SubTypeMetadata
 }
 
 class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubTypeMetadataFactory {
 
-    override fun getGsonSubType(fieldInfo: FieldInfo): SubTypeMetadata? {
-        return fieldInfo.getAnnotation(GsonSubtype::class.java)?.let {
-            validateGsonSubType(fieldInfo, it)
-        }
+    override fun getGsonSubType(gsonSubType: GsonSubtype, fieldInfo: FieldInfo): SubTypeMetadata {
+        return validateGsonSubType(fieldInfo, gsonSubType)
     }
 
     /**

@@ -35,6 +35,13 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
         this.mGson = gson;
     }
 
+    private CollectionTypeAdapter<Type> getItemsGsonSubtype() {
+        if (itemsGsonSubtype == null) {
+            itemsGsonSubtype = new CollectionTypeAdapter<Type>(new ItemsGsonSubtype(mGson), false);
+        }
+        return itemsGsonSubtype;
+    }
+
     @Override
     public TypesList read(JsonReader in) throws IOException {
         // Ensure the object is not null.
@@ -56,6 +63,7 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
                 case "items":
                     jsonFieldCounter0++;
 
+                    // Extension (Read) - 'GsonSubtype' Annotation
                     List<Type> value_items = (List<Type>) getItemsGsonSubtype().read(in);
                     if (value_items != null) {
                         result.items = value_items;
@@ -84,18 +92,12 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
         List<Type> obj0 = value.items;
         if (obj0 != null) {
             out.name("items");
+            // Extension (Write) - 'GsonSubtype' Annotation
             getItemsGsonSubtype().write(out, obj0);
         }
 
         // End
         out.endObject();
-    }
-
-    private CollectionTypeAdapter<Type> getItemsGsonSubtype() {
-        if (itemsGsonSubtype == null) {
-            itemsGsonSubtype = new CollectionTypeAdapter<Type>(new ItemsGsonSubtype(mGson), false);
-        }
-        return itemsGsonSubtype;
     }
 
     private static final class ItemsGsonSubtype extends TypeAdapter<Type> {

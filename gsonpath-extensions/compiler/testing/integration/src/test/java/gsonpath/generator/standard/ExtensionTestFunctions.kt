@@ -88,7 +88,7 @@ private fun handleException(expectedMessage: String, triggerFunc: () -> Any?) {
 }
 
 fun String.toCodeReadExpectation() = CodeReadExpectation.Valid(trimIndent())
-fun String.toPostReadExpectation()= PostReadExpectation.Valid(trimIndent())
+fun String.toPostReadExpectation() = PostReadExpectation.Valid(trimIndent())
 
 sealed class CanHandleFieldReadExpectation {
     data class Valid(val result: Boolean) : CanHandleFieldReadExpectation()

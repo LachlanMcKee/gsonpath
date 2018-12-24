@@ -7,8 +7,7 @@ import javax.lang.model.element.Element
 
 class GsonObjectFactory(
         private val gsonObjectValidator: GsonObjectValidator,
-        private val fieldPathFetcher: FieldPathFetcher,
-        private val subTypeMetadataFactory: SubTypeMetadataFactory) {
+        private val fieldPathFetcher: FieldPathFetcher) {
 
     @Throws(ProcessingException::class)
     fun addGsonType(
@@ -40,17 +39,15 @@ class GsonObjectFactory(
                 validationResult == GsonObjectValidator.Result.Mandatory && !fieldInfo.hasDefaultValue
         }
 
-        val gsonSubTypeMetadata = subTypeMetadataFactory.getGsonSubType(fieldInfo)
-
         when (val jsonFieldPath = fieldPathFetcher.getJsonFieldPath(fieldInfo, metadata)) {
             is FieldPath.Nested -> {
                 addNestedType(gsonPathObject, fieldInfo, jsonFieldPath, metadata.flattenDelimiter,
-                        fieldInfoIndex, isRequired, gsonSubTypeMetadata)
+                        fieldInfoIndex, isRequired)
             }
 
             is FieldPath.Standard -> {
                 addStandardType(gsonPathObject, fieldInfo, jsonFieldPath,
-                        fieldInfoIndex, isRequired, gsonSubTypeMetadata)
+                        fieldInfoIndex, isRequired)
             }
         }
     }
@@ -62,8 +59,7 @@ class GsonObjectFactory(
             jsonFieldPath: FieldPath.Nested,
             flattenDelimiter: Char,
             fieldInfoIndex: Int,
-            isRequired: Boolean,
-            gsonSubTypeMetadata: SubTypeMetadata?) {
+            isRequired: Boolean) {
 
         // Ensure that the delimiter is correctly escaped before attempting to pathSegments the string.
         val regexSafeDelimiter: Regex = Pattern.quote(flattenDelimiter.toString()).toRegex()
@@ -89,7 +85,7 @@ class GsonObjectFactory(
 
             } else {
                 // We have reached the end of this object branch, add the field at the end.
-                handleLastNestedSegment(content, fieldInfoIndex, jsonFieldPath, isRequired, gsonSubTypeMetadata)
+                handleLastNestedSegment(content, fieldInfoIndex, jsonFieldPath, isRequired)
             }
         }
     }
@@ -147,8 +143,7 @@ class GsonObjectFactory(
             content: CommonSegmentContent,
             fieldIndex: Int,
             jsonFieldPath: FieldPath.Nested,
-            isRequired: Boolean,
-            gsonSubTypeMetadata: SubTypeMetadata?): MutableGsonField = try {
+            isRequired: Boolean): MutableGsonField = try {
 
         val parentModel = content.currentModel
         val pathType = content.pathType
@@ -162,7 +157,7 @@ class GsonObjectFactory(
                     parentModel as MutableGsonObject
                 }
 
-        createField(fieldIndex, content.fieldInfo, jsonFieldPath.path, isRequired, gsonSubTypeMetadata)
+        createField(fieldIndex, content.fieldInfo, jsonFieldPath.path, isRequired)
                 .also { field ->
                     when (pathType) {
                         is PathType.Standard -> {
@@ -186,11 +181,10 @@ class GsonObjectFactory(
             fieldInfo: FieldInfo,
             jsonFieldPath: FieldPath.Standard,
             fieldInfoIndex: Int,
-            isRequired: Boolean,
-            gsonSubTypeMetadata: SubTypeMetadata?) {
+            isRequired: Boolean) {
 
         val pathType = getPathType(jsonFieldPath.path)
-        val field = createField(fieldInfoIndex, fieldInfo, pathType.path, isRequired, gsonSubTypeMetadata)
+        val field = createField(fieldInfoIndex, fieldInfo, pathType.path, isRequired)
 
         when (pathType) {
             is PathType.Standard -> {
@@ -211,11 +205,10 @@ class GsonObjectFactory(
             fieldIndex: Int,
             fieldInfo: FieldInfo,
             jsonPath: String,
-            isRequired: Boolean,
-            gsonSubTypeMetadata: SubTypeMetadata?): MutableGsonField {
+            isRequired: Boolean): MutableGsonField {
 
         val variableName = "value_" + jsonPath.replace("[^A-Za-z0-9_]".toRegex(), "_")
-        return MutableGsonField(fieldIndex, fieldInfo, variableName, jsonPath, isRequired, gsonSubTypeMetadata)
+        return MutableGsonField(fieldIndex, fieldInfo, variableName, jsonPath, isRequired)
     }
 
     @Throws(ProcessingException::class)

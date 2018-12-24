@@ -1,5 +1,6 @@
 package gsonpath.model
 
+import gsonpath.generator.extension.subtype.SubTypeMetadata
 import gsonpath.generator.processingExceptionMatcher
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert

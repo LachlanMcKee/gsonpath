@@ -19,7 +19,7 @@ import java.io.IOException
 /**
  * public void write(JsonWriter out, ImageSizes value) throws IOException {
  */
-class WriteFunctions {
+class WriteFunctions(private val extensionsHandler: ExtensionsHandler) {
     @Throws(ProcessingException::class)
     fun createWriteMethod(params: WriteParams) = MethodSpecExt.overrideMethodBuilder("write").applyAndBuild {
         addParameter(JsonWriter::class.java, OUT)
@@ -182,15 +182,19 @@ class WriteFunctions {
     }
 
     private fun CodeBlock.Builder.writeField(value: GsonField, objectName: String, fieldTypeName: TypeName) {
-        val writeLine = when (fieldTypeName) {
-            is ParameterizedTypeName -> {
-                "$GET_ADAPTER(new com.google.gson.reflect.TypeToken<\$T>(){}).write($OUT, $objectName)"
+        when {
+            extensionsHandler.canHandleFieldWrite(value, objectName) -> {
+                extensionsHandler.executeFieldWrite(value, objectName) { extensionName, writeResult ->
+                    comment("Extension (Write) - $extensionName")
+                    add(writeResult.codeBlock)
+                }
+            }
+            fieldTypeName is ParameterizedTypeName -> {
+                addStatement("$GET_ADAPTER(new com.google.gson.reflect.TypeToken<\$T>(){}).write($OUT, $objectName)", fieldTypeName.box())
             }
             else -> {
-                "$GET_ADAPTER(\$T.class).write($OUT, $objectName)"
+                addStatement("$GET_ADAPTER(\$T.class).write($OUT, $objectName)", fieldTypeName.box())
             }
         }
-
-        addStatement(writeLine, fieldTypeName.box())
     }
 }

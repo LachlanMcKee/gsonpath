@@ -1,4 +1,4 @@
-package gsonpath.generator.adapter.subtype
+package gsonpath.generator.extension.subtype
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -10,72 +10,123 @@ import com.google.gson.stream.JsonWriter
 import com.squareup.javapoet.*
 import gsonpath.GsonSubTypeFailureException
 import gsonpath.GsonSubTypeFailureOutcome
-import gsonpath.generator.Constants.GSON
-import gsonpath.generator.Constants.IN
-import gsonpath.generator.Constants.NULL
-import gsonpath.generator.Constants.OUT
-import gsonpath.generator.Constants.VALUE
+import gsonpath.GsonSubtype
+import gsonpath.ProcessingException
+import gsonpath.compiler.ExtensionFieldMetadata
+import gsonpath.compiler.GsonPathExtension
+import gsonpath.generator.Constants
 import gsonpath.internal.CollectionTypeAdapter
 import gsonpath.internal.StrictArrayTypeAdapter
+import gsonpath.model.FieldInfo
 import gsonpath.model.FieldType
-import gsonpath.model.GsonField
-import gsonpath.model.SubTypeKeyType
-import gsonpath.model.SubTypeMetadata
 import gsonpath.util.*
 import java.io.IOException
+import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Modifier
 
-class SubtypeFunctions(private val typeHandler: TypeHandler) {
-    /**
-     * Creates the code required for subtype adapters for any fields that use the GsonSubtype annotation.
-     */
-    fun addSubTypeTypeAdapters(typeSpecBuilder: TypeSpec.Builder, subtypeParams: SubtypeParams) {
-        subtypeParams.subTypedFields.forEach {
-            val gsonField = it.gsonField
-            val subTypeMetadata = it.subTypeMetadata
-            typeSpecBuilder.apply {
-                val typeAdapterDetails = when (it.fieldType) {
-                    is FieldType.MultipleValues.Array -> TypeAdapterDetails.ArrayTypeAdapter
-                    is FieldType.MultipleValues.Collection -> {
-                        TypeAdapterDetails.CollectionTypeAdapter(ParameterizedTypeName.get(
-                                ClassName.get(CollectionTypeAdapter::class.java), TypeName.get(typeHandler.getRawType(gsonField.fieldInfo))))
-                    }
-                }
+class GsonSubTypeExtension(
+        private val typeHandler: TypeHandler,
+        private val subTypeMetadataFactory: SubTypeMetadataFactory) : GsonPathExtension {
 
-                field(subTypeMetadata.variableName, typeAdapterDetails.typeName) {
-                    addModifiers(Modifier.PRIVATE)
-                }
+    override val extensionName: String
+        get() = "'GsonSubtype' Annotation"
 
-                createGetter(typeAdapterDetails, gsonField, subTypeMetadata)
-                addType(createSubTypeAdapter(gsonField, subTypeMetadata))
+    private fun verifyMultipleValuesFieldType(fieldInfo: FieldInfo): FieldType.MultipleValues {
+        return when (val fieldType = fieldInfo.fieldType) {
+            is FieldType.MultipleValues -> fieldType
+            else -> throw ProcessingException("@GsonSubtype can only be used with arrays and collections",
+                    fieldInfo.element)
+        }
+    }
+
+    override fun canHandleFieldRead(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata): Boolean {
+
+        val (fieldInfo) = extensionFieldMetadata
+        if (fieldInfo.getAnnotation(GsonSubtype::class.java) == null) {
+            return false
+        }
+
+        verifyMultipleValuesFieldType(fieldInfo)
+
+        return true
+    }
+
+    override fun canHandleFieldWrite(processingEnvironment: ProcessingEnvironment, extensionFieldMetadata: ExtensionFieldMetadata): Boolean {
+        return canHandleFieldRead(processingEnvironment, extensionFieldMetadata)
+    }
+
+    override fun createCodeReadResult(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata,
+            checkIfResultIsNull: Boolean): GsonPathExtension.ExtensionResult {
+
+        val (fieldInfo, variableName) = extensionFieldMetadata
+        val fieldTypeName = fieldInfo.fieldType.typeName
+
+        val subTypeMetadata = subTypeMetadataFactory.getGsonSubType(
+                fieldInfo.getAnnotation(GsonSubtype::class.java)!!, fieldInfo)
+
+        val typeAdapterDetails = when (verifyMultipleValuesFieldType(fieldInfo)) {
+            is FieldType.MultipleValues.Array -> TypeAdapterDetails.ArrayTypeAdapter
+            is FieldType.MultipleValues.Collection -> {
+                TypeAdapterDetails.CollectionTypeAdapter(ParameterizedTypeName.get(
+                        ClassName.get(CollectionTypeAdapter::class.java), TypeName.get(typeHandler.getRawType(fieldInfo))))
             }
         }
+
+        return GsonPathExtension.ExtensionResult(
+                fieldSpecs = listOf(FieldSpec.builder(typeAdapterDetails.typeName, subTypeMetadata.variableName, Modifier.PRIVATE).build()),
+                methodSpecs = listOf(createGetter(typeAdapterDetails, fieldInfo, subTypeMetadata)),
+                typeSpecs = listOf(createSubTypeAdapter(fieldInfo, subTypeMetadata)),
+                codeBlock = codeBlock {
+                    if (checkIfResultIsNull) {
+                        createVariable("\$T", variableName, "(\$T) ${subTypeMetadata.getterName}().read(in)", fieldTypeName, fieldTypeName)
+                    } else {
+                        assign(variableName, "(\$T) ${subTypeMetadata.getterName}().read(in)", fieldTypeName)
+                    }
+                })
+    }
+
+    override fun createCodeWriteResult(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata): GsonPathExtension.ExtensionResult {
+
+        val (fieldInfo, variableName) = extensionFieldMetadata
+
+        val subTypeMetadata = subTypeMetadataFactory.getGsonSubType(
+                fieldInfo.getAnnotation(GsonSubtype::class.java)!!, fieldInfo)
+
+        return GsonPathExtension.ExtensionResult(
+                codeBlock = codeBlock {
+                    addStatement("${subTypeMetadata.getterName}().write(out, $variableName)")
+                })
     }
 
     /**
      * Creates the getter for the type adapter.
      * This implementration lazily loads, and then cached the result for subsequent usages.
      */
-    private fun TypeSpec.Builder.createGetter(
+    private fun createGetter(
             typeAdapterDetails: TypeAdapterDetails,
-            gsonField: GsonField,
-            subTypeMetadata: SubTypeMetadata) {
+            fieldInfo: FieldInfo,
+            subTypeMetadata: SubTypeMetadata): MethodSpec {
 
-        val variableName = subTypeMetadata.variableName
-
-        method(subTypeMetadata.getterName) {
+        return MethodSpec.methodBuilder(subTypeMetadata.getterName).applyAndBuild {
             addModifiers(Modifier.PRIVATE)
             returns(typeAdapterDetails.typeName)
 
             code {
-                `if`("$variableName == $NULL") {
+                val variableName = subTypeMetadata.variableName
+                `if`("$variableName == ${Constants.NULL}") {
                     val filterNulls = (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.REMOVE_ELEMENT)
 
                     when (typeAdapterDetails) {
                         is TypeAdapterDetails.ArrayTypeAdapter -> {
                             assignNew(variableName,
                                     "\$T<>(new ${subTypeMetadata.className}(mGson), \$T.class, $filterNulls)",
-                                    typeAdapterDetails.typeName, getRawTypeName(gsonField))
+                                    typeAdapterDetails.typeName, getRawTypeName(fieldInfo))
                         }
                         is TypeAdapterDetails.CollectionTypeAdapter -> {
                             assignNew(variableName,
@@ -89,8 +140,8 @@ class SubtypeFunctions(private val typeHandler: TypeHandler) {
         }
     }
 
-    private fun getRawTypeName(gsonField: GsonField): TypeName {
-        return TypeName.get(typeHandler.getRawType(gsonField.fieldInfo))
+    private fun getRawTypeName(fieldInfo: FieldInfo): TypeName {
+        return TypeName.get(typeHandler.getRawType(fieldInfo))
     }
 
     /**
@@ -98,9 +149,9 @@ class SubtypeFunctions(private val typeHandler: TypeHandler) {
      * <p>
      * Only gson fields that are annotated with 'GsonSubtype' should invoke this method
      */
-    private fun createSubTypeAdapter(gsonField: GsonField, subTypeMetadata: SubTypeMetadata): TypeSpec {
+    private fun createSubTypeAdapter(fieldInfo: FieldInfo, subTypeMetadata: SubTypeMetadata): TypeSpec {
         return TypeSpec.classBuilder(subTypeMetadata.className).applyAndBuild {
-            val rawTypeName = getRawTypeName(gsonField)
+            val rawTypeName = getRawTypeName(fieldInfo)
 
             addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
             superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), rawTypeName))
@@ -138,7 +189,7 @@ class SubtypeFunctions(private val typeHandler: TypeHandler) {
 
     private fun TypeSpec.Builder.addSubTypeConstructor(subTypeMetadata: SubTypeMetadata) = constructor {
         addModifiers(Modifier.PRIVATE)
-        addParameter(Gson::class.java, GSON)
+        addParameter(Gson::class.java, Constants.GSON)
 
         code {
             assignNew(DELEGATE_BY_VALUE_MAP, "java.util.HashMap<>()")
@@ -149,13 +200,13 @@ class SubtypeFunctions(private val typeHandler: TypeHandler) {
                 val subtypeElement = it.classElement
 
                 newLine()
-                addStatement("$DELEGATE_BY_VALUE_MAP.put(${it.key}, $GSON.getAdapter(\$T.class))", subtypeElement)
-                addStatement("$DELEGATE_BY_CLASS_MAP.put(\$T.class, $GSON.getAdapter(\$T.class))",
+                addStatement("$DELEGATE_BY_VALUE_MAP.put(${it.key}, ${Constants.GSON}.getAdapter(\$T.class))", subtypeElement)
+                addStatement("$DELEGATE_BY_CLASS_MAP.put(\$T.class, ${Constants.GSON}.getAdapter(\$T.class))",
                         subtypeElement, subtypeElement)
             }
 
             if (subTypeMetadata.defaultType != null) {
-                assign(DEFAULT_ADAPTER, "$GSON.getAdapter(\$T.class)", subTypeMetadata.defaultType)
+                assign(DEFAULT_ADAPTER, "${Constants.GSON}.getAdapter(\$T.class)", subTypeMetadata.defaultType)
             }
         }
     }
@@ -173,13 +224,13 @@ class SubtypeFunctions(private val typeHandler: TypeHandler) {
             rawTypeName: TypeName) = overrideMethod("read") {
 
         returns(rawTypeName)
-        addParameter(JsonReader::class.java, IN)
+        addParameter(JsonReader::class.java, Constants.IN)
         addException(IOException::class.java)
         code {
             val fieldName = subTypeMetadata.fieldName
             createVariable("\$T",
                     JSON_ELEMENT,
-                    "\$T.parse($IN)",
+                    "\$T.parse(${Constants.IN})",
                     JsonElement::class.java,
                     Streams::class.java)
 
@@ -188,7 +239,7 @@ class SubtypeFunctions(private val typeHandler: TypeHandler) {
                     "$JSON_ELEMENT.getAsJsonObject().get(\"$fieldName\")",
                     JsonElement::class.java)
 
-            `if`("$TYPE_VALUE_JSON_ELEMENT == $NULL || $TYPE_VALUE_JSON_ELEMENT.isJsonNull()") {
+            `if`("$TYPE_VALUE_JSON_ELEMENT == ${Constants.NULL} || $TYPE_VALUE_JSON_ELEMENT.isJsonNull()") {
                 addStatement("throw new \$T(\"cannot deserialize $rawTypeName because the subtype field " +
                         "'$fieldName' is either null or does not exist.\")",
                         JsonParseException::class.java)
@@ -197,37 +248,37 @@ class SubtypeFunctions(private val typeHandler: TypeHandler) {
             // Obtain the value using the correct type.
             when (subTypeMetadata.keyType) {
                 SubTypeKeyType.STRING ->
-                    createVariable("java.lang.String", VALUE, "$TYPE_VALUE_JSON_ELEMENT.getAsString()")
+                    createVariable("java.lang.String", Constants.VALUE, "$TYPE_VALUE_JSON_ELEMENT.getAsString()")
 
                 SubTypeKeyType.INTEGER ->
-                    createVariable("int", VALUE, "$TYPE_VALUE_JSON_ELEMENT.getAsInt()")
+                    createVariable("int", Constants.VALUE, "$TYPE_VALUE_JSON_ELEMENT.getAsInt()")
 
                 SubTypeKeyType.BOOLEAN ->
-                    createVariable("boolean", VALUE, "$TYPE_VALUE_JSON_ELEMENT.getAsBoolean()")
+                    createVariable("boolean", Constants.VALUE, "$TYPE_VALUE_JSON_ELEMENT.getAsBoolean()")
             }
 
             createVariable("\$T<? extends \$T>",
                     DELEGATE,
-                    "$DELEGATE_BY_VALUE_MAP.get($VALUE)",
+                    "$DELEGATE_BY_VALUE_MAP.get(${Constants.VALUE})",
                     TypeAdapter::class.java, rawTypeName)
 
-            `if`("$DELEGATE == $NULL") {
+            `if`("$DELEGATE == ${Constants.NULL}") {
                 if (subTypeMetadata.defaultType != null) {
                     comment("Use the default type adapter if the type is unknown.")
                     assign(DELEGATE, DEFAULT_ADAPTER)
                 } else {
                     if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
-                        addStatement("throw new \$T(\"Failed to find subtype for value: \" + $VALUE)",
+                        addStatement("throw new \$T(\"Failed to find subtype for value: \" + ${Constants.VALUE})",
                                 GsonSubTypeFailureException::class.java)
                     } else {
-                        `return`(NULL)
+                        `return`(Constants.NULL)
                     }
                 }
             }
             createVariable("\$T", RESULT, "$DELEGATE.fromJsonTree($JSON_ELEMENT)", rawTypeName)
 
             if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
-                `if`("$RESULT == $NULL") {
+                `if`("$RESULT == ${Constants.NULL}") {
                     addStatement("throw new \$T(\"Failed to deserailize subtype for object: \" + $JSON_ELEMENT)",
                             GsonSubTypeFailureException::class.java)
                 }
@@ -245,26 +296,26 @@ class SubtypeFunctions(private val typeHandler: TypeHandler) {
             rawTypeName: TypeName,
             typeAdapterType: TypeName) = overrideMethod("write") {
 
-        addParameter(JsonWriter::class.java, OUT)
-        addParameter(rawTypeName, VALUE)
+        addParameter(JsonWriter::class.java, Constants.OUT)
+        addParameter(rawTypeName, Constants.VALUE)
         addException(IOException::class.java)
         code {
-            `if`("$VALUE == $NULL") {
-                addStatement("$OUT.nullValue()")
+            `if`("${Constants.VALUE} == ${Constants.NULL}") {
+                addStatement("${Constants.OUT}.nullValue()")
                 `return`()
             }
-            createVariable("\$T", DELEGATE, "$DELEGATE_BY_CLASS_MAP.get($VALUE.getClass())", TypeAdapter::class.java)
+            createVariable("\$T", DELEGATE, "$DELEGATE_BY_CLASS_MAP.get(${Constants.VALUE}.getClass())", TypeAdapter::class.java)
         }
 
         if (subTypeMetadata.defaultType != null) {
             code {
-                `if`("$DELEGATE == $NULL") {
+                `if`("$DELEGATE == ${Constants.NULL}") {
                     assign(DELEGATE, DEFAULT_ADAPTER)
                 }
             }
         }
 
-        addStatement("$DELEGATE.write($OUT, $VALUE)", typeAdapterType)
+        addStatement("$DELEGATE.write(${Constants.OUT}, ${Constants.VALUE})", typeAdapterType)
     }
 
     private sealed class TypeAdapterDetails(val typeName: TypeName) {

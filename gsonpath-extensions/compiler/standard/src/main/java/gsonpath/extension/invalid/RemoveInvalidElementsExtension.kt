@@ -1,7 +1,6 @@
 package gsonpath.extension.invalid
 
 import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
 import gsonpath.compiler.ExtensionFieldMetadata

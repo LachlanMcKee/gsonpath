@@ -4,6 +4,7 @@ import com.google.gson.FieldNamingPolicy
 import gsonpath.GsonFieldValidationType
 import gsonpath.PathSubstitution
 import gsonpath.ProcessingException
+import gsonpath.generator.extension.subtype.SubTypeMetadataFactory
 import org.junit.Rule
 import org.junit.rules.ExpectedException
 import org.mockito.Mockito.mock

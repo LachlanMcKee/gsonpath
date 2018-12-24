@@ -9,20 +9,20 @@ import org.junit.Assert
 object TestUtil {
 
     fun <T> executeFromJson(clazz: Class<T>, jsonString: String): T =
-        GsonBuilder()
-            .registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory::class.java))
-            .create()
-            .fromJson(jsonString, clazz)
+            GsonBuilder()
+                    .registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory::class.java))
+                    .create()
+                    .fromJson(jsonString, clazz)
 
     fun expectException(clazz: Class<*>, jsonString: String, message: String) {
         val exception: JsonParseException? =
-            try {
-                executeFromJson(clazz, jsonString)
-                null
+                try {
+                    executeFromJson(clazz, jsonString)
+                    null
 
-            } catch (e: JsonParseException) {
-                e
-            }
+                } catch (e: JsonParseException) {
+                    e
+                }
 
         if (exception != null) {
             Assert.assertEquals(message, exception.message)

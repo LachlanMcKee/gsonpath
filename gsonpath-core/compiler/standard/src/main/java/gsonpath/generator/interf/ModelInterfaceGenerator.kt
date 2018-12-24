@@ -9,7 +9,6 @@ import gsonpath.generator.writeFile
 import gsonpath.model.FieldInfoFactory
 import gsonpath.model.FieldInfoFactory.InterfaceFieldInfo
 import gsonpath.model.FieldInfoFactory.InterfaceInfo
-import gsonpath.util.getAnnotationEx
 import gsonpath.util.*
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier

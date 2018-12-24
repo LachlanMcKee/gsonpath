@@ -2,8 +2,6 @@ package gsonpath.generator.standard
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import com.squareup.javapoet.TypeName
-import gsonpath.compiler.CLASS_NAME_STRING
 import gsonpath.extension.annotation.FlattenJson
 import gsonpath.extension.flatten.FlattenJsonExtension
 import org.junit.Test

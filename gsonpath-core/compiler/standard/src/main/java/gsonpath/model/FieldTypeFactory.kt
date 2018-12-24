@@ -19,7 +19,7 @@ class FieldTypeFactory(private val typeHandler: TypeHandler) {
 
     private fun attemptCollectionFieldType(typeMirror: TypeMirror): FieldType.MultipleValues.Collection? {
         val rawType: TypeMirror = when (typeMirror) {
-            is DeclaredType -> typeMirror.typeArguments.first()
+            is DeclaredType -> typeMirror.typeArguments.firstOrNull() ?: return null
             else -> return null
         }
 

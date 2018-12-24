@@ -59,8 +59,7 @@ interface GsonPathExtension {
 
     fun createCodeWriteResult(
             processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata,
-            checkIfResultIsNull: Boolean): ExtensionResult {
+            extensionFieldMetadata: ExtensionFieldMetadata): ExtensionResult {
 
         throw UnsupportedOperationException("This extension does not handle reading")
     }

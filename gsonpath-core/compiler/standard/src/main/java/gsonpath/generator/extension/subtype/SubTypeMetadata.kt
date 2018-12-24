@@ -1,4 +1,4 @@
-package gsonpath.model
+package gsonpath.generator.extension.subtype
 
 import gsonpath.GsonSubTypeFailureOutcome
 import javax.lang.model.element.Element

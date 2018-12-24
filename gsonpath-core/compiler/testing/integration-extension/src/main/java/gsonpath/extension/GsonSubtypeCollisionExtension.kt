@@ -1,14 +1,8 @@
 package gsonpath.extension
 
-import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.CodeBlock
 import gsonpath.GsonSubtype
-import gsonpath.ProcessingException
 import gsonpath.compiler.ExtensionFieldMetadata
 import gsonpath.compiler.GsonPathExtension
-import gsonpath.util.`if`
-import gsonpath.util.addEscapedStatement
-import gsonpath.util.assign
 import gsonpath.util.codeBlock
 import javax.annotation.processing.ProcessingEnvironment
 
@@ -28,14 +22,14 @@ class GsonSubtypeCollisionExtension : GsonPathExtension {
     override fun createCodeReadResult(
             processingEnvironment: ProcessingEnvironment,
             extensionFieldMetadata: ExtensionFieldMetadata,
-            checkIfResultIsNull: Boolean): CodeBlock {
+            checkIfResultIsNull: Boolean): GsonPathExtension.ExtensionResult {
 
-        return codeBlock {  }
+        return GsonPathExtension.ExtensionResult(codeBlock { })
     }
 
     override fun createCodePostReadResult(
             processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
+            extensionFieldMetadata: ExtensionFieldMetadata): GsonPathExtension.ExtensionResult? {
 
         return null
     }

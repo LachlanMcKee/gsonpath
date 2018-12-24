@@ -57,15 +57,15 @@ class ExtensionsHandler(
         }
     }
 
-    fun executeFieldWrite(gsonField: GsonField, variableName: String, checkIfResultIsNull: Boolean, handleFunc: (String, GsonPathExtension.ExtensionResult) -> Unit) {
-        if (!canHandleFieldRead(gsonField, variableName)) {
-            throw IllegalStateException("canHandleFieldRead must be checked before calling this method.")
+    fun executeFieldWrite(gsonField: GsonField, variableName: String, handleFunc: (String, GsonPathExtension.ExtensionResult) -> Unit) {
+        if (!canHandleFieldWrite(gsonField, variableName)) {
+            throw IllegalStateException("canHandleFieldWrite must be checked before calling this method.")
         }
         extensions.forEach { extension ->
             val extensionFieldMetadata = createMetadata(gsonField, variableName)
             if (extension.canHandleFieldWrite(processingEnvironment, extensionFieldMetadata)) {
-                handleFunc(extension.extensionName, extension.createCodeReadResult(
-                        processingEnvironment, extensionFieldMetadata, checkIfResultIsNull))
+                handleFunc(extension.extensionName, extension.createCodeWriteResult(
+                        processingEnvironment, extensionFieldMetadata))
             }
         }
     }
