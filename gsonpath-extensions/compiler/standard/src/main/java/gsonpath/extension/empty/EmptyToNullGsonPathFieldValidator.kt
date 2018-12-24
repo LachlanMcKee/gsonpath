@@ -1,7 +1,6 @@
 package gsonpath.extension.empty
 
 import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.CodeBlock
 import gsonpath.ProcessingException
 import gsonpath.compiler.ExtensionFieldMetadata
 import gsonpath.compiler.GsonPathExtension
@@ -21,9 +20,9 @@ class EmptyToNullGsonPathFieldValidator : GsonPathExtension {
     override val extensionName: String
         get() = "'EmptyToNull' Annotation"
 
-    override fun createCodePostReadCodeBlock(
+    override fun createCodePostReadResult(
             processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
+            extensionFieldMetadata: ExtensionFieldMetadata): GsonPathExtension.ExtensionResult? {
 
         val (fieldInfo, variableName, jsonPath, isRequired) = extensionFieldMetadata
 
@@ -43,7 +42,7 @@ class EmptyToNullGsonPathFieldValidator : GsonPathExtension {
                                 "string, array, map, or collection classes may be used.", fieldInfo.element)
                 }
 
-        return codeBlock {
+        return GsonPathExtension.ExtensionResult(codeBlock {
             `if`("$variableName${emptyToNullFieldType.emptyCheck}") {
                 if (isRequired) {
                     addException("JSON element '$jsonPath' cannot be blank")
@@ -51,7 +50,7 @@ class EmptyToNullGsonPathFieldValidator : GsonPathExtension {
                     assign(variableName, "null")
                 }
             }
-        }
+        })
     }
 
     /**

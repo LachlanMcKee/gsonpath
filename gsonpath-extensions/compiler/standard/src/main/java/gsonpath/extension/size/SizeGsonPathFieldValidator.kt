@@ -22,9 +22,9 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
     override val extensionName: String
         get() = "'Size' Annotation"
 
-    override fun createCodePostReadCodeBlock(
+    override fun createCodePostReadResult(
             processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
+            extensionFieldMetadata: ExtensionFieldMetadata): GsonPathExtension.ExtensionResult? {
 
         val (fieldInfo, variableName, jsonPath) = extensionFieldMetadata
 
@@ -51,7 +51,7 @@ class SizeGsonPathFieldValidator : GsonPathExtension {
             handleMultiple(sizeAnnotation, jsonPath, variableName, sizeFieldType)
         }
         if (!validationCodeBlock.isEmpty) {
-            return validationCodeBlock
+            return GsonPathExtension.ExtensionResult(validationCodeBlock)
         }
         return null
     }

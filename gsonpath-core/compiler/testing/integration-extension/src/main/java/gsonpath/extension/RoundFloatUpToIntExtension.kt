@@ -29,7 +29,7 @@ class RoundFloatUpToIntExtension : GsonPathExtension {
         return true
     }
 
-    override fun createCodeReadCodeBlock(
+    override fun createCodeReadResult(
             processingEnvironment: ProcessingEnvironment,
             extensionFieldMetadata: ExtensionFieldMetadata,
             checkIfResultIsNull: Boolean): CodeBlock {
@@ -57,7 +57,7 @@ class RoundFloatUpToIntExtension : GsonPathExtension {
         }
     }
 
-    override fun createCodePostReadCodeBlock(
+    override fun createCodePostReadResult(
             processingEnvironment: ProcessingEnvironment,
             extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
 

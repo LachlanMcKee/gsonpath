@@ -1,6 +1,9 @@
 package gsonpath.compiler
 
 import com.squareup.javapoet.CodeBlock
+import com.squareup.javapoet.FieldSpec
+import com.squareup.javapoet.MethodSpec
+import com.squareup.javapoet.TypeSpec
 
 import javax.annotation.processing.ProcessingEnvironment
 
@@ -42,15 +45,34 @@ interface GsonPathExtension {
             processingEnvironment: ProcessingEnvironment,
             extensionFieldMetadata: ExtensionFieldMetadata): Boolean = false
 
-    fun createCodeReadCodeBlock(
+    fun canHandleFieldWrite(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata): Boolean = false
+
+    fun createCodeReadResult(
             processingEnvironment: ProcessingEnvironment,
             extensionFieldMetadata: ExtensionFieldMetadata,
-            checkIfResultIsNull: Boolean): CodeBlock {
+            checkIfResultIsNull: Boolean): ExtensionResult {
 
         throw UnsupportedOperationException("This extension does not handle reading")
     }
 
-    fun createCodePostReadCodeBlock(
+    fun createCodeWriteResult(
             processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? = null
+            extensionFieldMetadata: ExtensionFieldMetadata,
+            checkIfResultIsNull: Boolean): ExtensionResult {
+
+        throw UnsupportedOperationException("This extension does not handle reading")
+    }
+
+    fun createCodePostReadResult(
+            processingEnvironment: ProcessingEnvironment,
+            extensionFieldMetadata: ExtensionFieldMetadata): ExtensionResult? = null
+
+    data class ExtensionResult(
+            val codeBlock: CodeBlock,
+            val fieldSpecs: List<FieldSpec> = emptyList(),
+            val typeSpecs: List<TypeSpec> = emptyList(),
+            val methodSpecs: List<MethodSpec> = emptyList()
+    )
 }

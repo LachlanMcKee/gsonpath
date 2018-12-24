@@ -23,9 +23,9 @@ class IntRangeGsonPathFieldValidator : GsonPathExtension {
     override val extensionName: String
         get() = "'IntRange' Annotation"
 
-    override fun createCodePostReadCodeBlock(
+    override fun createCodePostReadResult(
             processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
+            extensionFieldMetadata: ExtensionFieldMetadata): GsonPathExtension.ExtensionResult? {
 
         val (fieldInfo, variableName, jsonPath) = extensionFieldMetadata
 
@@ -53,7 +53,7 @@ class IntRangeGsonPathFieldValidator : GsonPathExtension {
             handleTo(intRangeAnnotation, jsonPath, variableName)
         }
         if (!validationCodeBlock.isEmpty) {
-            return validationCodeBlock
+            return GsonPathExtension.ExtensionResult(validationCodeBlock)
         }
         return null
     }

@@ -203,10 +203,10 @@ class ReadFunctions {
 
         // Execute any extensions and add the code blocks if they exist.
         val extensionsCodeBlock = codeBlock {
-            extensionsHandler.executePostRead(gsonField, assignedVariable) { extensionName, validationCodeBlock ->
+            extensionsHandler.executePostRead(gsonField, assignedVariable) { extensionName, validationResult ->
                 newLine()
                 comment("Extension - $extensionName")
-                add(validationCodeBlock)
+                add(validationResult.codeBlock)
                 newLine()
             }
         }
@@ -238,20 +238,15 @@ class ReadFunctions {
         val variableName = getVariableName(gsonField, requiresConstructorInjection)
         val checkIfResultIsNull = isCheckIfNullApplicable(gsonField, requiresConstructorInjection)
 
-        val fieldInfo = gsonField.fieldInfo
-        val fieldTypeName = fieldInfo.fieldType.typeName.box()
-
-        val useExtensionForRead = extensionsHandler.canHandleFieldRead(gsonField, variableName)
-
-        // Handle every other possible class by falling back onto the gson adapter.
-        if (useExtensionForRead) {
-            extensionsHandler.executeFieldRead(gsonField, variableName, checkIfResultIsNull) { extensionName, readCodeBlock ->
+        if (extensionsHandler.canHandleFieldRead(gsonField, variableName)) {
+            extensionsHandler.executeFieldRead(gsonField, variableName, checkIfResultIsNull) { extensionName, readResult ->
                 comment("Extension (Read) - $extensionName")
-                add(readCodeBlock)
+                add(readResult.codeBlock)
                 newLine()
             }
 
         } else {
+            val fieldTypeName = gsonField.fieldInfo.fieldType.typeName.box()
             val adapterName =
                     if (fieldTypeName is ParameterizedTypeName)
                         "new com.google.gson.reflect.TypeToken<\$T>(){}" // This is a generic type

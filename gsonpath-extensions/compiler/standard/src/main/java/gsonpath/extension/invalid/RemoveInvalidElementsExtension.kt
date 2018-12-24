@@ -42,10 +42,10 @@ class RemoveInvalidElementsExtension : GsonPathExtension {
         return true
     }
 
-    override fun createCodeReadCodeBlock(
+    override fun createCodeReadResult(
             processingEnvironment: ProcessingEnvironment,
             extensionFieldMetadata: ExtensionFieldMetadata,
-            checkIfResultIsNull: Boolean): CodeBlock {
+            checkIfResultIsNull: Boolean): GsonPathExtension.ExtensionResult {
 
         val (fieldInfo, variableName) = extensionFieldMetadata
 
@@ -57,13 +57,13 @@ class RemoveInvalidElementsExtension : GsonPathExtension {
         }
         val assignment = "\$T.$methodName(\$T.class, mGson, in)"
 
-        return codeBlock {
+        return GsonPathExtension.ExtensionResult(codeBlock {
             if (checkIfResultIsNull) {
                 createVariable("\$T", variableName, assignment, fieldInfo.fieldType.typeName, CLASS_NAME_UTIL, rawTypeName)
             } else {
                 assign(variableName, assignment, CLASS_NAME_UTIL, rawTypeName)
             }
-        }
+        })
     }
 
     private companion object {

@@ -1,6 +1,5 @@
 package gsonpath.extension.def.stringdef
 
-import com.squareup.javapoet.CodeBlock
 import com.sun.source.tree.AnnotationTree
 import com.sun.source.tree.AssignmentTree
 import com.sun.source.tree.IdentifierTree
@@ -32,9 +31,9 @@ class StringDefGsonPathFieldValidator : GsonPathExtension {
     override val extensionName: String
         get() = "'String Def' Annotation"
 
-    override fun createCodePostReadCodeBlock(
+    override fun createCodePostReadResult(
             processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
+            extensionFieldMetadata: ExtensionFieldMetadata): GsonPathExtension.ExtensionResult? {
 
         val (fieldInfo, variableName) = extensionFieldMetadata
 
@@ -61,7 +60,7 @@ class StringDefGsonPathFieldValidator : GsonPathExtension {
             return null
         }
 
-        return codeBlock {
+        return GsonPathExtension.ExtensionResult(codeBlock {
             switch(variableName) {
                 stringDefConstants
                         .map {
@@ -88,7 +87,7 @@ class StringDefGsonPathFieldValidator : GsonPathExtension {
                 addException("""Unexpected String '" + $variableName + "' for JSON element '${extensionFieldMetadata.jsonPath}'""")
                 unindent()
             }
-        }
+        })
     }
 
     /**

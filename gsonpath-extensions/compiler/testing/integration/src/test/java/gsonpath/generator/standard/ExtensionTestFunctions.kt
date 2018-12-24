@@ -40,7 +40,7 @@ fun validateCodeRead(
         codeReadExpectationFunc: () -> CodeReadExpectation) {
 
     val triggerFunc = {
-        extension.createCodeReadCodeBlock(mock(), metadata, checkResultIsNull)
+        extension.createCodeReadResult(mock(), metadata, checkResultIsNull)
     }
 
     when (val expectation = codeReadExpectationFunc()) {
@@ -59,7 +59,7 @@ fun validatePostRead(
         postReadExpectationFunc: () -> PostReadExpectation) {
 
     val triggerFunc = {
-        extension.createCodePostReadCodeBlock(mock(), metadata)
+        extension.createCodePostReadResult(mock(), metadata)
     }
 
     when (val expectation = postReadExpectationFunc()) {

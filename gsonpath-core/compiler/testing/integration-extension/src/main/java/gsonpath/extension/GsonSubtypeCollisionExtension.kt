@@ -25,7 +25,7 @@ class GsonSubtypeCollisionExtension : GsonPathExtension {
         return fieldInfo.getAnnotation(GsonSubtype::class.java) != null
     }
 
-    override fun createCodeReadCodeBlock(
+    override fun createCodeReadResult(
             processingEnvironment: ProcessingEnvironment,
             extensionFieldMetadata: ExtensionFieldMetadata,
             checkIfResultIsNull: Boolean): CodeBlock {
@@ -33,7 +33,7 @@ class GsonSubtypeCollisionExtension : GsonPathExtension {
         return codeBlock {  }
     }
 
-    override fun createCodePostReadCodeBlock(
+    override fun createCodePostReadResult(
             processingEnvironment: ProcessingEnvironment,
             extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
 

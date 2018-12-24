@@ -23,9 +23,9 @@ class FloatRangeGsonPathFieldValidator : GsonPathExtension {
     override val extensionName: String
         get() = "'FloatRange' Annotation"
 
-    override fun createCodePostReadCodeBlock(
+    override fun createCodePostReadResult(
             processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
+            extensionFieldMetadata: ExtensionFieldMetadata): GsonPathExtension.ExtensionResult? {
 
         val (fieldInfo, variableName, jsonPath) = extensionFieldMetadata
 
@@ -53,7 +53,7 @@ class FloatRangeGsonPathFieldValidator : GsonPathExtension {
             handleTo(floatRangeAnnotation, jsonPath, variableName)
         }
         if (!validationCodeBlock.isEmpty) {
-            return validationCodeBlock
+            return GsonPathExtension.ExtensionResult(validationCodeBlock)
         }
         return null
     }

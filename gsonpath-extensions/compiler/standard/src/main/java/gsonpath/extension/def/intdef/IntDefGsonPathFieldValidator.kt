@@ -1,6 +1,5 @@
 package gsonpath.extension.def.intdef
 
-import com.squareup.javapoet.CodeBlock
 import gsonpath.compiler.ExtensionFieldMetadata
 import gsonpath.compiler.GsonPathExtension
 import gsonpath.extension.addException
@@ -21,9 +20,9 @@ class IntDefGsonPathFieldValidator : GsonPathExtension {
     override val extensionName: String
         get() = "'Int Def' Annotation"
 
-    override fun createCodePostReadCodeBlock(
+    override fun createCodePostReadResult(
             processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
+            extensionFieldMetadata: ExtensionFieldMetadata): GsonPathExtension.ExtensionResult? {
 
         val (fieldInfo, variableName) = extensionFieldMetadata
 
@@ -34,7 +33,7 @@ class IntDefGsonPathFieldValidator : GsonPathExtension {
         val intDefValues: List<*> = getAnnotationValueObject(defAnnotationMirrors.defAnnotationMirror, "value")
                 as List<*>? ?: return null
 
-        return codeBlock {
+        return GsonPathExtension.ExtensionResult(codeBlock {
             switch(variableName) {
                 // Create a 'case' for each valid integer.
                 intDefValues.forEach {
@@ -47,7 +46,7 @@ class IntDefGsonPathFieldValidator : GsonPathExtension {
                 addException("""Unexpected Int '" + $variableName + "' for JSON element '${extensionFieldMetadata.jsonPath}'""")
                 unindent()
             }
-        }
+        })
     }
 
 }

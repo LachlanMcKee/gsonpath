@@ -1,6 +1,5 @@
 package gsonpath.util
 
-import com.squareup.javapoet.CodeBlock
 import gsonpath.ProcessingException
 import gsonpath.compiler.ExtensionFieldMetadata
 import gsonpath.compiler.GsonPathExtension
@@ -11,11 +10,13 @@ class ExtensionsHandler(
         private val processingEnvironment: ProcessingEnvironment,
         private val extensions: List<GsonPathExtension>) {
 
-    fun canHandleFieldRead(gsonField: GsonField, variableName: String): Boolean {
+    private fun canHandleFieldFunc(
+            gsonField: GsonField,
+            variableName: String,
+            func: (GsonPathExtension, ExtensionFieldMetadata) -> Boolean): Boolean {
+
         val supportedExtensions = extensions
-                .map { extension ->
-                    extension.canHandleFieldRead(processingEnvironment, createMetadata(gsonField, variableName))
-                }
+                .map { func(it, createMetadata(gsonField, variableName)) }
                 .filter { it }
                 .count()
 
@@ -26,22 +27,47 @@ class ExtensionsHandler(
         return supportedExtensions == 1
     }
 
-    fun executeFieldRead(gsonField: GsonField, variableName: String, checkIfResultIsNull: Boolean, handleFunc: (String, CodeBlock) -> Unit) {
+    fun canHandleFieldRead(gsonField: GsonField, variableName: String): Boolean {
+        return canHandleFieldFunc(gsonField, variableName) { extension, metadata ->
+            extension.canHandleFieldRead(processingEnvironment, metadata)
+        }
+    }
+
+    fun canHandleFieldWrite(gsonField: GsonField, variableName: String): Boolean {
+        return canHandleFieldFunc(gsonField, variableName) { extension, metadata ->
+            extension.canHandleFieldWrite(processingEnvironment, metadata)
+        }
+    }
+
+    fun executeFieldRead(gsonField: GsonField, variableName: String, checkIfResultIsNull: Boolean, handleFunc: (String, GsonPathExtension.ExtensionResult) -> Unit) {
         if (!canHandleFieldRead(gsonField, variableName)) {
             throw IllegalStateException("canHandleFieldRead must be checked before calling this method.")
         }
         extensions.forEach { extension ->
             val extensionFieldMetadata = createMetadata(gsonField, variableName)
             if (extension.canHandleFieldRead(processingEnvironment, extensionFieldMetadata)) {
-                handleFunc(extension.extensionName, extension.createCodeReadCodeBlock(
+                handleFunc(extension.extensionName, extension.createCodeReadResult(
                         processingEnvironment, extensionFieldMetadata, checkIfResultIsNull))
             }
         }
     }
 
-    fun executePostRead(gsonField: GsonField, variableName: String, handleFunc: (String, CodeBlock) -> Unit) {
+    fun executeFieldWrite(gsonField: GsonField, variableName: String, checkIfResultIsNull: Boolean, handleFunc: (String, GsonPathExtension.ExtensionResult) -> Unit) {
+        if (!canHandleFieldRead(gsonField, variableName)) {
+            throw IllegalStateException("canHandleFieldRead must be checked before calling this method.")
+        }
         extensions.forEach { extension ->
-            extension.createCodePostReadCodeBlock(processingEnvironment, createMetadata(gsonField, variableName))
+            val extensionFieldMetadata = createMetadata(gsonField, variableName)
+            if (extension.canHandleFieldWrite(processingEnvironment, extensionFieldMetadata)) {
+                handleFunc(extension.extensionName, extension.createCodeReadResult(
+                        processingEnvironment, extensionFieldMetadata, checkIfResultIsNull))
+            }
+        }
+    }
+
+    fun executePostRead(gsonField: GsonField, variableName: String, handleFunc: (String, GsonPathExtension.ExtensionResult) -> Unit) {
+        extensions.forEach { extension ->
+            extension.createCodePostReadResult(processingEnvironment, createMetadata(gsonField, variableName))
                     ?.let {
                         handleFunc(extension.extensionName, it)
                     }
