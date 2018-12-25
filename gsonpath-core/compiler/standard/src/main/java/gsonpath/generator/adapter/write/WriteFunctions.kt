@@ -4,6 +4,7 @@ import com.google.gson.stream.JsonWriter
 import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
+import com.squareup.javapoet.TypeSpec
 import gsonpath.ProcessingException
 import gsonpath.generator.Constants.GET_ADAPTER
 import gsonpath.generator.Constants.NULL
@@ -21,19 +22,21 @@ import java.io.IOException
  */
 class WriteFunctions(private val extensionsHandler: ExtensionsHandler) {
     @Throws(ProcessingException::class)
-    fun createWriteMethod(params: WriteParams) = MethodSpecExt.overrideMethodBuilder("write").applyAndBuild {
-        addParameter(JsonWriter::class.java, OUT)
-        addParameter(params.elementClassName, VALUE)
-        addException(IOException::class.java)
-        code {
-            // Initial block which prevents nulls being accessed.
-            `if`("$VALUE == $NULL") {
-                addStatement("$OUT.nullValue()")
-                `return`()
+    fun handleWrite(typeSpecBuilder: TypeSpec.Builder, params: WriteParams) {
+        typeSpecBuilder.overrideMethod("write") {
+            addParameter(JsonWriter::class.java, OUT)
+            addParameter(params.elementClassName, VALUE)
+            addException(IOException::class.java)
+            code {
+                // Initial block which prevents nulls being accessed.
+                `if`("$VALUE == $NULL") {
+                    addStatement("$OUT.nullValue()")
+                    `return`()
+                }
+                newLine()
+                comment("Begin")
+                writeGsonFieldWriter(params.rootElements, params.serializeNulls, true)
             }
-            newLine()
-            comment("Begin")
-            writeGsonFieldWriter(params.rootElements, params.serializeNulls, true)
         }
     }
 

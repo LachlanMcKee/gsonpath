@@ -75,7 +75,7 @@ class AutoGsonAdapterGenerator(
         }
 
         readFunctions.handleRead(this, metadata.readParams)
-        addMethod(writeFunctions.createWriteMethod(metadata.writeParams))
+        writeFunctions.handleWrite(this, metadata.writeParams)
 
         return this
     }

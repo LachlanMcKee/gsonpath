@@ -61,7 +61,7 @@ interface GsonPathExtension {
             processingEnvironment: ProcessingEnvironment,
             extensionFieldMetadata: ExtensionFieldMetadata): ExtensionResult {
 
-        throw UnsupportedOperationException("This extension does not handle reading")
+        throw UnsupportedOperationException("This extension does not handle writing")
     }
 
     fun createCodePostReadResult(
