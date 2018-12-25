@@ -8,7 +8,7 @@ import org.mockito.Mockito.`when` as whenever
 object FieldInfoTestFactory {
     fun mockFieldInfo(fieldName: String, jsonPath: String? = null): FieldInfo {
         val fieldInfo = Mockito.mock(FieldInfo::class.java)
-        whenever(fieldInfo.typeName).thenReturn(TypeName.INT)
+        whenever(fieldInfo.fieldType).thenReturn(FieldType.Primitive(TypeName.INT))
         whenever(fieldInfo.annotationNames).thenReturn(emptyList())
         whenever(fieldInfo.fieldName).thenReturn(fieldName)
 

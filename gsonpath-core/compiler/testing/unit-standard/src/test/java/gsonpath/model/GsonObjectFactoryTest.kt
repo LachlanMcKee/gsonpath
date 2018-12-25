@@ -2,6 +2,7 @@ package gsonpath.model
 
 import com.squareup.javapoet.TypeName
 import gsonpath.GsonFieldValidationType
+import gsonpath.GsonFieldValidationType.*
 import gsonpath.ProcessingException
 import gsonpath.model.FieldInfoTestFactory.mockFieldInfo
 import gsonpath.model.GsonObjectValidator.Result.*
@@ -31,7 +32,7 @@ class GsonObjectFactoryTest {
 
             // then
             val expectedGsonObject = MutableGsonObject()
-            expectedGsonObject.addField(DEFAULT_VARIABLE_NAME, MutableGsonField(0, fieldInfo, DEFAULT_VARIABLE_NAME_2, DEFAULT_VARIABLE_NAME, false, null))
+            expectedGsonObject.addField(DEFAULT_VARIABLE_NAME, MutableGsonField(0, fieldInfo, DEFAULT_VARIABLE_NAME_2, DEFAULT_VARIABLE_NAME, false))
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
 
@@ -51,7 +52,7 @@ class GsonObjectFactoryTest {
             // then
             val expectedGsonObject = MutableGsonObject()
             val mutableGsonObject = MutableGsonObject()
-            mutableGsonObject.addField("child", MutableGsonField(0, fieldInfo, "value_root_child", "root.child", false, null))
+            mutableGsonObject.addField("child", MutableGsonField(0, fieldInfo, "value_root_child", "root.child", false))
             expectedGsonObject.addObject("root", mutableGsonObject)
 
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
@@ -73,7 +74,7 @@ class GsonObjectFactoryTest {
             // then
             val expectedGsonObject = MutableGsonObject()
             val mutableGsonObject = MutableGsonObject()
-            mutableGsonObject.addField(DEFAULT_VARIABLE_NAME, MutableGsonField(0, fieldInfo, "value_root_$DEFAULT_VARIABLE_NAME", "root.$DEFAULT_VARIABLE_NAME", false, null))
+            mutableGsonObject.addField(DEFAULT_VARIABLE_NAME, MutableGsonField(0, fieldInfo, "value_root_$DEFAULT_VARIABLE_NAME", "root.$DEFAULT_VARIABLE_NAME", false))
             expectedGsonObject.addObject("root", mutableGsonObject)
 
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
@@ -95,7 +96,7 @@ class GsonObjectFactoryTest {
             // then
             val expectedGsonObject = MutableGsonObject()
             expectedGsonObject.addObject("replacement", MutableGsonObject())
-                    .addField("value", MutableGsonField(0, fieldInfo, "value_replacement_value", "replacement.value", false, null))
+                    .addField("value", MutableGsonField(0, fieldInfo, "value_replacement_value", "replacement.value", false))
 
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
@@ -116,7 +117,7 @@ class GsonObjectFactoryTest {
             // then
             val expectedGsonObject = MutableGsonObject()
             val elementArray = expectedGsonObject.addArray("element")
-            elementArray.addField(5, MutableGsonField(0, fieldInfo, "value_element_5_", "element[5]", false, null))
+            elementArray.addField(5, MutableGsonField(0, fieldInfo, "value_element_5_", "element[5]", false))
 
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
@@ -139,7 +140,7 @@ class GsonObjectFactoryTest {
             val valueObject = MutableGsonObject()
             expectedGsonObject.addObject("value", valueObject)
             val elementArray = valueObject.addArray("element")
-            elementArray.addField(5, MutableGsonField(0, fieldInfo, "value_value_element_5_", "value.element[5]", false, null))
+            elementArray.addField(5, MutableGsonField(0, fieldInfo, "value_value_element_5_", "value.element[5]", false))
 
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
@@ -161,7 +162,7 @@ class GsonObjectFactoryTest {
             val expectedGsonObject = MutableGsonObject()
             val elementArray = expectedGsonObject.addArray("element")
             val elementItemObject = elementArray.getObjectAtIndex(5)
-            elementItemObject.addField("value", MutableGsonField(0, fieldInfo, "value_element_5__value", "element[5].value", false, null))
+            elementItemObject.addField("value", MutableGsonField(0, fieldInfo, "value_element_5__value", "element[5].value", false))
 
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
@@ -184,7 +185,7 @@ class GsonObjectFactoryTest {
             val elementArray = expectedGsonObject.addArray("element")
             val elementItemObject = elementArray.getObjectAtIndex(5)
             val valueArray = elementItemObject.addArray("value")
-            valueArray.addField(0, MutableGsonField(0, fieldInfo, "value_element_5__value_0_", "element[5].value[0]", false, null))
+            valueArray.addField(0, MutableGsonField(0, fieldInfo, "value_element_5__value_0_", "element[5].value[0]", false))
 
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
@@ -216,8 +217,8 @@ class GsonObjectFactoryTest {
             val testObject = valueArray.getObjectAtIndex(5)
             val abcObject = testObject.addObject("test", MutableGsonObject())
 
-            abcObject.addField("def", MutableGsonField(0, defGsonFieldInfo, "value_element_value_5__test_def", "element.value[5].test.def", false, null))
-            abcObject.addField("abc", MutableGsonField(0, fieldInfo, "value_element_value_5__test_abc", "element.value[5].test.abc", false, null))
+            abcObject.addField("def", MutableGsonField(0, defGsonFieldInfo, "value_element_value_5__test_def", "element.value[5].test.def", false))
+            abcObject.addField("abc", MutableGsonField(0, fieldInfo, "value_element_value_5__test_abc", "element.value[5].test.abc", false))
 
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
@@ -227,7 +228,7 @@ class GsonObjectFactoryTest {
         fun givenDuplicateChildFields_whenAddGsonType_throwDuplicateFieldException() {
             // given
             val existingGsonObject = MutableGsonObject()
-            val existingField = MutableGsonField(0, mockFieldInfo(DEFAULT_VARIABLE_NAME), DEFAULT_VARIABLE_NAME_2, DEFAULT_VARIABLE_NAME, false, null)
+            val existingField = MutableGsonField(0, mockFieldInfo(DEFAULT_VARIABLE_NAME), DEFAULT_VARIABLE_NAME_2, DEFAULT_VARIABLE_NAME, false)
             existingGsonObject.addField(DEFAULT_VARIABLE_NAME, existingField)
 
             val fieldInfo = mockFieldInfo(DEFAULT_VARIABLE_NAME)
@@ -249,7 +250,7 @@ class GsonObjectFactoryTest {
             val duplicateBranchName = "duplicate"
 
             val existingGsonObject = MutableGsonObject()
-            val existingField = MutableGsonField(0, mockFieldInfo(duplicateBranchName), "value_$duplicateBranchName", duplicateBranchName, false, null)
+            val existingField = MutableGsonField(0, mockFieldInfo(duplicateBranchName), "value_$duplicateBranchName", duplicateBranchName, false)
             existingGsonObject.addField(duplicateBranchName, existingField)
 
             val fieldInfo = mockFieldInfo(DEFAULT_VARIABLE_NAME, "$duplicateBranchName.$DEFAULT_VARIABLE_NAME")
@@ -271,7 +272,7 @@ class GsonObjectFactoryTest {
             val duplicateBranchName = "duplicate"
 
             val existingGsonObject = MutableGsonObject()
-            val existingField = MutableGsonField(0, mockFieldInfo(duplicateBranchName), "value_$duplicateBranchName", duplicateBranchName, false, null)
+            val existingField = MutableGsonField(0, mockFieldInfo(duplicateBranchName), "value_$duplicateBranchName", duplicateBranchName, false)
 
             val childObject = MutableGsonObject()
             childObject.addField(duplicateBranchName, existingField)
@@ -294,7 +295,7 @@ class GsonObjectFactoryTest {
     class RequiredAnnotationsTest(
             private val validationResult: GsonObjectValidator.Result,
             private val gsonFieldValidationType: GsonFieldValidationType,
-            private val fieldTypeName: TypeName,
+            private val fieldType: FieldType,
             private val isRequired: Boolean) : BaseGsonObjectFactoryTest() {
 
         @Test
@@ -302,7 +303,7 @@ class GsonObjectFactoryTest {
         fun test() {
             // when
             val fieldInfo = mockFieldInfo(DEFAULT_VARIABLE_NAME)
-            whenever(fieldInfo.typeName).thenReturn(fieldTypeName)
+            whenever(fieldInfo.fieldType).thenReturn(fieldType)
 
             whenever(gsonObjectValidator.validate(fieldInfo)).thenReturn(validationResult)
 
@@ -315,34 +316,34 @@ class GsonObjectFactoryTest {
 
             // then
             val expectedGsonObject = MutableGsonObject()
-            expectedGsonObject.addField(DEFAULT_VARIABLE_NAME, MutableGsonField(0, fieldInfo, DEFAULT_VARIABLE_NAME_2, DEFAULT_VARIABLE_NAME, isRequired, null))
+            expectedGsonObject.addField(DEFAULT_VARIABLE_NAME, MutableGsonField(0, fieldInfo, DEFAULT_VARIABLE_NAME_2, DEFAULT_VARIABLE_NAME, isRequired))
             Assert.assertEquals(expectedGsonObject, outputGsonObject)
         }
 
         companion object {
             @JvmStatic
             @Parameterized.Parameters
-            fun data(): Collection<Array<Any?>> {
+            fun data(): Collection<Array<Any>> {
                 return listOf(
                         // Test 'NonNull' annotation permutations with a non-primitive type
-                        arrayOf(Mandatory, GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
-                        arrayOf(Mandatory, GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT.box(), true),
-                        arrayOf(Mandatory, GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT.box(), true),
+                        arrayOf(Mandatory, NO_VALIDATION, FieldType.Other(TypeName.INT.box()), false),
+                        arrayOf(Mandatory, VALIDATE_ALL_EXCEPT_NULLABLE, FieldType.Other(TypeName.INT.box()), true),
+                        arrayOf(Mandatory, VALIDATE_EXPLICIT_NON_NULL, FieldType.Other(TypeName.INT.box()), true),
 
                         // Test 'Nullable' annotation permutations with a non-primitive type
-                        arrayOf(Optional, GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
-                        arrayOf(Optional, GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT.box(), false),
-                        arrayOf(Optional, GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT.box(), false),
+                        arrayOf(Optional, NO_VALIDATION, FieldType.Other(TypeName.INT.box()), false),
+                        arrayOf(Optional, VALIDATE_ALL_EXCEPT_NULLABLE, FieldType.Other(TypeName.INT.box()), false),
+                        arrayOf(Optional, VALIDATE_EXPLICIT_NON_NULL, FieldType.Other(TypeName.INT.box()), false),
 
                         // Test no annotation permutations with a non-primitive type
-                        arrayOf(Standard, GsonFieldValidationType.NO_VALIDATION, TypeName.INT.box(), false),
-                        arrayOf(Standard, GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT.box(), true),
-                        arrayOf(Standard, GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT.box(), false),
+                        arrayOf(Standard, NO_VALIDATION, FieldType.Other(TypeName.INT.box()), false),
+                        arrayOf(Standard, VALIDATE_ALL_EXCEPT_NULLABLE, FieldType.Other(TypeName.INT.box()), true),
+                        arrayOf(Standard, VALIDATE_EXPLICIT_NON_NULL, FieldType.Other(TypeName.INT.box()), false),
 
                         // Test no annotation permutations with a primitive type
-                        arrayOf(Standard, GsonFieldValidationType.NO_VALIDATION, TypeName.INT, false),
-                        arrayOf(Standard, GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, TypeName.INT, true),
-                        arrayOf(Standard, GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL, TypeName.INT, true)
+                        arrayOf(Standard, NO_VALIDATION, FieldType.Primitive(TypeName.INT), false),
+                        arrayOf(Standard, VALIDATE_ALL_EXCEPT_NULLABLE, FieldType.Primitive(TypeName.INT), true),
+                        arrayOf(Standard, VALIDATE_EXPLICIT_NON_NULL, FieldType.Primitive(TypeName.INT), true)
                 )
             }
         }

@@ -25,7 +25,7 @@ class GsonObjectValidatorTest {
         fun givenBothNonNullAndNullableAnnotations_whenValidate_throwIncorrectAnnotationsException() {
             // given
             val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
-            whenever(fieldInfo.typeName).thenReturn(TypeName.INT.box())
+            whenever(fieldInfo.fieldType).thenReturn(FieldType.Other(TypeName.INT.box()))
             whenever(fieldInfo.annotationNames).thenReturn(listOf("NonNull", "Nullable"))
 
             // when / then
@@ -39,7 +39,7 @@ class GsonObjectValidatorTest {
         fun givenObjectType_whenValidate_throwInvalidFieldTypeException() {
             // given
             val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
-            whenever(fieldInfo.typeName).thenReturn(TypeName.OBJECT)
+            whenever(fieldInfo.fieldType).thenReturn(FieldType.Other(TypeName.OBJECT))
 
             // when / then
             exception.expect(ProcessingException::class.java)
@@ -89,8 +89,7 @@ class GsonObjectValidatorTest {
         fun test() {
             // when
             val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
-            whenever(fieldInfo.typeName).thenReturn(TypeName.INT.box())
-
+            whenever(fieldInfo.fieldType).thenReturn(FieldType.Other(TypeName.INT.box()))
             if (requiredTypeAnnotation != null) {
                 whenever(fieldInfo.annotationNames).thenReturn(listOf(requiredTypeAnnotation))
             }

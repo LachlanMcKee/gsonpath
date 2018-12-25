@@ -4,7 +4,6 @@ import com.google.gson.FieldNamingPolicy
 import gsonpath.GsonFieldValidationType
 import gsonpath.PathSubstitution
 import gsonpath.ProcessingException
-import gsonpath.generator.extension.subtype.SubTypeMetadataFactory
 import org.junit.Rule
 import org.junit.rules.ExpectedException
 import org.mockito.Mockito.mock
@@ -21,7 +20,7 @@ open class BaseGsonObjectFactoryTest {
 
     @Throws(ProcessingException::class)
     fun executeAddGsonType(arguments: GsonTypeArguments, metadata: GsonObjectMetadata, outputGsonObject: MutableGsonObject = MutableGsonObject()): MutableGsonObject {
-        GsonObjectFactory(gsonObjectValidator, fieldPathFetcher, mock(SubTypeMetadataFactory::class.java)).addGsonType(
+        GsonObjectFactory(gsonObjectValidator, fieldPathFetcher).addGsonType(
                 outputGsonObject,
                 arguments.fieldInfo,
                 arguments.fieldInfoIndex,

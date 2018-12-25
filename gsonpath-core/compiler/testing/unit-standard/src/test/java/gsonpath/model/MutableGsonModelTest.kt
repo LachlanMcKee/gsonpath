@@ -1,6 +1,5 @@
 package gsonpath.model
 
-import gsonpath.generator.extension.subtype.SubTypeMetadata
 import gsonpath.generator.processingExceptionMatcher
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert
@@ -17,19 +16,17 @@ class MutableGsonModelTest {
     @Test
     fun testGsonField() {
         val fieldInfo = mock(FieldInfo::class.java)
-        val subTypeMetadata = mock(SubTypeMetadata::class.java)
-        val mutableGsonField = MutableGsonField(0, fieldInfo, "variable", "path", true, subTypeMetadata)
+        val mutableGsonField = MutableGsonField(0, fieldInfo, "variable", "path", true)
 
         Assert.assertEquals(
-                GsonField(0, fieldInfo, "variable", "path", true, subTypeMetadata),
+                GsonField(0, fieldInfo, "variable", "path", true),
                 mutableGsonField.toImmutable())
     }
 
     @Test
     fun testGsonObject() {
         val fieldInfo = mock(FieldInfo::class.java)
-        val subTypeMetadata = mock(SubTypeMetadata::class.java)
-        val mutableGsonField = MutableGsonField(0, fieldInfo, "variable", "path", true, subTypeMetadata)
+        val mutableGsonField = MutableGsonField(0, fieldInfo, "variable", "path", true)
 
         val mutableGsonObject = MutableGsonObject()
         mutableGsonObject.addField("field1", mutableGsonField)
@@ -40,7 +37,7 @@ class MutableGsonModelTest {
         Assert.assertEquals(
                 GsonObject(
                         mapOf(
-                                "field1" to GsonField(0, fieldInfo, "variable", "path", true, subTypeMetadata),
+                                "field1" to GsonField(0, fieldInfo, "variable", "path", true),
                                 "object1" to GsonObject(emptyMap()),
                                 "array1" to GsonArray(mapOf(0 to GsonObject(emptyMap())), 0)
                         )
@@ -51,8 +48,7 @@ class MutableGsonModelTest {
     @Test
     fun testGsonArray() {
         val fieldInfo = mock(FieldInfo::class.java)
-        val subTypeMetadata = mock(SubTypeMetadata::class.java)
-        val mutableGsonField = MutableGsonField(0, fieldInfo, "variable", "path", true, subTypeMetadata)
+        val mutableGsonField = MutableGsonField(0, fieldInfo, "variable", "path", true)
         val mutableGsonArray = MutableGsonArray()
 
         mutableGsonArray.addField(0, mutableGsonField)
@@ -61,7 +57,7 @@ class MutableGsonModelTest {
         Assert.assertEquals(
                 GsonArray(
                         mapOf(
-                                0 to GsonField(0, fieldInfo, "variable", "path", true, subTypeMetadata),
+                                0 to GsonField(0, fieldInfo, "variable", "path", true),
                                 1 to GsonObject(emptyMap())
                         ),
                         1
