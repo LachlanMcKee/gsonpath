@@ -12,7 +12,7 @@ object EmptyTests {
         @Test
         fun givenBlankPassedToNonNullModel_whenJsonParsed_thenExpectException() {
             TestUtil.expectException(EmptyModel.NonNull.StringModel::class.java, "{value:\"\"}",
-                    "JSON element 'value' cannot be blank")
+                "JSON element 'value' cannot be blank")
         }
 
         @Test
@@ -38,7 +38,7 @@ object EmptyTests {
         @Test
         fun givenBlankPassedToNonNullModel_whenJsonParsed_thenExpectException() {
             TestUtil.expectException(EmptyModel.NonNull.MapModel::class.java, "{value: {}}",
-                    "JSON element 'value' cannot be blank")
+                "JSON element 'value' cannot be blank")
         }
 
         @Test
@@ -66,7 +66,7 @@ object EmptyTests {
         @Test
         fun givenBlankPassedToNonNullModel_whenJsonParsed_thenExpectException() {
             TestUtil.expectException(EmptyModel.NonNull.CollectionModel::class.java, "{value: []}",
-                    "JSON element 'value' cannot be blank")
+                "JSON element 'value' cannot be blank")
         }
 
         @Test
@@ -94,7 +94,7 @@ object EmptyTests {
         @Test
         fun givenBlankPassedToNonNullModel_whenJsonParsed_thenExpectException() {
             TestUtil.expectException(EmptyModel.NonNull.ArrayModel::class.java, "{value: []}",
-                    "JSON element 'value' cannot be blank")
+                "JSON element 'value' cannot be blank")
         }
 
         @Test

@@ -35,13 +35,13 @@ object IntRangeTests {
         @Test
         fun givenBelowMinValue_whenJsonParsed_thenThrowsException() {
             TestUtil.expectException(modelClass, "{value:-1}",
-                    "Invalid 'from' range for JSON element 'value'. Expected: '>= 0', Found '-1'")
+                "Invalid 'from' range for JSON element 'value'. Expected: '>= 0', Found '-1'")
         }
 
         @Test
         fun givenAboveMaxValue_whenJsonParsed_thenThrowsException() {
             TestUtil.expectException(modelClass, "{value:6}",
-                    "Invalid 'to' range for JSON element 'value'. Expected: '<= 5', Found '6'")
+                "Invalid 'to' range for JSON element 'value'. Expected: '<= 5', Found '6'")
         }
 
         private fun assertValue(model: IntRangeModel.BaseModel<*>, intValue: Int, longValue: Long) {

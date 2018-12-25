@@ -7,6 +7,7 @@ import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import java.lang.IllegalArgumentException
 import java.util.*
 
 @RunWith(Enclosed::class)
@@ -37,25 +38,25 @@ object SizeTests {
         @Test
         fun givenSizeTooSmall_whenJsonParsed_thenThrowsException() {
             val jsonString =
-                    when (modelClass) {
-                        SizeModel.MinAndMax.StringModel::class.java -> "{value: \"\"}"
-                        else -> "{value: []}"
-                    }
+                when (modelClass) {
+                    SizeModel.MinAndMax.StringModel::class.java -> "{value: \"\"}"
+                    else -> "{value: []}"
+                }
 
             TestUtil.expectException(modelClass, jsonString,
-                    "Invalid ${modelClass.getErrorPrefix()} for JSON element 'value'. Expected minimum: '1', actual minimum: '0'")
+                "Invalid ${modelClass.getErrorPrefix()} for JSON element 'value'. Expected minimum: '1', actual minimum: '0'")
         }
 
         @Test
         fun givenSizeTooLarge_whenJsonParsed_thenThrowsException() {
             val jsonString =
-                    when (modelClass) {
-                        SizeModel.MinAndMax.StringModel::class.java -> "{value: \"1234\"}"
-                        else -> "{value: [1, 2, 3, 4]}"
-                    }
+                when (modelClass) {
+                    SizeModel.MinAndMax.StringModel::class.java -> "{value: \"1234\"}"
+                    else -> "{value: [1, 2, 3, 4]}"
+                }
 
             TestUtil.expectException(modelClass, jsonString,
-                    "Invalid ${modelClass.getErrorPrefix()} for JSON element 'value'. Expected maximum: '3', actual maximum: '4'")
+                "Invalid ${modelClass.getErrorPrefix()} for JSON element 'value'. Expected maximum: '3', actual maximum: '4'")
         }
 
         companion object {
@@ -63,9 +64,9 @@ object SizeTests {
             @Parameterized.Parameters
             fun data(): Collection<Array<Any>> {
                 return Arrays.asList(
-                        arrayOf<Any>(SizeModel.MinAndMax.ArrayModel::class.java),
-                        arrayOf<Any>(SizeModel.MinAndMax.CollectionModel::class.java),
-                        arrayOf<Any>(SizeModel.MinAndMax.StringModel::class.java)
+                    arrayOf<Any>(SizeModel.MinAndMax.ArrayModel::class.java),
+                    arrayOf<Any>(SizeModel.MinAndMax.CollectionModel::class.java),
+                    arrayOf<Any>(SizeModel.MinAndMax.StringModel::class.java)
                 )
             }
         }
@@ -111,13 +112,13 @@ object SizeTests {
         @Test
         fun givenSizeIsNotAMultiple_whenJsonParsed_thenThrowsException() {
             val jsonString =
-                    when (modelClass) {
-                        SizeModel.Multiple.StringModel::class.java -> "{value: \"123\"}"
-                        else -> "{value: [1, 2, 3]}"
-                    }
+                when (modelClass) {
+                    SizeModel.Multiple.StringModel::class.java -> "{value: \"123\"}"
+                    else -> "{value: [1, 2, 3]}"
+                }
 
             TestUtil.expectException(modelClass, jsonString,
-                    "Invalid ${modelClass.getErrorPrefix()} for JSON element 'value'. ${modelClass.getLengthProperty()} of '3' is not a multiple of 2")
+                "Invalid ${modelClass.getErrorPrefix()} for JSON element 'value'. ${modelClass.getLengthProperty()} of '3' is not a multiple of 2")
         }
 
         companion object {
@@ -125,9 +126,9 @@ object SizeTests {
             @Parameterized.Parameters
             fun data(): Collection<Array<Any>> {
                 return Arrays.asList(
-                        arrayOf<Any>(SizeModel.Multiple.ArrayModel::class.java),
-                        arrayOf<Any>(SizeModel.Multiple.CollectionModel::class.java),
-                        arrayOf<Any>(SizeModel.Multiple.StringModel::class.java)
+                    arrayOf<Any>(SizeModel.Multiple.ArrayModel::class.java),
+                    arrayOf<Any>(SizeModel.Multiple.CollectionModel::class.java),
+                    arrayOf<Any>(SizeModel.Multiple.StringModel::class.java)
                 )
             }
         }
@@ -159,13 +160,13 @@ object SizeTests {
         @Test
         fun givenSizeDoesNotMatch_whenJsonParsed_thenThrowsException() {
             val jsonString =
-                    when (modelClass) {
-                        SizeModel.ExactSize.StringModel::class.java -> "{value: \"12\"}"
-                        else -> "{value: [1, 2]}"
-                    }
+                when (modelClass) {
+                    SizeModel.ExactSize.StringModel::class.java -> "{value: \"12\"}"
+                    else -> "{value: [1, 2]}"
+                }
 
             TestUtil.expectException(modelClass, jsonString,
-                    "Invalid ${modelClass.getErrorPrefix()} for JSON element 'value'. Expected ${modelClass.getLengthProperty()}: '1', actual ${modelClass.getLengthProperty()}: '2'")
+                "Invalid ${modelClass.getErrorPrefix()} for JSON element 'value'. Expected ${modelClass.getLengthProperty()}: '1', actual ${modelClass.getLengthProperty()}: '2'")
         }
 
         companion object {
@@ -173,9 +174,9 @@ object SizeTests {
             @Parameterized.Parameters
             fun data(): Collection<Array<Any>> {
                 return Arrays.asList(
-                        arrayOf<Any>(SizeModel.ExactSize.ArrayModel::class.java),
-                        arrayOf<Any>(SizeModel.ExactSize.CollectionModel::class.java),
-                        arrayOf<Any>(SizeModel.ExactSize.StringModel::class.java)
+                    arrayOf<Any>(SizeModel.ExactSize.ArrayModel::class.java),
+                    arrayOf<Any>(SizeModel.ExactSize.CollectionModel::class.java),
+                    arrayOf<Any>(SizeModel.ExactSize.StringModel::class.java)
                 )
             }
         }
