@@ -45,7 +45,7 @@ fun validateCodeRead(
 
     when (val expectation = codeReadExpectationFunc()) {
         is CodeReadExpectation.Valid -> {
-            Assert.assertEquals(codeBlock { add(expectation.codeString) }, triggerFunc())
+            Assert.assertEquals(codeBlock { add(expectation.codeString) }, triggerFunc().codeBlock)
         }
         is CodeReadExpectation.Exception -> {
             handleException(expectation.message, triggerFunc)

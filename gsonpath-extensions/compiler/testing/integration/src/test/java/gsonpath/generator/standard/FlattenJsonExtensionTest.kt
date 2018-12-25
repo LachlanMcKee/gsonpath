@@ -2,8 +2,11 @@ package gsonpath.generator.standard
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.squareup.javapoet.TypeName
+import gsonpath.compiler.CLASS_NAME_STRING
 import gsonpath.extension.annotation.FlattenJson
 import gsonpath.extension.flatten.FlattenJsonExtension
+import gsonpath.model.FieldType
 import org.junit.Test
 
 class FlattenJsonExtensionTest {
@@ -11,7 +14,7 @@ class FlattenJsonExtensionTest {
     fun testFlattenJsonInvalidType() {
         val metadata = createMetadata(true)
         whenever(metadata.fieldInfo.getAnnotation(FlattenJson::class.java)).thenReturn(mock())
-//        whenever(metadata.fieldInfo.typeName).thenReturn(TypeName.INT)
+        whenever(metadata.fieldInfo.fieldType).thenReturn(FieldType.Primitive(TypeName.INT))
         validateCanHandleFieldRead(FlattenJsonExtension(), metadata) {
             CanHandleFieldReadExpectation.Exception("FlattenObject can only be used on String variables")
         }
@@ -21,7 +24,7 @@ class FlattenJsonExtensionTest {
     fun testFlattenJsonInvalidTypeFoo() {
         val metadata = createMetadata(true)
         whenever(metadata.fieldInfo.getAnnotation(FlattenJson::class.java)).thenReturn(mock())
-//        whenever(metadata.fieldInfo.typeName).thenReturn(CLASS_NAME_STRING)
+        whenever(metadata.fieldInfo.fieldType).thenReturn(FieldType.Other(CLASS_NAME_STRING))
         validateCanHandleFieldRead(FlattenJsonExtension(), metadata) {
             CanHandleFieldReadExpectation.Valid(true)
         }
