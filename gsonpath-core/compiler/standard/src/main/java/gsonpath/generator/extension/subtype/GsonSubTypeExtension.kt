@@ -319,7 +319,7 @@ class GsonSubTypeExtension(
             }
         }
 
-        addStatement("$DELEGATE.write($OUT, $VALUE", typeAdapterType)
+        addStatement("$DELEGATE.write($OUT, $VALUE)", typeAdapterType)
     }
 
     private sealed class TypeAdapterDetails(val typeName: TypeName) {
