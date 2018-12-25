@@ -5,25 +5,18 @@ import gsonpath.GsonSubtype
 import gsonpath.ProcessingException
 import gsonpath.generator.adapter.SharedFunctions
 import gsonpath.model.FieldInfo
+import gsonpath.model.FieldType
 import gsonpath.util.TypeHandler
 import javax.lang.model.element.Element
 import javax.lang.model.type.TypeMirror
 
 interface SubTypeMetadataFactory {
-    fun getGsonSubType(gsonSubType: GsonSubtype, fieldInfo: FieldInfo): SubTypeMetadata
+    fun getGsonSubType(gsonSubType: GsonSubtype, fieldInfo: FieldInfo, fieldType: FieldType.MultipleValues): SubTypeMetadata
 }
 
 class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubTypeMetadataFactory {
 
-    override fun getGsonSubType(gsonSubType: GsonSubtype, fieldInfo: FieldInfo): SubTypeMetadata {
-        return validateGsonSubType(fieldInfo, gsonSubType)
-    }
-
-    /**
-     * Validates the GsonSubType annotation and returns a valid version that contains no incorrect data.
-     * Any incorrect usages will cause an exception to be thrown.
-     */
-    private fun validateGsonSubType(fieldInfo: FieldInfo, gsonSubType: GsonSubtype): SubTypeMetadata {
+    override fun getGsonSubType(gsonSubType: GsonSubtype, fieldInfo: FieldInfo, fieldType: FieldType.MultipleValues): SubTypeMetadata {
         if (gsonSubType.subTypeKey.isBlank()) {
             throw ProcessingException("subTypeKey cannot be blank for GsonSubType", fieldInfo.element)
         }
@@ -66,9 +59,8 @@ class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubType
                 }
 
         // Ensure that each subtype inherits from the annotated field.
-        val gsonFieldType = typeHandler.getRawType(fieldInfo)
         genericGsonSubTypeKeys.forEach {
-            validateSubType(gsonFieldType, it.classTypeMirror, fieldInfo.element)
+            validateSubType(fieldType.elementTypeMirror, it.classTypeMirror, fieldInfo.element)
         }
 
         // Inspect the failure outcome values.
@@ -82,7 +74,7 @@ class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubType
             }
 
             // Ensure that the default type inherits from the base type.
-            validateSubType(gsonFieldType, defaultTypeMirror, fieldInfo.element)
+            validateSubType(fieldType.elementTypeMirror, defaultTypeMirror, fieldInfo.element)
         }
 
         val variableName = "${fieldInfo.fieldName}GsonSubtype"

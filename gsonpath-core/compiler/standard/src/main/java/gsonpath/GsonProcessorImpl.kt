@@ -149,7 +149,7 @@ open class GsonProcessorImpl : AbstractProcessor() {
             printMessage("Extension found: " + it.extensionName)
         }
 
-        return extensions.plus(GsonSubTypeExtension(typeHandler, SubTypeMetadataFactoryImpl(typeHandler)))
+        return extensions.plus(GsonSubTypeExtension(SubTypeMetadataFactoryImpl(typeHandler)))
     }
 
     private fun printMessage(message: String) {
