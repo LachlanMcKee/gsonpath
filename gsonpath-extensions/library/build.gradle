@@ -8,11 +8,6 @@ version = extensions_version
 targetCompatibility = JavaVersion.VERSION_1_7
 sourceCompatibility = JavaVersion.VERSION_1_7
 
-dependencies {
-    compile project(":gsonpath-core:gsonpath-core-library")
-    compile "com.google.code.gson:gson:$gson_version"
-}
-
 buildscript {
     repositories {
         mavenCentral()
