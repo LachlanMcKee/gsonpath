@@ -1,6 +1,5 @@
 package gsonpath.extension
 
-import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
 import gsonpath.compiler.ExtensionFieldMetadata
@@ -21,7 +20,7 @@ class RoundFloatUpToIntExtension : GsonPathExtension {
             return false
         }
 
-        if (fieldInfo.typeName != TypeName.INT) {
+        if (fieldInfo.fieldType.typeName != TypeName.INT) {
             throw ProcessingException("Unexpected type found for field annotated with 'RoundFloatUpToInt', only " +
                     "int primitives may be used.", fieldInfo.element)
         }
@@ -32,11 +31,11 @@ class RoundFloatUpToIntExtension : GsonPathExtension {
     override fun createCodeReadResult(
             processingEnvironment: ProcessingEnvironment,
             extensionFieldMetadata: ExtensionFieldMetadata,
-            checkIfResultIsNull: Boolean): CodeBlock {
+            checkIfResultIsNull: Boolean): GsonPathExtension.ExtensionResult {
 
         val (_, variableName) = extensionFieldMetadata
 
-        return codeBlock {
+        return GsonPathExtension.ExtensionResult(codeBlock {
             val floatVariableName = "${variableName}_float"
             createVariable("Float", floatVariableName, "mGson.getAdapter(Float.class).read(in)")
 
@@ -54,12 +53,12 @@ class RoundFloatUpToIntExtension : GsonPathExtension {
                     assign(variableName, "(int) Math.ceil($floatVariableName)")
                 }
             }
-        }
+        })
     }
 
     override fun createCodePostReadResult(
             processingEnvironment: ProcessingEnvironment,
-            extensionFieldMetadata: ExtensionFieldMetadata): CodeBlock? {
+            extensionFieldMetadata: ExtensionFieldMetadata): GsonPathExtension.ExtensionResult? {
 
         return null
     }

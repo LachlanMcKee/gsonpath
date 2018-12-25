@@ -44,11 +44,6 @@ data class MethodElementContent(
         val generifiedElement: ExecutableType
 )
 
-enum class MultipleValuesFieldType {
-    ARRAY,
-    COLLECTION
-}
-
 class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : TypeHandler {
     override fun getTypeName(typeMirror: TypeMirror): TypeName? = TypeName.get(typeMirror)
 
