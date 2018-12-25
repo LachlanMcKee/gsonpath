@@ -71,7 +71,10 @@ class GsonSubTypeExtension(
         val elementTypeName = TypeName.get(fieldType.elementTypeMirror)
 
         val subTypeMetadata = subTypeMetadataFactory.getGsonSubType(
-                fieldInfo.getAnnotation(GsonSubtype::class.java)!!, fieldInfo, fieldType)
+                fieldInfo.getAnnotation(GsonSubtype::class.java)!!,
+                fieldType,
+                fieldInfo.fieldName,
+                fieldInfo.element)
 
         val typeAdapterDetails = when (fieldType) {
             is FieldType.MultipleValues.Array -> TypeAdapterDetails.ArrayTypeAdapter
@@ -102,7 +105,10 @@ class GsonSubTypeExtension(
         val (fieldInfo, variableName) = extensionFieldMetadata
 
         val subTypeMetadata = subTypeMetadataFactory.getGsonSubType(
-                fieldInfo.getAnnotation(GsonSubtype::class.java)!!, fieldInfo, verifyMultipleValuesFieldType(fieldInfo))
+                fieldInfo.getAnnotation(GsonSubtype::class.java)!!,
+                verifyMultipleValuesFieldType(fieldInfo),
+                fieldInfo.fieldName,
+                fieldInfo.element)
 
         return GsonPathExtension.ExtensionResult(
                 codeBlock = codeBlock {

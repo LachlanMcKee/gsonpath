@@ -4,21 +4,29 @@ import gsonpath.GsonSubTypeFailureOutcome
 import gsonpath.GsonSubtype
 import gsonpath.ProcessingException
 import gsonpath.generator.adapter.SharedFunctions
-import gsonpath.model.FieldInfo
 import gsonpath.model.FieldType
 import gsonpath.util.TypeHandler
 import javax.lang.model.element.Element
 import javax.lang.model.type.TypeMirror
 
 interface SubTypeMetadataFactory {
-    fun getGsonSubType(gsonSubType: GsonSubtype, fieldInfo: FieldInfo, fieldType: FieldType.MultipleValues): SubTypeMetadata
+    fun getGsonSubType(
+            gsonSubType: GsonSubtype,
+            fieldType: FieldType.MultipleValues,
+            fieldName: String,
+            element: Element): SubTypeMetadata
 }
 
 class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubTypeMetadataFactory {
 
-    override fun getGsonSubType(gsonSubType: GsonSubtype, fieldInfo: FieldInfo, fieldType: FieldType.MultipleValues): SubTypeMetadata {
+    override fun getGsonSubType(
+            gsonSubType: GsonSubtype,
+            fieldType: FieldType.MultipleValues,
+            fieldName: String,
+            element: Element): SubTypeMetadata {
+
         if (gsonSubType.subTypeKey.isBlank()) {
-            throw ProcessingException("subTypeKey cannot be blank for GsonSubType", fieldInfo.element)
+            throw ProcessingException("subTypeKey cannot be blank for GsonSubType", element)
         }
 
         val keyCount =
@@ -28,7 +36,7 @@ class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubType
 
         if (keyCount > 1) {
             throw ProcessingException("Only one keys array (string, integer or boolean) may be specified for the GsonSubType",
-                    fieldInfo.element)
+                    element)
         }
 
         val keyType: SubTypeKeyType =
@@ -36,7 +44,7 @@ class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubType
                     gsonSubType.stringValueSubtypes.isNotEmpty() -> SubTypeKeyType.STRING
                     gsonSubType.integerValueSubtypes.isNotEmpty() -> SubTypeKeyType.INTEGER
                     gsonSubType.booleanValueSubtypes.isNotEmpty() -> SubTypeKeyType.BOOLEAN
-                    else -> throw ProcessingException("Keys must be specified for the GsonSubType", fieldInfo.element)
+                    else -> throw ProcessingException("Keys must be specified for the GsonSubType", element)
                 }
 
         //
@@ -46,40 +54,40 @@ class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubType
         val genericGsonSubTypeKeys: List<GsonSubTypeKeyAndClass> =
                 when (keyType) {
                     SubTypeKeyType.STRING -> gsonSubType.stringValueSubtypes.map {
-                        getGsonSubTypeKeyAndClass("\"${it.value}\"", fieldInfo) { it.subtype }
+                        getGsonSubTypeKeyAndClass("\"${it.value}\"", element) { it.subtype }
                     }
 
                     SubTypeKeyType.INTEGER -> gsonSubType.integerValueSubtypes.map {
-                        getGsonSubTypeKeyAndClass(it.value.toString(), fieldInfo) { it.subtype }
+                        getGsonSubTypeKeyAndClass(it.value.toString(), element) { it.subtype }
                     }
 
                     SubTypeKeyType.BOOLEAN -> gsonSubType.booleanValueSubtypes.map {
-                        getGsonSubTypeKeyAndClass(it.value.toString(), fieldInfo) { it.subtype }
+                        getGsonSubTypeKeyAndClass(it.value.toString(), element) { it.subtype }
                     }
                 }
 
         // Ensure that each subtype inherits from the annotated field.
         genericGsonSubTypeKeys.forEach {
-            validateSubType(fieldType.elementTypeMirror, it.classTypeMirror, fieldInfo.element)
+            validateSubType(fieldType.elementTypeMirror, it.classTypeMirror, element)
         }
 
         // Inspect the failure outcome values.
-        val defaultTypeMirror = SharedFunctions.getMirroredClass(fieldInfo) { gsonSubType.defaultType }
+        val defaultTypeMirror = SharedFunctions.getMirroredClass(element) { gsonSubType.defaultType }
 
         val defaultsElement = typeHandler.asElement(defaultTypeMirror)
         if (defaultsElement != null) {
             // It is not valid to specify a default type if the failure outcome does not use it.
             if (gsonSubType.subTypeFailureOutcome != GsonSubTypeFailureOutcome.NULL_OR_DEFAULT_VALUE) {
-                throw ProcessingException("defaultType is only valid if subTypeFailureOutcome is set to NULL_OR_DEFAULT_VALUE", fieldInfo.element)
+                throw ProcessingException("defaultType is only valid if subTypeFailureOutcome is set to NULL_OR_DEFAULT_VALUE", element)
             }
 
             // Ensure that the default type inherits from the base type.
-            validateSubType(fieldType.elementTypeMirror, defaultTypeMirror, fieldInfo.element)
+            validateSubType(fieldType.elementTypeMirror, defaultTypeMirror, element)
         }
 
-        val variableName = "${fieldInfo.fieldName}GsonSubtype"
+        val variableName = "${fieldName}GsonSubtype"
         return SubTypeMetadata(
-                className = fieldInfo.fieldName[0].toUpperCase() + fieldInfo.fieldName.substring(1) + "GsonSubtype",
+                className = fieldName[0].toUpperCase() + fieldName.substring(1) + "GsonSubtype",
                 variableName = variableName,
                 getterName = "get${variableName[0].toUpperCase()}${variableName.substring(1)}",
                 fieldName = gsonSubType.subTypeKey,
@@ -96,9 +104,9 @@ class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubType
     }
 
     private fun getGsonSubTypeKeyAndClass(key: String,
-                                          fieldInfo: FieldInfo,
+                                          element: Element,
                                           accessorFunc: () -> Unit): GsonSubTypeKeyAndClass {
-        val classTypeMirror = SharedFunctions.getMirroredClass(fieldInfo, accessorFunc)
+        val classTypeMirror = SharedFunctions.getMirroredClass(element, accessorFunc)
         return GsonSubTypeKeyAndClass(key, classTypeMirror, typeHandler.asElement(classTypeMirror)!!)
     }
 }
