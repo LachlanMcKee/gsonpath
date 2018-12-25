@@ -31,6 +31,7 @@ interface TypeHandler {
     fun getRawType(fieldInfo: FieldInfo): TypeMirror
 
     fun getDeclaredType(clazz: KClass<*>, vararg typeMirrors: TypeMirror): TypeMirror
+    fun getWildcardType(extendsBound: TypeMirror?, superBound: TypeMirror?): TypeMirror
 }
 
 data class FieldElementContent(
@@ -99,6 +100,10 @@ class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : T
     override fun getDeclaredType(clazz: KClass<*>, vararg typeMirrors: TypeMirror): TypeMirror {
         val typeElement = processingEnv.elementUtils.getTypeElement(clazz.java.name)
         return processingEnv.typeUtils.getDeclaredType(typeElement, *typeMirrors)
+    }
+
+    override fun getWildcardType(extendsBound: TypeMirror?, superBound: TypeMirror?): TypeMirror {
+        return processingEnv.typeUtils.getWildcardType(extendsBound, superBound)
     }
 
     override fun getRawType(fieldInfo: FieldInfo): TypeMirror {

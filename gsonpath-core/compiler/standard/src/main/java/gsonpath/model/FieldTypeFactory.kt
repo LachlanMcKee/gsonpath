@@ -14,7 +14,9 @@ class FieldTypeFactory(private val typeHandler: TypeHandler) {
         if (typeMirror is ArrayType) {
             return FieldType.MultipleValues.Array(typeName, typeMirror.componentType)
         }
-        return attemptCollectionFieldType(typeMirror) ?: FieldType.Other(typeName)
+        return attemptCollectionFieldType(typeMirror)
+                ?: attemptMapFieldType(typeMirror)
+                ?: FieldType.Other(typeName)
     }
 
     private fun attemptCollectionFieldType(typeMirror: TypeMirror): FieldType.MultipleValues.Collection? {
@@ -27,6 +29,18 @@ class FieldTypeFactory(private val typeHandler: TypeHandler) {
 
         return if (typeHandler.isSubtype(typeMirror, collectionType)) {
             FieldType.MultipleValues.Collection(TypeName.get(typeMirror), rawType)
+        } else {
+            null
+        }
+    }
+
+    private fun attemptMapFieldType(typeMirror: TypeMirror): FieldType.MapFieldType? {
+        val mapWildcardType = typeHandler.getDeclaredType(Map::class,
+                typeHandler.getWildcardType(null, null),
+                typeHandler.getWildcardType(null, null))
+
+        return if (typeHandler.isSubtype(typeMirror, mapWildcardType)) {
+            FieldType.MapFieldType(TypeName.get(typeMirror))
         } else {
             null
         }
