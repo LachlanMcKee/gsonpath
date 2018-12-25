@@ -66,9 +66,6 @@ class FieldInfoFactory(
                         override val fieldType: FieldType
                             get() = fieldTypeFactory.createFieldType(TypeName.get(generifiedElement), generifiedElement)
 
-                        override val typeMirror: TypeMirror
-                            get() = generifiedElement
-
                         override val parentClassName: String
                             get() = memberElement.enclosingElement.toString()
 
@@ -121,9 +118,6 @@ class FieldInfoFactory(
             object : FieldInfo {
                 override val fieldType: FieldType
                     get() = fieldTypeFactory.createFieldType(it.typeName, it.typeMirror)
-
-                override val typeMirror: TypeMirror
-                    get() = it.typeMirror
 
                 override val parentClassName: String
                     get() = interfaceInfo.parentClassName.toString()
