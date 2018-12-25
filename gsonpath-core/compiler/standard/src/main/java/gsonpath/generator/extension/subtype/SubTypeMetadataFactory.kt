@@ -3,10 +3,10 @@ package gsonpath.generator.extension.subtype
 import gsonpath.GsonSubTypeFailureOutcome
 import gsonpath.GsonSubtype
 import gsonpath.ProcessingException
-import gsonpath.generator.adapter.SharedFunctions
 import gsonpath.model.FieldType
 import gsonpath.util.TypeHandler
 import javax.lang.model.element.Element
+import javax.lang.model.type.MirroredTypeException
 import javax.lang.model.type.TypeMirror
 
 interface SubTypeMetadataFactory {
@@ -72,7 +72,7 @@ class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubType
         }
 
         // Inspect the failure outcome values.
-        val defaultTypeMirror = SharedFunctions.getMirroredClass(element) { gsonSubType.defaultType }
+        val defaultTypeMirror = getMirroredClass(element) { gsonSubType.defaultType }
 
         val defaultsElement = typeHandler.asElement(defaultTypeMirror)
         if (defaultsElement != null) {
@@ -106,7 +106,16 @@ class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubType
     private fun getGsonSubTypeKeyAndClass(key: String,
                                           element: Element,
                                           accessorFunc: () -> Unit): GsonSubTypeKeyAndClass {
-        val classTypeMirror = SharedFunctions.getMirroredClass(element, accessorFunc)
+        val classTypeMirror = getMirroredClass(element, accessorFunc)
         return GsonSubTypeKeyAndClass(key, classTypeMirror, typeHandler.asElement(classTypeMirror)!!)
+    }
+
+    private fun getMirroredClass(element: Element, accessorFunc: () -> Unit): TypeMirror {
+        return try {
+            accessorFunc()
+            throw ProcessingException("Unexpected annotation processing defect while obtaining class.", element)
+        } catch (mte: MirroredTypeException) {
+            mte.typeMirror
+        }
     }
 }
