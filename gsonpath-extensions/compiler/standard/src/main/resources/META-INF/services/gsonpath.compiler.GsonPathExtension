@@ -5,4 +5,3 @@ gsonpath.extension.def.intdef.IntDefGsonPathFieldValidator
 gsonpath.extension.def.stringdef.StringDefGsonPathFieldValidator
 gsonpath.extension.empty.EmptyToNullGsonPathFieldValidator
 gsonpath.extension.flatten.FlattenJsonExtension
-gsonpath.extension.invalid.RemoveInvalidElementsExtension
