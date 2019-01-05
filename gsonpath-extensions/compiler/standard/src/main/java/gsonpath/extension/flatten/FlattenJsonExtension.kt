@@ -39,8 +39,8 @@ class FlattenJsonExtension : GsonPathExtension {
 
         return GsonPathExtension.ExtensionResult(codeBlock {
             val jsonElementVariableName = "${variableName}_jsonElement"
-            createVariable("\$T", jsonElementVariableName, "mGson.getAdapter(\$T.class).read(in)",
-                    CLASS_NAME_JSON_ELEMENT, CLASS_NAME_JSON_ELEMENT)
+            createVariable(CLASS_NAME_JSON_ELEMENT, jsonElementVariableName, "mGson.getAdapter(\$T.class).read(in)",
+                    CLASS_NAME_JSON_ELEMENT)
 
             if (checkIfResultIsNull) {
                 addStatement("\$T $variableName", CLASS_NAME_STRING)

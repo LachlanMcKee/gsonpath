@@ -59,6 +59,15 @@ fun CodeBlock.Builder.createVariable(type: String, name: String, assignment: Str
     return this
 }
 
+fun CodeBlock.Builder.createVariable(typeName: TypeName, name: String, assignment: String, vararg args: Any): CodeBlock.Builder {
+    val fullArgs = arrayOf(typeName, *args)
+    return createVariable("\$T", name, assignment, *fullArgs)
+}
+
+fun CodeBlock.Builder.createVariable(typeName: Class<*>, name: String, assignment: String, vararg args: Any): CodeBlock.Builder {
+    return createVariable(TypeName.get(typeName), name, assignment, *args)
+}
+
 fun CodeBlock.Builder.createVariableNew(type: String, name: String, assignment: String, vararg args: Any): CodeBlock.Builder {
     addStatement("$type $name = new $assignment", *args)
     return this

@@ -104,7 +104,7 @@ class WriteFunctions(private val extensionsHandler: ExtensionsHandler) {
         val fieldAccessor = fieldInfo.fieldAccessor
         val objectName = "obj$fieldCount"
 
-        createVariable("\$T", objectName, "$VALUE.$fieldAccessor", fieldTypeName)
+        createVariable(fieldTypeName, objectName, "$VALUE.$fieldAccessor")
 
         if (isPrimitive) {
             if (writeKeyName) {

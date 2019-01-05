@@ -91,7 +91,7 @@ class GsonSubTypeExtension(
                 typeSpecs = listOf(createSubTypeAdapter(elementTypeName, subTypeMetadata)),
                 codeBlock = codeBlock {
                     if (checkIfResultIsNull) {
-                        createVariable("\$T", variableName, "(\$T) ${subTypeMetadata.getterName}().read(in)", fieldTypeName, fieldTypeName)
+                        createVariable(fieldTypeName, variableName, "(\$T) ${subTypeMetadata.getterName}().read(in)", fieldTypeName)
                     } else {
                         assign(variableName, "(\$T) ${subTypeMetadata.getterName}().read(in)", fieldTypeName)
                     }
@@ -237,16 +237,14 @@ class GsonSubTypeExtension(
         addException(IOException::class.java)
         code {
             val fieldName = subTypeMetadata.fieldName
-            createVariable("\$T",
+            createVariable(JsonElement::class.java,
                     JSON_ELEMENT,
                     "\$T.parse($IN)",
-                    JsonElement::class.java,
                     Streams::class.java)
 
-            createVariable("\$T",
+            createVariable(JsonElement::class.java,
                     TYPE_VALUE_JSON_ELEMENT,
-                    "$JSON_ELEMENT.getAsJsonObject().get(\"$fieldName\")",
-                    JsonElement::class.java)
+                    "$JSON_ELEMENT.getAsJsonObject().get(\"$fieldName\")")
 
             `if`("$TYPE_VALUE_JSON_ELEMENT == $NULL || $TYPE_VALUE_JSON_ELEMENT.isJsonNull()") {
                 addStatement("throw new \$T(\"cannot deserialize $rawTypeName because the subtype field " +
@@ -266,10 +264,9 @@ class GsonSubTypeExtension(
                     createVariable("boolean", VALUE, "$TYPE_VALUE_JSON_ELEMENT.getAsBoolean()")
             }
 
-            createVariable("\$T<? extends \$T>",
+            createVariable(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), WildcardTypeName.subtypeOf(rawTypeName)),
                     DELEGATE,
-                    "$DELEGATE_BY_VALUE_MAP.get($VALUE)",
-                    TypeAdapter::class.java, rawTypeName)
+                    "$DELEGATE_BY_VALUE_MAP.get($VALUE)")
 
             `if`("$DELEGATE == $NULL") {
                 if (subTypeMetadata.defaultType != null) {
@@ -284,7 +281,7 @@ class GsonSubTypeExtension(
                     }
                 }
             }
-            createVariable("\$T", RESULT, "$DELEGATE.fromJsonTree($JSON_ELEMENT)", rawTypeName)
+            createVariable(rawTypeName, RESULT, "$DELEGATE.fromJsonTree($JSON_ELEMENT)")
 
             if (subTypeMetadata.failureOutcome == GsonSubTypeFailureOutcome.FAIL) {
                 `if`("$RESULT == $NULL") {
@@ -313,7 +310,7 @@ class GsonSubTypeExtension(
                 addStatement("$OUT.nullValue()")
                 `return`()
             }
-            createVariable("\$T", DELEGATE, "$DELEGATE_BY_CLASS_MAP.get($VALUE.getClass())", TypeAdapter::class.java)
+            createVariable(TypeAdapter::class.java, DELEGATE, "$DELEGATE_BY_CLASS_MAP.get($VALUE.getClass())")
         }
 
         if (subTypeMetadata.defaultType != null) {

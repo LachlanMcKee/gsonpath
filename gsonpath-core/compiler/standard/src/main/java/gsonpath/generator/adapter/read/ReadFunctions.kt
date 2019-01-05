@@ -55,10 +55,9 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
 
         } else {
             params.flattenedFields.forEach {
-                createVariable("\$T",
+                createVariable(it.fieldInfo.fieldType.typeName,
                         it.variableName,
-                        createDefaultVariableValueForTypeName(it.fieldInfo.fieldType.typeName),
-                        it.fieldInfo.fieldType.typeName)
+                        createDefaultVariableValueForTypeName(it.fieldInfo.fieldType.typeName))
             }
         }
 
@@ -258,7 +257,7 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
                         "\$T.class"
 
             if (checkIfResultIsNull) {
-                createVariable("\$T", variableName, "$GET_ADAPTER($adapterName).read($IN)", fieldTypeName, fieldTypeName)
+                createVariable(fieldTypeName, variableName, "$GET_ADAPTER($adapterName).read($IN)", fieldTypeName)
 
             } else {
                 assign(variableName, "$GET_ADAPTER($adapterName).read($IN)", fieldTypeName)

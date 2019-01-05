@@ -51,27 +51,23 @@ class RemoveInvalidElementsExtension : GsonPathExtension {
         val rawTypeName = TypeName.get(multipleValuesFieldType.elementTypeMirror)
 
         return GsonPathExtension.ExtensionResult(codeBlock {
-            if (checkIfResultIsNull) {
-                when (multipleValuesFieldType) {
-                    is FieldType.MultipleValues.Array -> {
-                        createVariable("\$T", variableName, "\$T.removeInvalidElementsArray(\$T.class, mGson, in, \$L)",
-                                fieldInfo.fieldType.typeName, CLASS_NAME_UTIL, rawTypeName,
-                                createCreateArrayFuncTypeSpec(rawTypeName))
-                    }
-                    is FieldType.MultipleValues.Collection -> {
-                        createVariable("\$T", variableName, "\$T.removeInvalidElementsList(\$T.class, mGson, in)",
-                                fieldInfo.fieldType.typeName, CLASS_NAME_UTIL, rawTypeName)
+            val typeName = fieldInfo.fieldType.typeName
+            when (multipleValuesFieldType) {
+                is FieldType.MultipleValues.Array -> {
+                    val assignment = "\$T.removeInvalidElementsArray(\$T.class, mGson, in, \$L)"
+                    val arrayFuncType = createCreateArrayFuncTypeSpec(rawTypeName)
+                    if (checkIfResultIsNull) {
+                        createVariable(typeName, variableName, assignment, UTIL_CLASS_NAME, rawTypeName, arrayFuncType)
+                    } else {
+                        assign(variableName, assignment, UTIL_CLASS_NAME, rawTypeName, arrayFuncType)
                     }
                 }
-            } else {
-                when (multipleValuesFieldType) {
-                    is FieldType.MultipleValues.Array -> {
-                        assign(variableName, "\$T.removeInvalidElementsArray(\$T.class, mGson, in, \$L)",
-                                CLASS_NAME_UTIL, rawTypeName, createCreateArrayFuncTypeSpec(rawTypeName))
-                    }
-                    is FieldType.MultipleValues.Collection -> {
-                        assign(variableName, "\$T.removeInvalidElementsList(\$T.class, mGson, in)",
-                                CLASS_NAME_UTIL, rawTypeName)
+                is FieldType.MultipleValues.Collection -> {
+                    val assignment = "\$T.removeInvalidElementsList(\$T.class, mGson, in)"
+                    if (checkIfResultIsNull) {
+                        createVariable(typeName, variableName, assignment, UTIL_CLASS_NAME, rawTypeName)
+                    } else {
+                        assign(variableName, assignment, UTIL_CLASS_NAME, rawTypeName)
                     }
                 }
             }
@@ -96,6 +92,6 @@ class RemoveInvalidElementsExtension : GsonPathExtension {
     }
 
     private companion object {
-        private val CLASS_NAME_UTIL = ClassName.get(RemoveInvalidElementsUtil::class.java)
+        private val UTIL_CLASS_NAME = ClassName.get(RemoveInvalidElementsUtil::class.java)
     }
 }

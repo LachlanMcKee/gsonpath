@@ -101,7 +101,7 @@ class ModelInterfaceGenerator(
                 `return`(FALSE)
             }
             newLine()
-            createVariable("\$T", EQUALS_OTHER_TYPE, "(\$T) o", outputClassName, outputClassName)
+            createVariable(outputClassName, EQUALS_OTHER_TYPE, "(\$T) o", outputClassName)
             newLine()
 
             modelMetadataList.forEach { (typeName, fieldName) ->
