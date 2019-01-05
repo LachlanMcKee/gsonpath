@@ -47,7 +47,12 @@ public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends Ty
                     jsonFieldCounter0++;
 
                     // Extension (Read) - 'RemoveInvalidElements' Annotation
-                    value_value1 = RemoveInvalidElementsUtil.removeInvalidElementsArray(String.class, mGson, in);
+                    value_value1 = RemoveInvalidElementsUtil.removeInvalidElementsArray(String.class, mGson, in, new RemoveInvalidElementsUtil.CreateArrayFunction<String>() {
+                        @Override
+                        public String[] createArray() {
+                            return new String[0];
+                        }
+                    });
 
                     break;
 
