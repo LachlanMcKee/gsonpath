@@ -1,7 +1,7 @@
 package gsonpath.extension;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
+import com.google.gson.*;
+import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 
 import java.io.IOException;
@@ -17,24 +17,32 @@ public class RemoveInvalidElementsUtil {
         }
         List<T> elements = new ArrayList<>();
 
-        in.beginArray();
-        while (in.hasNext()) {
+        TypeAdapter<T> adapter = gson.getAdapter(clazz);
+        JsonArray jsonArray = Streams.parse(in).getAsJsonArray();
+        for (JsonElement jsonElement : jsonArray) {
             try {
-                elements.add(gson.getAdapter(clazz).read(in));
-            } catch (JsonParseException ignored) {
+                elements.add(adapter.fromJsonTree(jsonElement));
+            } catch (Exception ignored) {
             }
         }
-        in.endArray();
 
         return elements;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> T[] removeInvalidElementsArray(Class<T> clazz, Gson gson, JsonReader in) throws IOException {
+    public static <T> T[] removeInvalidElementsArray(
+            Class<T> clazz,
+            Gson gson,
+            JsonReader in,
+            CreateArrayFunction<T> createArrayFunction) throws IOException {
+
         List<T> adjustedList = removeInvalidElementsList(clazz, gson, in);
         if (adjustedList == null) {
             return null;
         }
-        return (T[]) adjustedList.toArray();
+        return adjustedList.toArray(createArrayFunction.createArray());
+    }
+
+    public interface CreateArrayFunction<T> {
+        T[] createArray();
     }
 }
