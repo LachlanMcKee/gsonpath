@@ -26,7 +26,7 @@ import javax.lang.model.element.AnnotationValue
  * This is due to how the lint validation works in Android Studio. The linting requires that the exact same String
  * reference is used, rather than another String instance that has the same equality.
  */
-class StringDefGsonPathFieldValidator : GsonPathExtension {
+class StringDefExtension : GsonPathExtension {
 
     override val extensionName: String
         get() = "'String Def' Annotation"

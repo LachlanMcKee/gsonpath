@@ -8,6 +8,14 @@ import gsonpath.generator.adapter.AdapterModelMetadataFactory
 import gsonpath.generator.adapter.AutoGsonAdapterGenerator
 import gsonpath.generator.adapter.read.ReadFunctions
 import gsonpath.generator.adapter.write.WriteFunctions
+import gsonpath.generator.extension.def.intdef.IntDefExtension
+import gsonpath.generator.extension.def.stringdef.StringDefExtension
+import gsonpath.generator.extension.empty.EmptyToNullExtension
+import gsonpath.generator.extension.flatten.FlattenJsonExtension
+import gsonpath.generator.extension.invalid.RemoveInvalidElementsExtension
+import gsonpath.generator.extension.range.floatrange.FloatRangeExtension
+import gsonpath.generator.extension.range.intrange.IntRangeExtension
+import gsonpath.generator.extension.size.SizeExtension
 import gsonpath.generator.extension.subtype.GsonSubTypeExtension
 import gsonpath.generator.extension.subtype.SubTypeMetadataFactoryImpl
 import gsonpath.generator.factory.TypeAdapterFactoryGenerator
@@ -149,10 +157,17 @@ open class GsonProcessorImpl : AbstractProcessor() {
             printMessage("Extension found: " + it.extensionName)
         }
 
-        return extensions.plus(
-
+        return extensions.plus(arrayOf(
+                IntDefExtension(),
+                StringDefExtension(),
+                EmptyToNullExtension(),
+                FlattenJsonExtension(),
+                RemoveInvalidElementsExtension(),
+                FloatRangeExtension(),
+                IntRangeExtension(),
+                SizeExtension(),
                 GsonSubTypeExtension(SubTypeMetadataFactoryImpl(typeHandler))
-        )
+        ))
     }
 
     private fun printMessage(message: String) {

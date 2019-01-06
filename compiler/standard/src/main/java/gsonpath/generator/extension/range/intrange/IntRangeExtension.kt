@@ -16,7 +16,7 @@ import javax.lang.model.element.AnnotationMirror
 /**
  * A {@link GsonPathExtension} that supports the '@IntRange' annotation.
  */
-class IntRangeGsonPathFieldValidator : GsonPathExtension {
+class IntRangeExtension : GsonPathExtension {
     private val BOXED_INT = ClassName.get("java.lang", "Integer")
     private val BOXED_LONG = ClassName.get("java.lang", "Long")
 

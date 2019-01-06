@@ -17,7 +17,7 @@ import javax.lang.model.element.AnnotationMirror
 /**
  * A {@link GsonPathExtension} that supports the '@Size' annotation.
  */
-class SizeGsonPathFieldValidator : GsonPathExtension {
+class SizeExtension : GsonPathExtension {
 
     override val extensionName: String
         get() = "'Size' Annotation"

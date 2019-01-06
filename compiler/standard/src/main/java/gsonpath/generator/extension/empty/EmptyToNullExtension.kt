@@ -15,7 +15,7 @@ import javax.annotation.processing.ProcessingEnvironment
 /**
  * A {@link GsonPathExtension} that supports the '@Size' annotation.
  */
-class EmptyToNullGsonPathFieldValidator : GsonPathExtension {
+class EmptyToNullExtension : GsonPathExtension {
 
     override val extensionName: String
         get() = "'EmptyToNull' Annotation"
