@@ -1,4 +1,4 @@
-package gsonpath.generator.standard
+package gsonpath.generator.extension
 
 import com.nhaarman.mockitokotlin2.mock
 import gsonpath.ProcessingException
