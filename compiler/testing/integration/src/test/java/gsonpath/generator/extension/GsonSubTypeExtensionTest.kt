@@ -9,9 +9,8 @@ import gsonpath.generator.TestCriteria
 import org.junit.Test
 
 class GsonSubTypeExtensionTest {
-    @Test
-    fun givenStringKeys_whenProcessorExecuted_expectValidGsonTypeAdapter() {
-        assertGeneratedContent(TestCriteria("generator/extension/gson_sub_type/string_keys",
+    private fun test(packageName: String, className: String) {
+        assertGeneratedContent(TestCriteria("generator/extension/gson_sub_type/$packageName",
 
                 absoluteSourceNames = listOf(
                         "generator/standard/TestGsonTypeFactory.java",
@@ -20,156 +19,57 @@ class GsonSubTypeExtensionTest {
                         "generator/extension/gson_sub_type/Type2.java"),
 
                 relativeSourceNames = listOf(
-                        "TypesList.java"),
+                        "$className.java"),
 
                 relativeGeneratedNames = listOf(
-                        "TypesList_GsonTypeAdapter.java")
+                        "${className}_GsonTypeAdapter.java")
         ))
+    }
+
+    @Test
+    fun givenStringKeys_whenProcessorExecuted_expectValidGsonTypeAdapter() {
+        test("string_keys", "TypesList")
     }
 
     @Test
     fun givenIntegerKeys_whenProcessorExecuted_expectValidGsonTypeAdapter() {
-        assertGeneratedContent(TestCriteria("generator/extension/gson_sub_type/integer_keys",
-
-                absoluteSourceNames = listOf(
-                        "generator/standard/TestGsonTypeFactory.java",
-                        "generator/extension/gson_sub_type/Type.java",
-                        "generator/extension/gson_sub_type/Type1.java",
-                        "generator/extension/gson_sub_type/Type2.java"),
-
-                relativeSourceNames = listOf(
-                        "TypesList.java"),
-
-                relativeGeneratedNames = listOf(
-                        "TypesList_GsonTypeAdapter.java")
-        ))
+        test("integer_keys", "TypesList")
     }
 
     @Test
     fun givenBooleanKeys_whenProcessorExecuted_expectValidGsonTypeAdapter() {
-        assertGeneratedContent(TestCriteria("generator/extension/gson_sub_type/boolean_keys",
-
-                absoluteSourceNames = listOf(
-                        "generator/standard/TestGsonTypeFactory.java",
-                        "generator/extension/gson_sub_type/Type.java",
-                        "generator/extension/gson_sub_type/Type1.java",
-                        "generator/extension/gson_sub_type/Type2.java"),
-
-                relativeSourceNames = listOf(
-                        "TypeGsonSubType.java",
-                        "TypesList.java"),
-
-                relativeGeneratedNames = listOf(
-                        "TypesList_GsonTypeAdapter.java")
-        ))
+        test("boolean_keys", "TypesList")
+        test("boolean_keys", "TypesPojo")
     }
 
     @Test
     fun givenStringKeysWithInterface_whenProcessorExecuted_expectValidGsonTypeAdapter() {
-        assertGeneratedContent(TestCriteria("generator/extension/gson_sub_type/using_interface",
-
-                absoluteSourceNames = listOf(
-                        "generator/standard/TestGsonTypeFactory.java",
-                        "generator/extension/gson_sub_type/Type.java",
-                        "generator/extension/gson_sub_type/Type1.java",
-                        "generator/extension/gson_sub_type/Type2.java"),
-
-                relativeSourceNames = listOf(
-                        "TypesList.java"),
-
-                relativeGeneratedNames = listOf(
-                        "TypesList_GsonTypeAdapter.java")
-        ))
+        test("using_interface", "TypesList")
     }
 
     @Test
     fun givenStringKeysWithListField_whenProcessorExecuted_expectValidGsonTypeAdapter() {
-        assertGeneratedContent(TestCriteria("generator/extension/gson_sub_type/using_list",
-
-                absoluteSourceNames = listOf(
-                        "generator/standard/TestGsonTypeFactory.java",
-                        "generator/extension/gson_sub_type/Type.java",
-                        "generator/extension/gson_sub_type/Type1.java",
-                        "generator/extension/gson_sub_type/Type2.java"),
-
-                relativeSourceNames = listOf(
-                        "TypesList.java"),
-
-                relativeGeneratedNames = listOf(
-                        "TypesList_GsonTypeAdapter.java")
-        ))
+        test("using_list", "TypesList")
     }
 
     @Test
     fun givenDefaultValueAndDefaultFailureOutcome_whenProcessorExecuted_expectValidGsonTypeAdapter() {
-        assertGeneratedContent(TestCriteria("generator/extension/gson_sub_type/default_value",
-
-                absoluteSourceNames = listOf(
-                        "generator/standard/TestGsonTypeFactory.java",
-                        "generator/extension/gson_sub_type/Type.java",
-                        "generator/extension/gson_sub_type/Type1.java",
-                        "generator/extension/gson_sub_type/Type2.java"),
-
-                relativeSourceNames = listOf(
-                        "TypesList.java"),
-
-                relativeGeneratedNames = listOf(
-                        "TypesList_GsonTypeAdapter.java")
-        ))
+        test("default_value", "TypesList")
     }
 
     @Test
     fun givenRemoveElementFailureOutcome_whenProcessorExecuted_expectValidGsonTypeAdapter() {
-        assertGeneratedContent(TestCriteria("generator/extension/gson_sub_type/failure_outcome_remove_element",
-
-                absoluteSourceNames = listOf(
-                        "generator/standard/TestGsonTypeFactory.java",
-                        "generator/extension/gson_sub_type/Type.java",
-                        "generator/extension/gson_sub_type/Type1.java",
-                        "generator/extension/gson_sub_type/Type2.java"),
-
-                relativeSourceNames = listOf(
-                        "TypesList.java"),
-
-                relativeGeneratedNames = listOf(
-                        "TypesList_GsonTypeAdapter.java")
-        ))
+        test("failure_outcome_remove_element", "TypesList")
     }
 
     @Test
     fun givenFailFailureOutcome_whenProcessorExecuted_expectValidGsonTypeAdapter() {
-        assertGeneratedContent(TestCriteria("generator/extension/gson_sub_type/failure_outcome_fail",
-
-                absoluteSourceNames = listOf(
-                        "generator/standard/TestGsonTypeFactory.java",
-                        "generator/extension/gson_sub_type/Type.java",
-                        "generator/extension/gson_sub_type/Type1.java",
-                        "generator/extension/gson_sub_type/Type2.java"),
-
-                relativeSourceNames = listOf(
-                        "TypesList.java"),
-
-                relativeGeneratedNames = listOf(
-                        "TypesList_GsonTypeAdapter.java")
-        ))
+        test("failure_outcome_fail", "TypesList")
     }
 
     @Test
     fun givenStringKeysAndNonPolymorphismElements_whenProcessorExecuted_expectValidGsonTypeAdapter() {
-        assertGeneratedContent(TestCriteria("generator/extension/gson_sub_type/with_other_elements",
-
-                absoluteSourceNames = listOf(
-                        "generator/standard/TestGsonTypeFactory.java",
-                        "generator/extension/gson_sub_type/Type.java",
-                        "generator/extension/gson_sub_type/Type1.java",
-                        "generator/extension/gson_sub_type/Type2.java"),
-
-                relativeSourceNames = listOf(
-                        "TypesList.java"),
-
-                relativeGeneratedNames = listOf(
-                        "TypesList_GsonTypeAdapter.java")
-        ))
+        test("with_other_elements", "TypesList")
     }
 
     @Test

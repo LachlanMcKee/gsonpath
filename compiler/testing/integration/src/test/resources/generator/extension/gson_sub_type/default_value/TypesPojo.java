@@ -6,5 +6,5 @@ import gsonpath.AutoGsonAdapter;
 @AutoGsonAdapter
 class TypesList {
     @TypeGsonSubType
-    Type[] items;
+    Type items;
 }
