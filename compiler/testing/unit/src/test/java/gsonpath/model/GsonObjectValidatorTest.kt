@@ -1,5 +1,6 @@
 package gsonpath.model
 
+import com.nhaarman.mockitokotlin2.mock
 import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
 import gsonpath.model.FieldInfoTestFactory.mockFieldInfo
@@ -25,7 +26,7 @@ class GsonObjectValidatorTest {
         fun givenBothNonNullAndNullableAnnotations_whenValidate_throwIncorrectAnnotationsException() {
             // given
             val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
-            whenever(fieldInfo.fieldType).thenReturn(FieldType.Other(TypeName.INT.box()))
+            whenever(fieldInfo.fieldType).thenReturn(FieldType.Other(TypeName.INT.box(), mock()))
             whenever(fieldInfo.annotationNames).thenReturn(listOf("NonNull", "Nullable"))
 
             // when / then
@@ -39,7 +40,7 @@ class GsonObjectValidatorTest {
         fun givenObjectType_whenValidate_throwInvalidFieldTypeException() {
             // given
             val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
-            whenever(fieldInfo.fieldType).thenReturn(FieldType.Other(TypeName.OBJECT))
+            whenever(fieldInfo.fieldType).thenReturn(FieldType.Other(TypeName.OBJECT, mock()))
 
             // when / then
             exception.expect(ProcessingException::class.java)
@@ -89,7 +90,7 @@ class GsonObjectValidatorTest {
         fun test() {
             // when
             val fieldInfo = mockFieldInfo(BaseGsonObjectFactoryTest.DEFAULT_VARIABLE_NAME)
-            whenever(fieldInfo.fieldType).thenReturn(FieldType.Other(TypeName.INT.box()))
+            whenever(fieldInfo.fieldType).thenReturn(FieldType.Other(TypeName.INT.box(), mock()))
             if (requiredTypeAnnotation != null) {
                 whenever(fieldInfo.annotationNames).thenReturn(listOf(requiredTypeAnnotation))
             }

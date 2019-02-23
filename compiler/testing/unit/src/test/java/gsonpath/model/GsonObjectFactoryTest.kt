@@ -1,5 +1,6 @@
 package gsonpath.model
 
+import com.nhaarman.mockitokotlin2.mock
 import com.squareup.javapoet.TypeName
 import gsonpath.GsonFieldValidationType
 import gsonpath.GsonFieldValidationType.*
@@ -326,24 +327,24 @@ class GsonObjectFactoryTest {
             fun data(): Collection<Array<Any>> {
                 return listOf(
                         // Test 'NonNull' annotation permutations with a non-primitive type
-                        arrayOf(Mandatory, NO_VALIDATION, FieldType.Other(TypeName.INT.box()), false),
-                        arrayOf(Mandatory, VALIDATE_ALL_EXCEPT_NULLABLE, FieldType.Other(TypeName.INT.box()), true),
-                        arrayOf(Mandatory, VALIDATE_EXPLICIT_NON_NULL, FieldType.Other(TypeName.INT.box()), true),
+                        arrayOf(Mandatory, NO_VALIDATION, FieldType.Other(TypeName.INT.box(), mock()), false),
+                        arrayOf(Mandatory, VALIDATE_ALL_EXCEPT_NULLABLE, FieldType.Other(TypeName.INT.box(), mock()), true),
+                        arrayOf(Mandatory, VALIDATE_EXPLICIT_NON_NULL, FieldType.Other(TypeName.INT.box(), mock()), true),
 
                         // Test 'Nullable' annotation permutations with a non-primitive type
-                        arrayOf(Optional, NO_VALIDATION, FieldType.Other(TypeName.INT.box()), false),
-                        arrayOf(Optional, VALIDATE_ALL_EXCEPT_NULLABLE, FieldType.Other(TypeName.INT.box()), false),
-                        arrayOf(Optional, VALIDATE_EXPLICIT_NON_NULL, FieldType.Other(TypeName.INT.box()), false),
+                        arrayOf(Optional, NO_VALIDATION, FieldType.Other(TypeName.INT.box(), mock()), false),
+                        arrayOf(Optional, VALIDATE_ALL_EXCEPT_NULLABLE, FieldType.Other(TypeName.INT.box(), mock()), false),
+                        arrayOf(Optional, VALIDATE_EXPLICIT_NON_NULL, FieldType.Other(TypeName.INT.box(), mock()), false),
 
                         // Test no annotation permutations with a non-primitive type
-                        arrayOf(Standard, NO_VALIDATION, FieldType.Other(TypeName.INT.box()), false),
-                        arrayOf(Standard, VALIDATE_ALL_EXCEPT_NULLABLE, FieldType.Other(TypeName.INT.box()), true),
-                        arrayOf(Standard, VALIDATE_EXPLICIT_NON_NULL, FieldType.Other(TypeName.INT.box()), false),
+                        arrayOf(Standard, NO_VALIDATION, FieldType.Other(TypeName.INT.box(), mock()), false),
+                        arrayOf(Standard, VALIDATE_ALL_EXCEPT_NULLABLE, FieldType.Other(TypeName.INT.box(), mock()), true),
+                        arrayOf(Standard, VALIDATE_EXPLICIT_NON_NULL, FieldType.Other(TypeName.INT.box(), mock()), false),
 
                         // Test no annotation permutations with a primitive type
-                        arrayOf(Standard, NO_VALIDATION, FieldType.Primitive(TypeName.INT), false),
-                        arrayOf(Standard, VALIDATE_ALL_EXCEPT_NULLABLE, FieldType.Primitive(TypeName.INT), true),
-                        arrayOf(Standard, VALIDATE_EXPLICIT_NON_NULL, FieldType.Primitive(TypeName.INT), true)
+                        arrayOf(Standard, NO_VALIDATION, FieldType.Primitive(TypeName.INT, mock()), false),
+                        arrayOf(Standard, VALIDATE_ALL_EXCEPT_NULLABLE, FieldType.Primitive(TypeName.INT, mock()), true),
+                        arrayOf(Standard, VALIDATE_EXPLICIT_NON_NULL, FieldType.Primitive(TypeName.INT, mock()), true)
                 )
             }
         }

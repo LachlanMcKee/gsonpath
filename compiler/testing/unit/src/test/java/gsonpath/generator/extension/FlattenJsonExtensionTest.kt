@@ -14,7 +14,7 @@ class FlattenJsonExtensionTest {
     fun testFlattenJsonInvalidType() {
         val metadata = createMetadata(true)
         whenever(metadata.fieldInfo.getAnnotation(FlattenJson::class.java)).thenReturn(mock())
-        whenever(metadata.fieldInfo.fieldType).thenReturn(FieldType.Primitive(TypeName.INT))
+        whenever(metadata.fieldInfo.fieldType).thenReturn(FieldType.Primitive(TypeName.INT, mock()))
         validateCanHandleFieldRead(FlattenJsonExtension(), metadata) {
             CanHandleFieldReadExpectation.Exception("FlattenObject can only be used on String variables")
         }
@@ -24,7 +24,7 @@ class FlattenJsonExtensionTest {
     fun testFlattenJsonInvalidTypeFoo() {
         val metadata = createMetadata(true)
         whenever(metadata.fieldInfo.getAnnotation(FlattenJson::class.java)).thenReturn(mock())
-        whenever(metadata.fieldInfo.fieldType).thenReturn(FieldType.Other(CLASS_NAME_STRING))
+        whenever(metadata.fieldInfo.fieldType).thenReturn(FieldType.Other(CLASS_NAME_STRING, mock()))
         validateCanHandleFieldRead(FlattenJsonExtension(), metadata) {
             CanHandleFieldReadExpectation.Valid(true)
         }
