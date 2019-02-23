@@ -1,6 +1,64 @@
 Change Log
 ===========
 
+Version 3.1.0 *(2019-02-23)*
+----------------------------
+
+* Fix: Prevent a potential issue which causes extensions to not function.
+* Improvement: Merged existing extensions into the core library, please remove reference to the old extensions when updating. The only dependencies you will need now are:
+
+ ```gradle
+ compile 'net.lachlanmckee:gsonpath:x.x.x'
+ apt 'net.lachlanmckee:gsonpath-compiler:x.x.x'
+ ```
+
+* Improvement: Created `RemoveInvalidElements` extension. When used with arrays/lists it will remove any invalid elements rather than throwing an exception.
+* Improvement: GsonSubType now works with non-primitive, non-final types as well as arrays/lists. An example is as follows:
+
+ ```java
+ @AutoGsonAdapter
+ class SubTypesExample {
+     @GsonSubtype(
+             subTypeKey = "type",
+             stringValueSubtypes = {
+                     @GsonSubtype.StringValueSubtype(key = "type1", subtype = Type1.class),
+                     @GsonSubtype.StringValueSubtype(key = "type2", subtype = Type2.class)
+             }
+     )
+     Type item;
+ }
+ ```
+     
+This may be helpful when used with Kotlin sealed classes:
+
+Sealed Class:
+
+ ```kotlin
+ sealed class Type {
+     @AutoGsonAdapter
+     data class Type1(val value: String) : Type()
+     
+     @AutoGsonAdapter
+     data class Type2(val value: Int) : Type()
+ }
+ ```
+
+GsonSubType Pojo:
+
+ ```java
+ @AutoGsonAdapter
+ class SubTypesExample {
+     @GsonSubtype(
+             subTypeKey = "type",
+             stringValueSubtypes = {
+                     @GsonSubtype.StringValueSubtype(key = "type1", subtype = Type1.class),
+                     @GsonSubtype.StringValueSubtype(key = "type2", subtype = Type2.class)
+             }
+     )
+     Type item;
+ }
+ ```
+
 Version 3.0.1 *(2018-11-27)*
 ----------------------------
 
