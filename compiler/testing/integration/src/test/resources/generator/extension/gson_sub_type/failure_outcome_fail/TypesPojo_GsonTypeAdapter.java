@@ -13,7 +13,6 @@ import generator.extension.gson_sub_type.Type;
 import generator.extension.gson_sub_type.Type1;
 import generator.extension.gson_sub_type.Type2;
 import gsonpath.GsonSubTypeFailureException;
-import gsonpath.internal.StrictArrayTypeAdapter;
 
 import java.io.IOException;
 import java.lang.Class;
@@ -30,15 +29,15 @@ import javax.annotation.Generated;
 public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
     private final Gson mGson;
 
-    private StrictArrayTypeAdapter itemsGsonSubtype;
+    private ItemsGsonSubtype itemsGsonSubtype;
 
     public TypesList_GsonTypeAdapter(Gson gson) {
         this.mGson = gson;
     }
 
-    private StrictArrayTypeAdapter getItemsGsonSubtype() {
+    private ItemsGsonSubtype getItemsGsonSubtype() {
         if (itemsGsonSubtype == null) {
-            itemsGsonSubtype = new StrictArrayTypeAdapter<>(new ItemsGsonSubtype(mGson), Type.class, false);
+            itemsGsonSubtype = new ItemsGsonSubtype(mGson);
         }
         return itemsGsonSubtype;
     }
@@ -65,7 +64,7 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
                     jsonFieldCounter0++;
 
                     // Extension (Read) - 'GsonSubtype' Annotation
-                    Type[] value_items = (Type[]) getItemsGsonSubtype().read(in);
+                    Type value_items = (Type) getItemsGsonSubtype().read(in);
                     if (value_items != null) {
                         result.items = value_items;
                     }
@@ -90,7 +89,7 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
 
         // Begin
         out.beginObject();
-        Type[] obj0 = value.items;
+        Type obj0 = value.items;
         if (obj0 != null) {
             out.name("items");
             // Extension (Write) - 'GsonSubtype' Annotation

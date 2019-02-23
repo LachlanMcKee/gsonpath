@@ -1,4 +1,4 @@
-package generator.extension.gson_sub_type.failure_outcome_fail;
+package generator.extension.gson_sub_type.with_other_elements;
 
 import static gsonpath.GsonUtil.*;
 
@@ -12,9 +12,6 @@ import com.google.gson.stream.JsonWriter;
 import generator.extension.gson_sub_type.Type;
 import generator.extension.gson_sub_type.Type1;
 import generator.extension.gson_sub_type.Type2;
-import gsonpath.GsonSubTypeFailureException;
-import gsonpath.internal.StrictArrayTypeAdapter;
-
 import java.io.IOException;
 import java.lang.Class;
 import java.lang.Override;
@@ -30,15 +27,15 @@ import javax.annotation.Generated;
 public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
     private final Gson mGson;
 
-    private StrictArrayTypeAdapter itemsGsonSubtype;
+    private ItemsGsonSubtype itemsGsonSubtype;
 
     public TypesList_GsonTypeAdapter(Gson gson) {
         this.mGson = gson;
     }
 
-    private StrictArrayTypeAdapter getItemsGsonSubtype() {
+    private ItemsGsonSubtype getItemsGsonSubtype() {
         if (itemsGsonSubtype == null) {
-            itemsGsonSubtype = new StrictArrayTypeAdapter<>(new ItemsGsonSubtype(mGson), Type.class, false);
+            itemsGsonSubtype = new ItemsGsonSubtype(mGson);
         }
         return itemsGsonSubtype;
     }
@@ -55,19 +52,37 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
         in.beginObject();
 
         while (in.hasNext()) {
-            if (jsonFieldCounter0 == 1) {
+            if (jsonFieldCounter0 == 3) {
                 in.skipValue();
                 continue;
             }
 
             switch (in.nextName()) {
+                case "other1":
+                    jsonFieldCounter0++;
+
+                    String value_other1 = mGson.getAdapter(String.class).read(in);
+                    if (value_other1 != null) {
+                        result.other1 = value_other1;
+                    }
+                    break;
+
                 case "items":
                     jsonFieldCounter0++;
 
                     // Extension (Read) - 'GsonSubtype' Annotation
-                    Type[] value_items = (Type[]) getItemsGsonSubtype().read(in);
+                    Type value_items = (Type) getItemsGsonSubtype().read(in);
                     if (value_items != null) {
                         result.items = value_items;
+                    }
+                    break;
+
+                case "other2":
+                    jsonFieldCounter0++;
+
+                    String value_other2 = mGson.getAdapter(String.class).read(in);
+                    if (value_other2 != null) {
+                        result.other2 = value_other2;
                     }
                     break;
 
@@ -90,11 +105,23 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
 
         // Begin
         out.beginObject();
-        Type[] obj0 = value.items;
+        String obj0 = value.other1;
         if (obj0 != null) {
+            out.name("other1");
+            mGson.getAdapter(String.class).write(out, obj0);
+        }
+
+        Type obj1 = value.items;
+        if (obj1 != null) {
             out.name("items");
             // Extension (Write) - 'GsonSubtype' Annotation
-            getItemsGsonSubtype().write(out, obj0);
+            getItemsGsonSubtype().write(out, obj1);
+        }
+
+        String obj2 = value.other2;
+        if (obj2 != null) {
+            out.name("other2");
+            mGson.getAdapter(String.class).write(out, obj2);
         }
 
         // End
@@ -127,12 +154,9 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
             java.lang.String value = typeValueJsonElement.getAsString();
             TypeAdapter<? extends Type> delegate = typeAdaptersDelegatedByValueMap.get(value);
             if (delegate == null) {
-                throw new GsonSubTypeFailureException("Failed to find subtype for value: " + value);
+                return null;
             }
             Type result = delegate.fromJsonTree(jsonElement);
-            if (result == null) {
-                throw new GsonSubTypeFailureException("Failed to deserailize subtype for object: " + jsonElement);
-            }
             return result;
         }
 

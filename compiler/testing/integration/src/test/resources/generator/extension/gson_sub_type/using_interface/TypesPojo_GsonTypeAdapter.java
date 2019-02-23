@@ -1,8 +1,7 @@
-package generator.extension.gson_sub_type.string_keys;
+package generator.extension.gson_sub_type.using_interface;
 
 import static gsonpath.GsonUtil.*;
 
-import generator.extension.gson_sub_type.Type;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
@@ -10,7 +9,9 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.internal.StrictArrayTypeAdapter;
+import generator.extension.gson_sub_type.Type;
+import generator.extension.gson_sub_type.Type1;
+import generator.extension.gson_sub_type.Type2;
 import java.io.IOException;
 import java.lang.Class;
 import java.lang.Override;
@@ -26,15 +27,15 @@ import javax.annotation.Generated;
 public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
     private final Gson mGson;
 
-    private StrictArrayTypeAdapter itemsGsonSubtype;
+    private ItemsGsonSubtype itemsGsonSubtype;
 
     public TypesList_GsonTypeAdapter(Gson gson) {
         this.mGson = gson;
     }
 
-    private StrictArrayTypeAdapter getItemsGsonSubtype() {
+    private ItemsGsonSubtype getItemsGsonSubtype() {
         if (itemsGsonSubtype == null) {
-            itemsGsonSubtype = new StrictArrayTypeAdapter<>(new ItemsGsonSubtype(mGson), Type.class, false);
+            itemsGsonSubtype = new ItemsGsonSubtype(mGson);
         }
         return itemsGsonSubtype;
     }
@@ -45,7 +46,7 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
         if (!isValidValue(in)) {
             return null;
         }
-        TypesList result = new TypesList();
+        Type value_items = null;
 
         int jsonFieldCounter0 = 0;
         in.beginObject();
@@ -61,10 +62,7 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
                     jsonFieldCounter0++;
 
                     // Extension (Read) - 'GsonSubtype' Annotation
-                    generator.extension.gson_sub_type.Type[] value_items = (generator.extension.gson_sub_type.Type[]) getItemsGsonSubtype().read(in);
-                    if (value_items != null) {
-                        result.items = value_items;
-                    }
+                    value_items = (Type) getItemsGsonSubtype().read(in);
                     break;
 
                 default:
@@ -74,7 +72,9 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
         }
 
         in.endObject();
-        return result;
+        return new TypesList_GsonPathModel(
+                value_items
+        );
     }
 
     @Override
@@ -86,7 +86,7 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
 
         // Begin
         out.beginObject();
-        Type[] obj0 = value.items;
+        Type obj0 = value.getItems();
         if (obj0 != null) {
             out.name("items");
             // Extension (Write) - 'GsonSubtype' Annotation
@@ -106,11 +106,11 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
             typeAdaptersDelegatedByValueMap = new java.util.HashMap<>();
             typeAdaptersDelegatedByClassMap = new java.util.HashMap<>();
 
-            typeAdaptersDelegatedByValueMap.put("type1", gson.getAdapter(generator.extension.gson_sub_type.Type1.class));
-            typeAdaptersDelegatedByClassMap.put(generator.extension.gson_sub_type.Type1.class, gson.getAdapter(generator.extension.gson_sub_type.Type1.class));
+            typeAdaptersDelegatedByValueMap.put("type1", gson.getAdapter(Type1.class));
+            typeAdaptersDelegatedByClassMap.put(Type1.class, gson.getAdapter(Type1.class));
 
-            typeAdaptersDelegatedByValueMap.put("type2", gson.getAdapter(generator.extension.gson_sub_type.Type2.class));
-            typeAdaptersDelegatedByClassMap.put(generator.extension.gson_sub_type.Type2.class, gson.getAdapter(generator.extension.gson_sub_type.Type2.class));
+            typeAdaptersDelegatedByValueMap.put("type2", gson.getAdapter(Type2.class));
+            typeAdaptersDelegatedByClassMap.put(Type2.class, gson.getAdapter(Type2.class));
         }
 
         @Override
@@ -121,11 +121,11 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
                 throw new JsonParseException("cannot deserialize generator.extension.gson_sub_type.Type because the subtype field 'type' is either null or does not exist.");
             }
             java.lang.String value = typeValueJsonElement.getAsString();
-            TypeAdapter<? extends generator.extension.gson_sub_type.Type> delegate = typeAdaptersDelegatedByValueMap.get(value);
+            TypeAdapter<? extends Type> delegate = typeAdaptersDelegatedByValueMap.get(value);
             if (delegate == null) {
                 return null;
             }
-            generator.extension.gson_sub_type.Type result = delegate.fromJsonTree(jsonElement);
+            Type result = delegate.fromJsonTree(jsonElement);
             return result;
         }
 

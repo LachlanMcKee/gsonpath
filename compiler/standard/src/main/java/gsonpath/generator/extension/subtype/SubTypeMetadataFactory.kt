@@ -3,7 +3,6 @@ package gsonpath.generator.extension.subtype
 import gsonpath.GsonSubTypeFailureOutcome
 import gsonpath.GsonSubtype
 import gsonpath.ProcessingException
-import gsonpath.model.FieldType
 import gsonpath.util.TypeHandler
 import javax.lang.model.element.Element
 import javax.lang.model.type.MirroredTypeException
@@ -12,7 +11,7 @@ import javax.lang.model.type.TypeMirror
 interface SubTypeMetadataFactory {
     fun getGsonSubType(
             gsonSubType: GsonSubtype,
-            fieldType: FieldType.MultipleValues,
+            gsonSubTypeCategory: GsonSubTypeCategory,
             fieldName: String,
             element: Element): SubTypeMetadata
 }
@@ -21,7 +20,7 @@ class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubType
 
     override fun getGsonSubType(
             gsonSubType: GsonSubtype,
-            fieldType: FieldType.MultipleValues,
+            gsonSubTypeCategory: GsonSubTypeCategory,
             fieldName: String,
             element: Element): SubTypeMetadata {
 
@@ -66,24 +65,11 @@ class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubType
                     }
                 }
 
-        // Ensure that each subtype inherits from the annotated field.
-        genericGsonSubTypeKeys.forEach {
-            validateSubType(fieldType.elementTypeMirror, it.classTypeMirror, element)
-        }
+        validateKeys(element, genericGsonSubTypeKeys, gsonSubTypeCategory)
 
         // Inspect the failure outcome values.
         val defaultTypeMirror = getMirroredClass(element) { gsonSubType.defaultType }
-
-        val defaultsElement = typeHandler.asElement(defaultTypeMirror)
-        if (defaultsElement != null) {
-            // It is not valid to specify a default type if the failure outcome does not use it.
-            if (gsonSubType.subTypeFailureOutcome != GsonSubTypeFailureOutcome.NULL_OR_DEFAULT_VALUE) {
-                throw ProcessingException("defaultType is only valid if subTypeFailureOutcome is set to NULL_OR_DEFAULT_VALUE", element)
-            }
-
-            // Ensure that the default type inherits from the base type.
-            validateSubType(fieldType.elementTypeMirror, defaultTypeMirror, element)
-        }
+        validateFailureOutcomes(element, defaultTypeMirror, gsonSubType, gsonSubTypeCategory)
 
         val variableName = "${fieldName}GsonSubtype"
         return SubTypeMetadata(
@@ -93,8 +79,54 @@ class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubType
                 fieldName = gsonSubType.subTypeKey,
                 keyType = keyType,
                 gsonSubTypeKeys = genericGsonSubTypeKeys,
-                defaultType = defaultsElement?.asType(),
+                defaultType = typeHandler.asElement(defaultTypeMirror)?.asType(),
                 failureOutcome = gsonSubType.subTypeFailureOutcome)
+    }
+
+    private fun validateKeys(
+            element: Element,
+            genericGsonSubTypeKeys: List<GsonSubTypeKeyAndClass>,
+            gsonSubTypeCategory: GsonSubTypeCategory) {
+
+        // Ensure keys are not duplicated
+        genericGsonSubTypeKeys
+                .groupingBy { it.key }
+                .eachCount()
+                .filter { it.value > 1 }
+                .keys
+                .firstOrNull()
+                ?.let {
+                    throw ProcessingException("The key '$it' appears more than once", element)
+                }
+
+        // Ensure that each subtype inherits from the annotated field.
+        genericGsonSubTypeKeys.forEach {
+            validateSubType(gsonSubTypeCategory.fieldType.elementTypeMirror, it.classTypeMirror, element)
+        }
+    }
+
+    private fun validateFailureOutcomes(
+            element: Element,
+            defaultTypeMirror: TypeMirror,
+            gsonSubType: GsonSubtype,
+            gsonSubTypeCategory: GsonSubTypeCategory) {
+
+        val defaultsElement = typeHandler.asElement(defaultTypeMirror)
+        if (defaultsElement != null) {
+            // It is not valid to specify a default type if the failure outcome does not use it.
+            if (gsonSubType.subTypeFailureOutcome != GsonSubTypeFailureOutcome.NULL_OR_DEFAULT_VALUE) {
+                throw ProcessingException("defaultType is only valid if subTypeFailureOutcome is set to NULL_OR_DEFAULT_VALUE", element)
+            }
+
+            // Ensure that the default type inherits from the base type.
+            validateSubType(gsonSubTypeCategory.fieldType.elementTypeMirror, defaultTypeMirror, element)
+        }
+
+        if (gsonSubTypeCategory is GsonSubTypeCategory.SingleValue) {
+            if (gsonSubType.subTypeFailureOutcome == GsonSubTypeFailureOutcome.REMOVE_ELEMENT) {
+                throw ProcessingException("GsonSubTypeFailureOutcome.REMOVE_ELEMENT cannot be used on a type that is not a collection/array", element)
+            }
+        }
     }
 
     private fun validateSubType(baseType: TypeMirror, subType: TypeMirror, fieldElement: Element?) {

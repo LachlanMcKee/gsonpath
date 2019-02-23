@@ -34,12 +34,20 @@ class GsonSubTypeExtension(
     override val extensionName: String
         get() = "'GsonSubtype' Annotation"
 
-    private fun verifyMultipleValuesFieldType(fieldInfo: FieldInfo): FieldType.MultipleValues {
+    private fun determineSubTypeCategory(fieldInfo: FieldInfo): GsonSubTypeCategory {
         return when (val fieldType = fieldInfo.fieldType) {
-            is FieldType.MultipleValues -> fieldType
-            else -> throw ProcessingException("@GsonSubtype can only be used with arrays and collections",
-                    fieldInfo.element)
-        }
+            is FieldType.MultipleValues -> GsonSubTypeCategory.MultipleValues(fieldType)
+            is FieldType.Other -> {
+                if (!fieldInfo.element.enclosingElement.modifiers.contains(Modifier.FINAL)) {
+                    GsonSubTypeCategory.SingleValue(fieldType)
+                } else {
+                    null
+                }
+            }
+            else -> null
+        } ?: throw ProcessingException("@GsonSubtype can only be used with arrays, collections, " +
+                "interfaces and non-final classes. Maps and primitives are not supported.",
+                fieldInfo.element)
     }
 
     override fun canHandleFieldRead(
@@ -51,7 +59,7 @@ class GsonSubTypeExtension(
             return false
         }
 
-        verifyMultipleValuesFieldType(fieldInfo)
+        determineSubTypeCategory(fieldInfo)
 
         return true
     }
@@ -67,28 +75,38 @@ class GsonSubTypeExtension(
 
         val (fieldInfo, variableName) = extensionFieldMetadata
         val fieldTypeName = fieldInfo.fieldType.typeName
-        val fieldType = verifyMultipleValuesFieldType(fieldInfo)
+        val category = determineSubTypeCategory(fieldInfo)
+        val fieldType = category.fieldType
         val elementTypeName = TypeName.get(fieldType.elementTypeMirror)
 
         val subTypeMetadata = subTypeMetadataFactory.getGsonSubType(
                 fieldInfo.getAnnotation(GsonSubtype::class.java)!!,
-                fieldType,
+                category,
                 fieldInfo.fieldName,
                 fieldInfo.element)
 
-        val typeAdapterDetails = when (fieldType) {
-            is FieldType.MultipleValues.Array -> TypeAdapterDetails.ArrayTypeAdapter
-            is FieldType.MultipleValues.Collection -> {
-                TypeAdapterDetails.CollectionTypeAdapter(ParameterizedTypeName.get(
-                        ClassName.get(CollectionTypeAdapter::class.java),
-                        TypeName.get(fieldType.elementTypeMirror)))
+        val subTypeAdapterSpec = createSubTypeAdapter(elementTypeName, subTypeMetadata)
+
+        val typeAdapterDetails = when (category) {
+            is GsonSubTypeCategory.MultipleValues -> {
+                when (category.fieldType) {
+                    is FieldType.MultipleValues.Array -> TypeAdapterDetails.ArrayTypeAdapter
+                    is FieldType.MultipleValues.Collection -> {
+                        TypeAdapterDetails.CollectionTypeAdapter(ParameterizedTypeName.get(
+                                ClassName.get(CollectionTypeAdapter::class.java),
+                                TypeName.get(fieldType.elementTypeMirror)))
+                    }
+                }
+            }
+            is GsonSubTypeCategory.SingleValue -> {
+                TypeAdapterDetails.ValueTypeAdapter(ClassName.bestGuess(subTypeAdapterSpec.name))
             }
         }
 
         return GsonPathExtension.ExtensionResult(
                 fieldSpecs = listOf(FieldSpec.builder(typeAdapterDetails.typeName, subTypeMetadata.variableName, Modifier.PRIVATE).build()),
                 methodSpecs = listOf(createGetter(typeAdapterDetails, elementTypeName, subTypeMetadata)),
-                typeSpecs = listOf(createSubTypeAdapter(elementTypeName, subTypeMetadata)),
+                typeSpecs = listOf(subTypeAdapterSpec),
                 codeBlock = codeBlock {
                     if (checkIfResultIsNull) {
                         createVariable(fieldTypeName, variableName, "(\$T) ${subTypeMetadata.getterName}().read(in)", fieldTypeName)
@@ -106,7 +124,7 @@ class GsonSubTypeExtension(
 
         val subTypeMetadata = subTypeMetadataFactory.getGsonSubType(
                 fieldInfo.getAnnotation(GsonSubtype::class.java)!!,
-                verifyMultipleValuesFieldType(fieldInfo),
+                determineSubTypeCategory(fieldInfo),
                 fieldInfo.fieldName,
                 fieldInfo.element)
 
@@ -144,6 +162,10 @@ class GsonSubTypeExtension(
                             assignNew(variableName,
                                     "\$T(new ${subTypeMetadata.className}(mGson), $filterNulls)",
                                     typeAdapterDetails.typeName)
+                        }
+                        is TypeAdapterDetails.ValueTypeAdapter -> {
+                            assignNew(variableName,
+                                    "${subTypeMetadata.className}(mGson)")
                         }
                     }
                 }
@@ -327,6 +349,7 @@ class GsonSubTypeExtension(
     private sealed class TypeAdapterDetails(val typeName: TypeName) {
         object ArrayTypeAdapter : TypeAdapterDetails(arrayTypeAdapterClassName)
         class CollectionTypeAdapter(typeName: TypeName) : TypeAdapterDetails(typeName)
+        class ValueTypeAdapter(typeName: TypeName) : TypeAdapterDetails(typeName)
     }
 
     private companion object {

@@ -29,11 +29,13 @@ class GsonSubTypeExtensionTest {
     @Test
     fun givenStringKeys_whenProcessorExecuted_expectValidGsonTypeAdapter() {
         test("string_keys", "TypesList")
+        test("string_keys", "TypesPojo")
     }
 
     @Test
     fun givenIntegerKeys_whenProcessorExecuted_expectValidGsonTypeAdapter() {
         test("integer_keys", "TypesList")
+        test("integer_keys", "TypesPojo")
     }
 
     @Test
@@ -45,6 +47,7 @@ class GsonSubTypeExtensionTest {
     @Test
     fun givenStringKeysWithInterface_whenProcessorExecuted_expectValidGsonTypeAdapter() {
         test("using_interface", "TypesList")
+        test("using_interface", "TypesPojo")
     }
 
     @Test
@@ -55,21 +58,37 @@ class GsonSubTypeExtensionTest {
     @Test
     fun givenDefaultValueAndDefaultFailureOutcome_whenProcessorExecuted_expectValidGsonTypeAdapter() {
         test("default_value", "TypesList")
+        test("default_value", "TypesPojo")
     }
 
     @Test
-    fun givenRemoveElementFailureOutcome_whenProcessorExecuted_expectValidGsonTypeAdapter() {
+    fun givenRemoveElementFailureOutcomeAndCollectionType_whenProcessorExecuted_expectValidGsonTypeAdapter() {
         test("failure_outcome_remove_element", "TypesList")
+    }
+
+    @Test
+    fun givenRemoveElementFailureOutcomeAndSingleType_whenProcessorExecuted_expectNotAllowedError() {
+        assertPolymorphismFailure("TypesPojo.java",
+                "Gson Path: GsonSubTypeFailureOutcome.REMOVE_ELEMENT cannot be used on a type that is not a collection/array",
+                folder = "failure_outcome_remove_element")
     }
 
     @Test
     fun givenFailFailureOutcome_whenProcessorExecuted_expectValidGsonTypeAdapter() {
         test("failure_outcome_fail", "TypesList")
+        test("failure_outcome_fail", "TypesPojo")
     }
 
     @Test
     fun givenStringKeysAndNonPolymorphismElements_whenProcessorExecuted_expectValidGsonTypeAdapter() {
         test("with_other_elements", "TypesList")
+        test("with_other_elements", "TypesPojo")
+    }
+
+    @Test
+    fun givenDuplicateKeys_whenProcessorExecuted_expectDuplicateKeysError() {
+        assertPolymorphismFailure("TypesList_DuplicateKeys.java",
+                "The key '\"type1\"' appears more than once")
     }
 
     @Test
@@ -96,11 +115,11 @@ class GsonSubTypeExtensionTest {
                 "Gson Path: subtype java.lang.String does not inherit from generator.extension.gson_sub_type.Type")
     }
 
-    private fun assertPolymorphismFailure(className: String, errorMessage: String) {
+    private fun assertPolymorphismFailure(className: String, errorMessage: String, folder: String = "failures") {
         Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
                 .that(listOf(
                         JavaFileObjects.forResource("generator/standard/TestGsonTypeFactory.java"),
-                        JavaFileObjects.forResource("generator/extension/gson_sub_type/failures/$className")
+                        JavaFileObjects.forResource("generator/extension/gson_sub_type/$folder/$className")
                 ))
                 .processedWith(GsonProcessorImpl())
                 .failsToCompile()

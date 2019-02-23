@@ -9,14 +9,14 @@ import javax.lang.model.type.TypeMirror
 class FieldTypeFactory(private val typeHandler: TypeHandler) {
     fun createFieldType(typeName: TypeName, typeMirror: TypeMirror): FieldType {
         if (typeName.isPrimitive) {
-            return FieldType.Primitive(typeName)
+            return FieldType.Primitive(typeName, typeMirror)
         }
         if (typeMirror is ArrayType) {
             return FieldType.MultipleValues.Array(typeName, typeMirror.componentType)
         }
         return attemptCollectionFieldType(typeMirror)
                 ?: attemptMapFieldType(typeMirror)
-                ?: FieldType.Other(typeName)
+                ?: FieldType.Other(typeName, typeMirror)
     }
 
     private fun attemptCollectionFieldType(typeMirror: TypeMirror): FieldType.MultipleValues.Collection? {
@@ -40,7 +40,7 @@ class FieldTypeFactory(private val typeHandler: TypeHandler) {
                 typeHandler.getWildcardType(null, null))
 
         return if (typeHandler.isSubtype(typeMirror, mapWildcardType)) {
-            FieldType.MapFieldType(TypeName.get(typeMirror))
+            FieldType.MapFieldType(TypeName.get(typeMirror), typeMirror)
         } else {
             null
         }
