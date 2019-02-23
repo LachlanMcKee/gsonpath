@@ -1,4 +1,4 @@
-package gsonpath.polymorphism;
+package gsonpath.generator.extension.gsonSubType;
 
 import gsonpath.AutoGsonAdapter;
 
