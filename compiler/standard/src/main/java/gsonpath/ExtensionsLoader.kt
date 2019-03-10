@@ -16,7 +16,7 @@ import java.util.*
 
 object ExtensionsLoader {
 
-    fun loadExtensions(typeHandler: TypeHandler, logger: Logger): List<GsonPathExtension>? {
+    fun loadExtensions(typeHandler: TypeHandler, logger: Logger): List<GsonPathExtension> {
         // Load any extensions that are also available at compile time.
         println()
         val extensions: List<GsonPathExtension> =
@@ -24,8 +24,7 @@ object ExtensionsLoader {
                     ServiceLoader.load(GsonPathExtension::class.java, javaClass.classLoader).toList()
 
                 } catch (t: Throwable) {
-                    logger.printError("Failed to load one or more GsonPath extensions. Cause: ${t.message}")
-                    return null
+                    throw ProcessingException("Failed to load one or more GsonPath extensions. Cause: ${t.message}")
                 }
 
         // Print the extensions for auditing purposes.

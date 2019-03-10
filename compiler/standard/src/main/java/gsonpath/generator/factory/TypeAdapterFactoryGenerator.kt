@@ -15,22 +15,17 @@ import gsonpath.util.*
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 
-class TypeAdapterFactoryGenerator(
-        private val fileWriter: FileWriter,
-        private val logger: Logger) {
+class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
 
-    fun generate(factoryElement: TypeElement, generatedGsonAdapters: List<HandleResult>): Boolean {
+    fun generate(factoryElement: TypeElement, generatedGsonAdapters: List<HandleResult>) {
         val packageLocalHandleResults = TypeAdapterFactoryHandlersFactory
                 .createResults(factoryElement, generatedGsonAdapters)
 
         for ((packageName, list) in packageLocalHandleResults) {
-            if (!createPackageLocalTypeAdapterLoaders(packageName, list)) {
-                // If any of the package local adapters fail to generate, we must fail the entire process.
-                return false
-            }
+            createPackageLocalTypeAdapterLoaders(packageName, list)
         }
 
-        return createGsonTypeFactoryImpl(factoryElement, packageLocalHandleResults)
+        createGsonTypeFactoryImpl(factoryElement, packageLocalHandleResults)
     }
 
     /**
@@ -38,14 +33,14 @@ class TypeAdapterFactoryGenerator(
      */
     private fun createGsonTypeFactoryImpl(
             factoryElement: TypeElement,
-            packageLocalHandleResults: Map<String, List<HandleResult>>): Boolean {
+            packageLocalHandleResults: Map<String, List<HandleResult>>) {
 
         val factoryClassName = ClassName.get(factoryElement)
 
         return TypeSpecExt.finalClassBuilder(factoryClassName.simpleName() + "Impl")
                 .addSuperinterface(factoryClassName)
                 .gsonTypeFactoryImplContent(packageLocalHandleResults)
-                .writeFile(fileWriter, logger, factoryClassName.packageName())
+                .writeFile(fileWriter, factoryClassName.packageName())
     }
 
     private fun TypeSpec.Builder.gsonTypeFactoryImplContent(
@@ -96,12 +91,12 @@ class TypeAdapterFactoryGenerator(
 
     private fun createPackageLocalTypeAdapterLoaders(
             packageName: String,
-            packageLocalGsonAdapters: List<HandleResult>): Boolean {
+            packageLocalGsonAdapters: List<HandleResult>) {
 
-        return TypeSpecExt.finalClassBuilder(ClassName.get(packageName, PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME))
+        TypeSpecExt.finalClassBuilder(ClassName.get(packageName, PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME))
                 .addSuperinterface(TypeAdapterFactory::class.java)
                 .packagePrivateTypeAdapterLoaderContent(packageLocalGsonAdapters)
-                .writeFile(fileWriter, logger, packageName)
+                .writeFile(fileWriter, packageName)
     }
 
     //

@@ -19,8 +19,7 @@ class AutoGsonAdapterGenerator(
         private val adapterModelMetadataFactory: AdapterModelMetadataFactory,
         private val fileWriter: FileWriter,
         private val readFunctions: ReadFunctions,
-        private val writeFunctions: WriteFunctions,
-        private val logger: Logger) {
+        private val writeFunctions: WriteFunctions) {
 
     @Throws(ProcessingException::class)
     fun handle(
@@ -32,11 +31,8 @@ class AutoGsonAdapterGenerator(
         return TypeSpecExt.finalClassBuilder(adapterClassName)
                 .addDetails(metadata)
                 .let {
-                    if (it.writeFile(fileWriter, logger, adapterClassName.packageName(), this::onJavaFileBuilt)) {
-                        HandleResult(metadata.adapterGenericTypeClassNames.toTypedArray(), adapterClassName)
-                    } else {
-                        throw ProcessingException("Failed to write generated file: " + adapterClassName.simpleName())
-                    }
+                    it.writeFile(fileWriter, adapterClassName.packageName(), this::onJavaFileBuilt)
+                    HandleResult(metadata.adapterGenericTypeClassNames.toTypedArray(), adapterClassName)
                 }
     }
 

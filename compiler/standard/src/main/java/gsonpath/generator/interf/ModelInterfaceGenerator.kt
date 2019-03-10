@@ -16,8 +16,7 @@ import javax.lang.model.element.TypeElement
 
 class ModelInterfaceGenerator(
         private val interfaceModelMetadataFactory: InterfaceModelMetadataFactory,
-        private val fileWriter: FileWriter,
-        private val logger: Logger) {
+        private val fileWriter: FileWriter) {
 
     @Throws(ProcessingException::class)
     fun handle(element: TypeElement): InterfaceInfo {
@@ -40,9 +39,7 @@ class ModelInterfaceGenerator(
         addHashCodeMethod(modelMetadataList)
         addToStringMethod(element, modelMetadataList)
 
-        if (!writeFile(fileWriter, logger, outputClassName.packageName())) {
-            throw ProcessingException("Failed to write generated file: " + outputClassName.simpleName())
-        }
+        writeFile(fileWriter, outputClassName.packageName())
 
         return InterfaceInfo(outputClassName, modelMetadataList.map {
             InterfaceFieldInfo(StandardElementInfo(it.enclosedElement),

@@ -19,7 +19,6 @@ object DependencyFactory {
             extensions: List<GsonPathExtension>): Dependencies {
 
         val fileWriter = FileWriter(processingEnv)
-        val logger = LoggerImpl(processingEnv)
         val defaultValueDetector = DefaultValueDetectorImpl(processingEnv)
 
         val typeHandler = ProcessorTypeHandler(processingEnv)
@@ -32,7 +31,7 @@ object DependencyFactory {
         val extensionsHandler = ExtensionsHandler(processingEnv, extensions)
         val readFunctions = ReadFunctions(extensionsHandler)
         val writeFunctions = WriteFunctions(extensionsHandler)
-        val modelInterfaceGenerator = ModelInterfaceGenerator(InterfaceModelMetadataFactory(typeHandler), fileWriter, logger)
+        val modelInterfaceGenerator = ModelInterfaceGenerator(InterfaceModelMetadataFactory(typeHandler), fileWriter)
         val adapterModelMetadataFactory = AdapterModelMetadataFactory(
                 FieldInfoFactory(
                         typeHandler,
@@ -51,11 +50,9 @@ object DependencyFactory {
                         adapterModelMetadataFactory,
                         fileWriter,
                         readFunctions,
-                        writeFunctions,
-                        logger),
+                        writeFunctions),
                 typeAdapterFactoryGenerator = TypeAdapterFactoryGenerator(
-                        fileWriter,
-                        logger)
+                        fileWriter)
         )
     }
 }
