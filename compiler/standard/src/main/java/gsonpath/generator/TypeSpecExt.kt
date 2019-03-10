@@ -4,7 +4,6 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
 import gsonpath.ProcessingException
 import gsonpath.util.FileWriter
-import gsonpath.util.Logger
 import java.io.IOException
 
 fun TypeSpec.Builder.writeFile(

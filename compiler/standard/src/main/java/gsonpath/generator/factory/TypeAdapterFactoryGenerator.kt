@@ -37,7 +37,7 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
 
         val factoryClassName = ClassName.get(factoryElement)
 
-        return TypeSpecExt.finalClassBuilder(factoryClassName.simpleName() + "Impl")
+        TypeSpecExt.finalClassBuilder(factoryClassName.simpleName() + "Impl")
                 .addSuperinterface(factoryClassName)
                 .gsonTypeFactoryImplContent(packageLocalHandleResults)
                 .writeFile(fileWriter, factoryClassName.packageName())

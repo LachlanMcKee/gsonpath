@@ -20,13 +20,7 @@ open class GsonProcessorImpl : AbstractProcessor() {
         try {
             processInternal(annotations, env, logger)
         } catch (e: ProcessingException) {
-            e.element.let { element ->
-                if (element != null) {
-                    logger.printError(e.message, element)
-                } else {
-                    logger.printError(e.message)
-                }
-            }
+            logger.printError(e.message, e.element)
         }
 
         return false

@@ -10,12 +10,12 @@ class Logger(private val processingEnv: ProcessingEnvironment) {
         println(LOG_PREFIX + message)
     }
 
-    fun printError(message: String) {
-        processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, LOG_PREFIX + message)
-    }
-
-    fun printError(message: String, element: Element) {
-        processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, LOG_PREFIX + message, element)
+    fun printError(message: String, element: Element? = null) {
+        if (element != null) {
+            processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, LOG_PREFIX + message, element)
+        } else {
+            processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, LOG_PREFIX + message)
+        }
     }
 
     companion object {
