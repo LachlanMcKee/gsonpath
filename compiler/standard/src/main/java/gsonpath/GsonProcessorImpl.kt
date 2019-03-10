@@ -2,36 +2,17 @@ package gsonpath
 
 import com.google.common.collect.Sets
 import com.squareup.javapoet.ClassName
-import gsonpath.compiler.GsonPathExtension
 import gsonpath.generator.HandleResult
-import gsonpath.generator.adapter.AdapterModelMetadataFactory
-import gsonpath.generator.adapter.AutoGsonAdapterGenerator
-import gsonpath.generator.adapter.read.ReadFunctions
-import gsonpath.generator.adapter.write.WriteFunctions
-import gsonpath.generator.extension.def.intdef.IntDefExtension
-import gsonpath.generator.extension.def.stringdef.StringDefExtension
-import gsonpath.generator.extension.empty.EmptyToNullExtension
-import gsonpath.generator.extension.flatten.FlattenJsonExtension
-import gsonpath.generator.extension.invalid.RemoveInvalidElementsExtension
-import gsonpath.generator.extension.range.floatrange.FloatRangeExtension
-import gsonpath.generator.extension.range.intrange.IntRangeExtension
-import gsonpath.generator.extension.size.SizeExtension
-import gsonpath.generator.extension.subtype.GsonSubTypeExtension
-import gsonpath.generator.extension.subtype.SubTypeMetadataFactoryImpl
-import gsonpath.generator.factory.TypeAdapterFactoryGenerator
-import gsonpath.generator.interf.InterfaceModelMetadataFactory
-import gsonpath.generator.interf.ModelInterfaceGenerator
-import gsonpath.model.*
-import gsonpath.util.*
-import java.util.*
+import gsonpath.util.ProcessorTypeHandler
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
-import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
-import javax.tools.Diagnostic
 
 open class GsonProcessorImpl : AbstractProcessor() {
+
+    private val typeHandler = ProcessorTypeHandler(processingEnv)
+    private val logger = Logger(processingEnv)
 
     override fun process(annotations: Set<TypeElement>?, env: RoundEnvironment): Boolean {
         if (annotations == null) {
@@ -55,54 +36,21 @@ open class GsonProcessorImpl : AbstractProcessor() {
             return false
         }
 
-        val typeHandler = ProcessorTypeHandler(processingEnv)
-        val extensions = loadExtensions(typeHandler) ?: return false
+        val extensions = ExtensionsLoader.loadExtensions(typeHandler, logger) ?: return false
+        val (adapterGenerator, typeAdapterFactoryGenerator) = DependencyFactory.create(processingEnv, extensions)
 
         println()
-        printMessage("Started annotation processing")
-
-        val fileWriter = FileWriter(processingEnv)
-        val logger = LoggerImpl(processingEnv)
-        val defaultValueDetector = DefaultValueDetectorImpl(processingEnv)
-        val fieldGetterFinder = FieldGetterFinder(typeHandler)
-        val annotationFetcher = AnnotationFetcher(typeHandler, fieldGetterFinder)
-        val gsonObjectFactory = GsonObjectFactory(
-                GsonObjectValidator(),
-                FieldPathFetcher(SerializedNameFetcher, FieldNamingPolicyMapper()))
-        val gsonObjectTreeFactory = GsonObjectTreeFactory(gsonObjectFactory)
-        val extensionsHandler = ExtensionsHandler(processingEnv, extensions)
-        val readFunctions = ReadFunctions(extensionsHandler)
-        val writeFunctions = WriteFunctions(extensionsHandler)
-        val modelInterfaceGenerator = ModelInterfaceGenerator(InterfaceModelMetadataFactory(typeHandler), fileWriter, logger)
-        val adapterModelMetadataFactory = AdapterModelMetadataFactory(
-                FieldInfoFactory(
-                        typeHandler,
-                        FieldTypeFactory(typeHandler),
-                        fieldGetterFinder,
-                        annotationFetcher,
-                        defaultValueDetector),
-                gsonObjectTreeFactory,
-                typeHandler,
-                modelInterfaceGenerator
-        )
-
-        // Handle the standard type adapters.
-        val adapterGenerator = AutoGsonAdapterGenerator(
-                adapterModelMetadataFactory,
-                fileWriter,
-                readFunctions,
-                writeFunctions,
-                logger)
+        logger.printMessage("Started annotation processing")
 
         val autoGsonAdapterResults: List<HandleResult> =
                 getAnnotatedModelElements(env, customAnnotations)
                         .map { (element, autoGsonAdapter) ->
-                            printMessage("Generating TypeAdapter ($element)")
+                            logger.printMessage("Generating TypeAdapter ($element)")
 
                             try {
                                 adapterGenerator.handle(element, autoGsonAdapter)
                             } catch (e: ProcessingException) {
-                                printError(e.message, e.element ?: element)
+                                logger.printError(e.message, e.element ?: element)
                                 return false
                             }
                         }
@@ -111,75 +59,33 @@ open class GsonProcessorImpl : AbstractProcessor() {
             val gsonPathFactories = env.getElementsAnnotatedWith(AutoGsonAdapterFactory::class.java)
 
             if (gsonPathFactories.count() == 0) {
-                printError("An interface annotated with @AutoGsonAdapterFactory (that directly extends " +
+                logger.printError("An interface annotated with @AutoGsonAdapterFactory (that directly extends " +
                         "com.google.gson.TypeAdapterFactory) must exist before the annotation processor can succeed. " +
                         "See the AutoGsonAdapterFactory annotation for further details.")
                 return false
             }
 
             if (gsonPathFactories.count() > 1) {
-                printError("Only one interface annotated with @AutoGsonAdapterFactory can exist")
+                logger.printError("Only one interface annotated with @AutoGsonAdapterFactory can exist")
                 return false
             }
 
             val factoryElement = gsonPathFactories.first()
             try {
-                if (!TypeAdapterFactoryGenerator(fileWriter, logger).generate(factoryElement as TypeElement, autoGsonAdapterResults)) {
-                    printError("Error while generating TypeAdapterFactory", factoryElement)
+                if (!typeAdapterFactoryGenerator.generate(factoryElement as TypeElement, autoGsonAdapterResults)) {
+                    logger.printError("Error while generating TypeAdapterFactory", factoryElement)
                     return false
                 }
             } catch (e: ProcessingException) {
-                printError(e.message, e.element ?: factoryElement)
+                logger.printError(e.message, e.element ?: factoryElement)
                 return false
             }
         }
 
-        printMessage("Finished annotation processing")
+        logger.printMessage("Finished annotation processing")
         println()
 
         return false
-    }
-
-    private fun loadExtensions(typeHandler: TypeHandler): List<GsonPathExtension>? {
-        // Load any extensions that are also available at compile time.
-        println()
-        val extensions: List<GsonPathExtension> =
-                try {
-                    ServiceLoader.load(GsonPathExtension::class.java, javaClass.classLoader).toList()
-
-                } catch (t: Throwable) {
-                    printError("Failed to load one or more GsonPath extensions. Cause: ${t.message}")
-                    return null
-                }
-
-        // Print the extensions for auditing purposes.
-        extensions.forEach {
-            printMessage("Extension found: " + it.extensionName)
-        }
-
-        return extensions.plus(arrayOf(
-                IntDefExtension(),
-                StringDefExtension(),
-                EmptyToNullExtension(),
-                FlattenJsonExtension(),
-                RemoveInvalidElementsExtension(),
-                FloatRangeExtension(),
-                IntRangeExtension(),
-                SizeExtension(),
-                GsonSubTypeExtension(SubTypeMetadataFactoryImpl(typeHandler))
-        ))
-    }
-
-    private fun printMessage(message: String) {
-        println(LOG_PREFIX + message)
-    }
-
-    private fun printError(message: String) {
-        processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, LOG_PREFIX + message)
-    }
-
-    private fun printError(message: String, element: Element) {
-        processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, LOG_PREFIX + message, element)
     }
 
     override fun getSupportedAnnotationTypes(): Set<String> {
@@ -217,9 +123,5 @@ open class GsonProcessorImpl : AbstractProcessor() {
             val element: TypeElement,
             val autoGsonAdapter: AutoGsonAdapter
     )
-
-    companion object {
-        private const val LOG_PREFIX = "Gson Path: "
-    }
 
 }
