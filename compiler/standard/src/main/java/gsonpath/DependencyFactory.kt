@@ -1,6 +1,5 @@
 package gsonpath
 
-import gsonpath.compiler.GsonPathExtension
 import gsonpath.generator.adapter.AdapterModelMetadataFactory
 import gsonpath.generator.adapter.AutoGsonAdapterGenerator
 import gsonpath.generator.adapter.read.ReadFunctions
@@ -14,9 +13,7 @@ import javax.annotation.processing.ProcessingEnvironment
 
 object DependencyFactory {
 
-    fun create(
-            processingEnv: ProcessingEnvironment,
-            extensions: List<GsonPathExtension>): Dependencies {
+    fun create(processingEnv: ProcessingEnvironment): Dependencies {
 
         val fileWriter = FileWriter(processingEnv)
         val defaultValueDetector = DefaultValueDetectorImpl(processingEnv)
@@ -28,6 +25,8 @@ object DependencyFactory {
                 GsonObjectValidator(),
                 FieldPathFetcher(SerializedNameFetcher, FieldNamingPolicyMapper()))
         val gsonObjectTreeFactory = GsonObjectTreeFactory(gsonObjectFactory)
+
+        val extensions = ExtensionsLoader.loadExtensions(typeHandler, Logger(processingEnv))
         val extensionsHandler = ExtensionsHandler(processingEnv, extensions)
         val readFunctions = ReadFunctions(extensionsHandler)
         val writeFunctions = WriteFunctions(extensionsHandler)
