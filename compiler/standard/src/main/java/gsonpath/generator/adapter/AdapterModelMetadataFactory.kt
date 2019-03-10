@@ -30,7 +30,7 @@ class AdapterModelMetadataFactory(
         val fieldInfoList: List<FieldInfo>
         val isModelInterface = modelElement.kind.isInterface
 
-        val properties = AutoGsonAdapterPropertiesFactory().create(autoGsonAnnotation, isModelInterface)
+        val properties = AutoGsonAdapterPropertiesFactory().create(modelElement, autoGsonAnnotation, isModelInterface)
 
         val requiresConstructorInjection: Boolean =
                 if (isModelInterface) {

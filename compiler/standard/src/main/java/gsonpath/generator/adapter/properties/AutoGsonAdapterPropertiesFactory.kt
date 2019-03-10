@@ -3,11 +3,15 @@ package gsonpath.generator.adapter.properties
 import gsonpath.AutoGsonAdapter
 import gsonpath.GsonFieldValidationType
 import gsonpath.ProcessingException
+import javax.lang.model.element.TypeElement
 
 class AutoGsonAdapterPropertiesFactory {
 
     @Throws(ProcessingException::class)
-    fun create(autoGsonAnnotation: AutoGsonAdapter, isInterface: Boolean): AutoGsonAdapterProperties {
+    fun create(
+            modelElement: TypeElement,
+            autoGsonAnnotation: AutoGsonAdapter,
+            isInterface: Boolean): AutoGsonAdapterProperties {
 
         val gsonFieldValidationType =
                 if (isInterface) {
@@ -28,7 +32,7 @@ class AutoGsonAdapterPropertiesFactory {
         // Validate the path substitutions. Duplicate keys are not allowed.
         pathSubstitutions.fold(emptySet()) { set: Set<String>, pathSubstitution ->
             if (set.contains(pathSubstitution.original)) {
-                throw ProcessingException("PathSubstitution original values must be unique")
+                throw ProcessingException("PathSubstitution original values must be unique", modelElement)
             }
             set.plus(pathSubstitution.original)
         }
