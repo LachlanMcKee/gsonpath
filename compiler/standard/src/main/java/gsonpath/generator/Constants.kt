@@ -4,7 +4,7 @@ import com.squareup.javapoet.AnnotationSpec
 import javax.annotation.Generated
 
 object Constants {
-    const val GSON_PROPERTY = "mGson"
+    private const val GSON_PROPERTY = "mGson"
     const val GSON = "gson"
     const val NULL = "null"
     const val IN = "in"
@@ -14,7 +14,7 @@ object Constants {
     const val VALUE = "value"
     const val GET_ADAPTER = "$GSON_PROPERTY.getAdapter"
 
-    val GENERATED_ANNOTATION = AnnotationSpec.builder(Generated::class.java).run {
+    val GENERATED_ANNOTATION: AnnotationSpec = AnnotationSpec.builder(Generated::class.java).run {
         addMember("value", "\"gsonpath.GsonProcessor\"")
         addMember("comments", "\"https://github.com/LachlanMcKee/gsonpath\"")
         build()

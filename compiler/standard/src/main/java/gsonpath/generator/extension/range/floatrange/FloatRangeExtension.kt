@@ -17,8 +17,8 @@ import javax.lang.model.element.AnnotationMirror
  * A {@link GsonPathExtension} that supports the '@FloatRange' annotation.
  */
 class FloatRangeExtension : GsonPathExtension {
-    private val BOXED_FLOAT = ClassName.get("java.lang", "Float")
-    private val BOXED_DOUBLE = ClassName.get("java.lang", "Double")
+    private val boxedFloat = ClassName.get("java.lang", "Float")
+    private val boxedDouble = ClassName.get("java.lang", "Double")
 
     override val extensionName: String
         get() = "'FloatRange' Annotation"
@@ -43,7 +43,7 @@ class FloatRangeExtension : GsonPathExtension {
             }
         }
 
-        if (typeName != BOXED_DOUBLE && typeName != BOXED_FLOAT) {
+        if (typeName != boxedDouble && typeName != boxedFloat) {
             throw ProcessingException("Unexpected type found for field annotated with 'FloatRange', only " +
                     "floats and doubles are allowed.", fieldInfo.element)
         }

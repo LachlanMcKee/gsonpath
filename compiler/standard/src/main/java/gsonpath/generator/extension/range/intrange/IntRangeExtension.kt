@@ -17,8 +17,8 @@ import javax.lang.model.element.AnnotationMirror
  * A {@link GsonPathExtension} that supports the '@IntRange' annotation.
  */
 class IntRangeExtension : GsonPathExtension {
-    private val BOXED_INT = ClassName.get("java.lang", "Integer")
-    private val BOXED_LONG = ClassName.get("java.lang", "Long")
+    private val boxedInt = ClassName.get("java.lang", "Integer")
+    private val boxedLong = ClassName.get("java.lang", "Long")
 
     override val extensionName: String
         get() = "'IntRange' Annotation"
@@ -43,7 +43,7 @@ class IntRangeExtension : GsonPathExtension {
             }
         }
 
-        if (typeName != BOXED_INT && typeName != BOXED_LONG) {
+        if (typeName != boxedInt && typeName != boxedLong) {
             throw ProcessingException("Unexpected type found for field annotated with 'IntRange', only " +
                     "integers and longs are allowed.", fieldInfo.element)
         }
