@@ -1,7 +1,6 @@
 package gsonpath
 
 import com.google.common.collect.Sets
-import com.squareup.javapoet.ClassName
 import gsonpath.generator.HandleResult
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
@@ -27,51 +26,16 @@ open class GsonProcessorImpl : AbstractProcessor() {
     }
 
     private fun processInternal(annotations: Set<TypeElement>, env: RoundEnvironment, logger: Logger) {
-        val supportedAnnotations = getSupportedAnnotations(annotations)
-        val customAnnotations = getCustomAnnotations(annotations)
-
-        // Avoid going any further if no supported annotations are found.
-        if (supportedAnnotations.isEmpty() && customAnnotations.isEmpty()) {
-            return
-        }
-
         println()
         logger.printMessage("Started annotation processing")
 
         val dependencies = DependencyFactory.create(processingEnv)
-        val autoGsonAdapterResults = generateGsonAdapters(env, logger, customAnnotations, dependencies)
+        val autoGsonAdapterResults = StandardAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies)
 
         generateTypeAdapterFactories(env, dependencies, autoGsonAdapterResults)
 
         logger.printMessage("Finished annotation processing")
         println()
-    }
-
-    private fun getCustomAnnotations(annotations: Set<TypeElement>) =
-            annotations.filter { it.getAnnotation(AutoGsonAdapter::class.java) != null }
-
-    private fun getSupportedAnnotations(annotations: Set<TypeElement>) =
-            annotations
-                    .asSequence()
-                    .map(ClassName::get)
-                    .filter { annotationClassName ->
-                        annotationClassName == ClassName.get(AutoGsonAdapter::class.java) ||
-                                annotationClassName == ClassName.get(AutoGsonAdapterFactory::class.java)
-                    }
-                    .toList()
-
-    private fun generateGsonAdapters(
-            env: RoundEnvironment,
-            logger: Logger,
-            customAnnotations: List<TypeElement>,
-            dependencies: Dependencies): List<HandleResult> {
-
-        return getAnnotatedModelElements(env, customAnnotations)
-                .map { (element, autoGsonAdapter) ->
-                    logger.printMessage("Generating TypeAdapter ($element)")
-
-                    dependencies.autoGsonAdapterGenerator.handle(element, autoGsonAdapter)
-                }
     }
 
     private fun generateTypeAdapterFactories(
@@ -106,32 +70,4 @@ open class GsonProcessorImpl : AbstractProcessor() {
     override fun getSupportedSourceVersion(): SourceVersion {
         return SourceVersion.latestSupported()
     }
-
-    private fun getAnnotatedModelElements(env: RoundEnvironment,
-                                          customAnnotations: List<TypeElement>): Set<ElementAndAutoGson> {
-        return env
-                .getElementsAnnotatedWith(AutoGsonAdapter::class.java)
-                .asSequence()
-                .map {
-                    ElementAndAutoGson(it as TypeElement, it.getAnnotation(AutoGsonAdapter::class.java))
-                }
-                .filter {
-                    !customAnnotations.contains(it.element)
-                }
-                .plus(
-                        customAnnotations.flatMap { customAnnotation ->
-                            env
-                                    .getElementsAnnotatedWith(customAnnotation)
-                                    .map {
-                                        ElementAndAutoGson(it as TypeElement, customAnnotation.getAnnotation(AutoGsonAdapter::class.java))
-                                    }
-                        }
-                )
-                .toSet()
-    }
-
-    private data class ElementAndAutoGson(
-            val element: TypeElement,
-            val autoGsonAdapter: AutoGsonAdapter
-    )
 }
