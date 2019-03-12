@@ -24,7 +24,7 @@ import javax.annotation.Generated;
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class class ItemsGsonSubtype_GsonTypeAdapter extends TypeAdapter<Type> {
+public final class class Type_GsonTypeAdapter extends TypeAdapter<Type> {
     private final Map<Boolean, TypeAdapter<? extends Type>> typeAdaptersDelegatedByValueMap;
 
     private final Map<Class<? extends Type>, TypeAdapter<? extends Type>> typeAdaptersDelegatedByClassMap;
