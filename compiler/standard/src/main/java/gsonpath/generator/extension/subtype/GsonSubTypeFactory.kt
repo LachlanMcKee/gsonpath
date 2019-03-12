@@ -1,6 +1,5 @@
 package gsonpath.generator.extension.subtype
 
-import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
 import com.google.gson.TypeAdapter
@@ -17,37 +16,9 @@ import javax.lang.model.element.Modifier
 
 object GsonSubTypeFactory {
 
-    /**
-     * Creates the gson 'subtype' type adapter inside of the root level class.
-     * <p>
-     * Only gson fields that are annotated with 'GsonSubtype' should invoke this method
-     */
-    fun createSubTypeAdapter(
+    fun createSubTypeMetadata(
             elementTypeName: TypeName,
-            subTypeMetadata: SubTypeMetadata): TypeSpec {
-
-        return TypeSpec.classBuilder(subTypeMetadata.className).applyAndBuild {
-            addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-            superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), elementTypeName))
-
-            val result = createSubTypeMetadata(elementTypeName, subTypeMetadata)
-
-            result.fieldSpecs.map(::addField)
-
-            constructor {
-                addModifiers(Modifier.PRIVATE)
-                addParameter(Gson::class.java, Constants.GSON)
-
-                addCode(result.constructorCodeBlock)
-            }
-
-            result.methodSpecs.map(::addMethod)
-        }
-    }
-
-    private fun createSubTypeMetadata(
-            elementTypeName: TypeName,
-            subTypeMetadata: SubTypeMetadata): ExtensionResult2 {
+            subTypeMetadata: SubTypeMetadata): GsonSubTypeResult {
 
         // Create the type adapter delegate map.
         val typeAdapterType = ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), WildcardTypeName.subtypeOf(elementTypeName))
@@ -73,13 +44,11 @@ object GsonSubTypeFactory {
                 }
         )
 
-        return ExtensionResult2(
+        return GsonSubTypeResult(
                 constructorCodeBlock = createSubTypeConstructorCodeBlock(subTypeMetadata),
                 fieldSpecs = fieldSpecs.map(FieldSpec.Builder::build),
-                methodSpecs = listOf(
-                        createReadMethod(subTypeMetadata, elementTypeName),
-                        createWriteMethod(subTypeMetadata, elementTypeName, typeAdapterType)
-                )
+                readMethodSpecs = createReadMethod(subTypeMetadata, elementTypeName),
+                writeMethodSpecs = createWriteMethod(subTypeMetadata, elementTypeName, typeAdapterType)
         )
     }
 
@@ -205,13 +174,6 @@ object GsonSubTypeFactory {
 
         addStatement("$DELEGATE.write(${Constants.OUT}, ${Constants.VALUE})", typeAdapterType)
     }
-
-    data class ExtensionResult2(
-            val constructorCodeBlock: CodeBlock? = null,
-            val fieldSpecs: List<FieldSpec> = emptyList(),
-            val typeSpecs: List<TypeSpec> = emptyList(),
-            val methodSpecs: List<MethodSpec> = emptyList()
-    )
 
     private const val DELEGATE_BY_VALUE_MAP = "typeAdaptersDelegatedByValueMap"
     private const val DELEGATE_BY_CLASS_MAP = "typeAdaptersDelegatedByClassMap"

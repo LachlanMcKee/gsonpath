@@ -1,11 +1,14 @@
 package gsonpath.generator.extension.subtype
 
+import com.google.gson.Gson
+import com.google.gson.TypeAdapter
 import com.squareup.javapoet.*
 import gsonpath.GsonSubTypeFailureOutcome
 import gsonpath.GsonSubtype
 import gsonpath.ProcessingException
 import gsonpath.compiler.ExtensionFieldMetadata
 import gsonpath.compiler.GsonPathExtension
+import gsonpath.generator.Constants
 import gsonpath.generator.Constants.NULL
 import gsonpath.internal.CollectionTypeAdapter
 import gsonpath.internal.StrictArrayTypeAdapter
@@ -75,7 +78,7 @@ class GsonSubTypeExtension(
                 fieldInfo.fieldName,
                 fieldInfo.element)
 
-        val subTypeAdapterSpec = GsonSubTypeFactory.createSubTypeAdapter(elementTypeName, subTypeMetadata)
+        val subTypeAdapterSpec = createSubTypeAdapter(elementTypeName, subTypeMetadata)
 
         val typeAdapterDetails = when (category) {
             is GsonSubTypeCategory.MultipleValues -> {
@@ -163,6 +166,36 @@ class GsonSubTypeExtension(
             }
         }
     }
+
+    /**
+     * Creates the gson 'subtype' type adapter inside of the root level class.
+     * <p>
+     * Only gson fields that are annotated with 'GsonSubtype' should invoke this method
+     */
+    private fun createSubTypeAdapter(
+            elementTypeName: TypeName,
+            subTypeMetadata: SubTypeMetadata): TypeSpec {
+
+        return TypeSpec.classBuilder(subTypeMetadata.className).applyAndBuild {
+            addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+            superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), elementTypeName))
+
+            val result = GsonSubTypeFactory.createSubTypeMetadata(elementTypeName, subTypeMetadata)
+
+            result.fieldSpecs.map(::addField)
+
+            constructor {
+                addModifiers(Modifier.PRIVATE)
+                addParameter(Gson::class.java, Constants.GSON)
+
+                addCode(result.constructorCodeBlock)
+            }
+
+            addMethod(result.readMethodSpecs)
+            addMethod(result.writeMethodSpecs)
+        }
+    }
+
 
     private sealed class TypeAdapterDetails(val typeName: TypeName) {
         object ArrayTypeAdapter : TypeAdapterDetails(arrayTypeAdapterClassName)
