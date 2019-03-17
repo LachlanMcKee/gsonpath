@@ -31,6 +31,7 @@ open class GsonProcessorImpl : AbstractProcessor() {
 
         val dependencies = DependencyFactory.create(processingEnv)
         val autoGsonAdapterResults = StandardAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies)
+                .plus(SubTypeAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies))
 
         generateTypeAdapterFactories(env, dependencies, autoGsonAdapterResults)
 
