@@ -1,5 +1,8 @@
 package gsonpath;
 
+import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
@@ -27,5 +30,13 @@ public class GsonUtil {
             return false;
         }
         return true;
+    }
+
+    public static TypeAdapter getGenericAdapter(Gson gson, TypeToken token) {
+        return gson.getAdapter(token);
+    }
+
+    public static TypeAdapter getGenericAdapter(Gson gson, Class clazz) {
+        return gson.getAdapter(clazz);
     }
 }

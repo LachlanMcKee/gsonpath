@@ -45,3 +45,10 @@ class SealedClassSample(
 
         val value2: String?
 )
+
+@AutoGsonAdapter
+data class SealedClassPojo(
+        val value1: String?,
+        val item: Type,
+        val value2: String?
+)

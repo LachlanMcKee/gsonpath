@@ -5,6 +5,7 @@ import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
+import gsonpath.GsonUtil
 import gsonpath.ProcessingException
 import gsonpath.generator.Constants.GET_ADAPTER
 import gsonpath.generator.Constants.NULL
@@ -193,10 +194,15 @@ class WriteFunctions(private val extensionsHandler: ExtensionsHandler) {
                 }
             }
             fieldTypeName is ParameterizedTypeName -> {
-                addStatement("$GET_ADAPTER(new com.google.gson.reflect.TypeToken<\$T>(){}).write($OUT, $objectName)", fieldTypeName.box())
+                addStatement("\$T.getGenericAdapter(mGson, new com.google.gson.reflect.TypeToken<\$T>(){}).write($OUT, $objectName)", GsonUtil::class.java, fieldTypeName.box())
             }
             else -> {
-                addStatement("$GET_ADAPTER(\$T.class).write($OUT, $objectName)", fieldTypeName.box())
+                if (fieldTypeName.isPrimitive) {
+                    addStatement("$GET_ADAPTER(\$T.class).write($OUT, $objectName)", fieldTypeName.box())
+
+                } else {
+                    addStatement("\$T.getGenericAdapter(mGson, $objectName.getClass()).write($OUT, $objectName)", GsonUtil::class.java)
+                }
             }
         }
     }
