@@ -72,6 +72,26 @@ open class GsonProcessorImpl : AbstractProcessor() {
 
                     dependencies.autoGsonAdapterGenerator.handle(element, autoGsonAdapter)
                 }
+<<<<<<< Updated upstream
+=======
+
+        // Print the extensions for auditing purposes.
+        extensions.forEach {
+            printMessage("Extension found: " + it.extensionName)
+        }
+
+        return extensions.plus(arrayOf(
+                IntDefExtension(),
+                StringDefExtension(),
+                EmptyToNullExtension(),
+                FlattenJsonExtension(),
+                RemoveInvalidElementsExtension(),
+                FloatRangeExtension(),
+                IntRangeExtension(),
+                SizeExtension(),
+                GsonSubTypeExtension(typeHandler, SubTypeMetadataFactoryImpl(typeHandler))
+        ))
+>>>>>>> Stashed changes
     }
 
     private fun generateTypeAdapterFactories(

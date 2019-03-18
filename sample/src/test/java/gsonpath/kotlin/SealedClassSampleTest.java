@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 public class SealedClassSampleTest {
     @Test
     public void testWithAllValues() {
-        SealedClassSample model = runTest("SealedClassSample.json");
+        SealedClassSampleWithArray model = runTest(SealedClassSampleWithArray.class, "SealedClassSample.json");
 
         Type item1 = model.getItems()[0];
         Assert.assertEquals("Type1 Example", item1.getName());
@@ -28,7 +28,16 @@ public class SealedClassSampleTest {
         Assert.assertEquals("123", ((Type.Type3) item3).getStringTest());
     }
 
-    private SealedClassSample runTest(String fileName) {
+    @Test
+    public void testSinglePojo() {
+        SealedClassSampleWithPojo model = runTest(SealedClassSampleWithPojo.class, "SealedClassSample.json");
+
+        Type item1 = model.getItem();
+        Assert.assertEquals("Type1 Example", item1.getName());
+        Assert.assertEquals(1, ((Type.Type1) item1).getIntTest());
+    }
+
+    private <T> T runTest(Class<T> clazz, String fileName) {
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory.class));
 
@@ -36,6 +45,6 @@ public class SealedClassSampleTest {
         InputStream resourceAsStream = classLoader.getResourceAsStream(fileName);
 
         Gson gson = builder.create();
-        return gson.fromJson(new InputStreamReader(resourceAsStream), SealedClassSample.class);
+        return gson.fromJson(new InputStreamReader(resourceAsStream), clazz);
     }
 }
