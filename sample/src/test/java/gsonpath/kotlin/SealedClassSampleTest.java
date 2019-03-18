@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 public class SealedClassSampleTest {
     @Test
     public void testWithAllValues() {
-        SealedClassSample model = runTest("SealedClassSample.json");
+        SealedClassArray model = runTest(SealedClassArray.class, "SealedClassSample.json");
 
         Type item1 = model.getItems()[0];
         Assert.assertEquals("Type1 Example", item1.getName());
@@ -44,11 +44,20 @@ public class SealedClassSampleTest {
         Assert.assertEquals(json, createGson().toJson(pojo));
     }
 
-    private SealedClassSample runTest(String fileName) {
+    @Test
+    public void testSinglePojo() {
+        SealedClassSubTypePojo model = runTest(SealedClassSubTypePojo.class, "SealedClassSample.json");
+
+        Type item1 = model.getItem();
+        Assert.assertEquals("Type1 Example", item1.getName());
+        Assert.assertEquals(1, ((Type.Type1) item1).getIntTest());
+    }
+
+    private <T> T runTest(Class<T> clazz, String fileName) {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         InputStream resourceAsStream = classLoader.getResourceAsStream(fileName);
 
-        return createGson().fromJson(new InputStreamReader(resourceAsStream), SealedClassSample.class);
+        return createGson().fromJson(new InputStreamReader(resourceAsStream), clazz);
     }
 
     private Gson createGson() {

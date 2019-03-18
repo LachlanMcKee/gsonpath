@@ -29,6 +29,7 @@ import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Modifier
 
 class GsonSubTypeExtension(
+        private val typeHandler: TypeHandler,
         private val subTypeMetadataFactory: SubTypeMetadataFactory) : GsonPathExtension {
 
     override val extensionName: String
@@ -38,7 +39,9 @@ class GsonSubTypeExtension(
         return when (val fieldType = fieldInfo.fieldType) {
             is FieldType.MultipleValues -> GsonSubTypeCategory.MultipleValues(fieldType)
             is FieldType.Other -> {
-                if (!fieldInfo.element.enclosingElement.modifiers.contains(Modifier.FINAL)) {
+                val fieldElement = typeHandler.asElement(fieldInfo.fieldType.elementTypeMirror)
+
+                if (!fieldElement!!.modifiers.contains(Modifier.FINAL)) {
                     GsonSubTypeCategory.SingleValue(fieldType)
                 } else {
                     null

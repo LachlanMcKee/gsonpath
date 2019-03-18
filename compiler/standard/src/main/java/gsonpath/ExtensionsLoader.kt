@@ -41,7 +41,7 @@ object ExtensionsLoader {
                 FloatRangeExtension(),
                 IntRangeExtension(),
                 SizeExtension(),
-                GsonSubTypeExtension(SubTypeMetadataFactoryImpl(typeHandler))
+                GsonSubTypeExtension(typeHandler, SubTypeMetadataFactoryImpl(typeHandler))
         ))
     }
 }
