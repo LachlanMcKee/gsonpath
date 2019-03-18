@@ -132,13 +132,13 @@ public final class TestValidInterface_GsonTypeAdapter extends TypeAdapter<TestVa
         Integer obj0 = value.getValue1();
         if (obj0 != null) {
             out.name("Nest1");
-            mGson.getAdapter(Integer.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0)
         }
 
         Integer obj1 = value.getValue3();
         if (obj1 != null) {
             out.name("Nest3");
-            mGson.getAdapter(Integer.class).write(out, obj1);
+            writeWithGenericAdapter(mGson, obj1.getClass(), out, obj1)
         }
 
         // End Json1
@@ -146,19 +146,19 @@ public final class TestValidInterface_GsonTypeAdapter extends TypeAdapter<TestVa
         Integer obj2 = value.getValue2();
         if (obj2 != null) {
             out.name("value2");
-            mGson.getAdapter(Integer.class).write(out, obj2);
+            writeWithGenericAdapter(mGson, obj2.getClass(), out, obj2)
         }
 
         Integer obj3 = value.getResult();
         if (obj3 != null) {
             out.name("result");
-            mGson.getAdapter(Integer.class).write(out, obj3);
+            writeWithGenericAdapter(mGson, obj3.getClass(), out, obj3)
         }
 
         Integer obj4 = value.getThat();
         if (obj4 != null) {
             out.name("that");
-            mGson.getAdapter(Integer.class).write(out, obj4);
+            writeWithGenericAdapter(mGson, obj4.getClass(), out, obj4)
         }
 
         // End

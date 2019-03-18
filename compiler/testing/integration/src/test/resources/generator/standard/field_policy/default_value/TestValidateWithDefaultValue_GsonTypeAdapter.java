@@ -75,7 +75,7 @@ public final class TestValidateWithDefaultValue_GsonTypeAdapter extends TypeAdap
         Integer obj0 = value.mandatoryWithDefault;
         if (obj0 != null) {
             out.name("mandatoryWithDefault");
-            mGson.getAdapter(Integer.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0)
         }
 
         // End

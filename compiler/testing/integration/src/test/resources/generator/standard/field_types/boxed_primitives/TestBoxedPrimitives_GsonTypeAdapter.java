@@ -155,55 +155,55 @@ public final class TestBoxedPrimitives_GsonTypeAdapter extends TypeAdapter<TestB
         String obj0 = value.value1;
         if (obj0 != null) {
             out.name("value1");
-            mGson.getAdapter(String.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0);
         }
 
         Boolean obj1 = value.value2;
         if (obj1 != null) {
             out.name("value2");
-            mGson.getAdapter(Boolean.class).write(out, obj1);
+            writeWithGenericAdapter(mGson, obj1.getClass(), out, obj1)
         }
 
         Integer obj2 = value.value3;
         if (obj2 != null) {
             out.name("value3");
-            mGson.getAdapter(Integer.class).write(out, obj2);
+            writeWithGenericAdapter(mGson, obj2.getClass(), out, obj2)
         }
 
         Double obj3 = value.value4;
         if (obj3 != null) {
             out.name("value4");
-            mGson.getAdapter(Double.class).write(out, obj3);
+            writeWithGenericAdapter(mGson, obj3.getClass(), out, obj3)
         }
 
         Long obj4 = value.value5;
         if (obj4 != null) {
             out.name("value5");
-            mGson.getAdapter(Long.class).write(out, obj4);
+            writeWithGenericAdapter(mGson, obj4.getClass(), out, obj4)
         }
 
         Byte obj5 = value.value6;
         if (obj5 != null) {
             out.name("value6");
-            mGson.getAdapter(Byte.class).write(out, obj5);
+            writeWithGenericAdapter(mGson, obj5.getClass(), out, obj5)
         }
 
         Short obj6 = value.value7;
         if (obj6 != null) {
             out.name("value7");
-            mGson.getAdapter(Short.class).write(out, obj6);
+            writeWithGenericAdapter(mGson, obj6.getClass(), out, obj6)
         }
 
         Float obj7 = value.value8;
         if (obj7 != null) {
             out.name("value8");
-            mGson.getAdapter(Float.class).write(out, obj7);
+            writeWithGenericAdapter(mGson, obj7.getClass(), out, obj7)
         }
 
         Character obj8 = value.value9;
         if (obj8 != null) {
             out.name("value9");
-            mGson.getAdapter(Character.class).write(out, obj8);
+            writeWithGenericAdapter(mGson, obj8.getClass(), out, obj8)
         }
 
         // End

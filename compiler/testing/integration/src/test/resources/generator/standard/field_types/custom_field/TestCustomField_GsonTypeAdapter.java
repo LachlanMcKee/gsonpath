@@ -75,7 +75,7 @@ public final class TestCustomField_GsonTypeAdapter extends TypeAdapter<TestCusto
         Currency obj0 = value.value1;
         if (obj0 != null) {
             out.name("value1");
-            mGson.getAdapter(Currency.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0)
         }
 
         // End

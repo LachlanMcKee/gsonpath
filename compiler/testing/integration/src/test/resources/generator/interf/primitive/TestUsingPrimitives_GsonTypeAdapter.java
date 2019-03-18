@@ -209,25 +209,25 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends TypeAdapter<TestU
         int[] obj4 = value.getIntArrayExample();
         if (obj4 != null) {
             out.name("intArrayExample");
-            mGson.getAdapter(int[].class).write(out, obj4);
+            writeWithGenericAdapter(mGson, obj4.getClass(), out, obj4);
         }
 
         long[] obj5 = value.getLongArrayExample();
         if (obj5 != null) {
             out.name("longArrayExample");
-            mGson.getAdapter(long[].class).write(out, obj5);
+            writeWithGenericAdapter(mGson, obj5.getClass(), out, obj5);
         }
 
         double[] obj6 = value.getDoubleArrayExample();
         if (obj6 != null) {
             out.name("doubleArrayExample");
-            mGson.getAdapter(double[].class).write(out, obj6);
+            writeWithGenericAdapter(mGson, obj6.getClass(), out, obj6);
         }
 
         boolean[] obj7 = value.getBooleanArrayExample();
         if (obj7 != null) {
             out.name("booleanArrayExample");
-            mGson.getAdapter(boolean[].class).write(out, obj7);
+            writeWithGenericAdapter(mGson, obj7.getClass(), out, obj7);
         }
 
         // End

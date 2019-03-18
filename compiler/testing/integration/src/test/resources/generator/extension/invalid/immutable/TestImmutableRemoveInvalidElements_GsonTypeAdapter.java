@@ -89,7 +89,7 @@ public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends Ty
         String[] obj0 = value.getValue1();
         if (obj0 != null) {
             out.name("value1");
-            mGson.getAdapter(String[].class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0)
         }
 
         List<String> obj1 = value.getValue2();

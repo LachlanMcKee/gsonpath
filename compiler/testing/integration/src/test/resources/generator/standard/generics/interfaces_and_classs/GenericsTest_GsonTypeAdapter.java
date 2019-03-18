@@ -93,7 +93,7 @@ public final class GenericsTest_GsonTypeAdapter extends TypeAdapter<GenericsTest
         String obj0 = value.value1;
         if (obj0 != null) {
             out.name("value1");
-            mGson.getAdapter(String.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0);
         }
 
         Map<String, Integer> obj1 = value.value2;
@@ -105,7 +105,7 @@ public final class GenericsTest_GsonTypeAdapter extends TypeAdapter<GenericsTest
         Double obj2 = value.value3;
         if (obj2 != null) {
             out.name("value3");
-            mGson.getAdapter(Double.class).write(out, obj2);
+            writeWithGenericAdapter(mGson, obj2.getClass(), out, obj2)
         }
 
         // End

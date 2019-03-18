@@ -70,7 +70,7 @@ public final class TestJava8Interface_GsonTypeAdapter extends TypeAdapter<TestJa
         Integer obj0 = value.getValue1();
         if (obj0 != null) {
             out.name("value1");
-            mGson.getAdapter(Integer.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0);
         }
 
         // End

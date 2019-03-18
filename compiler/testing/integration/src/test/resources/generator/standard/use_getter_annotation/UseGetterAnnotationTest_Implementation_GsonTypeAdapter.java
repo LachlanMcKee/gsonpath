@@ -165,7 +165,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
         String obj0 = value.getName();
         if (obj0 != null) {
             out.name("name");
-            mGson.getAdapter(String.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0);
         }
 
         // End common

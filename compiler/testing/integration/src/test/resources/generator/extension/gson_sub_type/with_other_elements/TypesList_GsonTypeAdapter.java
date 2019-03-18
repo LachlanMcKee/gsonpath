@@ -109,7 +109,7 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
         String obj0 = value.other1;
         if (obj0 != null) {
             out.name("other1");
-            mGson.getAdapter(String.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0);
         }
 
         Type[] obj1 = value.items;
@@ -122,7 +122,7 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
         String obj2 = value.other2;
         if (obj2 != null) {
             out.name("other2");
-            mGson.getAdapter(String.class).write(out, obj2);
+            writeWithGenericAdapter(mGson, obj2.getClass(), out, obj2);
         }
 
         // End

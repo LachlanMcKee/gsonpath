@@ -146,13 +146,13 @@ public final class TestUsingInheritance_GsonTypeAdapter extends TypeAdapter<Test
         Integer obj0 = value.getValue3();
         if (obj0 != null) {
             out.name("value3");
-            mGson.getAdapter(Integer.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0);
         }
 
         Integer obj1 = value.getValue1();
         if (obj1 != null) {
             out.name("value1");
-            mGson.getAdapter(Integer.class).write(out, obj1);
+            writeWithGenericAdapter(mGson, obj1.getClass(), out, obj1);
         }
 
 
@@ -162,7 +162,7 @@ public final class TestUsingInheritance_GsonTypeAdapter extends TypeAdapter<Test
         Integer obj2 = value.getValue2();
         if (obj2 != null) {
             out.name("Nest2");
-            mGson.getAdapter(Integer.class).write(out, obj2);
+            writeWithGenericAdapter(mGson, obj2.getClass(), out, obj2);
         }
 
         // End Json1

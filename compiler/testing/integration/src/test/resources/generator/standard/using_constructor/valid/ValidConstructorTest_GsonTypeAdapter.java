@@ -148,7 +148,7 @@ public final class ValidConstructorTest_GsonTypeAdapter extends TypeAdapter<Vali
         String obj0 = value.getValue1();
         if (obj0 != null) {
             out.name("value1");
-            mGson.getAdapter(String.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0);
         }
 
         // End parentchild
@@ -162,7 +162,7 @@ public final class ValidConstructorTest_GsonTypeAdapter extends TypeAdapter<Vali
         Boolean obj2 = value.isBooleanTest2();
         if (obj2 != null) {
             out.name("isBooleanTest2");
-            mGson.getAdapter(Boolean.class).write(out, obj2);
+            writeWithGenericAdapter(mGson, obj2.getClass(), out, obj2)
         }
 
         // End

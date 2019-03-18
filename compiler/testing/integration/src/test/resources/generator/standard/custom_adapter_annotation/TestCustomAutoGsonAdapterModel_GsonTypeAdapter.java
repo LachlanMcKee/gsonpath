@@ -133,7 +133,7 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends TypeAd
         Integer obj0 = value.expectedValue;
         out.name("expectedValue");
         if (obj0 != null) {
-            mGson.getAdapter(Integer.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0)
         } else {
             out.nullValue();
         }

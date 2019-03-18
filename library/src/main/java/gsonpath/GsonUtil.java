@@ -1,7 +1,10 @@
 package gsonpath;
 
+import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 
@@ -27,5 +30,10 @@ public class GsonUtil {
             return false;
         }
         return true;
+    }
+
+    public static <T> void writeWithGenericAdapter(Gson gson, Class<? extends T> clazz, JsonWriter out, T obj0) throws IOException {
+        TypeAdapter adapter = gson.getAdapter(clazz);
+        adapter.write(out, obj0);
     }
 }

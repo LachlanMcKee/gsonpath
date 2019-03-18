@@ -172,13 +172,13 @@ public final class TestCustomSerializedNameModel_GsonTypeAdapter extends TypeAda
         String obj0 = value.value1;
         if (obj0 != null) {
             out.name("value1");
-            mGson.getAdapter(String.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0);
         }
 
         String obj1 = value.valueX;
         if (obj1 != null) {
             out.name("value2");
-            mGson.getAdapter(String.class).write(out, obj1);
+            writeWithGenericAdapter(mGson, obj1.getClass(), out, obj1)
         }
 
 
@@ -188,13 +188,13 @@ public final class TestCustomSerializedNameModel_GsonTypeAdapter extends TypeAda
         String obj2 = value.value3;
         if (obj2 != null) {
             out.name("value3");
-            mGson.getAdapter(String.class).write(out, obj2);
+            writeWithGenericAdapter(mGson, obj2.getClass(), out, obj2);
         }
 
         String obj3 = value.value3b;
         if (obj3 != null) {
             out.name("value3b");
-            mGson.getAdapter(String.class).write(out, obj3);
+            writeWithGenericAdapter(mGson, obj3.getClass(), out, obj3)
         }
 
         // End nestsecond
@@ -202,13 +202,13 @@ public final class TestCustomSerializedNameModel_GsonTypeAdapter extends TypeAda
         String obj4 = value.value1b;
         if (obj4 != null) {
             out.name("value1b");
-            mGson.getAdapter(String.class).write(out, obj4);
+            writeWithGenericAdapter(mGson, obj4.getClass(), out, obj4)
         }
 
         String obj5 = value.valueXb;
         if (obj5 != null) {
             out.name("value2b");
-            mGson.getAdapter(String.class).write(out, obj5);
+            writeWithGenericAdapter(mGson, obj5.getClass(), out, obj5)
         }
 
         // End nest

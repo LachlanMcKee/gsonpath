@@ -86,7 +86,7 @@ public final class TestImmutableSize_GsonTypeAdapter extends TypeAdapter<TestImm
         String[] obj0 = value.getValue1();
         if (obj0 != null) {
             out.name("value1");
-            mGson.getAdapter(String[].class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0)
         }
 
         // End

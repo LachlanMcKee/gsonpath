@@ -144,7 +144,7 @@ public final class TestSerializeNulls_GsonTypeAdapter extends TypeAdapter<TestSe
         String obj3 = value.value4;
         out.name("value4");
         if (obj3 != null) {
-            mGson.getAdapter(String.class).write(out, obj3);
+            writeWithGenericAdapter(mGson, obj3.getClass(), out, obj3)
         } else {
             out.nullValue();
         }
@@ -152,7 +152,7 @@ public final class TestSerializeNulls_GsonTypeAdapter extends TypeAdapter<TestSe
         Integer obj4 = value.value5;
         out.name("value5");
         if (obj4 != null) {
-            mGson.getAdapter(Integer.class).write(out, obj4);
+            writeWithGenericAdapter(mGson, obj4.getClass(), out, obj4)
         } else {
             out.nullValue();
         }
@@ -160,7 +160,7 @@ public final class TestSerializeNulls_GsonTypeAdapter extends TypeAdapter<TestSe
         Double obj5 = value.value6;
         out.name("value6");
         if (obj5 != null) {
-            mGson.getAdapter(Double.class).write(out, obj5);
+            writeWithGenericAdapter(mGson, obj5.getClass(), out, obj5)
         } else {
             out.nullValue();
         }
@@ -168,7 +168,7 @@ public final class TestSerializeNulls_GsonTypeAdapter extends TypeAdapter<TestSe
         Boolean obj6 = value.value7;
         out.name("value7");
         if (obj6 != null) {
-            mGson.getAdapter(Boolean.class).write(out, obj6);
+            writeWithGenericAdapter(mGson, obj6.getClass(), out, obj6)
         } else {
             out.nullValue();
         }

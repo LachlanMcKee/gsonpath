@@ -93,13 +93,13 @@ public final class TestNoValidation_GsonTypeAdapter extends TypeAdapter<TestNoVa
         Integer obj0 = value.optional1;
         if (obj0 != null) {
             out.name("optional1");
-            mGson.getAdapter(Integer.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0)
         }
 
         Integer obj1 = value.optional2;
         if (obj1 != null) {
             out.name("optional2");
-            mGson.getAdapter(Integer.class).write(out, obj1);
+            writeWithGenericAdapter(mGson, obj1.getClass(), out, obj1)
         }
 
         int obj2 = value.optional3;

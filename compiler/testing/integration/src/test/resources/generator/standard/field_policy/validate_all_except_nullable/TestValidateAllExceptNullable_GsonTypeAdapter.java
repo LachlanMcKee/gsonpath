@@ -125,19 +125,19 @@ public final class TestValidateAllExceptNullable_GsonTypeAdapter extends TypeAda
         Integer obj0 = value.mandatory1;
         if (obj0 != null) {
             out.name("mandatory1");
-            mGson.getAdapter(Integer.class).write(out, obj0);
+            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0)
         }
 
         Integer obj1 = value.mandatory2;
         if (obj1 != null) {
             out.name("mandatory2");
-            mGson.getAdapter(Integer.class).write(out, obj1);
+            writeWithGenericAdapter(mGson, obj1.getClass(), out, obj1)
         }
 
         Integer obj2 = value.optional1;
         if (obj2 != null) {
             out.name("optional1");
-            mGson.getAdapter(Integer.class).write(out, obj2);
+            writeWithGenericAdapter(mGson, obj2.getClass(), out, obj2)
         }
 
         // End
