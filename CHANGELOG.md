@@ -1,6 +1,37 @@
 Change Log
 ===========
 
+Version 3.2.0 *(2019-03-18)*
+----------------------------
+
+* Fix: The new GsonSubType changes made in 3.1.0 would fail if enclosed within a final class. This no longer occurs.
+* Fix / breaking change: The generated `TypeAdapter` will now delegate the writing of a field to the `TypeAdapter` belonging to the instance's type, rather than the defined type. This means in situations where inheritance is used, the concrete implementation will be used for writing, rather than the base type. For reads, there is no change in behaviour.
+
+e.g.
+ ```java
+ class Type {}
+ 
+ @AutoGsonAdapter
+ class Type1 extends Type {}
+ 
+ @AutoGsonAdapter
+ class SubTypesExample {
+     Type item;
+ }
+ ```
+ 
+ And a Kotlin example would be:
+
+ ```kotlin
+ sealed class Type {
+     @AutoGsonAdapter
+     data class Type1(val value: String) : Type()
+     
+     @AutoGsonAdapter
+     data class Type2(val value: Int) : Type()
+ }
+ ```
+
 Version 3.1.0 *(2019-02-23)*
 ----------------------------
 
