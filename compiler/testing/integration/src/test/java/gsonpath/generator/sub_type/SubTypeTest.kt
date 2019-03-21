@@ -7,11 +7,20 @@ import org.junit.Test
 class SubTypeTest {
 
     @Test
-    fun testSubType() {
-        assertGeneratedContent(TestCriteria("generator/gson_sub_type",
+    fun testDirectlyAnnotatedSubType() {
+        assertGeneratedContent(TestCriteria("generator/gson_sub_type/directly_annotated",
                 absoluteSourceNames = listOf("generator/standard/TestGsonTypeFactory.java"),
-                relativeSourceNames = listOf("Type.java"),
-                relativeGeneratedNames = listOf("Type_GsonTypeAdapter.java")
+                relativeSourceNames = listOf("DirectlyAnnotatedSubType.java"),
+                relativeGeneratedNames = listOf("DirectlyAnnotatedSubType_GsonTypeAdapter.java")
+        ))
+    }
+
+    @Test
+    fun testIndirectlyAnnotatedSubType() {
+        assertGeneratedContent(TestCriteria("generator/gson_sub_type/indirectly_annotated",
+                absoluteSourceNames = listOf("generator/standard/TestGsonTypeFactory.java"),
+                relativeSourceNames = listOf("IndirectlyAnnotatedSubType.java"),
+                relativeGeneratedNames = listOf("IndirectlyAnnotatedSubType_GsonTypeAdapter.java")
         ))
     }
 }
