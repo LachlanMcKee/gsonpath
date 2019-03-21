@@ -53,6 +53,14 @@ public class SealedClassSampleTest {
         Assert.assertEquals(1, ((Type.Type1) item1).getIntTest());
     }
 
+    @Test
+    public void testAnnotatedSealedClass() {
+        Type model = runTest(Type.class, "SealedClassSample_SingleType.json");
+
+        Assert.assertEquals("Type3 Example", model.getName());
+        Assert.assertEquals("123", ((Type.Type3) model).getStringTest());
+    }
+
     private <T> T runTest(Class<T> clazz, String fileName) {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         InputStream resourceAsStream = classLoader.getResourceAsStream(fileName);

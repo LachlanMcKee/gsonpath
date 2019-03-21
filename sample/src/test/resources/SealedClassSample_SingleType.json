@@ -1,0 +1,9 @@
+{
+  "type": "type3",
+  "common": {
+    "name": "Type3 Example"
+  },
+  "specific": {
+    "stringTest": "123"
+  }
+}
