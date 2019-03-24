@@ -4,6 +4,7 @@ import gsonpath.generator.adapter.AdapterModelMetadataFactory
 import gsonpath.generator.adapter.AutoGsonAdapterGenerator
 import gsonpath.generator.adapter.read.ReadFunctions
 import gsonpath.generator.adapter.write.WriteFunctions
+import gsonpath.generator.enums.EnumGsonAdapterGenerator
 import gsonpath.generator.extension.subtype.SubTypeMetadataFactoryImpl
 import gsonpath.generator.factory.TypeAdapterFactoryGenerator
 import gsonpath.generator.interf.InterfaceModelMetadataFactory
@@ -55,8 +56,13 @@ object DependencyFactory {
                 fileWriter = fileWriter,
                 typeAdapterFactoryGenerator = TypeAdapterFactoryGenerator(
                         fileWriter),
-                subTypeMetadataFactory = SubTypeMetadataFactoryImpl(typeHandler),
-                enumAdapterFactory = EnumAdapterFactory(typeHandler, annotationFetcher, fieldNamingPolicyMapper)
+                subTypeMetadataFactory = SubTypeMetadataFactoryImpl(
+                        typeHandler),
+                enumGsonAdapterGenerator = EnumGsonAdapterGenerator(
+                        typeHandler,
+                        fileWriter,
+                        annotationFetcher,
+                        fieldNamingPolicyMapper)
         )
     }
 }
