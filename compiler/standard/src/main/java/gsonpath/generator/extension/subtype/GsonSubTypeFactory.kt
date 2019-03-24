@@ -4,14 +4,12 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
 import com.google.gson.TypeAdapter
 import com.google.gson.internal.Streams
-import com.google.gson.stream.JsonReader
-import com.google.gson.stream.JsonWriter
 import com.squareup.javapoet.*
 import gsonpath.GsonSubTypeFailureException
 import gsonpath.GsonSubTypeFailureOutcome
+import gsonpath.generator.AdapterMethodBuilder
 import gsonpath.generator.Constants
 import gsonpath.util.*
-import java.io.IOException
 import javax.lang.model.element.Modifier
 
 object GsonSubTypeFactory {
@@ -81,11 +79,8 @@ object GsonSubTypeFactory {
      */
     private fun createReadMethod(
             subTypeMetadata: SubTypeMetadata,
-            rawTypeName: TypeName) = MethodSpecExt.overrideMethodBuilder("read").applyAndBuild {
+            rawTypeName: TypeName) = AdapterMethodBuilder.createReadMethodBuilder(rawTypeName).applyAndBuild {
 
-        returns(rawTypeName)
-        addParameter(JsonReader::class.java, Constants.IN)
-        addException(IOException::class.java)
         code {
             val fieldName = subTypeMetadata.fieldName
             createVariable(JsonElement::class.java,
@@ -151,11 +146,8 @@ object GsonSubTypeFactory {
     private fun createWriteMethod(
             subTypeMetadata: SubTypeMetadata,
             rawTypeName: TypeName,
-            typeAdapterType: TypeName) = MethodSpecExt.overrideMethodBuilder("write").applyAndBuild {
+            typeAdapterType: TypeName) = AdapterMethodBuilder.createWriteMethodBuilder(rawTypeName).applyAndBuild {
 
-        addParameter(JsonWriter::class.java, Constants.OUT)
-        addParameter(rawTypeName, Constants.VALUE)
-        addException(IOException::class.java)
         code {
             `if`("${Constants.VALUE} == ${Constants.NULL}") {
                 addStatement("${Constants.OUT}.nullValue()")

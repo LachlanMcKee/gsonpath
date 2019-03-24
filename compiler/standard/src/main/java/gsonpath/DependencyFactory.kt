@@ -22,9 +22,10 @@ object DependencyFactory {
         val typeHandler = ProcessorTypeHandler(processingEnv)
         val fieldGetterFinder = FieldGetterFinder(typeHandler)
         val annotationFetcher = AnnotationFetcher(typeHandler, fieldGetterFinder)
+        val fieldNamingPolicyMapper = FieldNamingPolicyMapper()
         val gsonObjectFactory = GsonObjectFactory(
                 GsonObjectValidator(),
-                FieldPathFetcher(SerializedNameFetcher, FieldNamingPolicyMapper()))
+                FieldPathFetcher(SerializedNameFetcher, fieldNamingPolicyMapper))
         val gsonObjectTreeFactory = GsonObjectTreeFactory(gsonObjectFactory)
 
         val extensions = ExtensionsLoader.loadExtensions(typeHandler, Logger(processingEnv))
@@ -54,7 +55,8 @@ object DependencyFactory {
                 fileWriter = fileWriter,
                 typeAdapterFactoryGenerator = TypeAdapterFactoryGenerator(
                         fileWriter),
-                subTypeMetadataFactory = SubTypeMetadataFactoryImpl(typeHandler)
+                subTypeMetadataFactory = SubTypeMetadataFactoryImpl(typeHandler),
+                enumAdapterFactory = EnumAdapterFactory(typeHandler, annotationFetcher, fieldNamingPolicyMapper)
         )
     }
 }

@@ -6,8 +6,8 @@ import gsonpath.AutoGsonAdapter;
 
 @AutoGsonAdapter(fieldNamingPolicy = FieldNamingPolicy.LOWER_CASE_WITH_DASHES)
 enum TestEnum {
-    VALUE_1,
-    VALUE_2,
+    VALUE_ABC,
+    VALUE_DEF,
     @SerializedName("custom")
-    VALUE_3
+    VALUE_GHI
 }

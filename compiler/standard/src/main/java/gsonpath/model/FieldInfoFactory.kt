@@ -8,6 +8,7 @@ import gsonpath.NestedJson
 import gsonpath.ProcessingException
 import gsonpath.util.*
 import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.TypeMirror
@@ -49,7 +50,8 @@ class FieldInfoFactory(
         val filterFunc: (Element) -> Boolean = {
 
             // Ignore static and transient fields.
-            !(it.modifiers.contains(Modifier.STATIC) || it.modifiers.contains(Modifier.TRANSIENT)) &&
+            it.kind == ElementKind.FIELD &&
+                    !(it.modifiers.contains(Modifier.STATIC) || it.modifiers.contains(Modifier.TRANSIENT)) &&
 
                     // If a field is final, we only add it if we are using a constructor to assign it.
                     (!it.modifiers.contains(Modifier.FINAL) || useConstructor) &&

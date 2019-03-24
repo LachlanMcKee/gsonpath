@@ -1,11 +1,11 @@
 package gsonpath.generator.adapter.read
 
-import com.google.gson.stream.JsonReader
 import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeSpec
 import gsonpath.ProcessingException
 import gsonpath.compiler.createDefaultVariableValueForTypeName
+import gsonpath.generator.AdapterMethodBuilder
 import gsonpath.generator.Constants.BREAK
 import gsonpath.generator.Constants.CONTINUE
 import gsonpath.generator.Constants.GET_ADAPTER
@@ -14,7 +14,6 @@ import gsonpath.generator.Constants.NULL
 import gsonpath.model.*
 import gsonpath.model.MandatoryFieldInfoFactory.MandatoryFieldInfo
 import gsonpath.util.*
-import java.io.IOException
 
 /**
  * public T read(JsonReader in) throws IOException {
@@ -23,10 +22,7 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
 
     @Throws(ProcessingException::class)
     fun handleRead(typeSpecBuilder: TypeSpec.Builder, params: ReadParams) {
-        typeSpecBuilder.overrideMethod("read") {
-            returns(params.baseElement)
-            addParameter(JsonReader::class.java, IN)
-            addException(IOException::class.java)
+        typeSpecBuilder.addMethod(AdapterMethodBuilder.createReadMethodBuilder(params.baseElement).applyAndBuild {
             code {
                 comment("Ensure the object is not null.")
                 `if`("!isValidValue($IN)") {
@@ -46,7 +42,7 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
                     multiLinedNewObject(params.concreteElement, params.flattenedFields.map { it.variableName })
                 }
             }
-        }
+        })
     }
 
     private fun CodeBlock.Builder.addInitialisationBlock(params: ReadParams) {

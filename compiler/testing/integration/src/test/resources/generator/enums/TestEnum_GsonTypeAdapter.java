@@ -1,16 +1,17 @@
 package generator.enums;
 
+import static gsonpath.GsonUtil.*;
+
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
-import javax.annotation.Generated;
 import java.io.IOException;
+import java.lang.Override;
+import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
-
-import static gsonpath.GsonUtil.isValidValue;
+import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
@@ -24,13 +25,13 @@ public final class TestEnum_GsonTypeAdapter extends TypeAdapter<TestEnum> {
     public TestEnum_GsonTypeAdapter(Gson gson) {
         this.mGson = gson;
 
-        nameToConstant.put("value-1", TestEnum.VALUE_1);
-        nameToConstant.put("value-2", TestEnum.VALUE_2);
-        nameToConstant.put("custom", TestEnum.VALUE_3);
+        nameToConstant.put("value-abc", TestEnum.VALUE_ABC);
+        nameToConstant.put("value-def", TestEnum.VALUE_DEF);
+        nameToConstant.put("custom", TestEnum.VALUE_GHI);
 
-        constantToName.put(TestEnum.VALUE_1, "value-1");
-        constantToName.put(TestEnum.VALUE_2, "value-2");
-        constantToName.put(TestEnum.VALUE_3, "custom");
+        constantToName.put(TestEnum.VALUE_ABC, "value-abc");
+        constantToName.put(TestEnum.VALUE_DEF, "value-def");
+        constantToName.put(TestEnum.VALUE_GHI, "custom");
     }
 
     @Override
