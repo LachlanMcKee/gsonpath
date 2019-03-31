@@ -12,7 +12,7 @@ import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
 
-open class GsonProcessorImpl : AbstractProcessor() {
+open class GsonProcessor : AbstractProcessor() {
 
     override fun process(annotations: Set<TypeElement>?, env: RoundEnvironment): Boolean {
         if (annotations == null) {

@@ -3,7 +3,7 @@ package gsonpath.adapter.standard.extension
 import com.google.common.truth.Truth
 import com.google.testing.compile.JavaFileObjects
 import com.google.testing.compile.JavaSourcesSubjectFactory
-import gsonpath.GsonProcessorImpl
+import gsonpath.GsonProcessor
 import gsonpath.generator.GeneratorTester.assertGeneratedContent
 import gsonpath.generator.TestCriteria
 import org.junit.Test
@@ -121,7 +121,7 @@ class GsonSubTypeExtensionTest {
                         JavaFileObjects.forResource("generator/standard/TestGsonTypeFactory.java"),
                         JavaFileObjects.forResource("generator/extension/gson_sub_type/$folder/$className")
                 ))
-                .processedWith(GsonProcessorImpl())
+                .processedWith(GsonProcessor())
                 .failsToCompile()
                 .withErrorContaining(errorMessage)
     }
