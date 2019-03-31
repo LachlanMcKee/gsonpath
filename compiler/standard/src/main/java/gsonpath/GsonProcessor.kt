@@ -19,8 +19,6 @@ open class GsonProcessor : AbstractProcessor() {
             return false
         }
 
-        val startTime = System.currentTimeMillis()
-
         val logger = Logger(processingEnv)
 
         try {
@@ -28,8 +26,6 @@ open class GsonProcessor : AbstractProcessor() {
         } catch (e: ProcessingException) {
             logger.printError(e.message, e.element)
         }
-
-        logger.printMessage("Duration: ${System.currentTimeMillis() - startTime}")
 
         return false
     }
