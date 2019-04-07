@@ -1,5 +1,6 @@
 package gsonpath.util
 
+import java.util.*
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
@@ -30,8 +31,8 @@ class FieldGetterFinder(private val typeHandler: TypeHandler) {
      */
     private fun isMethodNameGetter(methodElement: Element, variableElement: Element): Boolean {
         val remainder = methodElement.simpleName.toString()
-                .toLowerCase()
-                .replace(variableElement.simpleName.toString().toLowerCase(), "")
+                .toLowerCase(Locale.ENGLISH)
+                .replace(variableElement.simpleName.toString().toLowerCase(Locale.ENGLISH), "")
         return arrayOf("", "is", "has", "get").contains(remainder)
     }
 }

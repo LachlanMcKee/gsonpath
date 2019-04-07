@@ -2,6 +2,8 @@ package gsonpath.dependencies
 
 import gsonpath.adapter.common.SubTypeMetadataFactory
 import gsonpath.adapter.common.SubTypeMetadataFactoryImpl
+import gsonpath.adapter.enums.EnumFieldLabelMapper
+import gsonpath.adapter.enums.EnumGsonAdapterGenerator
 import gsonpath.adapter.standard.adapter.AdapterModelMetadataFactory
 import gsonpath.adapter.standard.adapter.StandardGsonAdapterGenerator
 import gsonpath.adapter.standard.adapter.read.ReadFunctions
@@ -22,7 +24,6 @@ import gsonpath.adapter.standard.interf.InterfaceModelMetadataFactory
 import gsonpath.adapter.standard.interf.ModelInterfaceGenerator
 import gsonpath.adapter.standard.model.*
 import gsonpath.compiler.GsonPathExtension
-import gsonpath.adapter.enums.EnumGsonAdapterGenerator
 import gsonpath.util.*
 import javax.annotation.processing.ProcessingEnvironment
 
@@ -36,10 +37,9 @@ object DependencyFactory {
         val typeHandler = ProcessorTypeHandler(processingEnv)
         val fieldGetterFinder = FieldGetterFinder(typeHandler)
         val annotationFetcher = AnnotationFetcher(typeHandler, fieldGetterFinder)
-        val fieldNamingPolicyMapper = FieldNamingPolicyMapper()
         val gsonObjectFactory = GsonObjectFactory(
                 GsonObjectValidator(),
-                FieldPathFetcher(SerializedNameFetcher, fieldNamingPolicyMapper))
+                FieldPathFetcher(SerializedNameFetcher, FieldNamingPolicyMapper()))
         val gsonObjectTreeFactory = GsonObjectTreeFactory(gsonObjectFactory)
 
         val subTypeMetadataFactory = SubTypeMetadataFactoryImpl(typeHandler)
@@ -76,7 +76,7 @@ object DependencyFactory {
                         typeHandler,
                         fileWriter,
                         annotationFetcher,
-                        fieldNamingPolicyMapper)
+                        EnumFieldLabelMapper)
         )
     }
 

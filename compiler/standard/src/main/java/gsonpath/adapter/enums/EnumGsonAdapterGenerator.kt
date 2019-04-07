@@ -1,6 +1,5 @@
 package gsonpath.adapter.enums
 
-import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.annotations.SerializedName
@@ -27,7 +26,7 @@ class EnumGsonAdapterGenerator(
         private val typeHandler: TypeHandler,
         private val fileWriter: FileWriter,
         private val annotationFetcher: AnnotationFetcher,
-        private val fieldNamingPolicyMapper: FieldNamingPolicyMapper
+        private val enumFieldLabelMapper: EnumFieldLabelMapper
 ) {
 
     @Throws(ProcessingException::class)
@@ -118,28 +117,8 @@ class EnumGsonAdapterGenerator(
             val serializedName = annotationFetcher.getAnnotation(element, field.element, SerializedName::class.java)
             val enumConstantName = field.element.simpleName.toString()
             val label = serializedName?.value
-                    ?: getFieldLabel(enumConstantName, properties.gsonFieldNamingPolicy)
+                    ?: enumFieldLabelMapper.map(enumConstantName, properties.gsonFieldNamingPolicy)
             fieldFunc(enumConstantName, label)
         }
-    }
-
-    private fun getFieldLabel(fieldName: String, fieldNamingPolicy: FieldNamingPolicy): String {
-        if (fieldNamingPolicy == FieldNamingPolicy.IDENTITY) {
-            return fieldName
-        }
-
-        // If not using identity, we need to modify the enum label so that naming policies work.
-        val adjustedFieldName = fieldName
-                .toLowerCase()
-                .let { lowerCaseFieldName ->
-                    Regex("_.")
-                            .findAll(lowerCaseFieldName)
-                            .fold(lowerCaseFieldName) { oldValue, group ->
-                                oldValue.replace(group.value, group.value.toUpperCase())
-                            }
-                }
-                .replace("_", "")
-
-        return fieldNamingPolicyMapper.applyFieldNamingPolicy(fieldNamingPolicy, adjustedFieldName)
     }
 }

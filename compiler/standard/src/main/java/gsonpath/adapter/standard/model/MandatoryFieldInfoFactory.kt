@@ -1,5 +1,7 @@
 package gsonpath.adapter.standard.model
 
+import java.util.*
+
 class MandatoryFieldInfoFactory {
 
     /**
@@ -35,7 +37,7 @@ class MandatoryFieldInfoFactory {
         return when {
             gsonModel.isRequired -> {
                 val fieldName = gsonModel.fieldInfo.fieldName
-                val mandatoryFieldIndexName = "MANDATORY_INDEX_" + fieldName.toUpperCase()
+                val mandatoryFieldIndexName = "MANDATORY_INDEX_" + fieldName.toUpperCase(Locale.ENGLISH)
 
                 // Keep track of the information for later use. Since this is a linked list, we keep track of insert order.
                 map.plus(Pair(fieldName, MandatoryFieldInfo(mandatoryFieldIndexName, gsonModel)))
