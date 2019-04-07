@@ -1,4 +1,4 @@
-package gsonpath.generator.enums
+package gsonpath.adapter.enums
 
 import gsonpath.generator.GeneratorTester.assertGeneratedContent
 import gsonpath.generator.TestCriteria

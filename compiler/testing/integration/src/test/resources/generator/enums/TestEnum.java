@@ -9,5 +9,6 @@ enum TestEnum {
     VALUE_ABC,
     VALUE_DEF,
     @SerializedName("custom")
-    VALUE_GHI
+    VALUE_GHI,
+    VALUE_1
 }

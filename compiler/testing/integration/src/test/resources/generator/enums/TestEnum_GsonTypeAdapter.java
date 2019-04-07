@@ -28,10 +28,12 @@ public final class TestEnum_GsonTypeAdapter extends TypeAdapter<TestEnum> {
         nameToConstant.put("value-abc", TestEnum.VALUE_ABC);
         nameToConstant.put("value-def", TestEnum.VALUE_DEF);
         nameToConstant.put("custom", TestEnum.VALUE_GHI);
+        nameToConstant.put("value-1", TestEnum.VALUE_1);
 
         constantToName.put(TestEnum.VALUE_ABC, "value-abc");
         constantToName.put(TestEnum.VALUE_DEF, "value-def");
         constantToName.put(TestEnum.VALUE_GHI, "custom");
+        constantToName.put(TestEnum.VALUE_1, "value-1");
     }
 
     @Override
