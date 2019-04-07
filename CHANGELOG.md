@@ -1,6 +1,83 @@
 Change Log
 ===========
 
+Version 3.3.0 *(2019-04-07)*
+----------------------------
+
+* Improvement: `@GsonSubType` now works as a top-level annotation in conjunction with `@AutoGsonAdapter`. This will allow sub-types to be used when it is the root JSON element.
+
+e.g.
+```java
+@GsonSubtype(
+        subTypeKey = "is_int",
+        booleanValueSubtypes = {
+                @GsonSubtype.BooleanValueSubtype(value = true, subtype = DirectlyAnnotatedSubType.Type1.class),
+                @GsonSubtype.BooleanValueSubtype(value = false, subtype = DirectlyAnnotatedSubType.Type2.class)
+        }
+)
+public abstract class DirectlyAnnotatedSubType {
+    String name;
+
+     public class Type1 extends DirectlyAnnotatedSubType {
+        int intTest;
+    }
+
+     public class Type2 extends DirectlyAnnotatedSubType {
+        double doubleTest;
+    }
+}
+```
+
+This can be used to deserialize the following JSON:
+```json
+{
+  "name": "example1",
+  "is_int": true,
+  "intTest": 0
+}
+```
+
+or:
+```json
+{
+  "name": "example2",
+  "is_int": false,
+  "doubleTest": 0.0
+}
+```
+ 
+* Improvement: `@AutoGsonAdapter` now works with enums.
+
+e.g.
+```java
+@AutoGsonAdapter
+class Type {
+    TestEnum[] value;
+}
+
+@AutoGsonAdapter(fieldNamingPolicy = FieldNamingPolicy.LOWER_CASE_WITH_DASHES)
+enum TestEnum {
+    VALUE_ABC,
+    VALUE_DEF,
+    @SerializedName("custom")
+    VALUE_GHI,
+    VALUE_1
+}
+```
+
+Can be used to parse the following JSON:
+
+```json
+{
+  "value": [
+    "value-abc",
+    "value-def",
+    "custom",
+    "value-1"
+  ]
+}
+```
+
 Version 3.2.0 *(2019-03-18)*
 ----------------------------
 
@@ -44,7 +121,7 @@ Version 3.1.0 *(2019-02-23)*
  ```
 
 * Improvement: Created `RemoveInvalidElements` extension. When used with arrays/lists it will remove any invalid elements rather than throwing an exception.
-* Improvement: GsonSubType now works with non-primitive, non-final types as well as arrays/lists. An example is as follows:
+* Improvement: `@GsonSubType` now works with non-primitive, non-final types as well as arrays/lists. An example is as follows:
 
  ```java
  @AutoGsonAdapter
