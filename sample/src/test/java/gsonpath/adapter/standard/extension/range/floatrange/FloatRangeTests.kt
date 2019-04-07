@@ -1,6 +1,6 @@
 package gsonpath.adapter.standard.extension.range.floatrange
 
-import gsonpath.adapter.standard.extension.TestUtil
+import gsonpath.TestUtil
 import org.junit.Assert
 import org.junit.Test
 import org.junit.experimental.runners.Enclosed
@@ -9,7 +9,7 @@ import org.junit.runners.Parameterized
 
 import java.util.Arrays
 
-import gsonpath.adapter.standard.extension.TestUtil.executeFromJson
+import gsonpath.TestUtil.executeFromJson
 
 @RunWith(Enclosed::class)
 object FloatRangeTests {

@@ -1,6 +1,6 @@
 package gsonpath.adapter.standard.extension.invalid
 
-import gsonpath.adapter.standard.extension.TestUtil.executeFromJson
+import gsonpath.TestUtil.executeFromJson
 import org.junit.Assert
 import org.junit.Test
 

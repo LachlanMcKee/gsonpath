@@ -1,7 +1,7 @@
 package gsonpath.adapter.standard.extension.range.intrange
 
-import gsonpath.adapter.standard.extension.TestUtil
-import gsonpath.adapter.standard.extension.TestUtil.executeFromJson
+import gsonpath.TestUtil
+import gsonpath.TestUtil.executeFromJson
 import org.junit.Assert
 import org.junit.Test
 import org.junit.experimental.runners.Enclosed

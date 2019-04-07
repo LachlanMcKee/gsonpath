@@ -1,6 +1,6 @@
 package gsonpath.adapter.standard.extension.def.intdef
 
-import gsonpath.adapter.standard.extension.TestUtil
+import gsonpath.TestUtil
 import org.junit.Assert
 import org.junit.Test
 
