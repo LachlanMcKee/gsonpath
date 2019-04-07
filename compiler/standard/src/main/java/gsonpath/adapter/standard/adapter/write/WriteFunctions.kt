@@ -14,7 +14,7 @@ import gsonpath.adapter.standard.extension.ExtensionsHandler
 import gsonpath.adapter.standard.model.GsonArray
 import gsonpath.adapter.standard.model.GsonField
 import gsonpath.adapter.standard.model.GsonObject
-import gsonpath.generator.AdapterMethodBuilder
+import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.model.FieldType
 import gsonpath.util.*
 

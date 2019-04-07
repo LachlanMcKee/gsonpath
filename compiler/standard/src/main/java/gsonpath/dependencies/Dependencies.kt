@@ -3,7 +3,7 @@ package gsonpath.dependencies
 import gsonpath.adapter.common.SubTypeMetadataFactory
 import gsonpath.adapter.standard.adapter.StandardGsonAdapterGenerator
 import gsonpath.adapter.standard.factory.TypeAdapterFactoryGenerator
-import gsonpath.generator.enums.EnumGsonAdapterGenerator
+import gsonpath.adapter.enums.EnumGsonAdapterGenerator
 import gsonpath.util.FileWriter
 
 data class Dependencies(

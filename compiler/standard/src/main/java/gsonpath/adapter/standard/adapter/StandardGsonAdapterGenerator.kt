@@ -6,8 +6,8 @@ import com.squareup.javapoet.*
 import gsonpath.AutoGsonAdapter
 import gsonpath.GsonUtil
 import gsonpath.ProcessingException
-import gsonpath.adapter.Constants.GENERATED_ANNOTATION
 import gsonpath.adapter.AdapterGenerationResult
+import gsonpath.adapter.Constants.GENERATED_ANNOTATION
 import gsonpath.adapter.standard.adapter.read.ReadFunctions
 import gsonpath.adapter.standard.adapter.write.WriteFunctions
 import gsonpath.adapter.util.writeFile

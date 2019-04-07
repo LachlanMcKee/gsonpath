@@ -2,6 +2,7 @@ package gsonpath
 
 import com.google.common.collect.Sets
 import gsonpath.adapter.AdapterGenerationResult
+import gsonpath.adapter.enums.EnumAdapterFactory
 import gsonpath.adapter.standard.StandardAdapterFactory
 import gsonpath.adapter.subType.SubTypeAdapterFactory
 import gsonpath.dependencies.Dependencies

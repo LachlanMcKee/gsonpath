@@ -22,7 +22,7 @@ import gsonpath.adapter.standard.interf.InterfaceModelMetadataFactory
 import gsonpath.adapter.standard.interf.ModelInterfaceGenerator
 import gsonpath.adapter.standard.model.*
 import gsonpath.compiler.GsonPathExtension
-import gsonpath.generator.enums.EnumGsonAdapterGenerator
+import gsonpath.adapter.enums.EnumGsonAdapterGenerator
 import gsonpath.util.*
 import javax.annotation.processing.ProcessingEnvironment
 

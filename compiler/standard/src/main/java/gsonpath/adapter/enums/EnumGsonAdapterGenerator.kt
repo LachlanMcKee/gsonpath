@@ -1,4 +1,4 @@
-package gsonpath.generator.enums
+package gsonpath.adapter.enums
 
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
@@ -10,15 +10,14 @@ import com.squareup.javapoet.TypeName
 import gsonpath.AutoGsonAdapter
 import gsonpath.GsonUtil
 import gsonpath.ProcessingException
+import gsonpath.adapter.AdapterGenerationResult
+import gsonpath.adapter.AdapterMethodBuilder
+import gsonpath.adapter.Constants
+import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterProperties
+import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterPropertiesFactory
+import gsonpath.adapter.util.writeFile
 import gsonpath.compiler.CLASS_NAME_STRING
 import gsonpath.compiler.generateClassName
-import gsonpath.generator.AdapterMethodBuilder
-import gsonpath.generator.Constants
-import gsonpath.generator.HandleResult
-import gsonpath.generator.adapter.properties.AutoGsonAdapterProperties
-import gsonpath.generator.adapter.properties.AutoGsonAdapterPropertiesFactory
-import gsonpath.generator.writeFile
-import gsonpath.model.FieldNamingPolicyMapper
 import gsonpath.util.*
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
@@ -34,7 +33,7 @@ class EnumGsonAdapterGenerator(
     @Throws(ProcessingException::class)
     fun handle(
             modelElement: TypeElement,
-            autoGsonAnnotation: AutoGsonAdapter): HandleResult {
+            autoGsonAnnotation: AutoGsonAdapter): AdapterGenerationResult {
 
         val properties = AutoGsonAdapterPropertiesFactory().create(modelElement, autoGsonAnnotation, false)
         val fields = typeHandler.getFields(modelElement) { it.kind == ElementKind.ENUM_CONSTANT }
@@ -47,7 +46,7 @@ class EnumGsonAdapterGenerator(
                 .writeFile(fileWriter, adapterClassName.packageName()) {
                     it.addStaticImport(GsonUtil::class.java, "*")
                 }
-        return HandleResult(arrayOf(typeName), adapterClassName)
+        return AdapterGenerationResult(arrayOf(typeName), adapterClassName)
     }
 
     private fun createEnumAdapterSpec(

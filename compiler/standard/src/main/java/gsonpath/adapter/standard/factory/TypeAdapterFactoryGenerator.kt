@@ -7,9 +7,9 @@ import com.google.gson.reflect.TypeToken
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeSpec
+import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.Constants.GSON
 import gsonpath.adapter.Constants.NULL
-import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.util.writeFile
 import gsonpath.util.*
 import javax.lang.model.element.Modifier

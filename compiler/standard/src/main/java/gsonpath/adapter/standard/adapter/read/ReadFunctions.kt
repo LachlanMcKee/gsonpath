@@ -16,7 +16,7 @@ import gsonpath.adapter.standard.model.GsonModel
 import gsonpath.adapter.standard.model.GsonObject
 import gsonpath.adapter.standard.model.MandatoryFieldInfoFactory.MandatoryFieldInfo
 import gsonpath.compiler.createDefaultVariableValueForTypeName
-import gsonpath.generator.AdapterMethodBuilder
+import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.model.FieldType
 import gsonpath.util.*
 

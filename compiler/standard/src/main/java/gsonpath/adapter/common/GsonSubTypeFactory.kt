@@ -8,7 +8,7 @@ import com.squareup.javapoet.*
 import gsonpath.GsonSubTypeFailureException
 import gsonpath.GsonSubTypeFailureOutcome
 import gsonpath.adapter.Constants
-import gsonpath.generator.AdapterMethodBuilder
+import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.util.*
 import javax.lang.model.element.Modifier
 
