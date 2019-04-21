@@ -56,7 +56,7 @@ public final class TestValidateAllExceptNullable_GsonTypeAdapter extends TypeAda
                         result.mandatory1 = value_mandatory1;
                         mandatoryFieldsCheckList[MANDATORY_INDEX_MANDATORY1] = true;
                     } else {
-                        throw new gsonpath.JsonFieldMissingException("Mandatory JSON element 'mandatory1' was null for class 'generator.standard.field_policy.validate_all_except_nullable.TestValidateAllExceptNullable'");
+                        throw new gsonpath.JsonFieldNullException("mandatory1", "generator.standard.field_policy.validate_all_except_nullable.TestValidateAllExceptNullable");
                     }
                     break;
 
@@ -68,7 +68,7 @@ public final class TestValidateAllExceptNullable_GsonTypeAdapter extends TypeAda
                         result.mandatory2 = value_mandatory2;
                         mandatoryFieldsCheckList[MANDATORY_INDEX_MANDATORY2] = true;
                     } else {
-                        throw new gsonpath.JsonFieldMissingException("Mandatory JSON element 'mandatory2' was null for class 'generator.standard.field_policy.validate_all_except_nullable.TestValidateAllExceptNullable'");
+                        throw new gsonpath.JsonFieldNullException("mandatory2", "generator.standard.field_policy.validate_all_except_nullable.TestValidateAllExceptNullable");
                     }
                     break;
 
@@ -106,7 +106,7 @@ public final class TestValidateAllExceptNullable_GsonTypeAdapter extends TypeAda
                         fieldName = "mandatory2";
                         break;
                 }
-                throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class 'generator.standard.field_policy.validate_all_except_nullable.TestValidateAllExceptNullable'");
+                throw new gsonpath.JsonFieldNoKeyException(fieldName, "generator.standard.field_policy.validate_all_except_nullable.TestValidateAllExceptNullable");
             }
         }
 

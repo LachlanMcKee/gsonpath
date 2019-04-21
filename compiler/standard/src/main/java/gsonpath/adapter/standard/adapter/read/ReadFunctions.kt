@@ -196,7 +196,7 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
                     newLine()
 
                     nextControlFlow("else")
-                    addEscapedStatement("""throw new $JSON_FIELD_MISSING_EXCEPTION("Mandatory JSON element '${gsonField.jsonPath}' was null for class '${fieldInfo.parentClassName}'")""")
+                    addEscapedStatement("""throw new gsonpath.JsonFieldNullException("${gsonField.jsonPath}", "${fieldInfo.parentClassName}")""")
                 }
             }
         }
@@ -355,7 +355,7 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
                     }
 
                 }
-                addStatement("""throw new $JSON_FIELD_MISSING_EXCEPTION("Mandatory JSON element '" + $FIELD_NAME + "' was not found for class '${params.concreteElement}'")""")
+                addStatement("""throw new gsonpath.JsonFieldNoKeyException($FIELD_NAME, "${params.concreteElement}")""")
             }
         }
     }
@@ -381,6 +381,5 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
         private const val MANDATORY_FIELDS_SIZE = "MANDATORY_FIELDS_SIZE"
         private const val MANDATORY_FIELD_INDEX = "mandatoryFieldIndex"
         private const val FIELD_NAME = "fieldName"
-        private const val JSON_FIELD_MISSING_EXCEPTION = "gsonpath.JsonFieldMissingException"
     }
 }

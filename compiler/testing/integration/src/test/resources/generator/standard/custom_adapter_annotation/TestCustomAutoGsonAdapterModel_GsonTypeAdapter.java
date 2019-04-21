@@ -74,7 +74,7 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends TypeAd
                                     mandatoryFieldsCheckList[MANDATORY_INDEX_EXPECTEDVALUE] = true;
 
                                 } else {
-                                    throw new gsonpath.JsonFieldMissingException("Mandatory JSON element 'path$expectedValue' was null for class 'generator.standard.custom_adapter_annotation.TestCustomAutoGsonAdapterModel'");
+                                    throw new gsonpath.JsonFieldNullException("path$expectedValue", "generator.standard.custom_adapter_annotation.TestCustomAutoGsonAdapterModel");
                                 }
                                 break;
 
@@ -111,7 +111,7 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends TypeAd
                         break;
 
                 }
-                throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class 'generator.standard.custom_adapter_annotation.TestCustomAutoGsonAdapterModel'");
+                throw new gsonpath.JsonFieldNoKeyException(fieldName, "generator.standard.custom_adapter_annotation.TestCustomAutoGsonAdapterModel");
             }
         }
         return result;

@@ -73,7 +73,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
                                     mandatoryFieldsCheckList[MANDATORY_INDEX_NAME] = true;
 
                                 } else {
-                                    throw new gsonpath.JsonFieldMissingException("Mandatory JSON element 'common.name' was null for class 'generator.standard.use_getter_annotation.UseGetterAnnotationTest.Implementation'");
+                                    throw new gsonpath.JsonFieldNullException("common.name", "generator.standard.use_getter_annotation.UseGetterAnnotationTest.Implementation");
                                 }
                                 break;
 
@@ -140,7 +140,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
                         break;
 
                 }
-                throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class 'generator.standard.use_getter_annotation.UseGetterAnnotationTest.Implementation'");
+                throw new gsonpath.JsonFieldNoKeyException(fieldName, "generator.standard.use_getter_annotation.UseGetterAnnotationTest.Implementation");
             }
         }
         return new UseGetterAnnotationTest.Implementation(

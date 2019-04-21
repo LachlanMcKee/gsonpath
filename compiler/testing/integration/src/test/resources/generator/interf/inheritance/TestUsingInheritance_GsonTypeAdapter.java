@@ -65,7 +65,7 @@ public final class TestUsingInheritance_GsonTypeAdapter extends TypeAdapter<Test
                         mandatoryFieldsCheckList[MANDATORY_INDEX_VALUE1] = true;
 
                     } else {
-                        throw new gsonpath.JsonFieldMissingException("Mandatory JSON element 'value1' was null for class 'generator.interf.inheritance.TestUsingInheritance_GsonPathModel'");
+                        throw new gsonpath.JsonFieldNullException("value1", "generator.interf.inheritance.TestUsingInheritance_GsonPathModel");
                     }
                     break;
 
@@ -124,7 +124,7 @@ public final class TestUsingInheritance_GsonTypeAdapter extends TypeAdapter<Test
                         break;
 
                 }
-                throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class 'generator.interf.inheritance.TestUsingInheritance_GsonPathModel'");
+                throw new gsonpath.JsonFieldNoKeyException(fieldName, "generator.interf.inheritance.TestUsingInheritance_GsonPathModel");
             }
         }
         return new TestUsingInheritance_GsonPathModel(

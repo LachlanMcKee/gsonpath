@@ -69,7 +69,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends TypeAdapter<TestU
                         mandatoryFieldsCheckList[MANDATORY_INDEX_INTEXAMPLE] = true;
 
                     } else {
-                        throw new gsonpath.JsonFieldMissingException("Mandatory JSON element 'intExample' was null for class 'generator.interf.primitive.TestUsingPrimitives_GsonPathModel'");
+                        throw new gsonpath.JsonFieldNullException("intExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
                     }
                     break;
 
@@ -82,7 +82,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends TypeAdapter<TestU
                         mandatoryFieldsCheckList[MANDATORY_INDEX_LONGEXAMPLE] = true;
 
                     } else {
-                        throw new gsonpath.JsonFieldMissingException("Mandatory JSON element 'longExample' was null for class 'generator.interf.primitive.TestUsingPrimitives_GsonPathModel'");
+                        throw new gsonpath.JsonFieldNullException("longExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
                     }
                     break;
 
@@ -95,7 +95,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends TypeAdapter<TestU
                         mandatoryFieldsCheckList[MANDATORY_INDEX_DOUBLEEXAMPLE] = true;
 
                     } else {
-                        throw new gsonpath.JsonFieldMissingException("Mandatory JSON element 'doubleExample' was null for class 'generator.interf.primitive.TestUsingPrimitives_GsonPathModel'");
+                        throw new gsonpath.JsonFieldNullException("doubleExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
                     }
                     break;
 
@@ -108,7 +108,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends TypeAdapter<TestU
                         mandatoryFieldsCheckList[MANDATORY_INDEX_BOOLEANEXAMPLE] = true;
 
                     } else {
-                        throw new gsonpath.JsonFieldMissingException("Mandatory JSON element 'booleanExample' was null for class 'generator.interf.primitive.TestUsingPrimitives_GsonPathModel'");
+                        throw new gsonpath.JsonFieldNullException("booleanExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
                     }
                     break;
 
@@ -165,7 +165,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends TypeAdapter<TestU
                         fieldName = "booleanExample";
                         break;
                 }
-                throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class 'generator.interf.primitive.TestUsingPrimitives_GsonPathModel'");
+                throw new gsonpath.JsonFieldNoKeyException(fieldName, "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
             }
         }
 

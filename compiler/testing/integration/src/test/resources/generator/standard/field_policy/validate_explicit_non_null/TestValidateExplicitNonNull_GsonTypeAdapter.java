@@ -57,7 +57,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends TypeAdapt
                         result.mandatory1 = value_mandatory1;
                         mandatoryFieldsCheckList[MANDATORY_INDEX_MANDATORY1] = true;
                     } else {
-                        throw new gsonpath.JsonFieldMissingException("Mandatory JSON element 'mandatory1' was null for class 'generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull'");
+                        throw new gsonpath.JsonFieldNullException("mandatory1", "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
                     }
                     break;
 
@@ -69,7 +69,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends TypeAdapt
                         result.mandatory2 = value_mandatory2;
                         mandatoryFieldsCheckList[MANDATORY_INDEX_MANDATORY2] = true;
                     } else {
-                        throw new gsonpath.JsonFieldMissingException("Mandatory JSON element 'mandatory2' was null for class 'generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull'");
+                        throw new gsonpath.JsonFieldNullException("mandatory2", "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
                     }
                     break;
 
@@ -81,7 +81,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends TypeAdapt
                         result.mandatory3 = value_mandatory3;
                         mandatoryFieldsCheckList[MANDATORY_INDEX_MANDATORY3] = true;
                     } else {
-                        throw new gsonpath.JsonFieldMissingException("Mandatory JSON element 'mandatory3' was null for class 'generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull'");
+                        throw new gsonpath.JsonFieldNullException("mandatory3", "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
                     }
                     break;
 
@@ -123,7 +123,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends TypeAdapt
                         fieldName = "mandatory3";
                         break;
                 }
-                throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class 'generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull'");
+                throw new gsonpath.JsonFieldNoKeyException(fieldName, "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
             }
         }
 
