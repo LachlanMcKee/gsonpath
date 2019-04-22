@@ -1,82 +1,63 @@
 package generator.standard.naming_policy.upper_camel_case_spaces;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
-
+import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestNamePolicyUpperCamelCaseSpaces_GsonTypeAdapter extends TypeAdapter<TestNamePolicyUpperCamelCaseSpaces> {
-    private final Gson mGson;
-
+public final class TestNamePolicyUpperCamelCaseSpaces_GsonTypeAdapter extends GsonPathTypeAdapter<TestNamePolicyUpperCamelCaseSpaces> {
     public TestNamePolicyUpperCamelCaseSpaces_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestNamePolicyUpperCamelCaseSpaces read(JsonReader in) throws IOException {
-
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestNamePolicyUpperCamelCaseSpaces readImpl(JsonReader in) throws IOException {
         TestNamePolicyUpperCamelCaseSpaces result = new TestNamePolicyUpperCamelCaseSpaces();
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 1) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "Test Value":
-                    jsonFieldCounter0++;
-
-                    Integer value_Test_Value = mGson.getAdapter(Integer.class).read(in);
+                    Integer value_Test_Value = gson.getAdapter(Integer.class).read(in);
                     if (value_Test_Value != null) {
                         result.testValue = value_Test_Value;
                     }
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-
-        in.endObject();
         return result;
     }
 
     @Override
-    public void write(JsonWriter out, TestNamePolicyUpperCamelCaseSpaces value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestNamePolicyUpperCamelCaseSpaces value) throws
+            IOException {
         // Begin
         out.beginObject();
         int obj0 = value.testValue;
         out.name("Test Value");
-        mGson.getAdapter(Integer.class).write(out, obj0);
+        gson.getAdapter(Integer.class).write(out, obj0);
 
         // End
         out.endObject();
+    }
+
+    @Override
+    public String getModelClassName() {
+        return "generator.standard.naming_policy.upper_camel_case_spaces.TestNamePolicyUpperCamelCaseSpaces";
     }
 }

@@ -1,168 +1,107 @@
 package generator.standard.custom_serialized_name_annotation;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.GsonUtil;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
-    value = "gsonpath.GsonProcessor",
-    comments = "https://github.com/LachlanMcKee/gsonpath"
+        value = "gsonpath.GsonProcessor",
+        comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestCustomSerializedNameModel_GsonTypeAdapter extends TypeAdapter<TestCustomSerializedNameModel> {
-    private final Gson mGson;
-
+public final class TestCustomSerializedNameModel_GsonTypeAdapter extends GsonPathTypeAdapter<TestCustomSerializedNameModel> {
     public TestCustomSerializedNameModel_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestCustomSerializedNameModel read(JsonReader in) throws IOException {
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestCustomSerializedNameModel readImpl(JsonReader in) throws IOException {
         TestCustomSerializedNameModel result = new TestCustomSerializedNameModel();
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 3, 0);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 1) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "nest":
-                    jsonFieldCounter0++;
-
-                    // Ensure the object is not null.
-                    if (!isValidValue(in)) {
-                        break;
-                    }
-                    int jsonFieldCounter1 = 0;
-                    in.beginObject();
-
-                    while (in.hasNext()) {
-                        if (jsonFieldCounter1 == 5) {
-                            in.skipValue();
-                            continue;
-                        }
-
+                    while (jsonReaderHelper.handleObject(1, 5)) {
                         switch (in.nextName()) {
                             case "value1":
-                                jsonFieldCounter1++;
-
-                                String value_nest_value1 = mGson.getAdapter(String.class).read(in);
+                                String value_nest_value1 = gson.getAdapter(String.class).read(in);
                                 if (value_nest_value1 != null) {
                                     result.value1 = value_nest_value1;
                                 }
                                 break;
 
                             case "value2":
-                                jsonFieldCounter1++;
-
-                                String value_nest_value2 = mGson.getAdapter(String.class).read(in);
+                                String value_nest_value2 = gson.getAdapter(String.class).read(in);
                                 if (value_nest_value2 != null) {
                                     result.valueX = value_nest_value2;
                                 }
                                 break;
 
                             case "second":
-                                jsonFieldCounter1++;
-
-                                // Ensure the object is not null.
-                                if (!isValidValue(in)) {
-                                    break;
-                                }
-                                int jsonFieldCounter2 = 0;
-                                in.beginObject();
-
-                                while (in.hasNext()) {
-                                    if (jsonFieldCounter2 == 2) {
-                                        in.skipValue();
-                                        continue;
-                                    }
-
+                                while (jsonReaderHelper.handleObject(2, 2)) {
                                     switch (in.nextName()) {
                                         case "value3":
-                                            jsonFieldCounter2++;
-
-                                            String value_nest_second_value3 = mGson.getAdapter(String.class).read(in);
+                                            String value_nest_second_value3 = gson.getAdapter(String.class).read(in);
                                             if (value_nest_second_value3 != null) {
                                                 result.value3 = value_nest_second_value3;
                                             }
                                             break;
 
                                         case "value3b":
-                                            jsonFieldCounter2++;
-
-                                            String value_nest_second_value3b = mGson.getAdapter(String.class).read(in);
+                                            String value_nest_second_value3b = gson.getAdapter(String.class).read(in);
                                             if (value_nest_second_value3b != null) {
                                                 result.value3b = value_nest_second_value3b;
                                             }
                                             break;
 
                                         default:
-                                            in.skipValue();
+                                            jsonReaderHelper.onObjectFieldNotFound(2);
                                             break;
+
                                     }
                                 }
-
-                                in.endObject();
                                 break;
 
                             case "value1b":
-                                jsonFieldCounter1++;
-
-                                String value_nest_value1b = mGson.getAdapter(String.class).read(in);
+                                String value_nest_value1b = gson.getAdapter(String.class).read(in);
                                 if (value_nest_value1b != null) {
                                     result.value1b = value_nest_value1b;
                                 }
                                 break;
 
                             case "value2b":
-                                jsonFieldCounter1++;
-
-                                String value_nest_value2b = mGson.getAdapter(String.class).read(in);
+                                String value_nest_value2b = gson.getAdapter(String.class).read(in);
                                 if (value_nest_value2b != null) {
                                     result.valueXb = value_nest_value2b;
                                 }
                                 break;
 
                             default:
-                                in.skipValue();
+                                jsonReaderHelper.onObjectFieldNotFound(1);
                                 break;
+
                         }
                     }
-
-                    in.endObject();
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-        in.endObject();
         return result;
     }
 
     @Override
-    public void write(JsonWriter out, TestCustomSerializedNameModel value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestCustomSerializedNameModel value) throws IOException {
         // Begin
         out.beginObject();
 
@@ -172,13 +111,13 @@ public final class TestCustomSerializedNameModel_GsonTypeAdapter extends TypeAda
         String obj0 = value.value1;
         if (obj0 != null) {
             out.name("value1");
-            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0);
+            GsonUtil.writeWithGenericAdapter(gson, obj0.getClass(), out, obj0);
         }
 
         String obj1 = value.valueX;
         if (obj1 != null) {
             out.name("value2");
-            writeWithGenericAdapter(mGson, obj1.getClass(), out, obj1)
+            GsonUtil.writeWithGenericAdapter(gson, obj1.getClass(), out, obj1);
         }
 
 
@@ -188,13 +127,13 @@ public final class TestCustomSerializedNameModel_GsonTypeAdapter extends TypeAda
         String obj2 = value.value3;
         if (obj2 != null) {
             out.name("value3");
-            writeWithGenericAdapter(mGson, obj2.getClass(), out, obj2);
+            GsonUtil.writeWithGenericAdapter(gson, obj2.getClass(), out, obj2);
         }
 
         String obj3 = value.value3b;
         if (obj3 != null) {
             out.name("value3b");
-            writeWithGenericAdapter(mGson, obj3.getClass(), out, obj3)
+            GsonUtil.writeWithGenericAdapter(gson, obj3.getClass(), out, obj3);
         }
 
         // End nestsecond
@@ -202,18 +141,23 @@ public final class TestCustomSerializedNameModel_GsonTypeAdapter extends TypeAda
         String obj4 = value.value1b;
         if (obj4 != null) {
             out.name("value1b");
-            writeWithGenericAdapter(mGson, obj4.getClass(), out, obj4)
+            GsonUtil.writeWithGenericAdapter(gson, obj4.getClass(), out, obj4);
         }
 
         String obj5 = value.valueXb;
         if (obj5 != null) {
             out.name("value2b");
-            writeWithGenericAdapter(mGson, obj5.getClass(), out, obj5)
+            GsonUtil.writeWithGenericAdapter(gson, obj5.getClass(), out, obj5);
         }
 
         // End nest
         out.endObject();
         // End
         out.endObject();
+    }
+
+    @Override
+    public String getModelClassName() {
+        return "generator.standard.custom_serialized_name_annotation.TestCustomSerializedNameModel";
     }
 }

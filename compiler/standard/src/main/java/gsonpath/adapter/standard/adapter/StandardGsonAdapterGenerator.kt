@@ -9,11 +9,15 @@ import gsonpath.AutoGsonAdapter
 import gsonpath.GsonPathTypeAdapter
 import gsonpath.ProcessingException
 import gsonpath.adapter.AdapterGenerationResult
+import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.adapter.Constants.GENERATED_ANNOTATION
 import gsonpath.adapter.standard.adapter.read.ReadFunctions
 import gsonpath.adapter.standard.adapter.write.WriteFunctions
 import gsonpath.adapter.util.writeFile
-import gsonpath.util.*
+import gsonpath.util.FileWriter
+import gsonpath.util.TypeSpecExt
+import gsonpath.util.constructor
+import gsonpath.util.field
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 
@@ -68,12 +72,7 @@ class StandardGsonAdapterGenerator(
 
         readFunctions.handleRead(this, metadata.readParams)
         writeFunctions.handleWrite(this, metadata.writeParams)
-
-        addMethod(MethodSpecExt.overrideMethodBuilder("getModelClassName").applyAndBuild {
-            addModifiers(Modifier.PUBLIC)
-            returns(ClassName.get(String::class.java))
-            addStatement("""return "${metadata.readParams.concreteElement}"""")
-        })
+        addMethod(AdapterMethodBuilder.createModelClassNameMethod(metadata.readParams.concreteElement))
 
         return this
     }

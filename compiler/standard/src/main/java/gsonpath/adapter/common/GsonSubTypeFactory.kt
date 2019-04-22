@@ -7,8 +7,8 @@ import com.google.gson.internal.Streams
 import com.squareup.javapoet.*
 import gsonpath.GsonSubTypeFailureException
 import gsonpath.GsonSubTypeFailureOutcome
-import gsonpath.adapter.Constants
 import gsonpath.adapter.AdapterMethodBuilder
+import gsonpath.adapter.Constants
 import gsonpath.util.*
 import javax.lang.model.element.Modifier
 
@@ -46,7 +46,8 @@ object GsonSubTypeFactory {
                 constructorCodeBlock = createSubTypeConstructorCodeBlock(subTypeMetadata),
                 fieldSpecs = fieldSpecs.map(FieldSpec.Builder::build),
                 readMethodSpecs = createReadMethod(subTypeMetadata, elementTypeName),
-                writeMethodSpecs = createWriteMethod(subTypeMetadata, elementTypeName, typeAdapterType)
+                writeMethodSpecs = createWriteMethod(subTypeMetadata, elementTypeName, typeAdapterType),
+                modelClassNameMethodSpec = AdapterMethodBuilder.createModelClassNameMethod(elementTypeName)
         )
     }
 
@@ -149,10 +150,6 @@ object GsonSubTypeFactory {
             typeAdapterType: TypeName) = AdapterMethodBuilder.createWriteMethodBuilder(rawTypeName).applyAndBuild {
 
         code {
-            `if`("${Constants.VALUE} == ${Constants.NULL}") {
-                addStatement("${Constants.OUT}.nullValue()")
-                `return`()
-            }
             createVariable(TypeAdapter::class.java, DELEGATE, "$DELEGATE_BY_CLASS_MAP.get(${Constants.VALUE}.getClass())")
         }
 

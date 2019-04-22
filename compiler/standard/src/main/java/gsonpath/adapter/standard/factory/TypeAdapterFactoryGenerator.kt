@@ -69,7 +69,6 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
         // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
         //
         overrideMethod("create") {
-            addModifiers(Modifier.PUBLIC)
             returns(TypeAdapter::class.java)
             addParameter(Gson::class.java, GSON)
             addParameter(TypeToken::class.java, "type")
@@ -107,7 +106,6 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
             packageLocalGsonAdapters: List<AdapterGenerationResult>): TypeSpec.Builder {
 
         overrideMethod("create") {
-            addModifiers(Modifier.PUBLIC)
             returns(TypeAdapter::class.java)
             addParameter(Gson::class.java, GSON)
             addParameter(TypeToken::class.java, "type")

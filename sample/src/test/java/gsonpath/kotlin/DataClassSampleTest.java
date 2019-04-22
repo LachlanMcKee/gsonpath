@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import gsonpath.GsonPath;
 import gsonpath.JsonFieldMissingException;
+import gsonpath.JsonFieldNoKeyException;
 import gsonpath.TestGsonTypeFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,8 +30,8 @@ public class DataClassSampleTest {
             runTest("DataClassJson_missing_values.json");
             fail("Exception not triggered");
         } catch (Exception e) {
-            Assert.assertEquals(JsonFieldMissingException.class, e.getClass());
-            Assert.assertEquals("Mandatory JSON element 'parent.child.value1' was not found for class " +
+            Assert.assertEquals(JsonFieldNoKeyException.class, e.getClass());
+            Assert.assertEquals("Mandatory JSON element 'parent.child.value1' was not found within class " +
                 "'gsonpath.kotlin.DataClassSample'", e.getMessage());
         }
     }

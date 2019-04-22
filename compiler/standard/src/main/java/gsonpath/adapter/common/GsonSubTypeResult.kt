@@ -10,5 +10,6 @@ data class GsonSubTypeResult(
         val fieldSpecs: List<FieldSpec> = emptyList(),
         val typeSpecs: List<TypeSpec> = emptyList(),
         val readMethodSpecs: MethodSpec,
-        val writeMethodSpecs: MethodSpec
+        val writeMethodSpecs: MethodSpec,
+        val modelClassNameMethodSpec: MethodSpec
 )

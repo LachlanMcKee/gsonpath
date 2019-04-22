@@ -1,13 +1,10 @@
 package generator.standard.array;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
 import gsonpath.GsonPathTypeAdapter;
-
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -19,7 +16,6 @@ import javax.annotation.Generated;
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
 public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArray> {
-
     public TestArray_GsonTypeAdapter(Gson gson) {
         super(gson);
     }
@@ -27,29 +23,13 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
     @Override
     public TestArray readImpl(JsonReader in) throws IOException {
         TestArray result = new TestArray();
-        ArrayHandler arrayHandler = new ArrayHandler(in);
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 4, 5);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 4) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 4)) {
             switch (in.nextName()) {
                 case "test1":
-                    jsonFieldCounter0++;
-
-                    // Ensure the array is not null.
-                    if (!isValidValue(in)) {
-                        break;
-                    }
-
-                    // Iterate through the array.
-                    while (arrayHandler.handleArray(0)) {
-                        switch (arrayHandler.getIndex(0)) {
+                    while (jsonReaderHelper.handleArray(0)) {
+                        switch (jsonReaderHelper.getArrayIndex(0)) {
                             case 1:
                                 Integer value_test1_1_ = gson.getAdapter(Integer.class).read(in);
                                 if (value_test1_1_ != null) {
@@ -58,35 +38,20 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
                                 break;
 
                             default:
-                                arrayHandler.onFieldNotFound(0);
+                                jsonReaderHelper.onArrayFieldNotFound(0);
                                 break;
+
                         }
                     }
                     break;
 
                 case "test2":
-                    jsonFieldCounter0++;
-
-                    in.beginArray();
-                    int test2_arrayIndex = 0;
-
-                    // Iterate through the array.
-                    while (in.hasNext()) {
-                        switch (test2_arrayIndex) {
+                    while (jsonReaderHelper.handleArray(1)) {
+                        switch (jsonReaderHelper.getArrayIndex(1)) {
                             case 2:
-                                int jsonFieldCounter1 = 0;
-                                in.beginObject();
-
-                                while (in.hasNext()) {
-                                    if (jsonFieldCounter1 == 2) {
-                                        in.skipValue();
-                                        continue;
-                                    }
-
+                                while (jsonReaderHelper.handleObject(1, 2)) {
                                     switch (in.nextName()) {
                                         case "child":
-                                            jsonFieldCounter1++;
-
                                             Integer value_test2_2__child = gson.getAdapter(Integer.class).read(in);
                                             if (value_test2_2__child != null) {
                                                 result.arrayWithNestedObject = value_test2_2__child;
@@ -94,8 +59,6 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
                                             break;
 
                                         case "child2":
-                                            jsonFieldCounter1++;
-
                                             Integer value_test2_2__child2 = gson.getAdapter(Integer.class).read(in);
                                             if (value_test2_2__child2 != null) {
                                                 result.arrayWithNestedObject2 = value_test2_2__child2;
@@ -103,60 +66,30 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
                                             break;
 
                                         default:
-                                            in.skipValue();
+                                            jsonReaderHelper.onObjectFieldNotFound(1);
                                             break;
+
                                     }
                                 }
-
-                                in.endObject();
                                 break;
 
                             default:
-                                in.skipValue();
+                                jsonReaderHelper.onArrayFieldNotFound(1);
                                 break;
+
                         }
-                        test2_arrayIndex++;
                     }
-                    in.endArray();
                     break;
 
                 case "test3":
-                    jsonFieldCounter0++;
-
-                    // Ensure the array is not null.
-                    if (!isValidValue(in)) {
-                        break;
-                    }
-                    in.beginArray();
-                    int test3_arrayIndex = 0;
-
-                    // Iterate through the array.
-                    while (in.hasNext()) {
-                        switch (test3_arrayIndex) {
+                    while (jsonReaderHelper.handleArray(2)) {
+                        switch (jsonReaderHelper.getArrayIndex(2)) {
                             case 3:
-                                int jsonFieldCounter2 = 0;
-                                in.beginObject();
-
-                                while (in.hasNext()) {
-                                    if (jsonFieldCounter2 == 1) {
-                                        in.skipValue();
-                                        continue;
-                                    }
-
+                                while (jsonReaderHelper.handleObject(2, 1)) {
                                     switch (in.nextName()) {
                                         case "child":
-                                            jsonFieldCounter2++;
-
-                                            // Ensure the array is not null.
-                                            if (!isValidValue(in)) {
-                                                break;
-                                            }
-                                            in.beginArray();
-                                            int child_arrayIndex = 0;
-
-                                            // Iterate through the array.
-                                            while (in.hasNext()) {
-                                                switch (child_arrayIndex) {
+                                            while (jsonReaderHelper.handleArray(3)) {
+                                                switch (jsonReaderHelper.getArrayIndex(3)) {
                                                     case 1:
                                                         Integer value_test3_3__child_1_ = gson.getAdapter(Integer.class).read(in);
                                                         if (value_test3_3__child_1_ != null) {
@@ -165,62 +98,35 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
                                                         break;
 
                                                     default:
-                                                        in.skipValue();
+                                                        jsonReaderHelper.onArrayFieldNotFound(3);
                                                         break;
+
                                                 }
-                                                child_arrayIndex++;
                                             }
-                                            in.endArray();
                                             break;
 
                                         default:
-                                            in.skipValue();
+                                            jsonReaderHelper.onObjectFieldNotFound(2);
                                             break;
+
                                     }
                                 }
-
-                                in.endObject();
                                 break;
 
                             default:
-                                in.skipValue();
+                                jsonReaderHelper.onArrayFieldNotFound(2);
                                 break;
+
                         }
-                        test3_arrayIndex++;
                     }
-                    in.endArray();
                     break;
 
                 case "test4":
-                    jsonFieldCounter0++;
-
-                    // Ensure the object is not null.
-                    if (!isValidValue(in)) {
-                        break;
-                    }
-                    int jsonFieldCounter3 = 0;
-                    in.beginObject();
-
-                    while (in.hasNext()) {
-                        if (jsonFieldCounter3 == 1) {
-                            in.skipValue();
-                            continue;
-                        }
-
+                    while (jsonReaderHelper.handleObject(3, 1)) {
                         switch (in.nextName()) {
                             case "child":
-                                jsonFieldCounter3++;
-
-                                // Ensure the array is not null.
-                                if (!isValidValue(in)) {
-                                    break;
-                                }
-                                in.beginArray();
-                                int child_arrayIndex = 0;
-
-                                // Iterate through the array.
-                                while (in.hasNext()) {
-                                    switch (child_arrayIndex) {
+                                while (jsonReaderHelper.handleArray(4)) {
+                                    switch (jsonReaderHelper.getArrayIndex(4)) {
                                         case 1:
                                             Integer value_test4_child_1_ = gson.getAdapter(Integer.class).read(in);
                                             if (value_test4_child_1_ != null) {
@@ -229,30 +135,27 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
                                             break;
 
                                         default:
-                                            in.skipValue();
+                                            jsonReaderHelper.onArrayFieldNotFound(4);
                                             break;
+
                                     }
-                                    child_arrayIndex++;
                                 }
-                                in.endArray();
                                 break;
 
                             default:
-                                in.skipValue();
+                                jsonReaderHelper.onObjectFieldNotFound(3);
                                 break;
+
                         }
                     }
-
-                    in.endObject();
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-        in.endObject();
         return result;
     }
 
@@ -261,7 +164,7 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
         // Begin
         out.beginObject();
 
-        // Begin Array: 'test1'
+        // Begin Array: '.test1'
         out.name("test1");
         out.beginArray();
 
@@ -274,7 +177,7 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
         // End Array: 'test1'
         out.endArray();
 
-        // Begin Array: 'test2'
+        // Begin Array: '.test2'
         out.name("test2");
         out.beginArray();
 
@@ -283,23 +186,20 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
 
         // Begin Object: 'test2[2]'
         out.beginObject();
-
-        // Set Value: 'test2[2].child'
         int obj1 = value.arrayWithNestedObject;
         out.name("child");
         gson.getAdapter(Integer.class).write(out, obj1);
 
-        // Set Value: 'test2[2].child2'
         int obj2 = value.arrayWithNestedObject2;
         out.name("child2");
         gson.getAdapter(Integer.class).write(out, obj2);
 
-        // End Object: 'test2[2]'
+        // End test2[2]
         out.endObject();
         // End Array: 'test2'
         out.endArray();
 
-        // Begin Array: 'test3'
+        // Begin Array: '.test3'
         out.name("test3");
         out.beginArray();
 
@@ -307,7 +207,10 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
         out.nullValue(); // Set Value: 'test3[1]'
         out.nullValue(); // Set Value: 'test3[2]'
 
+        // Begin Object: 'test3[3]'
         out.beginObject();
+
+        // Begin Array: 'test3[3].child'
         out.name("child");
         out.beginArray();
 
@@ -317,13 +220,14 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
         int obj3 = value.arrayWithNestedArray;
         gson.getAdapter(Integer.class).write(out, obj3);
 
+        // End Array: 'child'
         out.endArray();
+        // End test3[3]
         out.endObject();
-
         // End Array: 'test3'
         out.endArray();
 
-        // Begin Object: 'test4'
+        // Begin test4
         out.name("test4");
         out.beginObject();
 
@@ -337,12 +241,11 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
         int obj4 = value.objectWithNestedArray;
         gson.getAdapter(Integer.class).write(out, obj4);
 
-        // End Array: 'test4.child'
+        // End Array: 'child'
         out.endArray();
-
-        // End Object: 'test4'
+        // End test4
         out.endObject();
-
+        // End
         out.endObject();
     }
 

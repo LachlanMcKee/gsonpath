@@ -193,11 +193,13 @@ class GsonSubTypeExtension(
                 addModifiers(Modifier.PRIVATE)
                 addParameter(Gson::class.java, Constants.GSON)
 
+                addStatement("super(gson)")
                 addCode(result.constructorCodeBlock)
             }
 
             addMethod(result.readMethodSpecs)
             addMethod(result.writeMethodSpecs)
+            addMethod(result.modelClassNameMethodSpec)
         }
     }
 

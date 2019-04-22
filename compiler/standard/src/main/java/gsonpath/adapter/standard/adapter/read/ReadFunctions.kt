@@ -7,7 +7,6 @@ import com.squareup.javapoet.TypeSpec
 import gsonpath.JsonReaderHelper
 import gsonpath.ProcessingException
 import gsonpath.adapter.AdapterMethodBuilder
-import gsonpath.adapter.Constants.BREAK
 import gsonpath.adapter.Constants.GET_ADAPTER
 import gsonpath.adapter.Constants.IN
 import gsonpath.adapter.Constants.NULL
@@ -59,7 +58,7 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
         }
 
         val readerHelperClassName = ClassName.get(JsonReaderHelper::class.java)
-        createVariableNew("\$T", JSON_READER_HELPER, "\$T($IN)",
+        createVariableNew("\$T", JSON_READER_HELPER, "\$T($IN, ${params.objectIndexes.size}, ${params.arrayIndexes.size})",
                 readerHelperClassName,
                 readerHelperClassName)
 
@@ -79,30 +78,32 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
     private fun CodeBlock.Builder.addReadCodeForElements(
             typeSpecBuilder: TypeSpec.Builder,
             jsonMapping: GsonObject,
-            params: ReadParams,
-            recursionCount: Int = 0): Int {
+            params: ReadParams) {
 
         val jsonMappingSize = jsonMapping.size()
         if (jsonMappingSize == 0) {
-            return recursionCount
+            return
         }
 
-        return `while`("$JSON_READER_HELPER.handleObject($recursionCount, $jsonMappingSize)") {
+        // Search based on the exact reference avoiding 'equals'
+        val objectIndex = params.objectIndexes.indexOfFirst {
+            it === jsonMapping
+        }
+
+        return `while`("$JSON_READER_HELPER.handleObject($objectIndex, $jsonMappingSize)") {
             switch("$IN.nextName()") {
                 jsonMapping.entries()
-                        .fold(recursionCount + 1) { currentOverallRecursionCount, entry ->
+                        .forEach { entry ->
                             addReadCodeForModel(
                                     typeSpecBuilder = typeSpecBuilder,
                                     params = params,
                                     key = entry.key,
-                                    value = entry.value,
-                                    currentOverallRecursionCount = currentOverallRecursionCount)
+                                    value = entry.value)
                         }
-                        .also {
-                            default {
-                                addStatement("$JSON_READER_HELPER.onObjectFieldNotFound($recursionCount)")
-                            }
-                        }
+
+                default {
+                    addStatement("$JSON_READER_HELPER.onObjectFieldNotFound($objectIndex)")
+                }
             }
         }
     }
@@ -111,25 +112,21 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
             typeSpecBuilder: TypeSpec.Builder,
             params: ReadParams,
             key: String,
-            value: GsonModel,
-            currentOverallRecursionCount: Int): Int {
+            value: GsonModel) {
 
-        return case("\"$key\"") {
+        case("\"$key\"") {
             when (value) {
                 is GsonField -> {
                     writeGsonFieldReader(typeSpecBuilder, value, params.requiresConstructorInjection,
                             params.mandatoryInfoMap[value.fieldInfo.fieldName])
-
-                    // No extra recursion has happened.
-                    currentOverallRecursionCount
                 }
 
                 is GsonObject -> {
-                    addReadCodeForElements(typeSpecBuilder, value, params, currentOverallRecursionCount)
+                    addReadCodeForElements(typeSpecBuilder, value, params)
                 }
 
                 is GsonArray -> {
-                    writeGsonArrayReader(typeSpecBuilder, value, params, key, currentOverallRecursionCount)
+                    writeGsonArrayReader(typeSpecBuilder, value, params)
                 }
             }
         }
@@ -237,55 +234,37 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
     private fun CodeBlock.Builder.writeGsonArrayReader(
             typeSpecBuilder: TypeSpec.Builder,
             value: GsonArray,
-            params: ReadParams,
-            key: String,
-            currentOverallRecursionCount: Int): Int {
+            params: ReadParams) {
 
-        val arrayIndexVariableName = "${key}_arrayIndex"
-        newLine()
-        comment("Ensure the array is not null.")
-        `if`("!isValidValue(in)") {
-            addStatement("break")
+        // Search based on the exact reference avoiding 'equals'
+        val arrayIndex = params.arrayIndexes.indexOfFirst {
+            it === value
         }
-        addStatement("in.beginArray()")
-        createVariable("int", arrayIndexVariableName, "0")
-        newLine()
-        comment("Iterate through the array.")
 
-        return `while`("in.hasNext()") {
-            switch(arrayIndexVariableName) {
-                writeGsonArrayReaderCases(typeSpecBuilder, value, params, currentOverallRecursionCount)
-                        .also {
-                            default {
-                                addStatement("in.skipValue()")
-                            }
-                        }
-            }.also {
-                addStatement("$arrayIndexVariableName++")
+        `while`("$JSON_READER_HELPER.handleArray($arrayIndex)") {
+            switch("$JSON_READER_HELPER.getArrayIndex($arrayIndex)") {
+                writeGsonArrayReaderCases(typeSpecBuilder, value, params)
+                default {
+                    addStatement("$JSON_READER_HELPER.onArrayFieldNotFound($arrayIndex)")
+                }
             }
-        }.also {
-            addStatement("in.endArray()")
         }
     }
 
     private fun CodeBlock.Builder.writeGsonArrayReaderCases(
             typeSpecBuilder: TypeSpec.Builder,
             value: GsonArray,
-            params: ReadParams,
-            seedValue: Int): Int {
+            params: ReadParams) {
 
-        return value.entries().fold(seedValue) { previousRecursionCount, (arrayIndex, arrayItemValue) ->
+        value.entries().forEach { (arrayIndex, arrayItemValue) ->
             case("$arrayIndex") {
                 when (arrayItemValue) {
                     is GsonField -> {
                         writeGsonFieldReader(typeSpecBuilder, arrayItemValue, params.requiresConstructorInjection,
                                 params.mandatoryInfoMap[arrayItemValue.fieldInfo.fieldName])
-
-                        // No extra recursion has happened.
-                        previousRecursionCount
                     }
                     is GsonObject -> {
-                        addReadCodeForElements(typeSpecBuilder, arrayItemValue, params, previousRecursionCount)
+                        addReadCodeForElements(typeSpecBuilder, arrayItemValue, params)
                     }
                 }
             }

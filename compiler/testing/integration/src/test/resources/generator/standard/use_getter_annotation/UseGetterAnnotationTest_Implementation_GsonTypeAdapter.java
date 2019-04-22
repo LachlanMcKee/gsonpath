@@ -1,11 +1,11 @@
 package generator.standard.use_getter_annotation;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.GsonUtil;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -13,61 +13,32 @@ import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
-    value = "gsonpath.GsonProcessor",
-    comments = "https://github.com/LachlanMcKee/gsonpath"
+        value = "gsonpath.GsonProcessor",
+        comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extends TypeAdapter<UseGetterAnnotationTest.Implementation> {
+public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extends GsonPathTypeAdapter<UseGetterAnnotationTest.Implementation> {
     private static final int MANDATORY_INDEX_NAME = 0;
 
     private static final int MANDATORY_FIELDS_SIZE = 1;
 
-    private final Gson mGson;
-
     public UseGetterAnnotationTest_Implementation_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public UseGetterAnnotationTest.Implementation read(JsonReader in) throws IOException {
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public UseGetterAnnotationTest.Implementation readImpl(JsonReader in) throws IOException {
         String value_common_name = null;
         int value_specific_intTest = 0;
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 3, 0);
         boolean[] mandatoryFieldsCheckList = new boolean[MANDATORY_FIELDS_SIZE];
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 2) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 2)) {
             switch (in.nextName()) {
                 case "common":
-                    jsonFieldCounter0++;
-
-                    // Ensure the object is not null.
-                    if (!isValidValue(in)) {
-                        break;
-                    }
-                    int jsonFieldCounter1 = 0;
-                    in.beginObject();
-
-                    while (in.hasNext()) {
-                        if (jsonFieldCounter1 == 1) {
-                            in.skipValue();
-                            continue;
-                        }
-
+                    while (jsonReaderHelper.handleObject(1, 1)) {
                         switch (in.nextName()) {
                             case "name":
-                                jsonFieldCounter1++;
-
-                                String value_common_name_safe = mGson.getAdapter(String.class).read(in);
+                                String value_common_name_safe = gson.getAdapter(String.class).read(in);
                                 if (value_common_name_safe != null) {
                                     value_common_name = value_common_name_safe;
                                     mandatoryFieldsCheckList[MANDATORY_INDEX_NAME] = true;
@@ -78,53 +49,34 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
                                 break;
 
                             default:
-                                in.skipValue();
+                                jsonReaderHelper.onObjectFieldNotFound(1);
                                 break;
+
                         }
                     }
-
-                    in.endObject();
                     break;
 
                 case "specific":
-                    jsonFieldCounter0++;
-
-                    // Ensure the object is not null.
-                    if (!isValidValue(in)) {
-                        break;
-                    }
-                    int jsonFieldCounter2 = 0;
-                    in.beginObject();
-
-                    while (in.hasNext()) {
-                        if (jsonFieldCounter2 == 1) {
-                            in.skipValue();
-                            continue;
-                        }
-
+                    while (jsonReaderHelper.handleObject(2, 1)) {
                         switch (in.nextName()) {
                             case "intTest":
-                                jsonFieldCounter2++;
-
-                                value_specific_intTest = mGson.getAdapter(Integer.class).read(in);
+                                value_specific_intTest = gson.getAdapter(Integer.class).read(in);
                                 break;
 
                             default:
-                                in.skipValue();
+                                jsonReaderHelper.onObjectFieldNotFound(2);
                                 break;
+
                         }
                     }
-
-                    in.endObject();
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-        in.endObject();
 
         // Mandatory object validation
         for (int mandatoryFieldIndex = 0; mandatoryFieldIndex < MANDATORY_FIELDS_SIZE; mandatoryFieldIndex++) {
@@ -144,18 +96,13 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
             }
         }
         return new UseGetterAnnotationTest.Implementation(
-            value_common_name,
-            value_specific_intTest
-        );
+                value_common_name,
+                value_specific_intTest);
     }
 
     @Override
-    public void write(JsonWriter out, UseGetterAnnotationTest.Implementation value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, UseGetterAnnotationTest.Implementation value) throws
+            IOException {
         // Begin
         out.beginObject();
 
@@ -165,7 +112,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
         String obj0 = value.getName();
         if (obj0 != null) {
             out.name("name");
-            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0);
+            GsonUtil.writeWithGenericAdapter(gson, obj0.getClass(), out, obj0);
         }
 
         // End common
@@ -176,11 +123,16 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
         out.beginObject();
         int obj1 = value.getIntTest();
         out.name("intTest");
-        mGson.getAdapter(Integer.class).write(out, obj1);
+        gson.getAdapter(Integer.class).write(out, obj1);
 
         // End specific
         out.endObject();
         // End
         out.endObject();
+    }
+
+    @Override
+    public String getModelClassName() {
+        return "generator.standard.use_getter_annotation.UseGetterAnnotationTest.Implementation";
     }
 }

@@ -87,7 +87,6 @@ class ModelInterfaceGenerator(
     }
 
     private fun TypeSpec.Builder.addEqualsMethod(outputClassName: ClassName, modelMetadataList: List<InterfaceModelMetadata>) = overrideMethod("equals") {
-        addModifiers(Modifier.PUBLIC)
         returns(TypeName.BOOLEAN)
         addParameter(TypeName.OBJECT, "o")
 
@@ -127,7 +126,6 @@ class ModelInterfaceGenerator(
     }
 
     private fun TypeSpec.Builder.addHashCodeMethod(modelMetadataList: List<InterfaceModelMetadata>) = overrideMethod("hashCode") {
-        addModifiers(Modifier.PUBLIC)
         returns(TypeName.INT)
 
         code {
@@ -175,7 +173,6 @@ class ModelInterfaceGenerator(
     }
 
     private fun TypeSpec.Builder.addToStringMethod(element: TypeElement, modelMetadataList: List<InterfaceModelMetadata>) = overrideMethod("toString") {
-        addModifiers(Modifier.PUBLIC)
         returns(TypeName.get(String::class.java))
 
         val className = ClassName.get(element).simpleName()

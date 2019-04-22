@@ -3,9 +3,9 @@ package generator.enums;
 import static gsonpath.GsonUtil.*;
 
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonPathTypeAdapter;
 import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
@@ -17,13 +17,12 @@ import javax.annotation.Generated;
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestEnum_GsonTypeAdapter extends TypeAdapter<TestEnum> {
-    private final Gson mGson;
+public final class TestEnum_GsonTypeAdapter extends GsonPathTypeAdapter<TestEnum> {
     private final Map<String, TestEnum> nameToConstant = new HashMap<String, TestEnum>();
     private final Map<TestEnum, String> constantToName = new HashMap<TestEnum, String>();
 
     public TestEnum_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
 
         nameToConstant.put("value-abc", TestEnum.VALUE_ABC);
         nameToConstant.put("value-def", TestEnum.VALUE_DEF);
@@ -37,15 +36,17 @@ public final class TestEnum_GsonTypeAdapter extends TypeAdapter<TestEnum> {
     }
 
     @Override
-    public TestEnum read(JsonReader in) throws IOException {
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestEnum readImpl(JsonReader in) throws IOException {
         return nameToConstant.get(in.nextString());
     }
 
     @Override
-    public void write(JsonWriter out, TestEnum value) throws IOException {
-        out.value(value == null ? null : constantToName.get(value));
+    public void writeImpl(JsonWriter out, TestEnum value) throws IOException {
+        out.value(constantToName.get(value));
+    }
+
+    @Override
+    public String getModelClassName() {
+        return "generator.enums.TestEnum";
     }
 }

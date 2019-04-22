@@ -41,7 +41,7 @@ class FlattenJsonExtensionTest {
     fun testFlattenCheckResultIsNullIsTrue() {
         validateCodeRead(FlattenJsonExtension(), createMetadata(true), false) {
             """
-            com.google.gson.JsonElement variable_jsonElement = mGson.getAdapter(com.google.gson.JsonElement.class).read(in);
+            com.google.gson.JsonElement variable_jsonElement = gson.getAdapter(com.google.gson.JsonElement.class).read(in);
             if (variable_jsonElement != null) {
               variable = variable_jsonElement.toString();
             }
@@ -54,7 +54,7 @@ class FlattenJsonExtensionTest {
     fun testFlattenCheckResultIsNullIsFalse() {
         validateCodeRead(FlattenJsonExtension(), createMetadata(true), true) {
             """
-            com.google.gson.JsonElement variable_jsonElement = mGson.getAdapter(com.google.gson.JsonElement.class).read(in);
+            com.google.gson.JsonElement variable_jsonElement = gson.getAdapter(com.google.gson.JsonElement.class).read(in);
             java.lang.String variable;
             if (variable_jsonElement != null) {
               variable = variable_jsonElement.toString();

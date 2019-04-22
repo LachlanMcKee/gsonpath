@@ -89,19 +89,17 @@ class EnumGsonAdapterGenerator(
 
         addMethod(createReadMethod(typeName))
         addMethod(createWriteMethod(typeName))
+        addMethod(AdapterMethodBuilder.createModelClassNameMethod(typeName))
     }
 
     private fun createReadMethod(enumTypeName: TypeName) = AdapterMethodBuilder.createReadMethodBuilder(enumTypeName).applyAndBuild {
         code {
-            `if`("!isValidValue(${Constants.IN})") {
-                `return`(Constants.NULL)
-            }
             `return`("nameToConstant.get(in.nextString())")
         }
     }
 
     private fun createWriteMethod(enumTypeName: TypeName) = AdapterMethodBuilder.createWriteMethodBuilder(enumTypeName).applyAndBuild {
-        addStatement("out.value(value == null ? null : constantToName.get(value))")
+        addStatement("out.value(constantToName.get(value))")
     }
 
     private fun handleFields(

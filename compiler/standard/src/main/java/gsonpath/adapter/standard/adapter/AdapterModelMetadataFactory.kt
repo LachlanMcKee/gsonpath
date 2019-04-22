@@ -6,10 +6,7 @@ import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterPropertiesFac
 import gsonpath.adapter.standard.adapter.read.ReadParams
 import gsonpath.adapter.standard.adapter.write.WriteParams
 import gsonpath.adapter.standard.interf.ModelInterfaceGenerator
-import gsonpath.adapter.standard.model.FieldInfoFactory
-import gsonpath.adapter.standard.model.GsonObjectMetadata
-import gsonpath.adapter.standard.model.GsonObjectTreeFactory
-import gsonpath.adapter.standard.model.MandatoryFieldInfoFactory
+import gsonpath.adapter.standard.model.*
 import gsonpath.compiler.generateClassName
 import gsonpath.model.FieldInfo
 import gsonpath.util.TypeHandler
@@ -79,7 +76,9 @@ class AdapterModelMetadataFactory(
                 requiresConstructorInjection = requiresConstructorInjection,
                 mandatoryInfoMap = mandatoryInfoMap,
                 rootElements = rootObject,
-                flattenedFields = flattenedFields)
+                flattenedFields = flattenedFields,
+                objectIndexes = GsonModelIndexAssigner.assignObjectIndexes(rootObject),
+                arrayIndexes = GsonModelIndexAssigner.assignArrayIndexes(rootObject))
 
         val writeParams = WriteParams(
                 elementClassName = modelClassName,

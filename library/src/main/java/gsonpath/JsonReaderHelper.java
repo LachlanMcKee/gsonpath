@@ -5,14 +5,12 @@ import com.google.gson.stream.JsonReader;
 import java.io.IOException;
 
 public final class JsonReaderHelper {
-    private static final int ARRAY_INDEX_NOT_SET = -1;
-
     private final JsonReader reader;
     private final int maxObjects;
     private final int maxArrays;
 
     private ObjectState[] objectStates;
-    private int[] arrayIndexMap;
+    private Integer[] arrayIndexMap;
 
     public JsonReaderHelper(JsonReader reader, int maxObjects, int maxArrays) {
         this.reader = reader;
@@ -42,6 +40,8 @@ public final class JsonReaderHelper {
             objectState = new ObjectState(numberOfElements);
             objectState.currentCounter = 0;
             objectState.fieldFound = true;
+
+            objectStates[index] = objectState;
         } else {
             if (objectState.fieldFound) {
                 objectState.currentCounter++;
@@ -49,12 +49,14 @@ public final class JsonReaderHelper {
             objectState.fieldFound = true;
         }
 
-        boolean hasNext = reader.hasNext();
-        if (hasNext) {
-            if (objectState.currentCounter == objectState.currentNumberOfElements) {
+        if (objectState.currentCounter == objectState.currentNumberOfElements) {
+            while (reader.hasNext()) {
                 reader.skipValue();
             }
-        } else {
+        }
+
+        boolean hasNext = reader.hasNext();
+        if (!hasNext) {
             reader.endObject();
             objectStates[index] = null;
         }
@@ -67,17 +69,22 @@ public final class JsonReaderHelper {
     }
 
     public final boolean handleArray(int index) throws IOException {
-        int arrayIndex = ARRAY_INDEX_NOT_SET;
+        Integer arrayIndex = null;
         boolean stateMapExists = arrayIndexMap != null;
         if (stateMapExists) {
             arrayIndex = arrayIndexMap[index];
         }
 
-        if (arrayIndex == ARRAY_INDEX_NOT_SET) {
+        if (arrayIndex == null) {
+            // If the array is null, abort
+            if (!GsonUtil.isValidValue(reader)) {
+                return false;
+            }
+
             reader.beginArray();
 
             if (!stateMapExists) {
-                arrayIndexMap = new int[maxArrays];
+                arrayIndexMap = new Integer[maxArrays];
             }
 
             arrayIndexMap[index] = 0;
@@ -88,7 +95,7 @@ public final class JsonReaderHelper {
         boolean hasNext = reader.hasNext();
         if (!hasNext) {
             reader.endArray();
-            arrayIndexMap[index] = ARRAY_INDEX_NOT_SET;
+            arrayIndexMap[index] = null;
         }
         return hasNext;
     }
@@ -97,7 +104,7 @@ public final class JsonReaderHelper {
         return arrayIndexMap[index];
     }
 
-    public final void onArrayFieldNotFound() throws IOException {
+    public final void onArrayFieldNotFound(int index) throws IOException {
         reader.skipValue();
     }
 

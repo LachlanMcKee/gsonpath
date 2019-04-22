@@ -1,129 +1,72 @@
 package generator.standard.nested_json.root_nesting;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
-
+import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestRootNesting_GsonTypeAdapter extends TypeAdapter<TestRootNesting> {
-    private final Gson mGson;
-
+public final class TestRootNesting_GsonTypeAdapter extends GsonPathTypeAdapter<TestRootNesting> {
     public TestRootNesting_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestRootNesting read(JsonReader in) throws IOException {
-
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestRootNesting readImpl(JsonReader in) throws IOException {
         TestRootNesting result = new TestRootNesting();
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 3, 0);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 1) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "Root":
-                    jsonFieldCounter0++;
-
-                    // Ensure the object is not null.
-                    if (!isValidValue(in)) {
-                        break;
-                    }
-                    int jsonFieldCounter1 = 0;
-                    in.beginObject();
-
-                    while (in.hasNext()) {
-                        if (jsonFieldCounter1 == 1) {
-                            in.skipValue();
-                            continue;
-                        }
-
+                    while (jsonReaderHelper.handleObject(1, 1)) {
                         switch (in.nextName()) {
                             case "Nest1":
-                                jsonFieldCounter1++;
-
-                                // Ensure the object is not null.
-                                if (!isValidValue(in)) {
-                                    break;
-                                }
-                                int jsonFieldCounter2 = 0;
-                                in.beginObject();
-
-                                while (in.hasNext()) {
-                                    if (jsonFieldCounter2 == 1) {
-                                        in.skipValue();
-                                        continue;
-                                    }
-
+                                while (jsonReaderHelper.handleObject(2, 1)) {
                                     switch (in.nextName()) {
                                         case "value1":
-                                            jsonFieldCounter2++;
-
-                                            Integer value_value1 = mGson.getAdapter(Integer.class).read(in);
+                                            Integer value_value1 = gson.getAdapter(Integer.class).read(in);
                                             if (value_value1 != null) {
                                                 result.value1 = value_value1;
                                             }
                                             break;
 
                                         default:
-                                            in.skipValue();
+                                            jsonReaderHelper.onObjectFieldNotFound(2);
                                             break;
+
                                     }
                                 }
-
-
-                                in.endObject();
                                 break;
 
                             default:
-                                in.skipValue();
+                                jsonReaderHelper.onObjectFieldNotFound(1);
                                 break;
+
                         }
                     }
-
-
-                    in.endObject();
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-
-        in.endObject();
         return result;
     }
 
     @Override
-    public void write(JsonWriter out, TestRootNesting value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestRootNesting value) throws IOException {
         // Begin
         out.beginObject();
 
@@ -131,18 +74,23 @@ public final class TestRootNesting_GsonTypeAdapter extends TypeAdapter<TestRootN
         out.name("Root");
         out.beginObject();
 
-        // Begin Root.Nest1
+        // Begin RootNest1
         out.name("Nest1");
         out.beginObject();
         int obj0 = value.value1;
         out.name("value1");
-        mGson.getAdapter(Integer.class).write(out, obj0);
+        gson.getAdapter(Integer.class).write(out, obj0);
 
-        // End Root.Nest1
+        // End RootNest1
         out.endObject();
         // End Root
         out.endObject();
         // End
         out.endObject();
+    }
+
+    @Override
+    public String getModelClassName() {
+        return "generator.standard.nested_json.root_nesting.TestRootNesting";
     }
 }

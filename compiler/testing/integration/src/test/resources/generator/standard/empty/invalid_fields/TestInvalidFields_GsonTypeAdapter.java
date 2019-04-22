@@ -1,50 +1,42 @@
 package generator.standard.empty.invalid_fields;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Override;
-
+import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestInvalidFields_GsonTypeAdapter extends TypeAdapter<TestInvalidFields> {
-    private final Gson mGson;
-
+public final class TestInvalidFields_GsonTypeAdapter extends GsonPathTypeAdapter<TestInvalidFields> {
     public TestInvalidFields_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestInvalidFields read(JsonReader in) throws IOException {
-
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestInvalidFields readImpl(JsonReader in) throws IOException {
         TestInvalidFields result = new TestInvalidFields();
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
         return result;
     }
 
     @Override
-    public void write(JsonWriter out, TestInvalidFields value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestInvalidFields value) throws IOException {
         // Begin
         out.beginObject();
         // End
         out.endObject();
+    }
+
+    @Override
+    public String getModelClassName() {
+        return "generator.standard.empty.invalid_fields.TestInvalidFields";
     }
 }

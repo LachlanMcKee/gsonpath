@@ -1,74 +1,43 @@
 package generator.standard.custom_adapter_annotation;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.GsonUtil;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
-
+import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends TypeAdapter<TestCustomAutoGsonAdapterModel> {
+public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends GsonPathTypeAdapter<TestCustomAutoGsonAdapterModel> {
     private static final int MANDATORY_INDEX_EXPECTEDVALUE = 0;
 
     private static final int MANDATORY_FIELDS_SIZE = 1;
 
-    private final Gson mGson;
-
     public TestCustomAutoGsonAdapterModel_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestCustomAutoGsonAdapterModel read(JsonReader in) throws IOException {
-
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestCustomAutoGsonAdapterModel readImpl(JsonReader in) throws IOException {
         TestCustomAutoGsonAdapterModel result = new TestCustomAutoGsonAdapterModel();
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 2, 0);
         boolean[] mandatoryFieldsCheckList = new boolean[MANDATORY_FIELDS_SIZE];
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 1) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "path":
-                    jsonFieldCounter0++;
-
-                    // Ensure the object is not null.
-                    if (!isValidValue(in)) {
-                        break;
-                    }
-                    int jsonFieldCounter1 = 0;
-                    in.beginObject();
-
-                    while (in.hasNext()) {
-                        if (jsonFieldCounter1 == 1) {
-                            in.skipValue();
-                            continue;
-                        }
-
+                    while (jsonReaderHelper.handleObject(1, 1)) {
                         switch (in.nextName()) {
                             case "expectedValue":
-                                jsonFieldCounter1++;
-
-                                Integer value_path_expectedValue = mGson.getAdapter(Integer.class).read(in);
+                                Integer value_path_expectedValue = gson.getAdapter(Integer.class).read(in);
                                 if (value_path_expectedValue != null) {
                                     result.expectedValue = value_path_expectedValue;
                                     mandatoryFieldsCheckList[MANDATORY_INDEX_EXPECTEDVALUE] = true;
@@ -79,23 +48,19 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends TypeAd
                                 break;
 
                             default:
-                                in.skipValue();
+                                jsonReaderHelper.onObjectFieldNotFound(1);
                                 break;
+
                         }
                     }
-
-
-                    in.endObject();
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-
-        in.endObject();
 
         // Mandatory object validation
         for (int mandatoryFieldIndex = 0; mandatoryFieldIndex < MANDATORY_FIELDS_SIZE; mandatoryFieldIndex++) {
@@ -118,12 +83,7 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends TypeAd
     }
 
     @Override
-    public void write(JsonWriter out, TestCustomAutoGsonAdapterModel value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestCustomAutoGsonAdapterModel value) throws IOException {
         // Begin
         out.beginObject();
 
@@ -133,7 +93,7 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends TypeAd
         Integer obj0 = value.expectedValue;
         out.name("expectedValue");
         if (obj0 != null) {
-            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0)
+            GsonUtil.writeWithGenericAdapter(gson, obj0.getClass(), out, obj0);
         } else {
             out.nullValue();
         }
@@ -142,5 +102,10 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends TypeAd
         out.endObject();
         // End
         out.endObject();
+    }
+
+    @Override
+    public String getModelClassName() {
+        return "generator.standard.custom_adapter_annotation.TestCustomAutoGsonAdapterModel";
     }
 }

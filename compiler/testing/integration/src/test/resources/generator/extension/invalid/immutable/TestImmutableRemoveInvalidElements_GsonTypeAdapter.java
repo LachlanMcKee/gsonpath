@@ -1,11 +1,11 @@
 package generator.standard.invalid.immutable;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.GsonUtil;
+import gsonpath.JsonReaderHelper;
 import gsonpath.extension.RemoveInvalidElementsUtil;
 import java.io.IOException;
 import java.lang.Override;
@@ -17,37 +17,22 @@ import javax.annotation.Generated;
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends TypeAdapter<TestImmutableRemoveInvalidElements> {
-    private final Gson mGson;
-
+public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends GsonPathTypeAdapter<TestImmutableRemoveInvalidElements> {
     public TestImmutableRemoveInvalidElements_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestImmutableRemoveInvalidElements read(JsonReader in) throws IOException {
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestImmutableRemoveInvalidElements readImpl(JsonReader in) throws IOException {
         String[] value_value1 = null;
         List<String> value_value2 = null;
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 2) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 2)) {
             switch (in.nextName()) {
                 case "value1":
-                    jsonFieldCounter0++;
-
                     // Extension (Read) - 'RemoveInvalidElements' Annotation
-                    value_value1 = RemoveInvalidElementsUtil.removeInvalidElementsArray(String.class, mGson, in, new RemoveInvalidElementsUtil.CreateArrayFunction<String>() {
+                    value_value1 = RemoveInvalidElementsUtil.removeInvalidElementsArray(String.class, gson, in, new RemoveInvalidElementsUtil.CreateArrayFunction<String>() {
                         @Override
                         public String[] createArray() {
                             return new String[0];
@@ -57,48 +42,45 @@ public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends Ty
                     break;
 
                 case "value2":
-                    jsonFieldCounter0++;
-
                     // Extension (Read) - 'RemoveInvalidElements' Annotation
-                    value_value2 = RemoveInvalidElementsUtil.removeInvalidElementsList(String.class, mGson, in);
+                    value_value2 = RemoveInvalidElementsUtil.removeInvalidElementsList(String.class, gson, in);
 
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
 
             }
         }
-
-        in.endObject();
         return new TestImmutableRemoveInvalidElements(
                 value_value1,
                 value_value2);
     }
 
     @Override
-    public void write(JsonWriter out, TestImmutableRemoveInvalidElements value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestImmutableRemoveInvalidElements value) throws
+            IOException {
         // Begin
         out.beginObject();
         String[] obj0 = value.getValue1();
         if (obj0 != null) {
             out.name("value1");
-            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0)
+            GsonUtil.writeWithGenericAdapter(gson, obj0.getClass(), out, obj0);
         }
 
         List<String> obj1 = value.getValue2();
         if (obj1 != null) {
             out.name("value2");
-            mGson.getAdapter(new com.google.gson.reflect.TypeToken<List<String>>(){}).write(out, obj1);
+            gson.getAdapter(new com.google.gson.reflect.TypeToken<List<String>>(){}).write(out, obj1);
         }
 
         // End
         out.endObject();
+    }
+
+    @Override
+    public String getModelClassName() {
+        return "generator.standard.invalid.immutable.TestImmutableRemoveInvalidElements";
     }
 }

@@ -9,6 +9,7 @@ import gsonpath.extension.RemoveInvalidElementsUtil
 import gsonpath.extension.annotation.RemoveInvalidElements
 import gsonpath.model.FieldInfo
 import gsonpath.model.FieldType
+import gsonpath.util.MethodSpecExt
 import gsonpath.util.assign
 import gsonpath.util.codeBlock
 import gsonpath.util.createVariable
@@ -83,9 +84,7 @@ class RemoveInvalidElementsExtension : GsonPathExtension {
         val functionClassName = ClassName.get(RemoveInvalidElementsUtil.CreateArrayFunction::class.java)
         return TypeSpec.anonymousClassBuilder("")
                 .addSuperinterface(ParameterizedTypeName.get(functionClassName, arrayType))
-                .addMethod(MethodSpec.methodBuilder("createArray")
-                        .addAnnotation(Override::class.java)
-                        .addModifiers(Modifier.PUBLIC)
+                .addMethod(MethodSpecExt.overrideMethodBuilder("createArray")
                         .returns(ArrayTypeName.of(arrayType))
                         .addStatement("return new \$T[0]", arrayType)
                         .build())

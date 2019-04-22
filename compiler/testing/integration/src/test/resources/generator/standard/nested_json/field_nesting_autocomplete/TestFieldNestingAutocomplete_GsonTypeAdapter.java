@@ -1,102 +1,61 @@
 package generator.standard.nested_json.field_nesting_autocomplete;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
-
+import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestFieldNestingAutocomplete_GsonTypeAdapter extends TypeAdapter<TestFieldNestingAutocomplete> {
-    private final Gson mGson;
-
+public final class TestFieldNestingAutocomplete_GsonTypeAdapter extends GsonPathTypeAdapter<TestFieldNestingAutocomplete> {
     public TestFieldNestingAutocomplete_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestFieldNestingAutocomplete read(JsonReader in) throws IOException {
-
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestFieldNestingAutocomplete readImpl(JsonReader in) throws IOException {
         TestFieldNestingAutocomplete result = new TestFieldNestingAutocomplete();
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 2, 0);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 1) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "Json1":
-                    jsonFieldCounter0++;
-
-                    // Ensure the object is not null.
-                    if (!isValidValue(in)) {
-                        break;
-                    }
-                    int jsonFieldCounter1 = 0;
-                    in.beginObject();
-
-                    while (in.hasNext()) {
-                        if (jsonFieldCounter1 == 1) {
-                            in.skipValue();
-                            continue;
-                        }
-
+                    while (jsonReaderHelper.handleObject(1, 1)) {
                         switch (in.nextName()) {
                             case "value1":
-                                jsonFieldCounter1++;
-
-                                Integer value_Json1_value1 = mGson.getAdapter(Integer.class).read(in);
+                                Integer value_Json1_value1 = gson.getAdapter(Integer.class).read(in);
                                 if (value_Json1_value1 != null) {
                                     result.value1 = value_Json1_value1;
                                 }
                                 break;
 
                             default:
-                                in.skipValue();
+                                jsonReaderHelper.onObjectFieldNotFound(1);
                                 break;
+
                         }
                     }
-
-
-                    in.endObject();
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-
-        in.endObject();
         return result;
     }
 
     @Override
-    public void write(JsonWriter out, TestFieldNestingAutocomplete value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestFieldNestingAutocomplete value) throws IOException {
         // Begin
         out.beginObject();
 
@@ -105,11 +64,16 @@ public final class TestFieldNestingAutocomplete_GsonTypeAdapter extends TypeAdap
         out.beginObject();
         int obj0 = value.value1;
         out.name("value1");
-        mGson.getAdapter(Integer.class).write(out, obj0);
+        gson.getAdapter(Integer.class).write(out, obj0);
 
         // End Json1
         out.endObject();
         // End
         out.endObject();
+    }
+
+    @Override
+    public String getModelClassName() {
+        return "generator.standard.nested_json.field_nesting_autocomplete.TestFieldNestingAutocomplete";
     }
 }

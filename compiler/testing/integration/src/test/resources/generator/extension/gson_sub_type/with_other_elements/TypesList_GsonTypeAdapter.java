@@ -1,7 +1,5 @@
 package generator.extension.gson_sub_type.with_other_elements;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
@@ -12,104 +10,82 @@ import com.google.gson.stream.JsonWriter;
 import generator.extension.gson_sub_type.Type;
 import generator.extension.gson_sub_type.Type1;
 import generator.extension.gson_sub_type.Type2;
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.GsonUtil;
+import gsonpath.JsonReaderHelper;
 import gsonpath.internal.StrictArrayTypeAdapter;
 import java.io.IOException;
 import java.lang.Class;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Map;
-
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
-    private final Gson mGson;
-
+public final class TypesList_GsonTypeAdapter extends GsonPathTypeAdapter<TypesList> {
     private StrictArrayTypeAdapter itemsGsonSubtype;
 
     public TypesList_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     private StrictArrayTypeAdapter getItemsGsonSubtype() {
         if (itemsGsonSubtype == null) {
-            itemsGsonSubtype = new StrictArrayTypeAdapter<>(new ItemsGsonSubtype(mGson), Type.class, false);
+            itemsGsonSubtype = new StrictArrayTypeAdapter<>(new ItemsGsonSubtype(gson), Type.class, false);
         }
         return itemsGsonSubtype;
     }
 
     @Override
-    public TypesList read(JsonReader in) throws IOException {
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TypesList readImpl(JsonReader in) throws IOException {
         TypesList result = new TypesList();
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 3) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 3)) {
             switch (in.nextName()) {
                 case "other1":
-                    jsonFieldCounter0++;
-
-                    String value_other1 = mGson.getAdapter(String.class).read(in);
+                    String value_other1 = gson.getAdapter(String.class).read(in);
                     if (value_other1 != null) {
                         result.other1 = value_other1;
                     }
                     break;
 
                 case "items":
-                    jsonFieldCounter0++;
-
                     // Extension (Read) - 'GsonSubtype' Annotation
                     Type[] value_items = (Type[]) getItemsGsonSubtype().read(in);
+
                     if (value_items != null) {
                         result.items = value_items;
                     }
                     break;
 
                 case "other2":
-                    jsonFieldCounter0++;
-
-                    String value_other2 = mGson.getAdapter(String.class).read(in);
+                    String value_other2 = gson.getAdapter(String.class).read(in);
                     if (value_other2 != null) {
                         result.other2 = value_other2;
                     }
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-        in.endObject();
         return result;
     }
 
     @Override
-    public void write(JsonWriter out, TypesList value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TypesList value) throws IOException {
         // Begin
         out.beginObject();
         String obj0 = value.other1;
         if (obj0 != null) {
             out.name("other1");
-            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0);
+            GsonUtil.writeWithGenericAdapter(gson, obj0.getClass(), out, obj0);
         }
 
         Type[] obj1 = value.items;
@@ -122,19 +98,25 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
         String obj2 = value.other2;
         if (obj2 != null) {
             out.name("other2");
-            writeWithGenericAdapter(mGson, obj2.getClass(), out, obj2);
+            GsonUtil.writeWithGenericAdapter(gson, obj2.getClass(), out, obj2);
         }
 
         // End
         out.endObject();
     }
 
-    private static final class ItemsGsonSubtype extends TypeAdapter<Type> {
+    @Override
+    public String getModelClassName() {
+        return "generator.extension.gson_sub_type.with_other_elements.TypesList";
+    }
+
+    private static final class ItemsGsonSubtype extends GsonPathTypeAdapter<Type> {
         private final Map<String, TypeAdapter<? extends Type>> typeAdaptersDelegatedByValueMap;
 
         private final Map<Class<? extends Type>, TypeAdapter<? extends Type>> typeAdaptersDelegatedByClassMap;
 
         private ItemsGsonSubtype(Gson gson) {
+            super(gson);
             typeAdaptersDelegatedByValueMap = new java.util.HashMap<>();
             typeAdaptersDelegatedByClassMap = new java.util.HashMap<>();
 
@@ -146,7 +128,7 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
         }
 
         @Override
-        public Type read(JsonReader in) throws IOException {
+        public Type readImpl(JsonReader in) throws IOException {
             JsonElement jsonElement = Streams.parse(in);
             JsonElement typeValueJsonElement = jsonElement.getAsJsonObject().get("type");
             if (typeValueJsonElement == null || typeValueJsonElement.isJsonNull()) {
@@ -162,13 +144,14 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
         }
 
         @Override
-        public void write(JsonWriter out, Type value) throws IOException {
-            if (value == null) {
-                out.nullValue();
-                return;
-            }
+        public void writeImpl(JsonWriter out, Type value) throws IOException {
             TypeAdapter delegate = typeAdaptersDelegatedByClassMap.get(value.getClass());
             delegate.write(out, value);
+        }
+
+        @Override
+        public String getModelClassName() {
+            return "generator.extension.gson_sub_type.Type";
         }
     }
 }

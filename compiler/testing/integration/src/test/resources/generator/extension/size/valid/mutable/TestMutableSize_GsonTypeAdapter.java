@@ -1,11 +1,11 @@
 package generator.standard.size.valid.nullable;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.GsonUtil;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
@@ -15,35 +15,20 @@ import javax.annotation.Generated;
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestMutableSize_GsonTypeAdapter extends TypeAdapter<TestMutableSize> {
-    private final Gson mGson;
-
+public final class TestMutableSize_GsonTypeAdapter extends GsonPathTypeAdapter<TestMutableSize> {
     public TestMutableSize_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestMutableSize read(JsonReader in) throws IOException {
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestMutableSize readImpl(JsonReader in) throws IOException {
         TestMutableSize result = new TestMutableSize();
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 1) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "value1":
-                    jsonFieldCounter0++;
-
-                    String[] value_value1 = mGson.getAdapter(String[].class).read(in);
+                    String[] value_value1 = gson.getAdapter(String[].class).read(in);
                     if (value_value1 != null) {
                         result.value1 = value_value1;
                     }
@@ -60,32 +45,30 @@ public final class TestMutableSize_GsonTypeAdapter extends TypeAdapter<TestMutab
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
 
             }
         }
-
-        in.endObject();
         return result;
     }
 
     @Override
-    public void write(JsonWriter out, TestMutableSize value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestMutableSize value) throws IOException {
         // Begin
         out.beginObject();
         String[] obj0 = value.value1;
         if (obj0 != null) {
             out.name("value1");
-            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0)
+            GsonUtil.writeWithGenericAdapter(gson, obj0.getClass(), out, obj0);
         }
 
         // End
         out.endObject();
+    }
+
+    @Override
+    public String getModelClassName() {
+        return "generator.standard.size.valid.nullable.TestMutableSize";
     }
 }

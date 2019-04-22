@@ -1,84 +1,65 @@
 package generator.standard.field_policy.validate_explicit_non_null;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.GsonUtil;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
-
+import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestValidateWithDefaultValue_GsonTypeAdapter extends TypeAdapter<TestValidateWithDefaultValue> {
-    private final Gson mGson;
-
+public final class TestValidateWithDefaultValue_GsonTypeAdapter extends GsonPathTypeAdapter<TestValidateWithDefaultValue> {
     public TestValidateWithDefaultValue_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestValidateWithDefaultValue read(JsonReader in) throws IOException {
-
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestValidateWithDefaultValue readImpl(JsonReader in) throws IOException {
         TestValidateWithDefaultValue result = new TestValidateWithDefaultValue();
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 1) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "mandatoryWithDefault":
-                    jsonFieldCounter0++;
-
-                    Integer value_mandatoryWithDefault = mGson.getAdapter(Integer.class).read(in);
+                    Integer value_mandatoryWithDefault = gson.getAdapter(Integer.class).read(in);
                     if (value_mandatoryWithDefault != null) {
                         result.mandatoryWithDefault = value_mandatoryWithDefault;
                     }
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-        in.endObject();
-
         return result;
     }
 
     @Override
-    public void write(JsonWriter out, TestValidateWithDefaultValue value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestValidateWithDefaultValue value) throws IOException {
         // Begin
         out.beginObject();
         Integer obj0 = value.mandatoryWithDefault;
         if (obj0 != null) {
             out.name("mandatoryWithDefault");
-            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0)
+            GsonUtil.writeWithGenericAdapter(gson, obj0.getClass(), out, obj0);
         }
 
         // End
         out.endObject();
+    }
+
+    @Override
+    public String getModelClassName() {
+        return "generator.standard.field_policy.validate_explicit_non_null.TestValidateWithDefaultValue";
     }
 }

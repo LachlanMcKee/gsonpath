@@ -1,86 +1,64 @@
 package generator.standard.field_types.generics;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
 import java.util.List;
-
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestGenerics_GsonTypeAdapter extends TypeAdapter<TestGenerics> {
-    private final Gson mGson;
-
+public final class TestGenerics_GsonTypeAdapter extends GsonPathTypeAdapter<TestGenerics> {
     public TestGenerics_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestGenerics read(JsonReader in) throws IOException {
-
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestGenerics readImpl(JsonReader in) throws IOException {
         TestGenerics result = new TestGenerics();
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 1) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "value1":
-                    jsonFieldCounter0++;
-
-                    List<String> value_value1 = mGson.getAdapter(new com.google.gson.reflect.TypeToken<List<String>>() {
-                    }).read(in);
+                    List<String> value_value1 = gson.getAdapter(new com.google.gson.reflect.TypeToken<List<String>>(){}).read(in);
                     if (value_value1 != null) {
                         result.value1 = value_value1;
                     }
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-
-        in.endObject();
         return result;
     }
 
     @Override
-    public void write(JsonWriter out, TestGenerics value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestGenerics value) throws IOException {
         // Begin
         out.beginObject();
         List<String> obj0 = value.value1;
         if (obj0 != null) {
             out.name("value1");
-            mGson.getAdapter(new com.google.gson.reflect.TypeToken<List<String>>(){}).write(out, obj0);
+            gson.getAdapter(new com.google.gson.reflect.TypeToken<List<String>>(){}).write(out, obj0);
         }
 
         // End
         out.endObject();
+    }
+
+    @Override
+    public String getModelClassName() {
+        return "generator.standard.field_types.generics.TestGenerics";
     }
 }
