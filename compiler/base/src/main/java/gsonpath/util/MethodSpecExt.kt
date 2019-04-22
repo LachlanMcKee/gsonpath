@@ -8,7 +8,6 @@ object MethodSpecExt {
     fun overrideMethodBuilder(name: String): MethodSpec.Builder {
         return MethodSpec.methodBuilder(name)
                 .addAnnotation(Override::class.java)
-                .addModifiers(Modifier.PUBLIC)
     }
 }
 

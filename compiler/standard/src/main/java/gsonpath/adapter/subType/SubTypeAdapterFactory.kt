@@ -1,9 +1,9 @@
 package gsonpath.adapter.subType
 
 import com.google.gson.Gson
-import com.google.gson.TypeAdapter
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
+import gsonpath.GsonPathTypeAdapter
 import gsonpath.GsonSubtype
 import gsonpath.adapter.AdapterFactory
 import gsonpath.adapter.AdapterGenerationResult
@@ -67,12 +67,8 @@ object SubTypeAdapterFactory : AdapterFactory {
             typeName: ClassName,
             result: GsonSubTypeResult) = TypeSpecExt.finalClassBuilder(adapterClassName).apply {
 
-        superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), typeName))
+        superclass(ParameterizedTypeName.get(ClassName.get(GsonPathTypeAdapter::class.java), typeName))
         addAnnotation(Constants.GENERATED_ANNOTATION)
-
-        field("mGson", Gson::class.java) {
-            addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-        }
 
         result.fieldSpecs.forEach { addField(it) }
 
@@ -80,9 +76,7 @@ object SubTypeAdapterFactory : AdapterFactory {
         constructor {
             addModifiers(Modifier.PUBLIC)
             addParameter(Gson::class.java, "gson")
-            code {
-                assign("this.mGson", "gson")
-            }
+            addStatement("super(gson)")
             addCode(result.constructorCodeBlock)
         }
 

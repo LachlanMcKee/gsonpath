@@ -1,11 +1,13 @@
 package gsonpath.adapter.standard.adapter.read
 
+import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeSpec
+import gsonpath.JsonReaderHelper
 import gsonpath.ProcessingException
+import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.adapter.Constants.BREAK
-import gsonpath.adapter.Constants.CONTINUE
 import gsonpath.adapter.Constants.GET_ADAPTER
 import gsonpath.adapter.Constants.IN
 import gsonpath.adapter.Constants.NULL
@@ -16,7 +18,6 @@ import gsonpath.adapter.standard.model.GsonModel
 import gsonpath.adapter.standard.model.GsonObject
 import gsonpath.adapter.standard.model.MandatoryFieldInfoFactory.MandatoryFieldInfo
 import gsonpath.compiler.createDefaultVariableValueForTypeName
-import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.model.FieldType
 import gsonpath.util.*
 
@@ -29,11 +30,6 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
     fun handleRead(typeSpecBuilder: TypeSpec.Builder, params: ReadParams) {
         typeSpecBuilder.addMethod(AdapterMethodBuilder.createReadMethodBuilder(params.baseElement).applyAndBuild {
             code {
-                comment("Ensure the object is not null.")
-                `if`("!isValidValue($IN)") {
-                    `return`(NULL)
-                }
-
                 addInitialisationBlock(params)
                 addReadCodeForElements(typeSpecBuilder, params.rootElements, params)
                 addMandatoryValuesCheck(params)
@@ -62,6 +58,11 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
             }
         }
 
+        val readerHelperClassName = ClassName.get(JsonReaderHelper::class.java)
+        createVariableNew("\$T", JSON_READER_HELPER, "\$T($IN)",
+                readerHelperClassName,
+                readerHelperClassName)
+
         // If we have any mandatory fields, we need to keep track of what has been assigned.
         if (params.mandatoryInfoMap.isNotEmpty()) {
             createVariableNew("boolean[]", MANDATORY_FIELDS_CHECK_LIST, "boolean[$MANDATORY_FIELDS_SIZE]")
@@ -86,25 +87,7 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
             return recursionCount
         }
 
-        val counterVariableName = "jsonFieldCounter$recursionCount"
-
-        createVariable("int", counterVariableName, "0")
-        addStatement("$IN.beginObject()")
-        newLine()
-
-        return `while`("$IN.hasNext()") {
-
-            //
-            // Since all the required fields have been mapped, we can avoid calling 'nextName'.
-            // This ends up yielding performance improvements on large datasets depending on
-            // the ordering of the fields within the JSON.
-            //
-            `if`("$counterVariableName == $jsonMappingSize") {
-                addStatement("$IN.skipValue()")
-                addStatement(CONTINUE)
-            }
-            newLine()
-
+        return `while`("$JSON_READER_HELPER.handleObject($recursionCount, $jsonMappingSize)") {
             switch("$IN.nextName()") {
                 jsonMapping.entries()
                         .fold(recursionCount + 1) { currentOverallRecursionCount, entry ->
@@ -113,18 +96,14 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
                                     params = params,
                                     key = entry.key,
                                     value = entry.value,
-                                    counterVariableName = counterVariableName,
                                     currentOverallRecursionCount = currentOverallRecursionCount)
                         }
                         .also {
                             default {
-                                addStatement("$IN.skipValue()")
+                                addStatement("$JSON_READER_HELPER.onObjectFieldNotFound($recursionCount)")
                             }
                         }
             }
-        }.also {
-            newLine()
-            addStatement("$IN.endObject()")
         }
     }
 
@@ -133,13 +112,9 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
             params: ReadParams,
             key: String,
             value: GsonModel,
-            counterVariableName: String,
             currentOverallRecursionCount: Int): Int {
 
         return case("\"$key\"") {
-            // Increment the counter to ensure we track how many fields we have mapped.
-            addStatement("$counterVariableName++")
-
             when (value) {
                 is GsonField -> {
                     writeGsonFieldReader(typeSpecBuilder, value, params.requiresConstructorInjection,
@@ -150,11 +125,6 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
                 }
 
                 is GsonObject -> {
-                    newLine()
-                    comment("Ensure the object is not null.")
-                    `if`("!isValidValue($IN)") {
-                        addStatement(BREAK)
-                    }
                     addReadCodeForElements(typeSpecBuilder, value, params, currentOverallRecursionCount)
                 }
 
@@ -173,10 +143,6 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
             mandatoryFieldInfo: MandatoryFieldInfo?) {
 
         val fieldInfo = gsonField.fieldInfo
-
-        // Add a new line to improve readability for the multi-lined mapping.
-        newLine()
-
         val result = writeGsonFieldReading(typeSpecBuilder, gsonField, requiresConstructorInjection)
 
         val assignedVariable =
@@ -381,5 +347,6 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
         private const val MANDATORY_FIELDS_SIZE = "MANDATORY_FIELDS_SIZE"
         private const val MANDATORY_FIELD_INDEX = "mandatoryFieldIndex"
         private const val FIELD_NAME = "fieldName"
+        private const val JSON_READER_HELPER = "jsonReaderHelper"
     }
 }

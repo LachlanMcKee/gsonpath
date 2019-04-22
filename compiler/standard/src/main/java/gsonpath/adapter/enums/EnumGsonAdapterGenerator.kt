@@ -1,12 +1,12 @@
 package gsonpath.adapter.enums
 
 import com.google.gson.Gson
-import com.google.gson.TypeAdapter
 import com.google.gson.annotations.SerializedName
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import gsonpath.AutoGsonAdapter
+import gsonpath.GsonPathTypeAdapter
 import gsonpath.GsonUtil
 import gsonpath.ProcessingException
 import gsonpath.adapter.AdapterGenerationResult
@@ -55,12 +55,9 @@ class EnumGsonAdapterGenerator(
             fields: List<FieldElementContent>) = TypeSpecExt.finalClassBuilder(adapterClassName).apply {
 
         val typeName = ClassName.get(element)
-        superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), typeName))
+        superclass(ParameterizedTypeName.get(ClassName.get(GsonPathTypeAdapter::class.java), typeName))
         addAnnotation(Constants.GENERATED_ANNOTATION)
 
-        field("mGson", Gson::class.java) {
-            addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-        }
         field("nameToConstant", TypeNameExt.createMap(CLASS_NAME_STRING, typeName)) {
             addModifiers(Modifier.PRIVATE, Modifier.FINAL)
             initializer("new \$T()", TypeNameExt.createHashMap(CLASS_NAME_STRING, typeName))
@@ -75,7 +72,7 @@ class EnumGsonAdapterGenerator(
             addModifiers(Modifier.PUBLIC)
             addParameter(Gson::class.java, "gson")
             code {
-                assign("this.mGson", "gson")
+                addStatement("super(gson)")
                 newLine()
 
                 handleFields(element, fields, properties) { enumConstantName, label ->

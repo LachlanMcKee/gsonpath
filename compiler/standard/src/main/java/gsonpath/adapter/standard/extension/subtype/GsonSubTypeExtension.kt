@@ -1,12 +1,13 @@
 package gsonpath.adapter.standard.extension.subtype
 
 import com.google.gson.Gson
-import com.google.gson.TypeAdapter
 import com.squareup.javapoet.*
+import gsonpath.GsonPathTypeAdapter
 import gsonpath.GsonSubTypeFailureOutcome
 import gsonpath.GsonSubtype
 import gsonpath.ProcessingException
 import gsonpath.adapter.Constants
+import gsonpath.adapter.Constants.GSON
 import gsonpath.adapter.Constants.NULL
 import gsonpath.adapter.common.GsonSubTypeCategory
 import gsonpath.adapter.common.GsonSubTypeFactory
@@ -152,17 +153,17 @@ class GsonSubTypeExtension(
                     when (typeAdapterDetails) {
                         is TypeAdapterDetails.ArrayTypeAdapter -> {
                             assignNew(variableName,
-                                    "\$T<>(new ${subTypeMetadata.className}(mGson), \$T.class, $filterNulls)",
+                                    "\$T<>(new ${subTypeMetadata.className}($GSON), \$T.class, $filterNulls)",
                                     typeAdapterDetails.typeName, elementTypeName)
                         }
                         is TypeAdapterDetails.CollectionTypeAdapter -> {
                             assignNew(variableName,
-                                    "\$T(new ${subTypeMetadata.className}(mGson), $filterNulls)",
+                                    "\$T(new ${subTypeMetadata.className}($GSON), $filterNulls)",
                                     typeAdapterDetails.typeName)
                         }
                         is TypeAdapterDetails.ValueTypeAdapter -> {
                             assignNew(variableName,
-                                    "${subTypeMetadata.className}(mGson)")
+                                    "${subTypeMetadata.className}($GSON)")
                         }
                     }
                 }
@@ -182,7 +183,7 @@ class GsonSubTypeExtension(
 
         return TypeSpec.classBuilder(subTypeMetadata.className).applyAndBuild {
             addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-            superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), elementTypeName))
+            superclass(ParameterizedTypeName.get(ClassName.get(GsonPathTypeAdapter::class.java), elementTypeName))
 
             val result = GsonSubTypeFactory.createSubTypeMetadata(elementTypeName, subTypeMetadata)
 

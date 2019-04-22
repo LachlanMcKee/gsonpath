@@ -3,32 +3,31 @@ package generator.standard.array;
 import static gsonpath.GsonUtil.*;
 
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+
+import gsonpath.GsonPathTypeAdapter;
+
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
+import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestArray_GsonTypeAdapter extends TypeAdapter<TestArray> {
-    private final Gson mGson;
+public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArray> {
 
     public TestArray_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestArray read(JsonReader in) throws IOException {
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestArray readImpl(JsonReader in) throws IOException {
         TestArray result = new TestArray();
+        ArrayHandler arrayHandler = new ArrayHandler(in);
 
         int jsonFieldCounter0 = 0;
         in.beginObject();
@@ -47,35 +46,27 @@ public final class TestArray_GsonTypeAdapter extends TypeAdapter<TestArray> {
                     if (!isValidValue(in)) {
                         break;
                     }
-                    in.beginArray();
-                    int test1_arrayIndex = 0;
 
                     // Iterate through the array.
-                    while (in.hasNext()) {
-                        switch (test1_arrayIndex) {
+                    while (arrayHandler.handleArray(0)) {
+                        switch (arrayHandler.getIndex(0)) {
                             case 1:
-                                Integer value_test1_1_ = mGson.getAdapter(Integer.class).read(in);
+                                Integer value_test1_1_ = gson.getAdapter(Integer.class).read(in);
                                 if (value_test1_1_ != null) {
                                     result.plainArray = value_test1_1_;
                                 }
                                 break;
 
                             default:
-                                in.skipValue();
+                                arrayHandler.onFieldNotFound(0);
                                 break;
                         }
-                        test1_arrayIndex++;
                     }
-                    in.endArray();
                     break;
 
                 case "test2":
                     jsonFieldCounter0++;
 
-                    // Ensure the array is not null.
-                    if (!isValidValue(in)) {
-                        break;
-                    }
                     in.beginArray();
                     int test2_arrayIndex = 0;
 
@@ -96,7 +87,7 @@ public final class TestArray_GsonTypeAdapter extends TypeAdapter<TestArray> {
                                         case "child":
                                             jsonFieldCounter1++;
 
-                                            Integer value_test2_2__child = mGson.getAdapter(Integer.class).read(in);
+                                            Integer value_test2_2__child = gson.getAdapter(Integer.class).read(in);
                                             if (value_test2_2__child != null) {
                                                 result.arrayWithNestedObject = value_test2_2__child;
                                             }
@@ -105,7 +96,7 @@ public final class TestArray_GsonTypeAdapter extends TypeAdapter<TestArray> {
                                         case "child2":
                                             jsonFieldCounter1++;
 
-                                            Integer value_test2_2__child2 = mGson.getAdapter(Integer.class).read(in);
+                                            Integer value_test2_2__child2 = gson.getAdapter(Integer.class).read(in);
                                             if (value_test2_2__child2 != null) {
                                                 result.arrayWithNestedObject2 = value_test2_2__child2;
                                             }
@@ -167,7 +158,7 @@ public final class TestArray_GsonTypeAdapter extends TypeAdapter<TestArray> {
                                             while (in.hasNext()) {
                                                 switch (child_arrayIndex) {
                                                     case 1:
-                                                        Integer value_test3_3__child_1_ = mGson.getAdapter(Integer.class).read(in);
+                                                        Integer value_test3_3__child_1_ = gson.getAdapter(Integer.class).read(in);
                                                         if (value_test3_3__child_1_ != null) {
                                                             result.arrayWithNestedArray = value_test3_3__child_1_;
                                                         }
@@ -231,7 +222,7 @@ public final class TestArray_GsonTypeAdapter extends TypeAdapter<TestArray> {
                                 while (in.hasNext()) {
                                     switch (child_arrayIndex) {
                                         case 1:
-                                            Integer value_test4_child_1_ = mGson.getAdapter(Integer.class).read(in);
+                                            Integer value_test4_child_1_ = gson.getAdapter(Integer.class).read(in);
                                             if (value_test4_child_1_ != null) {
                                                 result.objectWithNestedArray = value_test4_child_1_;
                                             }
@@ -266,12 +257,7 @@ public final class TestArray_GsonTypeAdapter extends TypeAdapter<TestArray> {
     }
 
     @Override
-    public void write(JsonWriter out, TestArray value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestArray value) throws IOException {
         // Begin
         out.beginObject();
 
@@ -283,7 +269,7 @@ public final class TestArray_GsonTypeAdapter extends TypeAdapter<TestArray> {
 
         // Set Value: 'test1[1]'
         int obj0 = value.plainArray;
-        mGson.getAdapter(Integer.class).write(out, obj0);
+        gson.getAdapter(Integer.class).write(out, obj0);
 
         // End Array: 'test1'
         out.endArray();
@@ -301,12 +287,12 @@ public final class TestArray_GsonTypeAdapter extends TypeAdapter<TestArray> {
         // Set Value: 'test2[2].child'
         int obj1 = value.arrayWithNestedObject;
         out.name("child");
-        mGson.getAdapter(Integer.class).write(out, obj1);
+        gson.getAdapter(Integer.class).write(out, obj1);
 
         // Set Value: 'test2[2].child2'
         int obj2 = value.arrayWithNestedObject2;
         out.name("child2");
-        mGson.getAdapter(Integer.class).write(out, obj2);
+        gson.getAdapter(Integer.class).write(out, obj2);
 
         // End Object: 'test2[2]'
         out.endObject();
@@ -329,7 +315,7 @@ public final class TestArray_GsonTypeAdapter extends TypeAdapter<TestArray> {
 
         // Set Value: 'test3[3].child[1]'
         int obj3 = value.arrayWithNestedArray;
-        mGson.getAdapter(Integer.class).write(out, obj3);
+        gson.getAdapter(Integer.class).write(out, obj3);
 
         out.endArray();
         out.endObject();
@@ -349,7 +335,7 @@ public final class TestArray_GsonTypeAdapter extends TypeAdapter<TestArray> {
 
         // Set Value: 'test4.child[1]'
         int obj4 = value.objectWithNestedArray;
-        mGson.getAdapter(Integer.class).write(out, obj4);
+        gson.getAdapter(Integer.class).write(out, obj4);
 
         // End Array: 'test4.child'
         out.endArray();
@@ -358,5 +344,10 @@ public final class TestArray_GsonTypeAdapter extends TypeAdapter<TestArray> {
         out.endObject();
 
         out.endObject();
+    }
+
+    @Override
+    public String getModelClassName() {
+        return "generator.standard.array.TestArray";
     }
 }

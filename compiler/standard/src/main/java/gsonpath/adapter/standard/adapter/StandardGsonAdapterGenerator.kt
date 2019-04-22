@@ -1,10 +1,12 @@
 package gsonpath.adapter.standard.adapter
 
 import com.google.gson.Gson
-import com.google.gson.TypeAdapter
-import com.squareup.javapoet.*
+import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.ParameterizedTypeName
+import com.squareup.javapoet.TypeName
+import com.squareup.javapoet.TypeSpec
 import gsonpath.AutoGsonAdapter
-import gsonpath.GsonUtil
+import gsonpath.GsonPathTypeAdapter
 import gsonpath.ProcessingException
 import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.Constants.GENERATED_ANNOTATION
@@ -31,26 +33,20 @@ class StandardGsonAdapterGenerator(
         return TypeSpecExt.finalClassBuilder(adapterClassName)
                 .addDetails(metadata)
                 .let {
-                    it.writeFile(fileWriter, adapterClassName.packageName(), this::onJavaFileBuilt)
+                    it.writeFile(fileWriter, adapterClassName.packageName())
                     AdapterGenerationResult(metadata.adapterGenericTypeClassNames.toTypedArray(), adapterClassName)
                 }
     }
 
     private fun TypeSpec.Builder.addDetails(metadata: AdapterModelMetadata): TypeSpec.Builder {
-        superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), metadata.modelClassName))
+        superclass(ParameterizedTypeName.get(ClassName.get(GsonPathTypeAdapter::class.java), metadata.modelClassName))
         addAnnotation(GENERATED_ANNOTATION)
-
-        field("mGson", Gson::class.java) {
-            addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-        }
 
         // Add the constructor which takes a gson instance for future use.
         constructor {
             addModifiers(Modifier.PUBLIC)
             addParameter(Gson::class.java, "gson")
-            code {
-                assign("this.mGson", "gson")
-            }
+            addStatement("super(gson)")
         }
 
         // Adds the mandatory field index constants and also populates the mandatoryInfoMap values.
@@ -73,10 +69,12 @@ class StandardGsonAdapterGenerator(
         readFunctions.handleRead(this, metadata.readParams)
         writeFunctions.handleWrite(this, metadata.writeParams)
 
-        return this
-    }
+        addMethod(MethodSpecExt.overrideMethodBuilder("getModelClassName").applyAndBuild {
+            addModifiers(Modifier.PUBLIC)
+            returns(ClassName.get(String::class.java))
+            addStatement("""return "${metadata.readParams.concreteElement}"""")
+        })
 
-    private fun onJavaFileBuilt(builder: JavaFile.Builder) {
-        builder.addStaticImport(GsonUtil::class.java, "*")
+        return this
     }
 }

@@ -2,6 +2,7 @@ package gsonpath.adapter.standard.extension.invalid
 
 import com.squareup.javapoet.*
 import gsonpath.ProcessingException
+import gsonpath.adapter.Constants.GSON
 import gsonpath.compiler.ExtensionFieldMetadata
 import gsonpath.compiler.GsonPathExtension
 import gsonpath.extension.RemoveInvalidElementsUtil
@@ -54,7 +55,7 @@ class RemoveInvalidElementsExtension : GsonPathExtension {
             val typeName = fieldInfo.fieldType.typeName
             when (multipleValuesFieldType) {
                 is FieldType.MultipleValues.Array -> {
-                    val assignment = "\$T.removeInvalidElementsArray(\$T.class, mGson, in, \$L)"
+                    val assignment = "\$T.removeInvalidElementsArray(\$T.class, $GSON, in, \$L)"
                     val arrayFuncType = createCreateArrayFuncTypeSpec(rawTypeName)
                     if (checkIfResultIsNull) {
                         createVariable(typeName, variableName, assignment, UTIL_CLASS_NAME, rawTypeName, arrayFuncType)
@@ -63,7 +64,7 @@ class RemoveInvalidElementsExtension : GsonPathExtension {
                     }
                 }
                 is FieldType.MultipleValues.Collection -> {
-                    val assignment = "\$T.removeInvalidElementsList(\$T.class, mGson, in)"
+                    val assignment = "\$T.removeInvalidElementsList(\$T.class, $GSON, in)"
                     if (checkIfResultIsNull) {
                         createVariable(typeName, variableName, assignment, UTIL_CLASS_NAME, rawTypeName)
                     } else {
