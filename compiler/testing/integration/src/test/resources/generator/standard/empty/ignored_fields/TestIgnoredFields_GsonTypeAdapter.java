@@ -7,7 +7,6 @@ import gsonpath.GsonPathTypeAdapter;
 import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Override;
-import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
@@ -33,10 +32,5 @@ public final class TestIgnoredFields_GsonTypeAdapter extends GsonPathTypeAdapter
         out.beginObject();
         // End
         out.endObject();
-    }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.standard.empty.ignored_fields.TestIgnoredFields";
     }
 }

@@ -168,9 +168,4 @@ public final class TestBoxedPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
         // End
         out.endObject();
     }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.standard.field_types.boxed_primitives.TestBoxedPrimitives";
-    }
 }

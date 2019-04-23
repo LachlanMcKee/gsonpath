@@ -15,7 +15,6 @@ import java.lang.Integer;
 import java.lang.Long;
 import java.lang.Override;
 import java.lang.Short;
-import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
@@ -137,10 +136,5 @@ public final class TestValidPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
 
         // End
         out.endObject();
-    }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.standard.field_types.primitives.valid.TestValidPrimitives";
     }
 }

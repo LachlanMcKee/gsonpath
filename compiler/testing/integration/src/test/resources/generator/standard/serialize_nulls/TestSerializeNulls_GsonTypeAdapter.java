@@ -139,9 +139,4 @@ public final class TestSerializeNulls_GsonTypeAdapter extends GsonPathTypeAdapte
         // End
         out.endObject();
     }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.standard.class_annotations.serialize_nulls.TestSerializeNulls";
-    }
 }

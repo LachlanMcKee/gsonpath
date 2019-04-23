@@ -8,7 +8,6 @@ import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
-import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
@@ -53,10 +52,5 @@ public final class TestInheritance_GsonTypeAdapter extends GsonPathTypeAdapter<T
 
         // End
         out.endObject();
-    }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.standard.inheritance.TestInheritance";
     }
 }

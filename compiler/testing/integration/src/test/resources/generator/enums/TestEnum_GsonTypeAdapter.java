@@ -44,9 +44,4 @@ public final class TestEnum_GsonTypeAdapter extends GsonPathTypeAdapter<TestEnum
     public void writeImpl(JsonWriter out, TestEnum value) throws IOException {
         out.value(constantToName.get(value));
     }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.enums.TestEnum";
-    }
 }

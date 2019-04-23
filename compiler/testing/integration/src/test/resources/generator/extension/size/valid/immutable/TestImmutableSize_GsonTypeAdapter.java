@@ -70,9 +70,4 @@ public final class TestImmutableSize_GsonTypeAdapter extends GsonPathTypeAdapter
         // End
         out.endObject();
     }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.standard.size.valid.nullable.TestImmutableSize";
-    }
 }

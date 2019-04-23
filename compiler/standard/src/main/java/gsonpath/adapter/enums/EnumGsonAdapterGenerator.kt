@@ -89,7 +89,6 @@ class EnumGsonAdapterGenerator(
 
         addMethod(createReadMethod(typeName))
         addMethod(createWriteMethod(typeName))
-        addMethod(AdapterMethodBuilder.createModelClassNameMethod(typeName))
     }
 
     private fun createReadMethod(enumTypeName: TypeName) = AdapterMethodBuilder.createReadMethodBuilder(enumTypeName).applyAndBuild {

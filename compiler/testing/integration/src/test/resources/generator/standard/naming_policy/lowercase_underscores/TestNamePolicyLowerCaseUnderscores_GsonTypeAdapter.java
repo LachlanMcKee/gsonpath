@@ -8,7 +8,6 @@ import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
-import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
@@ -54,10 +53,5 @@ public final class TestNamePolicyLowerCaseUnderscores_GsonTypeAdapter extends Gs
 
         // End
         out.endObject();
-    }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.standard.naming_policy.lowercase_underscores.TestNamePolicyLowerCaseUnderscores";
     }
 }

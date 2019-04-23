@@ -85,9 +85,4 @@ public final class GenericsTest_GsonTypeAdapter extends GsonPathTypeAdapter<Gene
         // End
         out.endObject();
     }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.standard.generics.interfaces_and_classs.GenericsTest";
-    }
 }

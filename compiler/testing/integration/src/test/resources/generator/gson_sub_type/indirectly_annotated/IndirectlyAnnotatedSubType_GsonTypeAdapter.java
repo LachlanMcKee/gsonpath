@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Class;
 import java.lang.Override;
-import java.lang.String;
 import java.util.Map;
 import javax.annotation.Generated;
 
@@ -57,10 +56,5 @@ public final class IndirectlyAnnotatedSubType_GsonTypeAdapter extends GsonPathTy
     public void writeImpl(JsonWriter out, IndirectlyAnnotatedSubType value) throws IOException {
         TypeAdapter delegate = typeAdaptersDelegatedByClassMap.get(value.getClass());
         delegate.write(out, value);
-    }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.gson_sub_type.indirectly_annotated.IndirectlyAnnotatedSubType";
     }
 }

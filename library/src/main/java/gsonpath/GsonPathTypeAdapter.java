@@ -38,6 +38,4 @@ public abstract class GsonPathTypeAdapter<T> extends TypeAdapter<T> {
     public abstract T readImpl(JsonReader in) throws IOException;
 
     public abstract void writeImpl(JsonWriter out, T value) throws IOException;
-
-    public abstract String getModelClassName();
 }

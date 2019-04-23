@@ -46,8 +46,7 @@ object GsonSubTypeFactory {
                 constructorCodeBlock = createSubTypeConstructorCodeBlock(subTypeMetadata),
                 fieldSpecs = fieldSpecs.map(FieldSpec.Builder::build),
                 readMethodSpecs = createReadMethod(subTypeMetadata, elementTypeName),
-                writeMethodSpecs = createWriteMethod(subTypeMetadata, elementTypeName, typeAdapterType),
-                modelClassNameMethodSpec = AdapterMethodBuilder.createModelClassNameMethod(elementTypeName)
+                writeMethodSpecs = createWriteMethod(subTypeMetadata, elementTypeName, typeAdapterType)
         )
     }
 

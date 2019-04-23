@@ -83,6 +83,5 @@ object SubTypeAdapterFactory : AdapterFactory {
         result.typeSpecs.forEach { addType(it) }
         addMethod(result.readMethodSpecs)
         addMethod(result.writeMethodSpecs)
-        addMethod(result.modelClassNameMethodSpec)
     }
 }

@@ -111,9 +111,4 @@ public final class ValidConstructorTest_GsonTypeAdapter extends GsonPathTypeAdap
         // End
         out.endObject();
     }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.standard.using_constructor.valid.ValidConstructorTest";
-    }
 }

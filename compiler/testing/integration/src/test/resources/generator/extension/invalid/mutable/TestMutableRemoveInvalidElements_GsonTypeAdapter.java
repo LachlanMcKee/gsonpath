@@ -80,9 +80,4 @@ public final class TestMutableRemoveInvalidElements_GsonTypeAdapter extends Gson
         // End
         out.endObject();
     }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.standard.invalid.mutable.TestMutableRemoveInvalidElements";
-    }
 }

@@ -79,11 +79,6 @@ public final class TypesList_GsonTypeAdapter extends GsonPathTypeAdapter<TypesLi
         out.endObject();
     }
 
-    @Override
-    public String getModelClassName() {
-        return "generator.extension.gson_sub_type.using_list.TypesList";
-    }
-
     private static final class ItemsGsonSubtype extends GsonPathTypeAdapter<Type> {
         private final Map<String, TypeAdapter<? extends Type>> typeAdaptersDelegatedByValueMap;
 
@@ -121,11 +116,6 @@ public final class TypesList_GsonTypeAdapter extends GsonPathTypeAdapter<TypesLi
         public void writeImpl(JsonWriter out, Type value) throws IOException {
             TypeAdapter delegate = typeAdaptersDelegatedByClassMap.get(value.getClass());
             delegate.write(out, value);
-        }
-
-        @Override
-        public String getModelClassName() {
-            return "generator.extension.gson_sub_type.Type";
         }
     }
 }

@@ -199,7 +199,6 @@ class GsonSubTypeExtension(
 
             addMethod(result.readMethodSpecs)
             addMethod(result.writeMethodSpecs)
-            addMethod(result.modelClassNameMethodSpec)
         }
     }
 

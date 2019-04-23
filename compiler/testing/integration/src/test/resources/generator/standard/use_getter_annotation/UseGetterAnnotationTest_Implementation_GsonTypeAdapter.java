@@ -127,9 +127,4 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
         // End
         out.endObject();
     }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.standard.use_getter_annotation.UseGetterAnnotationTest.Implementation";
-    }
 }

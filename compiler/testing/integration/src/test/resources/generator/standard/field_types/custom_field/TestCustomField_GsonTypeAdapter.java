@@ -8,7 +8,6 @@ import gsonpath.GsonUtil;
 import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Override;
-import java.lang.String;
 import java.util.Currency;
 import javax.annotation.Generated;
 
@@ -56,10 +55,5 @@ public final class TestCustomField_GsonTypeAdapter extends GsonPathTypeAdapter<T
 
         // End
         out.endObject();
-    }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.standard.field_types.custom_field.TestCustomField";
     }
 }

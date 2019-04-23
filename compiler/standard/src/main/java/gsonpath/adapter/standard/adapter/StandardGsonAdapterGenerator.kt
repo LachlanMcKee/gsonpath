@@ -53,7 +53,6 @@ class StandardGsonAdapterGenerator(
 
         readFunctions.handleRead(this, metadata.readParams)
         writeFunctions.handleWrite(this, metadata.writeParams)
-        addMethod(AdapterMethodBuilder.createModelClassNameMethod(metadata.readParams.concreteElement))
 
         return this
     }

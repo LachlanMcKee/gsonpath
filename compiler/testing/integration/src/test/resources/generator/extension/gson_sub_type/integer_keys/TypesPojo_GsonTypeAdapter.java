@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.lang.Class;
 import java.lang.Integer;
 import java.lang.Override;
-import java.lang.String;
 import java.util.Map;
 import javax.annotation.Generated;
 
@@ -78,11 +77,6 @@ public final class TypesList_GsonTypeAdapter extends GsonPathTypeAdapter<TypesLi
         out.endObject();
     }
 
-    @Override
-    public String getModelClassName() {
-        return "generator.extension.gson_sub_type.integer_keys.TypesList";
-    }
-
     private static final class ItemsGsonSubtype extends GsonPathTypeAdapter<Type> {
         private final Map<Integer, TypeAdapter<? extends Type>> typeAdaptersDelegatedByValueMap;
 
@@ -120,11 +114,6 @@ public final class TypesList_GsonTypeAdapter extends GsonPathTypeAdapter<TypesLi
         public void writeImpl(JsonWriter out, Type value) throws IOException {
             TypeAdapter delegate = typeAdaptersDelegatedByClassMap.get(value.getClass());
             delegate.write(out, value);
-        }
-
-        @Override
-        public String getModelClassName() {
-            return "generator.extension.gson_sub_type.Type";
         }
     }
 }

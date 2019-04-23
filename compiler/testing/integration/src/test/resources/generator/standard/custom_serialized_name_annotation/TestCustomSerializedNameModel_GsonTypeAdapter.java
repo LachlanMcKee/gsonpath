@@ -155,9 +155,4 @@ public final class TestCustomSerializedNameModel_GsonTypeAdapter extends GsonPat
         // End
         out.endObject();
     }
-
-    @Override
-    public String getModelClassName() {
-        return "generator.standard.custom_serialized_name_annotation.TestCustomSerializedNameModel";
-    }
 }
