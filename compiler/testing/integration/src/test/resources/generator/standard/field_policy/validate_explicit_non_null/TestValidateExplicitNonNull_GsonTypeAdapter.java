@@ -17,13 +17,6 @@ import javax.annotation.Generated;
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
 public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathTypeAdapter<TestValidateExplicitNonNull> {
-    private static final int MANDATORY_INDEX_MANDATORY1 = 0;
-
-    private static final int MANDATORY_INDEX_MANDATORY2 = 1;
-
-    private static final int MANDATORY_INDEX_MANDATORY3 = 2;
-
-    private static final int MANDATORY_FIELDS_SIZE = 3;
 
     public TestValidateExplicitNonNull_GsonTypeAdapter(Gson gson) {
         super(gson);
@@ -33,7 +26,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
     public TestValidateExplicitNonNull readImpl(JsonReader in) throws IOException {
         TestValidateExplicitNonNull result = new TestValidateExplicitNonNull();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
-        boolean[] mandatoryFieldsCheckList = new boolean[MANDATORY_FIELDS_SIZE];
+        boolean[] mandatoryFieldsCheckList = new boolean[3];
 
         while (jsonReaderHelper.handleObject(0, 4)) {
             switch (in.nextName()) {
@@ -41,7 +34,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
                     Integer value_mandatory1 = gson.getAdapter(Integer.class).read(in);
                     if (value_mandatory1 != null) {
                         result.mandatory1 = value_mandatory1;
-                        mandatoryFieldsCheckList[MANDATORY_INDEX_MANDATORY1] = true;
+                        mandatoryFieldsCheckList[0] = true;
 
                     } else {
                         throw new gsonpath.JsonFieldNullException("mandatory1", "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
@@ -52,7 +45,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
                     Integer value_mandatory2 = gson.getAdapter(Integer.class).read(in);
                     if (value_mandatory2 != null) {
                         result.mandatory2 = value_mandatory2;
-                        mandatoryFieldsCheckList[MANDATORY_INDEX_MANDATORY2] = true;
+                        mandatoryFieldsCheckList[1] = true;
 
                     } else {
                         throw new gsonpath.JsonFieldNullException("mandatory2", "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
@@ -63,7 +56,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
                     Integer value_mandatory3 = gson.getAdapter(Integer.class).read(in);
                     if (value_mandatory3 != null) {
                         result.mandatory3 = value_mandatory3;
-                        mandatoryFieldsCheckList[MANDATORY_INDEX_MANDATORY3] = true;
+                        mandatoryFieldsCheckList[2] = true;
 
                     } else {
                         throw new gsonpath.JsonFieldNullException("mandatory3", "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
@@ -85,7 +78,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
         }
 
         // Mandatory object validation
-        for (int mandatoryFieldIndex = 0; mandatoryFieldIndex < MANDATORY_FIELDS_SIZE; mandatoryFieldIndex++) {
+        for (int mandatoryFieldIndex = 0; mandatoryFieldIndex < 3; mandatoryFieldIndex++) {
 
             // Check if a mandatory value is missing.
             if (!mandatoryFieldsCheckList[mandatoryFieldIndex]) {
@@ -93,15 +86,15 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
                 // Find the field name of the missing json value.
                 String fieldName = null;
                 switch (mandatoryFieldIndex) {
-                    case MANDATORY_INDEX_MANDATORY1:
+                    case 0:
                         fieldName = "mandatory1";
                         break;
 
-                    case MANDATORY_INDEX_MANDATORY2:
+                    case 1:
                         fieldName = "mandatory2";
                         break;
 
-                    case MANDATORY_INDEX_MANDATORY3:
+                    case 2:
                         fieldName = "mandatory3";
                         break;
 

@@ -17,9 +17,6 @@ import javax.annotation.Generated;
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
 public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends GsonPathTypeAdapter<TestCustomAutoGsonAdapterModel> {
-    private static final int MANDATORY_INDEX_EXPECTEDVALUE = 0;
-
-    private static final int MANDATORY_FIELDS_SIZE = 1;
 
     public TestCustomAutoGsonAdapterModel_GsonTypeAdapter(Gson gson) {
         super(gson);
@@ -29,7 +26,7 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends GsonPa
     public TestCustomAutoGsonAdapterModel readImpl(JsonReader in) throws IOException {
         TestCustomAutoGsonAdapterModel result = new TestCustomAutoGsonAdapterModel();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 2, 0);
-        boolean[] mandatoryFieldsCheckList = new boolean[MANDATORY_FIELDS_SIZE];
+        boolean[] mandatoryFieldsCheckList = new boolean[1];
 
         while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
@@ -40,7 +37,7 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends GsonPa
                                 Integer value_path_expectedValue = gson.getAdapter(Integer.class).read(in);
                                 if (value_path_expectedValue != null) {
                                     result.expectedValue = value_path_expectedValue;
-                                    mandatoryFieldsCheckList[MANDATORY_INDEX_EXPECTEDVALUE] = true;
+                                    mandatoryFieldsCheckList[0] = true;
 
                                 } else {
                                     throw new gsonpath.JsonFieldNullException("path$expectedValue", "generator.standard.custom_adapter_annotation.TestCustomAutoGsonAdapterModel");
@@ -63,7 +60,7 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends GsonPa
         }
 
         // Mandatory object validation
-        for (int mandatoryFieldIndex = 0; mandatoryFieldIndex < MANDATORY_FIELDS_SIZE; mandatoryFieldIndex++) {
+        for (int mandatoryFieldIndex = 0; mandatoryFieldIndex < 1; mandatoryFieldIndex++) {
 
             // Check if a mandatory value is missing.
             if (!mandatoryFieldsCheckList[mandatoryFieldIndex]) {
@@ -71,7 +68,7 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends GsonPa
                 // Find the field name of the missing json value.
                 String fieldName = null;
                 switch (mandatoryFieldIndex) {
-                    case MANDATORY_INDEX_EXPECTEDVALUE:
+                    case 0:
                         fieldName = "path$expectedValue";
                         break;
 

@@ -68,13 +68,13 @@ class AdapterModelMetadataFactory(
 
         val rootObject = gsonTreeResult.rootObject
         val flattenedFields = gsonTreeResult.flattenedFields
-        val mandatoryInfoMap = MandatoryFieldInfoFactory().createMandatoryFieldsFromGsonObject(rootObject)
+        val mandatoryFields = MandatoryFieldInfoFactory().createMandatoryFieldsFromGsonObject(rootObject)
 
         val readParams = ReadParams(
                 baseElement = modelClassName,
                 concreteElement = concreteClassName,
                 requiresConstructorInjection = requiresConstructorInjection,
-                mandatoryInfoMap = mandatoryInfoMap,
+                mandatoryFields = mandatoryFields,
                 rootElements = rootObject,
                 flattenedFields = flattenedFields,
                 objectIndexes = GsonModelIndexAssigner.assignObjectIndexes(rootObject),
@@ -91,7 +91,7 @@ class AdapterModelMetadataFactory(
                 adapterClassName,
                 isModelInterface,
                 rootObject,
-                mandatoryInfoMap,
+                mandatoryFields,
                 readParams,
                 writeParams)
     }

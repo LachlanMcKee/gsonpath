@@ -17,9 +17,6 @@ import javax.annotation.Generated;
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
 public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extends GsonPathTypeAdapter<UseGetterAnnotationTest.Implementation> {
-    private static final int MANDATORY_INDEX_NAME = 0;
-
-    private static final int MANDATORY_FIELDS_SIZE = 1;
 
     public UseGetterAnnotationTest_Implementation_GsonTypeAdapter(Gson gson) {
         super(gson);
@@ -30,7 +27,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
         String value_common_name = null;
         int value_specific_intTest = 0;
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 3, 0);
-        boolean[] mandatoryFieldsCheckList = new boolean[MANDATORY_FIELDS_SIZE];
+        boolean[] mandatoryFieldsCheckList = new boolean[1];
 
         while (jsonReaderHelper.handleObject(0, 2)) {
             switch (in.nextName()) {
@@ -41,7 +38,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
                                 String value_common_name_safe = gson.getAdapter(String.class).read(in);
                                 if (value_common_name_safe != null) {
                                     value_common_name = value_common_name_safe;
-                                    mandatoryFieldsCheckList[MANDATORY_INDEX_NAME] = true;
+                                    mandatoryFieldsCheckList[0] = true;
 
                                 } else {
                                     throw new gsonpath.JsonFieldNullException("common.name", "generator.standard.use_getter_annotation.UseGetterAnnotationTest.Implementation");
@@ -79,7 +76,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
         }
 
         // Mandatory object validation
-        for (int mandatoryFieldIndex = 0; mandatoryFieldIndex < MANDATORY_FIELDS_SIZE; mandatoryFieldIndex++) {
+        for (int mandatoryFieldIndex = 0; mandatoryFieldIndex < 1; mandatoryFieldIndex++) {
 
             // Check if a mandatory value is missing.
             if (!mandatoryFieldsCheckList[mandatoryFieldIndex]) {
@@ -87,7 +84,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
                 // Find the field name of the missing json value.
                 String fieldName = null;
                 switch (mandatoryFieldIndex) {
-                    case MANDATORY_INDEX_NAME:
+                    case 0:
                         fieldName = "common.name";
                         break;
 

@@ -17,9 +17,6 @@ import javax.annotation.Generated;
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
 public final class TestUsingInheritance_GsonTypeAdapter extends GsonPathTypeAdapter<TestUsingInheritance> {
-    private static final int MANDATORY_INDEX_VALUE1 = 0;
-
-    private static final int MANDATORY_FIELDS_SIZE = 1;
 
     public TestUsingInheritance_GsonTypeAdapter(Gson gson) {
         super(gson);
@@ -31,7 +28,7 @@ public final class TestUsingInheritance_GsonTypeAdapter extends GsonPathTypeAdap
         Integer value_value1 = null;
         Integer value_Json1_Nest2 = null;
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 2, 0);
-        boolean[] mandatoryFieldsCheckList = new boolean[MANDATORY_FIELDS_SIZE];
+        boolean[] mandatoryFieldsCheckList = new boolean[1];
 
         while (jsonReaderHelper.handleObject(0, 3)) {
             switch (in.nextName()) {
@@ -43,7 +40,7 @@ public final class TestUsingInheritance_GsonTypeAdapter extends GsonPathTypeAdap
                     Integer value_value1_safe = gson.getAdapter(Integer.class).read(in);
                     if (value_value1_safe != null) {
                         value_value1 = value_value1_safe;
-                        mandatoryFieldsCheckList[MANDATORY_INDEX_VALUE1] = true;
+                        mandatoryFieldsCheckList[0] = true;
 
                     } else {
                         throw new gsonpath.JsonFieldNullException("value1", "generator.interf.inheritance.TestUsingInheritance_GsonPathModel");
@@ -73,7 +70,7 @@ public final class TestUsingInheritance_GsonTypeAdapter extends GsonPathTypeAdap
         }
 
         // Mandatory object validation
-        for (int mandatoryFieldIndex = 0; mandatoryFieldIndex < MANDATORY_FIELDS_SIZE; mandatoryFieldIndex++) {
+        for (int mandatoryFieldIndex = 0; mandatoryFieldIndex < 1; mandatoryFieldIndex++) {
 
             // Check if a mandatory value is missing.
             if (!mandatoryFieldsCheckList[mandatoryFieldIndex]) {
@@ -81,7 +78,7 @@ public final class TestUsingInheritance_GsonTypeAdapter extends GsonPathTypeAdap
                 // Find the field name of the missing json value.
                 String fieldName = null;
                 switch (mandatoryFieldIndex) {
-                    case MANDATORY_INDEX_VALUE1:
+                    case 0:
                         fieldName = "value1";
                         break;
 

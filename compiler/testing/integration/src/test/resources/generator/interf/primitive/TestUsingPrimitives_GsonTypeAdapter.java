@@ -20,15 +20,6 @@ import javax.annotation.Generated;
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
 public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapter<TestUsingPrimitives> {
-    private static final int MANDATORY_INDEX_INTEXAMPLE = 0;
-
-    private static final int MANDATORY_INDEX_LONGEXAMPLE = 1;
-
-    private static final int MANDATORY_INDEX_DOUBLEEXAMPLE = 2;
-
-    private static final int MANDATORY_INDEX_BOOLEANEXAMPLE = 3;
-
-    private static final int MANDATORY_FIELDS_SIZE = 4;
 
     public TestUsingPrimitives_GsonTypeAdapter(Gson gson) {
         super(gson);
@@ -45,7 +36,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
         double[] value_doubleArrayExample = null;
         boolean[] value_booleanArrayExample = null;
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
-        boolean[] mandatoryFieldsCheckList = new boolean[MANDATORY_FIELDS_SIZE];
+        boolean[] mandatoryFieldsCheckList = new boolean[4];
 
         while (jsonReaderHelper.handleObject(0, 8)) {
             switch (in.nextName()) {
@@ -53,7 +44,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                     Integer value_intExample_safe = gson.getAdapter(Integer.class).read(in);
                     if (value_intExample_safe != null) {
                         value_intExample = value_intExample_safe;
-                        mandatoryFieldsCheckList[MANDATORY_INDEX_INTEXAMPLE] = true;
+                        mandatoryFieldsCheckList[0] = true;
 
                     } else {
                         throw new gsonpath.JsonFieldNullException("intExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
@@ -64,7 +55,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                     Long value_longExample_safe = gson.getAdapter(Long.class).read(in);
                     if (value_longExample_safe != null) {
                         value_longExample = value_longExample_safe;
-                        mandatoryFieldsCheckList[MANDATORY_INDEX_LONGEXAMPLE] = true;
+                        mandatoryFieldsCheckList[1] = true;
 
                     } else {
                         throw new gsonpath.JsonFieldNullException("longExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
@@ -75,7 +66,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                     Double value_doubleExample_safe = gson.getAdapter(Double.class).read(in);
                     if (value_doubleExample_safe != null) {
                         value_doubleExample = value_doubleExample_safe;
-                        mandatoryFieldsCheckList[MANDATORY_INDEX_DOUBLEEXAMPLE] = true;
+                        mandatoryFieldsCheckList[2] = true;
 
                     } else {
                         throw new gsonpath.JsonFieldNullException("doubleExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
@@ -86,7 +77,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                     Boolean value_booleanExample_safe = gson.getAdapter(Boolean.class).read(in);
                     if (value_booleanExample_safe != null) {
                         value_booleanExample = value_booleanExample_safe;
-                        mandatoryFieldsCheckList[MANDATORY_INDEX_BOOLEANEXAMPLE] = true;
+                        mandatoryFieldsCheckList[3] = true;
 
                     } else {
                         throw new gsonpath.JsonFieldNullException("booleanExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
@@ -117,7 +108,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
         }
 
         // Mandatory object validation
-        for (int mandatoryFieldIndex = 0; mandatoryFieldIndex < MANDATORY_FIELDS_SIZE; mandatoryFieldIndex++) {
+        for (int mandatoryFieldIndex = 0; mandatoryFieldIndex < 4; mandatoryFieldIndex++) {
 
             // Check if a mandatory value is missing.
             if (!mandatoryFieldsCheckList[mandatoryFieldIndex]) {
@@ -125,19 +116,19 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                 // Find the field name of the missing json value.
                 String fieldName = null;
                 switch (mandatoryFieldIndex) {
-                    case MANDATORY_INDEX_INTEXAMPLE:
+                    case 0:
                         fieldName = "intExample";
                         break;
 
-                    case MANDATORY_INDEX_LONGEXAMPLE:
+                    case 1:
                         fieldName = "longExample";
                         break;
 
-                    case MANDATORY_INDEX_DOUBLEEXAMPLE:
+                    case 2:
                         fieldName = "doubleExample";
                         break;
 
-                    case MANDATORY_INDEX_BOOLEANEXAMPLE:
+                    case 3:
                         fieldName = "booleanExample";
                         break;
 

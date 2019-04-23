@@ -3,7 +3,6 @@ package gsonpath.adapter.standard.adapter
 import com.google.gson.Gson
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
-import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import gsonpath.AutoGsonAdapter
 import gsonpath.GsonPathTypeAdapter
@@ -17,7 +16,6 @@ import gsonpath.adapter.util.writeFile
 import gsonpath.util.FileWriter
 import gsonpath.util.TypeSpecExt
 import gsonpath.util.constructor
-import gsonpath.util.field
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 
@@ -51,23 +49,6 @@ class StandardGsonAdapterGenerator(
             addModifiers(Modifier.PUBLIC)
             addParameter(Gson::class.java, "gson")
             addStatement("super(gson)")
-        }
-
-        // Adds the mandatory field index constants and also populates the mandatoryInfoMap values.
-        metadata.mandatoryInfoMap.let {
-            if (it.isNotEmpty()) {
-                it.values.forEachIndexed { mandatoryIndex, mandatoryField ->
-                    field(mandatoryField.indexVariableName, TypeName.INT) {
-                        addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                        initializer("" + mandatoryIndex)
-                    }
-                }
-
-                field("MANDATORY_FIELDS_SIZE", TypeName.INT) {
-                    addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                    initializer("" + it.size)
-                }
-            }
         }
 
         readFunctions.handleRead(this, metadata.readParams)

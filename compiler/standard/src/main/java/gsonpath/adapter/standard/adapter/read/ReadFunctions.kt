@@ -15,7 +15,6 @@ import gsonpath.adapter.standard.model.GsonArray
 import gsonpath.adapter.standard.model.GsonField
 import gsonpath.adapter.standard.model.GsonModel
 import gsonpath.adapter.standard.model.GsonObject
-import gsonpath.adapter.standard.model.MandatoryFieldInfoFactory.MandatoryFieldInfo
 import gsonpath.compiler.createDefaultVariableValueForTypeName
 import gsonpath.model.FieldType
 import gsonpath.util.*
@@ -63,8 +62,8 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
                 readerHelperClassName)
 
         // If we have any mandatory fields, we need to keep track of what has been assigned.
-        if (params.mandatoryInfoMap.isNotEmpty()) {
-            createVariableNew("boolean[]", MANDATORY_FIELDS_CHECK_LIST, "boolean[$MANDATORY_FIELDS_SIZE]")
+        if (params.mandatoryFields.isNotEmpty()) {
+            createVariableNew("boolean[]", MANDATORY_FIELDS_CHECK_LIST, "boolean[${params.mandatoryFields.size}]")
         }
 
         newLine()
@@ -118,7 +117,7 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
             when (value) {
                 is GsonField -> {
                     writeGsonFieldReader(typeSpecBuilder, value, params.requiresConstructorInjection,
-                            params.mandatoryInfoMap[value.fieldInfo.fieldName])
+                            params.mandatoryFields)
                 }
 
                 is GsonObject -> {
@@ -137,7 +136,7 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
             typeSpecBuilder: TypeSpec.Builder,
             gsonField: GsonField,
             requiresConstructorInjection: Boolean,
-            mandatoryFieldInfo: MandatoryFieldInfo?) {
+            mandatoryFields: List<GsonField>) {
 
         val fieldInfo = gsonField.fieldInfo
         val result = writeGsonFieldReading(typeSpecBuilder, gsonField, requiresConstructorInjection)
@@ -153,9 +152,11 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
             `if`("${result.variableName} != $NULL") {
                 assign(assignedVariable, result.variableName)
 
+                val mandatoryIndex = mandatoryFields.indexOfFirst { it === gsonField }
+
                 // When a field has been assigned, if it is a mandatory value, we note this down.
-                if (mandatoryFieldInfo != null) {
-                    assign("$MANDATORY_FIELDS_CHECK_LIST[${mandatoryFieldInfo.indexVariableName}]", "true")
+                if (mandatoryIndex > -1) {
+                    assign("$MANDATORY_FIELDS_CHECK_LIST[$mandatoryIndex]", "true")
                     newLine()
 
                     nextControlFlow("else")
@@ -261,7 +262,7 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
                 when (arrayItemValue) {
                     is GsonField -> {
                         writeGsonFieldReader(typeSpecBuilder, arrayItemValue, params.requiresConstructorInjection,
-                                params.mandatoryInfoMap[arrayItemValue.fieldInfo.fieldName])
+                                params.mandatoryFields)
                     }
                     is GsonObject -> {
                         addReadCodeForElements(typeSpecBuilder, arrayItemValue, params)
@@ -275,13 +276,14 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
      * If there are any mandatory fields, we now check if any values have been missed. If there are, an exception will be raised here.
      */
     private fun CodeBlock.Builder.addMandatoryValuesCheck(params: ReadParams) {
-        if (params.mandatoryInfoMap.isEmpty()) {
+        val mandatoryFields = params.mandatoryFields
+        if (mandatoryFields.isEmpty()) {
             return
         }
 
         newLine()
         comment("Mandatory object validation")
-        `for`("int $MANDATORY_FIELD_INDEX = 0; $MANDATORY_FIELD_INDEX < $MANDATORY_FIELDS_SIZE; $MANDATORY_FIELD_INDEX++") {
+        `for`("int $MANDATORY_FIELD_INDEX = 0; $MANDATORY_FIELD_INDEX < ${mandatoryFields.size}; $MANDATORY_FIELD_INDEX++") {
 
             newLine()
             comment("Check if a mandatory value is missing.")
@@ -292,13 +294,11 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
                 comment("Find the field name of the missing json value.")
                 createVariable("String", FIELD_NAME, NULL)
                 switch(MANDATORY_FIELD_INDEX) {
-
-                    for ((_, mandatoryFieldInfo) in params.mandatoryInfoMap) {
-                        case(mandatoryFieldInfo.indexVariableName) {
-                            addEscapedStatement("""$FIELD_NAME = "${mandatoryFieldInfo.gsonField.jsonPath}"""")
+                    params.mandatoryFields.forEachIndexed { index, gsonField ->
+                        case("$index") {
+                            addEscapedStatement("""$FIELD_NAME = "${gsonField.jsonPath}"""")
                         }
                     }
-
                 }
                 addStatement("""throw new gsonpath.JsonFieldNoKeyException($FIELD_NAME, "${params.concreteElement}")""")
             }
@@ -323,7 +323,6 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
     private companion object {
         private const val RESULT = "result"
         private const val MANDATORY_FIELDS_CHECK_LIST = "mandatoryFieldsCheckList"
-        private const val MANDATORY_FIELDS_SIZE = "MANDATORY_FIELDS_SIZE"
         private const val MANDATORY_FIELD_INDEX = "mandatoryFieldIndex"
         private const val FIELD_NAME = "fieldName"
         private const val JSON_READER_HELPER = "jsonReaderHelper"
