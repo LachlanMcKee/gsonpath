@@ -2,6 +2,7 @@ package gsonpath.adapter.standard.model
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import gsonpath.simpleGsonObject
 import org.junit.Assert
 import org.junit.Test
 
@@ -9,7 +10,7 @@ class MandatoryFieldInfoFactoryTest {
 
     @Test
     fun givenNoRequiredFields_thenExpectEmptyList() {
-        test(GsonObject(fieldMap = mapOf("foo" to createField(false))), emptyList())
+        test(simpleGsonObject("foo", createField(false)), emptyList())
     }
 
     @Test
@@ -19,8 +20,8 @@ class MandatoryFieldInfoFactoryTest {
         val field3 = createField(true)
         val field4 = createField(true)
 
-        val nestedObject = GsonObject(fieldMap = mapOf("bar" to field2))
-        val array = GsonArray(arrayFields = mapOf(1 to GsonObject(fieldMap = mapOf("bar" to field4)), 0 to field3), maxIndex = 2)
+        val nestedObject = simpleGsonObject("bar", field2)
+        val array = GsonArray(arrayFields = mapOf(1 to simpleGsonObject("bar", field4), 0 to field3), maxIndex = 2)
         val rootObject = GsonObject(fieldMap = mapOf(
                 "value2" to nestedObject,
                 "value3" to array,
