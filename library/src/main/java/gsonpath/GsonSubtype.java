@@ -71,7 +71,7 @@ public @interface GsonSubtype {
         /**
          * The value that maps to the subtype.
          *
-         * @return a non-null value.
+         * @return a non-null value (use {@link #NULL_STRING} to support nulls).
          */
         String value();
 
@@ -85,6 +85,11 @@ public @interface GsonSubtype {
          * @return a non-null class.
          */
         Class subtype();
+
+        /**
+         * Allows the value to be defined as a null string (a literal null value is not permitted within an annotation)
+         */
+        String NULL_STRING = "<SPECIAL GSON SUBTYPE VALUE>";
     }
 
     /**

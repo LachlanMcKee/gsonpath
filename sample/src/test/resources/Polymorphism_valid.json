@@ -21,6 +21,10 @@
             "stringTest": "123"
         },
         {
+            "type": null,
+            "name": "TypeNull Example 1"
+        },
+        {
             "type": "unexpected_type",
             "name": "Type3 Example 1",
             "stringTest": "123"

@@ -1,14 +1,13 @@
 package gsonpath.adapter.common
 
 import com.google.gson.JsonElement
-import com.google.gson.JsonParseException
 import com.google.gson.TypeAdapter
 import com.google.gson.internal.Streams
 import com.squareup.javapoet.*
 import gsonpath.GsonSubTypeFailureException
 import gsonpath.GsonSubTypeFailureOutcome
-import gsonpath.adapter.Constants
 import gsonpath.adapter.AdapterMethodBuilder
+import gsonpath.adapter.Constants
 import gsonpath.util.*
 import javax.lang.model.element.Modifier
 
@@ -92,22 +91,26 @@ object GsonSubTypeFactory {
                     TYPE_VALUE_JSON_ELEMENT,
                     "$JSON_ELEMENT.getAsJsonObject().get(\"$fieldName\")")
 
-            `if`("$TYPE_VALUE_JSON_ELEMENT == ${Constants.NULL} || $TYPE_VALUE_JSON_ELEMENT.isJsonNull()") {
-                addStatement("throw new \$T(\"cannot deserialize $rawTypeName because the subtype field " +
-                        "'$fieldName' is either null or does not exist.\")",
-                        JsonParseException::class.java)
+            with(when (subTypeMetadata.keyType) {
+                SubTypeKeyType.STRING -> "java.lang.String"
+                SubTypeKeyType.INTEGER -> "Integer"
+                SubTypeKeyType.BOOLEAN -> "Boolean"
+            }) {
+                addStatement("final $this ${Constants.VALUE}")
             }
 
-            // Obtain the value using the correct type.
-            when (subTypeMetadata.keyType) {
-                SubTypeKeyType.STRING ->
-                    createVariable("java.lang.String", Constants.VALUE, "$TYPE_VALUE_JSON_ELEMENT.getAsString()")
-
-                SubTypeKeyType.INTEGER ->
-                    createVariable("int", Constants.VALUE, "$TYPE_VALUE_JSON_ELEMENT.getAsInt()")
-
-                SubTypeKeyType.BOOLEAN ->
-                    createVariable("boolean", Constants.VALUE, "$TYPE_VALUE_JSON_ELEMENT.getAsBoolean()")
+            ifWithoutClose("$TYPE_VALUE_JSON_ELEMENT == ${Constants.NULL} || $TYPE_VALUE_JSON_ELEMENT.isJsonNull()") {
+                assign(Constants.VALUE, "null")
+            }
+            `else` {
+                // Obtain the value using the correct type.
+                with(when (subTypeMetadata.keyType) {
+                    SubTypeKeyType.STRING -> "getAsString"
+                    SubTypeKeyType.INTEGER -> "getAsInt"
+                    SubTypeKeyType.BOOLEAN -> "getAsBoolean"
+                }) {
+                    assign(Constants.VALUE, "$TYPE_VALUE_JSON_ELEMENT.$this()")
+                }
             }
 
             createVariable(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), WildcardTypeName.subtypeOf(rawTypeName)),

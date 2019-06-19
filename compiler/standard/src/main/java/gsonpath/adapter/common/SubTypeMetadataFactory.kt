@@ -53,7 +53,12 @@ class SubTypeMetadataFactoryImpl(private val typeHandler: TypeHandler) : SubType
         val genericGsonSubTypeKeys: List<GsonSubTypeKeyAndClass> =
                 when (keyType) {
                     SubTypeKeyType.STRING -> gsonSubType.stringValueSubtypes.map {
-                        getGsonSubTypeKeyAndClass("\"${it.value}\"", element) { it.subtype }
+                        val value = if (it.value == GsonSubtype.StringValueSubtype.NULL_STRING) {
+                            "null"
+                        } else {
+                            "\"${it.value}\""
+                        }
+                        getGsonSubTypeKeyAndClass(value, element) { it.subtype }
                     }
 
                     SubTypeKeyType.INTEGER -> gsonSubType.integerValueSubtypes.map {

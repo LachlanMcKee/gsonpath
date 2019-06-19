@@ -2,7 +2,6 @@ package gsonpath.adapter.standard.extension.gsonSubType;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParseException;
 import gsonpath.GsonPath;
 import gsonpath.TestGsonTypeFactory;
 import org.junit.Assert;
@@ -24,13 +23,14 @@ public class GsonSubTypeTest {
 
         TypesList typesList = gson.fromJson(new InputStreamReader(resourceAsStream), TypesList.class);
         Type[] types = typesList.getItems();
-        Assert.assertEquals(5, types.length);
+        Assert.assertEquals(6, types.length);
 
         validateValue1(types[0]);
         validateValue2(types[1]);
         validateValue3(types[2]);
         validateValue4(types[3]);
         validateValue5(types[4]);
+        validateValue6(types[5]);
     }
 
     private void validateValue1(Type type) {
@@ -62,6 +62,12 @@ public class GsonSubTypeTest {
     }
 
     private void validateValue5(Type type) {
+        TypeNull value5 = (TypeNull) type;
+        Assert.assertNull(value5.type);
+        Assert.assertEquals("TypeNull Example 1", value5.name);
+    }
+
+    private void validateValue6(Type type) {
         Assert.assertNull(type);
     }
 
@@ -81,28 +87,6 @@ public class GsonSubTypeTest {
         validateValue3(typesList.getItem2());
         validateValue4(typesList.getItem3());
         validateValue5(typesList.getItem4());
-    }
-
-    @Test
-    public void givenNullTypeField_whenReadingJson_thenExpectException() {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory.class))
-                .create();
-
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        InputStream resourceAsStream = classLoader.getResourceAsStream("Polymorphism_type_is_null.json");
-
-        try {
-            gson.fromJson(new InputStreamReader(resourceAsStream), TypesList.class);
-
-        } catch (JsonParseException e) {
-            // Since the mandatory value is not found, we are expecting an exception.
-            Assert.assertEquals(JsonParseException.class, e.getClass());
-            Assert.assertEquals("cannot deserialize gsonpath.adapter.standard.extension.gsonSubType.Type because the subtype field 'type' is either null or does not exist.", e.getMessage());
-            return;
-        }
-
-        Assert.fail("Expected JsonParseException was not triggered");
     }
 
 }

@@ -4,7 +4,6 @@ import static gsonpath.GsonUtil.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
@@ -118,10 +117,12 @@ public final class TypesList_GsonTypeAdapter extends TypeAdapter<TypesList> {
         public Type read(JsonReader in) throws IOException {
             JsonElement jsonElement = Streams.parse(in);
             JsonElement typeValueJsonElement = jsonElement.getAsJsonObject().get("type");
+            final java.lang.String value;
             if (typeValueJsonElement == null || typeValueJsonElement.isJsonNull()) {
-                throw new JsonParseException("cannot deserialize generator.extension.gson_sub_type.Type because the subtype field 'type' is either null or does not exist.");
+                value = null;
+            } else {
+                value = typeValueJsonElement.getAsString();
             }
-            java.lang.String value = typeValueJsonElement.getAsString();
             TypeAdapter<? extends Type> delegate = typeAdaptersDelegatedByValueMap.get(value);
             if (delegate == null) {
                 // Use the default type adapter if the type is unknown.

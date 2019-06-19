@@ -33,6 +33,12 @@ class GsonSubTypeExtensionTest {
     }
 
     @Test
+    fun givenStringKeysWithNull_whenProcessorExecuted_expectValidGsonTypeAdapter() {
+        test("null_string_key", "TypesList")
+        test("null_string_key", "TypesPojo")
+    }
+
+    @Test
     fun givenIntegerKeys_whenProcessorExecuted_expectValidGsonTypeAdapter() {
         test("integer_keys", "TypesList")
         test("integer_keys", "TypesPojo")

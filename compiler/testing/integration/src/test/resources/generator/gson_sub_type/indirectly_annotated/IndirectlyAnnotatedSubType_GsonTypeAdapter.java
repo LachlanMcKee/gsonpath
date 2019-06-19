@@ -2,7 +2,6 @@ package generator.gson_sub_type.indirectly_annotated;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
@@ -41,10 +40,12 @@ public final class IndirectlyAnnotatedSubType_GsonTypeAdapter extends TypeAdapte
     public IndirectlyAnnotatedSubType read(JsonReader in) throws IOException {
         JsonElement jsonElement = Streams.parse(in);
         JsonElement typeValueJsonElement = jsonElement.getAsJsonObject().get("type");
+        final Boolean value;
         if (typeValueJsonElement == null || typeValueJsonElement.isJsonNull()) {
-            throw new JsonParseException("cannot deserialize generator.gson_sub_type.indirectly_annotated.IndirectlyAnnotatedSubType because the subtype field 'type' is either null or does not exist.");
+            value = null;
+        } else {
+            value = typeValueJsonElement.getAsBoolean();
         }
-        boolean value = typeValueJsonElement.getAsBoolean();
         TypeAdapter<? extends IndirectlyAnnotatedSubType> delegate = typeAdaptersDelegatedByValueMap.get(value);
         if (delegate == null) {
             return null;
