@@ -18,7 +18,6 @@ import gsonpath.adapter.standard.extension.invalid.RemoveInvalidElementsExtensio
 import gsonpath.adapter.standard.extension.range.floatrange.FloatRangeExtension
 import gsonpath.adapter.standard.extension.range.intrange.IntRangeExtension
 import gsonpath.adapter.standard.extension.size.SizeExtension
-import gsonpath.adapter.standard.extension.subtype.GsonSubTypeExtension
 import gsonpath.adapter.standard.factory.TypeAdapterFactoryGenerator
 import gsonpath.adapter.standard.interf.InterfaceModelMetadataFactory
 import gsonpath.adapter.standard.interf.ModelInterfaceGenerator
@@ -94,8 +93,7 @@ object DependencyFactory {
                         RemoveInvalidElementsExtension(),
                         FloatRangeExtension(),
                         IntRangeExtension(),
-                        SizeExtension(),
-                        GsonSubTypeExtension(typeHandler, subTypeMetadataFactory)
+                        SizeExtension()
                 ))
     }
 }
