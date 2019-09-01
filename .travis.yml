@@ -1,3 +1,4 @@
+dist: trusty # Required due to Xenial not working with oraclejdk8
 language: java
 
 notifications:
