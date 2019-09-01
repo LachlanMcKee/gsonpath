@@ -8,7 +8,6 @@ import gsonpath.GsonSubtype
 import gsonpath.adapter.AdapterFactory
 import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.Constants
-import gsonpath.adapter.common.GsonSubTypeCategory
 import gsonpath.adapter.common.GsonSubTypeFactory
 import gsonpath.adapter.common.GsonSubTypeResult
 import gsonpath.adapter.util.AdapterFactoryUtil.getAnnotatedModelElements
@@ -44,10 +43,10 @@ object SubTypeAdapterFactory : AdapterFactory {
         val typeName = ClassName.get(element)
         val subTypeMetadata = dependencies.subTypeMetadataFactory.getGsonSubType(
                 gsonSubtype,
-                GsonSubTypeCategory.SingleValue(FieldType.Other(
+                FieldType.Other(
                         typeName = typeName,
                         elementTypeMirror = element.asType()
-                )),
+                ),
                 "Type",
                 element)
 
@@ -74,8 +73,6 @@ object SubTypeAdapterFactory : AdapterFactory {
             addModifiers(Modifier.PRIVATE, Modifier.FINAL)
         }
 
-        result.fieldSpecs.forEach { addField(it) }
-
         // Add the constructor which takes a gson instance for future use.
         constructor {
             addModifiers(Modifier.PUBLIC)
@@ -83,10 +80,8 @@ object SubTypeAdapterFactory : AdapterFactory {
             code {
                 assign("this.mGson", "gson")
             }
-            addCode(result.constructorCodeBlock)
         }
 
-        result.typeSpecs.forEach { addType(it) }
         addMethod(result.readMethodSpecs)
         addMethod(result.writeMethodSpecs)
     }

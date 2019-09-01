@@ -71,8 +71,12 @@ class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : T
                 }
                 .filter {
                     // Ignore Java 8 default/static interface methods.
-                    !it.modifiers.contains(Modifier.DEFAULT) &&
-                            !it.modifiers.contains(Modifier.STATIC)
+                    if (typeElement.kind == ElementKind.INTERFACE) {
+                        !it.modifiers.contains(Modifier.DEFAULT) &&
+                                !it.modifiers.contains(Modifier.STATIC)
+                    } else {
+                        true
+                    }
                 }
                 .map { MethodElementContent(it, getGenerifiedTypeMirror(typeElement, it) as ExecutableType) }
                 .toList()

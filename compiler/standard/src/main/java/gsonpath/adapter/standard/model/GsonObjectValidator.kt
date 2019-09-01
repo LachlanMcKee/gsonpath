@@ -2,10 +2,11 @@ package gsonpath.adapter.standard.model
 
 import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
+import gsonpath.adapter.util.NullableUtil
 import gsonpath.model.FieldInfo
 import gsonpath.model.FieldType
 
-class GsonObjectValidator {
+class GsonObjectValidator(private val nullableUtil: NullableUtil) {
 
     @Throws(ProcessingException::class)
     fun validate(fieldInfo: FieldInfo): Result {
@@ -17,9 +18,7 @@ class GsonObjectValidator {
 
         // Attempt to find a Nullable or NonNull annotation type.
         val isOptional: Boolean = fieldInfo.annotationNames.any { it == "Nullable" }
-        val isMandatory: Boolean = fieldInfo.annotationNames.any {
-            arrayOf("NonNull", "Nonnull", "NotNull", "Notnull").contains(it)
-        }
+        val isMandatory: Boolean = fieldInfo.annotationNames.any { nullableUtil.isNullableKeyword(it) }
 
         // Fields cannot use both annotations.
         if (isMandatory && isOptional) {

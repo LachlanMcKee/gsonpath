@@ -1,4 +1,4 @@
-package generator.gson_sub_type.indirectly_annotated;
+package generator.gson_sub_type.one_argument;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -9,41 +9,42 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.lang.Class;
 import java.lang.Override;
+import java.lang.String;
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class IndirectlyAnnotatedSubType_GsonTypeAdapter extends TypeAdapter<IndirectlyAnnotatedSubType> {
+public final class TypeGsonSubType_GsonTypeAdapter extends TypeAdapter<TypeGsonSubType> {
     private final Gson mGson;
 
-    public IndirectlyAnnotatedSubType_GsonTypeAdapter(Gson gson) {
+    public TypeGsonSubType_GsonTypeAdapter(Gson gson) {
         this.mGson = gson;
     }
 
     @Override
-    public IndirectlyAnnotatedSubType read(JsonReader in) throws IOException {
+    public TypeGsonSubType read(JsonReader in) throws IOException {
         JsonElement jsonElement = Streams.parse(in);
 
         JsonElement subTypeElement0_jsonElement = jsonElement.getAsJsonObject().get("type");
-        final boolean subTypeElement0;
+        final String subTypeElement0;
         if (subTypeElement0_jsonElement == null || subTypeElement0_jsonElement.isJsonNull()) {
-            throw new com.google.gson.JsonParseException("cannot deserialize generator.gson_sub_type.indirectly_annotated.IndirectlyAnnotatedSubType because the subtype field 'type' is either null or does not exist.");
+            subTypeElement0 = null;
         } else {
-            subTypeElement0 = mGson.getAdapter(boolean.class).fromJsonTree(subTypeElement0_jsonElement);
+            subTypeElement0 = mGson.getAdapter(String.class).fromJsonTree(subTypeElement0_jsonElement);
         }
 
-        Class<? extends IndirectlyAnnotatedSubType> delegateClass = IndirectlyAnnotatedSubType.getSubType1(subTypeElement0);
+        Class<? extends TypeGsonSubType> delegateClass = TypeGsonSubType.getSubType1(subTypeElement0);
         if (delegateClass == null) {
             return null;
         }
-        IndirectlyAnnotatedSubType result = mGson.getAdapter(delegateClass).fromJsonTree(jsonElement);
+        TypeGsonSubType result = mGson.getAdapter(delegateClass).fromJsonTree(jsonElement);
         return result;
     }
 
     @Override
-    public void write(JsonWriter out, IndirectlyAnnotatedSubType value) throws IOException {
+    public void write(JsonWriter out, TypeGsonSubType value) throws IOException {
 
         if (value == null) {
             out.nullValue();

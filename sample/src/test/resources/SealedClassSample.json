@@ -26,6 +26,14 @@
       "specific": {
         "stringTest": "123"
       }
+    },
+    {
+      "common": {
+        "name": "Type3 Example"
+      },
+      "specific": {
+        "stringTest": "123"
+      }
     }
   ]
 }

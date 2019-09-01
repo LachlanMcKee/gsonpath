@@ -3,17 +3,27 @@ package gsonpath.kotlin
 import com.google.gson.annotations.SerializedName
 import gsonpath.AutoGsonAdapter
 import gsonpath.GsonSubtype
+import gsonpath.GsonSubtypeGetter
 
-@GsonSubtype(
-        subTypeKey = "type",
-        stringValueSubtypes = [
-            GsonSubtype.StringValueSubtype(value = "type1", subtype = Type.Type1::class),
-            GsonSubtype.StringValueSubtype(value = "type2", subtype = Type.Type2::class),
-            GsonSubtype.StringValueSubtype(value = "type3", subtype = Type.Type3::class)])
+@GsonSubtype(jsonKeys = ["type"])
 annotation class TypeSubType
 
 @TypeSubType
 sealed class Type {
+
+    companion object {
+        @GsonSubtypeGetter
+        @JvmStatic
+        fun getSubType(type: String?): Class<out Type>? {
+            return when (type) {
+                "type1" -> Type1::class.java
+                "type2" -> Type2::class.java
+                "type3" -> Type3::class.java
+                else -> null
+            }
+        }
+    }
+
     @get:SerializedName("common.")
     abstract val name: String
 

@@ -1,17 +1,14 @@
-package generator.extension.gson_sub_type.failures;
+package generator.gson_sub_type.failures;
 
-import generator.extension.gson_sub_type.Type1;
-import gsonpath.AutoGsonAdapter;
 import gsonpath.GsonSubtype;
 
-@AutoGsonAdapter
-class TypesList_DuplicateKeys {
-    @GsonSubtype(
-            subTypeKey = "type",
-            stringValueSubtypes = {
-                    @GsonSubtype.StringValueSubtype(value = "type1", subtype = Type1.class),
-                    @GsonSubtype.StringValueSubtype(value = "type1", subtype = Type2.class)
-            }
-    )
-    Type[] items;
+@GsonSubtype(
+        jsonKeys = {"type1", "type1"}
+)
+public class TypesList_DuplicateKeys {
+    public class Type1 extends TypesList_DuplicateKeys {
+    }
+
+    public class Type2 extends TypesList_DuplicateKeys {
+    }
 }
