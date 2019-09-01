@@ -23,8 +23,7 @@ interface SubTypeMetadataFactory {
 }
 
 class SubTypeMetadataFactoryImpl(
-        private val typeHandler: TypeHandler,
-        private val nullableUtil: NullableUtil) : SubTypeMetadataFactory {
+        private val typeHandler: TypeHandler) : SubTypeMetadataFactory {
 
     override fun getGsonSubType(
             gsonSubType: GsonSubtype,
@@ -94,7 +93,7 @@ class SubTypeMetadataFactoryImpl(
         val fieldInfoList = parameters.zip(jsonKeys)
                 .mapIndexed { index, (parameter, key) ->
                     val nonNullAnnotationExists = parameter.annotationMirrors
-                            .any { nullableUtil.isNullableKeyword(it.annotationType.asElement().simpleName.toString()) }
+                            .any { NullableUtil.isNullableKeyword(it.annotationType.asElement().simpleName.toString()) }
 
                     val parameterTypeName = TypeName.get(parameter.asType())
                     val nullable = !nonNullAnnotationExists && !parameterTypeName.isPrimitive

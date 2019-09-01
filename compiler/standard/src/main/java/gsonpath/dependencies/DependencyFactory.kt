@@ -21,7 +21,6 @@ import gsonpath.adapter.standard.factory.TypeAdapterFactoryGenerator
 import gsonpath.adapter.standard.interf.InterfaceModelMetadataFactory
 import gsonpath.adapter.standard.interf.ModelInterfaceGenerator
 import gsonpath.adapter.standard.model.*
-import gsonpath.adapter.util.NullableUtil
 import gsonpath.compiler.GsonPathExtension
 import gsonpath.util.*
 import javax.annotation.processing.ProcessingEnvironment
@@ -29,7 +28,6 @@ import javax.annotation.processing.ProcessingEnvironment
 object DependencyFactory {
 
     fun create(processingEnv: ProcessingEnvironment): Dependencies {
-        val nullableUtil = NullableUtil()
         val fileWriter = FileWriter(processingEnv)
         val defaultValueDetector = DefaultValueDetectorImpl(processingEnv)
 
@@ -37,11 +35,11 @@ object DependencyFactory {
         val fieldGetterFinder = FieldGetterFinder(typeHandler)
         val annotationFetcher = AnnotationFetcher(typeHandler, fieldGetterFinder)
         val gsonObjectFactory = GsonObjectFactory(
-                GsonObjectValidator(nullableUtil),
+                GsonObjectValidator(),
                 FieldPathFetcher(SerializedNameFetcher, FieldNamingPolicyMapper()))
         val gsonObjectTreeFactory = GsonObjectTreeFactory(gsonObjectFactory)
 
-        val subTypeMetadataFactory = SubTypeMetadataFactoryImpl(typeHandler, nullableUtil)
+        val subTypeMetadataFactory = SubTypeMetadataFactoryImpl(typeHandler)
         val extensions = loadExtensions(processingEnv)
         val extensionsHandler = ExtensionsHandler(processingEnv, extensions)
         val readFunctions = ReadFunctions(extensionsHandler)

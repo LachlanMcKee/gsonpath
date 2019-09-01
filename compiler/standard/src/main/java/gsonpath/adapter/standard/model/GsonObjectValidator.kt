@@ -6,7 +6,7 @@ import gsonpath.adapter.util.NullableUtil
 import gsonpath.model.FieldInfo
 import gsonpath.model.FieldType
 
-class GsonObjectValidator(private val nullableUtil: NullableUtil) {
+class GsonObjectValidator {
 
     @Throws(ProcessingException::class)
     fun validate(fieldInfo: FieldInfo): Result {
@@ -18,7 +18,7 @@ class GsonObjectValidator(private val nullableUtil: NullableUtil) {
 
         // Attempt to find a Nullable or NonNull annotation type.
         val isOptional: Boolean = fieldInfo.annotationNames.any { it == "Nullable" }
-        val isMandatory: Boolean = fieldInfo.annotationNames.any { nullableUtil.isNullableKeyword(it) }
+        val isMandatory: Boolean = fieldInfo.annotationNames.any { NullableUtil.isNullableKeyword(it) }
 
         // Fields cannot use both annotations.
         if (isMandatory && isOptional) {
