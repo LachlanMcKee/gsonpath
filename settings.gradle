@@ -1,7 +1,7 @@
-include ':library'
-include ':compiler:base'
-include ':compiler:standard'
-include ':compiler:testing:base'
-include ':compiler:testing:unit'
-include ':compiler:testing:integration'
-include ':sample'
+include ":library"
+include ":compiler:base"
+include ":compiler:standard"
+include ":compiler:testing:base"
+include ":compiler:testing:unit"
+include ":compiler:testing:integration"
+include ":sample"
