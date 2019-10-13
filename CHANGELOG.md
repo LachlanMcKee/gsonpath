@@ -1,6 +1,15 @@
 Change Log
 ===========
 
+Version 3.6.0 *(2019-10-13)*
+----------------------------
+
+* Improvement: Added a `gson-kt` library that will contain Kotlin specific features.
+* Improvement: Added `GsonResultList` and `GsonSafeArrayList`. [#214](../../issues/217)
+     * `GsonSafeArrayList` is a list that has an interlying type adapter that remove any invalid elements. It is quite similar to `@RemoveInvalidElements`, however it can also be used when a list is the root element of the array (something `@RemoveInvalidElements` cannot do)
+     * `GsonResultList` is Kotlin only and uses a sealed class (`GsonResult`) to either return a `Success` or `Failure` result. 
+     * To use these types you need to register the correct type adapter. If you use Kotlin, use `GsonPathTypeAdapterFactoryKt` (also ensure you include the `gsonpath-kt` library), otherwise use `GsonPathTypeAdapterFactory`.
+
 Version 3.5.0 *(2019-10-05)*
 ----------------------------
 
