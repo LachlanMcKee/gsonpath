@@ -1,4 +1,5 @@
-apply plugin: 'java'
+apply plugin: "java"
+apply plugin: "kotlin"
 apply plugin: 'jacoco'
 
 jacoco {
@@ -10,7 +11,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.7.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.vanniktech:gradle-maven-publish-plugin:0.7.0"
     }
 }
 
@@ -20,8 +22,8 @@ targetCompatibility = JavaVersion.VERSION_1_7
 sourceCompatibility = JavaVersion.VERSION_1_7
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "com.google.code.gson:gson:$gson_version"
+    compile project(":library")
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     testCompile "junit:junit:$junit_version"
 }

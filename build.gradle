@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.3.21'
+    ext.kotlin_version = '1.3.50'
     ext.javapoet_version = '1.11.1'
     ext.gson_version = '2.8.1'
     ext.junit_version = '4.12'
@@ -60,7 +60,11 @@ task integrationCodeCoverageReport(type: JacocoReport) {
 }
 
 task unitCodeCoverageReport(type: JacocoReport) {
-    executionData fileTree(dir: "compiler/testing/unit").include("**/build/jacoco/*.exec")
+    executionData(
+            fileTree(dir: "compiler/testing/unit").include("**/build/jacoco/*.exec"),
+            fileTree(dir: "library").include("**/build/jacoco/*.exec"),
+            fileTree(dir: "library-kt").include("**/build/jacoco/*.exec")
+    )
 
     // Ignore extension code
     def excludes = ['gsonpath/compiler/ExtensionFieldMetadata.class']
@@ -68,10 +72,15 @@ task unitCodeCoverageReport(type: JacocoReport) {
     classDirectories = fileTree(dir: "compiler/standard/build/classes/java/main") +
             fileTree(dir: "compiler/standard/build/classes/kotlin/main") +
             fileTree(dir: "compiler/base/build/classes/java/main", excludes: excludes) +
-            fileTree(dir: "compiler/base/build/classes/kotlin/main", excludes: excludes)
+            fileTree(dir: "compiler/base/build/classes/kotlin/main", excludes: excludes) +
+            fileTree(dir: "library/build/classes/java/main") +
+            fileTree(dir: "library-kt/build/classes/java/main") +
+            fileTree(dir: "library-kt/build/classes/kotlin/main")
 
     sourceDirectories = files('compiler/standard/src/main/java',
-            'compiler/base/src/main/java')
+            'compiler/base/src/main/java',
+            'library/src/main/java',
+            'library-kt/src/main/java')
 
     reports {
         xml.setEnabled(true)
@@ -80,5 +89,9 @@ task unitCodeCoverageReport(type: JacocoReport) {
         csv.setEnabled(false)
     }
 
-    dependsOn(':compiler:testing:unit:test')
+    dependsOn(
+            ':compiler:testing:unit:test',
+            ':library:test',
+            ':library-kt:test'
+    )
 }
