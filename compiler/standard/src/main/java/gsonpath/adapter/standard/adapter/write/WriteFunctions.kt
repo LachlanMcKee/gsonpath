@@ -6,7 +6,9 @@ import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import gsonpath.GsonUtil
 import gsonpath.ProcessingException
+import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.adapter.Constants.GET_ADAPTER
+import gsonpath.adapter.Constants.GSON
 import gsonpath.adapter.Constants.NULL
 import gsonpath.adapter.Constants.OUT
 import gsonpath.adapter.Constants.VALUE
@@ -14,7 +16,6 @@ import gsonpath.adapter.standard.extension.ExtensionsHandler
 import gsonpath.adapter.standard.model.GsonArray
 import gsonpath.adapter.standard.model.GsonField
 import gsonpath.adapter.standard.model.GsonObject
-import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.model.FieldType
 import gsonpath.util.*
 
@@ -26,12 +27,6 @@ class WriteFunctions(private val extensionsHandler: ExtensionsHandler) {
     fun handleWrite(typeSpecBuilder: TypeSpec.Builder, params: WriteParams) {
         typeSpecBuilder.addMethod(AdapterMethodBuilder.createWriteMethodBuilder(params.elementClassName).applyAndBuild {
             code {
-                // Initial block which prevents nulls being accessed.
-                `if`("$VALUE == $NULL") {
-                    addStatement("$OUT.nullValue()")
-                    `return`()
-                }
-                newLine()
                 comment("Begin")
                 writeGsonFieldWriter(params.rootElements, params.serializeNulls, true)
             }
@@ -198,7 +193,7 @@ class WriteFunctions(private val extensionsHandler: ExtensionsHandler) {
                     addStatement("$GET_ADAPTER(\$T.class).write($OUT, $objectName)", fieldTypeName.box())
 
                 } else {
-                    addStatement("\$T.writeWithGenericAdapter(mGson, $objectName.getClass(), $OUT, $objectName)", GsonUtil::class.java)
+                    addStatement("\$T.writeWithGenericAdapter($GSON, $objectName.getClass(), $OUT, $objectName)", GsonUtil::class.java)
                 }
             }
         }

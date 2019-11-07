@@ -1,12 +1,12 @@
 package gsonpath.adapter.enums
 
 import com.google.gson.Gson
-import com.google.gson.TypeAdapter
 import com.google.gson.annotations.SerializedName
 import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterizedTypeName
-import com.squareup.javapoet.TypeName
 import gsonpath.AutoGsonAdapter
+import gsonpath.GsonPathTypeAdapter
 import gsonpath.GsonUtil
 import gsonpath.ProcessingException
 import gsonpath.adapter.AdapterGenerationResult
@@ -15,7 +15,6 @@ import gsonpath.adapter.Constants
 import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterProperties
 import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterPropertiesFactory
 import gsonpath.adapter.util.writeFile
-import gsonpath.compiler.CLASS_NAME_STRING
 import gsonpath.compiler.generateClassName
 import gsonpath.util.*
 import javax.lang.model.element.ElementKind
@@ -55,56 +54,62 @@ class EnumGsonAdapterGenerator(
             fields: List<FieldElementContent>) = TypeSpecExt.finalClassBuilder(adapterClassName).apply {
 
         val typeName = ClassName.get(element)
-        superclass(ParameterizedTypeName.get(ClassName.get(TypeAdapter::class.java), typeName))
+        superclass(ParameterizedTypeName.get(ClassName.get(GsonPathTypeAdapter::class.java), typeName))
         addAnnotation(Constants.GENERATED_ANNOTATION)
-
-        field("mGson", Gson::class.java) {
-            addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-        }
-        field("nameToConstant", TypeNameExt.createMap(CLASS_NAME_STRING, typeName)) {
-            addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-            initializer("new \$T()", TypeNameExt.createHashMap(CLASS_NAME_STRING, typeName))
-        }
-        field("constantToName", TypeNameExt.createMap(typeName, CLASS_NAME_STRING)) {
-            addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-            initializer("new \$T()", TypeNameExt.createHashMap(typeName, CLASS_NAME_STRING))
-        }
 
         // Add the constructor which takes a gson instance for future use.
         constructor {
             addModifiers(Modifier.PUBLIC)
             addParameter(Gson::class.java, "gson")
             code {
-                assign("this.mGson", "gson")
-                newLine()
-
-                handleFields(element, fields, properties) { enumConstantName, label ->
-                    addStatement("nameToConstant.put(\"$label\", \$T.$enumConstantName)", typeName)
-                }
-
-                newLine()
-
-                handleFields(element, fields, properties) { enumConstantName, label ->
-                    addStatement("constantToName.put(\$T.$enumConstantName, \"$label\")", typeName)
-                }
+                addStatement("super(gson)")
             }
         }
 
-        addMethod(createReadMethod(typeName))
-        addMethod(createWriteMethod(typeName))
+        addMethod(createReadMethod(element, properties, fields))
+        addMethod(createWriteMethod(element, properties, fields))
     }
 
-    private fun createReadMethod(enumTypeName: TypeName) = AdapterMethodBuilder.createReadMethodBuilder(enumTypeName).applyAndBuild {
-        code {
-            `if`("!isValidValue(${Constants.IN})") {
-                `return`(Constants.NULL)
+    private fun createReadMethod(
+            element: TypeElement,
+            properties: AutoGsonAdapterProperties,
+            fields: List<FieldElementContent>): MethodSpec {
+
+        val typeName = ClassName.get(element)
+        return AdapterMethodBuilder.createReadMethodBuilder(typeName).applyAndBuild {
+            code {
+                switch("in.nextString()") {
+                    handleFields(element, fields, properties) { enumConstantName, label ->
+                        case("\"$label\"", addBreak = false) {
+                            `return`("$typeName.$enumConstantName"
+                            )
+                        }
+                    }
+                    default(addBreak = false) {
+                        `return`("null")
+                    }
+                }
             }
-            `return`("nameToConstant.get(in.nextString())")
         }
     }
 
-    private fun createWriteMethod(enumTypeName: TypeName) = AdapterMethodBuilder.createWriteMethodBuilder(enumTypeName).applyAndBuild {
-        addStatement("out.value(value == null ? null : constantToName.get(value))")
+    private fun createWriteMethod(
+            element: TypeElement,
+            properties: AutoGsonAdapterProperties,
+            fields: List<FieldElementContent>): MethodSpec {
+
+        val typeName = ClassName.get(element)
+        return AdapterMethodBuilder.createWriteMethodBuilder(typeName).applyAndBuild {
+            code {
+                switch("value") {
+                    handleFields(element, fields, properties) { enumConstantName, label ->
+                        case(enumConstantName) {
+                            addStatement("out.value(\"$label\")")
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun handleFields(

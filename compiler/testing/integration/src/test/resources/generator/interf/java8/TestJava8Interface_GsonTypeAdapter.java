@@ -1,11 +1,11 @@
 package generator.interf.java8;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.GsonUtil;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -15,62 +15,40 @@ import javax.annotation.Generated;
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestJava8Interface_GsonTypeAdapter extends TypeAdapter<TestJava8Interface> {
-    private final Gson mGson;
-
+public final class TestJava8Interface_GsonTypeAdapter extends GsonPathTypeAdapter<TestJava8Interface> {
     public TestJava8Interface_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestJava8Interface read(JsonReader in) throws IOException {
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestJava8Interface readImpl(JsonReader in) throws IOException {
         Integer value_value1 = null;
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 1) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "value1":
-                    jsonFieldCounter0++;
-
-                    value_value1 = mGson.getAdapter(Integer.class).read(in);
+                    value_value1 = gson.getAdapter(Integer.class).read(in);
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-        in.endObject();
         return new TestJava8Interface_GsonPathModel(
-                value_value1
-        );
+                value_value1);
     }
 
     @Override
-    public void write(JsonWriter out, TestJava8Interface value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestJava8Interface value) throws IOException {
         // Begin
         out.beginObject();
         Integer obj0 = value.getValue1();
         if (obj0 != null) {
             out.name("value1");
-            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0);
+            GsonUtil.writeWithGenericAdapter(gson, obj0.getClass(), out, obj0);
         }
 
         // End

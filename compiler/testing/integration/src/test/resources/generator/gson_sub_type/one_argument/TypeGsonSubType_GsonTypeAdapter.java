@@ -6,6 +6,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonPathTypeAdapter;
 import java.io.IOException;
 import java.lang.Class;
 import java.lang.Override;
@@ -16,15 +17,14 @@ import javax.annotation.Generated;
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TypeGsonSubType_GsonTypeAdapter extends TypeAdapter<TypeGsonSubType> {
-    private final Gson mGson;
+public final class TypeGsonSubType_GsonTypeAdapter extends GsonPathTypeAdapter<TypeGsonSubType> {
 
     public TypeGsonSubType_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TypeGsonSubType read(JsonReader in) throws IOException {
+    public TypeGsonSubType readImpl(JsonReader in) throws IOException {
         JsonElement jsonElement = Streams.parse(in);
 
         JsonElement subTypeElement0_jsonElement = jsonElement.getAsJsonObject().get("type");
@@ -32,25 +32,20 @@ public final class TypeGsonSubType_GsonTypeAdapter extends TypeAdapter<TypeGsonS
         if (subTypeElement0_jsonElement == null || subTypeElement0_jsonElement.isJsonNull()) {
             subTypeElement0 = null;
         } else {
-            subTypeElement0 = mGson.getAdapter(String.class).fromJsonTree(subTypeElement0_jsonElement);
+            subTypeElement0 = gson.getAdapter(String.class).fromJsonTree(subTypeElement0_jsonElement);
         }
 
         Class<? extends TypeGsonSubType> delegateClass = TypeGsonSubType.getSubType1(subTypeElement0);
         if (delegateClass == null) {
             return null;
         }
-        TypeGsonSubType result = mGson.getAdapter(delegateClass).fromJsonTree(jsonElement);
+        TypeGsonSubType result = gson.getAdapter(delegateClass).fromJsonTree(jsonElement);
         return result;
     }
 
     @Override
-    public void write(JsonWriter out, TypeGsonSubType value) throws IOException {
-
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-        TypeAdapter delegateAdapter = mGson.getAdapter(value.getClass());
+    public void writeImpl(JsonWriter out, TypeGsonSubType value) throws IOException {
+        TypeAdapter delegateAdapter = gson.getAdapter(value.getClass());
         delegateAdapter.write(out, value);
     }
 }

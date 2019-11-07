@@ -1,7 +1,9 @@
 package gsonpath.adapter.standard.model
 
+import gsonpath.emptyGsonObject
 import gsonpath.generator.processingExceptionMatcher
 import gsonpath.model.FieldInfo
+import gsonpath.simpleGsonArray
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert
 import org.junit.Rule
@@ -39,8 +41,8 @@ class MutableGsonModelTest {
                 GsonObject(
                         mapOf(
                                 "field1" to GsonField(0, fieldInfo, "variable", "path", true),
-                                "object1" to GsonObject(emptyMap()),
-                                "array1" to GsonArray(mapOf(0 to GsonObject(emptyMap())), 0)
+                                "object1" to emptyGsonObject(),
+                                "array1" to simpleGsonArray(0, emptyGsonObject())
                         )
                 ),
                 mutableGsonObject.toImmutable())
@@ -59,7 +61,7 @@ class MutableGsonModelTest {
                 GsonArray(
                         mapOf(
                                 0 to GsonField(0, fieldInfo, "variable", "path", true),
-                                1 to GsonObject(emptyMap())
+                                1 to emptyGsonObject()
                         ),
                         1
                 ),

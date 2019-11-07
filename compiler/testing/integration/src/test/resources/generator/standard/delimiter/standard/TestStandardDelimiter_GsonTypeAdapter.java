@@ -1,102 +1,60 @@
 package generator.standard.delimiter.standard;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
-
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestStandardDelimiter_GsonTypeAdapter extends TypeAdapter<TestStandardDelimiter> {
-    private final Gson mGson;
-
+public final class TestStandardDelimiter_GsonTypeAdapter extends GsonPathTypeAdapter<TestStandardDelimiter> {
     public TestStandardDelimiter_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestStandardDelimiter read(JsonReader in) throws IOException {
-
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestStandardDelimiter readImpl(JsonReader in) throws IOException {
         TestStandardDelimiter result = new TestStandardDelimiter();
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 2, 0);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 1) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "Json1":
-                    jsonFieldCounter0++;
-
-                    // Ensure the object is not null.
-                    if (!isValidValue(in)) {
-                        break;
-                    }
-                    int jsonFieldCounter1 = 0;
-                    in.beginObject();
-
-                    while (in.hasNext()) {
-                        if (jsonFieldCounter1 == 1) {
-                            in.skipValue();
-                            continue;
-                        }
-
+                    while (jsonReaderHelper.handleObject(1, 1)) {
                         switch (in.nextName()) {
                             case "Nest1":
-                                jsonFieldCounter1++;
-
-                                Integer value_Json1_Nest1 = mGson.getAdapter(Integer.class).read(in);
+                                Integer value_Json1_Nest1 = gson.getAdapter(Integer.class).read(in);
                                 if (value_Json1_Nest1 != null) {
                                     result.value1 = value_Json1_Nest1;
                                 }
                                 break;
 
                             default:
-                                in.skipValue();
+                                jsonReaderHelper.onObjectFieldNotFound(1);
                                 break;
+
                         }
                     }
-
-
-                    in.endObject();
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-
-        in.endObject();
         return result;
     }
 
     @Override
-    public void write(JsonWriter out, TestStandardDelimiter value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestStandardDelimiter value) throws IOException {
         // Begin
         out.beginObject();
 
@@ -105,7 +63,7 @@ public final class TestStandardDelimiter_GsonTypeAdapter extends TypeAdapter<Tes
         out.beginObject();
         int obj0 = value.value1;
         out.name("Nest1");
-        mGson.getAdapter(Integer.class).write(out, obj0);
+        gson.getAdapter(Integer.class).write(out, obj0);
 
         // End Json1
         out.endObject();

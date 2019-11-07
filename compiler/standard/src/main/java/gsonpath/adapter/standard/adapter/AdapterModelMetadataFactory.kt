@@ -6,10 +6,7 @@ import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterPropertiesFac
 import gsonpath.adapter.standard.adapter.read.ReadParams
 import gsonpath.adapter.standard.adapter.write.WriteParams
 import gsonpath.adapter.standard.interf.ModelInterfaceGenerator
-import gsonpath.adapter.standard.model.FieldInfoFactory
-import gsonpath.adapter.standard.model.GsonObjectMetadata
-import gsonpath.adapter.standard.model.GsonObjectTreeFactory
-import gsonpath.adapter.standard.model.MandatoryFieldInfoFactory
+import gsonpath.adapter.standard.model.*
 import gsonpath.compiler.generateClassName
 import gsonpath.model.FieldInfo
 import gsonpath.util.TypeHandler
@@ -71,15 +68,17 @@ class AdapterModelMetadataFactory(
 
         val rootObject = gsonTreeResult.rootObject
         val flattenedFields = gsonTreeResult.flattenedFields
-        val mandatoryInfoMap = MandatoryFieldInfoFactory().createMandatoryFieldsFromGsonObject(rootObject)
+        val mandatoryFields = MandatoryFieldInfoFactory().createMandatoryFieldsFromGsonObject(rootObject)
 
         val readParams = ReadParams(
                 baseElement = modelClassName,
                 concreteElement = concreteClassName,
                 requiresConstructorInjection = requiresConstructorInjection,
-                mandatoryInfoMap = mandatoryInfoMap,
+                mandatoryFields = mandatoryFields,
                 rootElements = rootObject,
-                flattenedFields = flattenedFields)
+                flattenedFields = flattenedFields,
+                objectIndexes = GsonModelIndexAssigner.assignObjectIndexes(rootObject),
+                arrayIndexes = GsonModelIndexAssigner.assignArrayIndexes(rootObject))
 
         val writeParams = WriteParams(
                 elementClassName = modelClassName,
@@ -92,7 +91,7 @@ class AdapterModelMetadataFactory(
                 adapterClassName,
                 isModelInterface,
                 rootObject,
-                mandatoryInfoMap,
+                mandatoryFields,
                 readParams,
                 writeParams)
     }

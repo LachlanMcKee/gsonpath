@@ -6,6 +6,7 @@ import com.google.gson.internal.Streams
 import com.squareup.javapoet.*
 import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.adapter.Constants
+import gsonpath.adapter.Constants.GSON
 import gsonpath.adapter.standard.extension.addException
 import gsonpath.util.*
 
@@ -56,7 +57,7 @@ object GsonSubTypeFactory {
                 `return`(Constants.NULL)
             }
 
-            createVariable(rawTypeName, RESULT, "mGson.getAdapter($DELEGATE_CLASS).fromJsonTree($JSON_ELEMENT)")
+            createVariable(rawTypeName, RESULT, "$GSON.getAdapter($DELEGATE_CLASS).fromJsonTree($JSON_ELEMENT)")
 
             `return`(RESULT)
         }
@@ -98,15 +99,9 @@ object GsonSubTypeFactory {
             rawTypeName: TypeName) = AdapterMethodBuilder.createWriteMethodBuilder(rawTypeName).applyAndBuild {
 
         code {
-            newLine()
-            `if`("${Constants.VALUE} == ${Constants.NULL}") {
-                addStatement("${Constants.OUT}.nullValue()")
-                `return`()
-            }
-            createVariable(TypeAdapter::class.java, DELEGATE_ADAPTER, "mGson.getAdapter(${Constants.VALUE}.getClass())")
+            createVariable(TypeAdapter::class.java, DELEGATE_ADAPTER, "$GSON.getAdapter(${Constants.VALUE}.getClass())")
+            addStatement("$DELEGATE_ADAPTER.write(${Constants.OUT}, ${Constants.VALUE})")
         }
-
-        addStatement("$DELEGATE_ADAPTER.write(${Constants.OUT}, ${Constants.VALUE})")
     }
 
     private const val JSON_ELEMENT = "jsonElement"

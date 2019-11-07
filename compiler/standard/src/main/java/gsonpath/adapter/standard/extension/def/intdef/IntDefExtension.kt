@@ -6,10 +6,7 @@ import gsonpath.adapter.standard.extension.def.getDefAnnotationMirrors
 import gsonpath.adapter.standard.extension.getAnnotationValueObject
 import gsonpath.compiler.ExtensionFieldMetadata
 import gsonpath.compiler.GsonPathExtension
-import gsonpath.util.addWithNewLine
-import gsonpath.util.case
-import gsonpath.util.codeBlock
-import gsonpath.util.switch
+import gsonpath.util.*
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.AnnotationValue
 
@@ -41,10 +38,9 @@ class IntDefExtension : GsonPathExtension {
                 }
 
                 // Create a 'default' that throws an exception if an unexpected integer is found.
-                addWithNewLine("default:")
-                indent()
-                addException("""Unexpected Int '" + $variableName + "' for JSON element '${extensionFieldMetadata.jsonPath}'""")
-                unindent()
+                default(addBreak = false) {
+                    addException("""Unexpected Int '" + $variableName + "' for JSON element '${extensionFieldMetadata.jsonPath}'""")
+                }
             }
         })
     }
