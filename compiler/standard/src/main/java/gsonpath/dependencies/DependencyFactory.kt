@@ -27,7 +27,8 @@ object DependencyFactory {
 
     fun create(processingEnv: ProcessingEnvironment): Dependencies {
         val fileWriter = FileWriter(processingEnv)
-        val defaultValueDetector = DefaultValueDetectorImpl(processingEnv)
+        val sunTreesProvider = SunTreesProvider(processingEnv)
+        val defaultValueDetector = DefaultValueDetectorImpl(sunTreesProvider)
 
         val typeHandler = ProcessorTypeHandler(processingEnv)
         val fieldGetterFinder = FieldGetterFinder(typeHandler)

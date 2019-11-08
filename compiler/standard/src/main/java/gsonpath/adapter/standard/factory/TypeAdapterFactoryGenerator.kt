@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeSpec
+import gsonpath.adapter.AdapterMetadata
 import gsonpath.adapter.Constants.GSON
 import gsonpath.adapter.Constants.NULL
 import gsonpath.adapter.util.writeFile
@@ -16,7 +17,7 @@ import javax.lang.model.element.TypeElement
 
 class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
 
-    fun generate(factoryElement: TypeElement, generatedGsonAdapters: List<AdapterGenerationResult>) {
+    fun generate(factoryElement: TypeElement, generatedGsonAdapters: List<AdapterMetadata>) {
         val packageLocalHandleResults = TypeAdapterFactoryHandlersFactory
                 .createResults(factoryElement, generatedGsonAdapters)
 
@@ -32,19 +33,25 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
      */
     private fun createGsonTypeFactoryImpl(
             factoryElement: TypeElement,
-            packageLocalAdapterGenerationResults: Map<String, List<AdapterGenerationResult>>) {
+            packageLocalAdapterGenerationResults: Map<String, List<AdapterMetadata>>) {
 
         val factoryClassName = ClassName.get(factoryElement)
 
         TypeSpecExt.finalClassBuilder(factoryClassName.simpleName() + "Impl")
                 .addSuperinterface(factoryClassName)
                 .gsonTypeFactoryImplContent(packageLocalAdapterGenerationResults)
-                TODO - GUESS WE ARE AGGREGATING :(
+                .apply {
+                    packageLocalAdapterGenerationResults.forEach { packageLocalResult ->
+                        packageLocalResult.value.forEach {
+                            addOriginatingElement(it.element)
+                        }
+                    }
+                }
                 .writeFile(fileWriter, factoryClassName.packageName())
     }
 
     private fun TypeSpec.Builder.gsonTypeFactoryImplContent(
-            packageLocalAdapterGenerationResults: Map<String, List<AdapterGenerationResult>>): TypeSpec.Builder {
+            packageLocalAdapterGenerationResults: Map<String, List<AdapterMetadata>>): TypeSpec.Builder {
 
         field(PACKAGE_PRIVATE_LOADERS, ArrayTypeName.of(TypeAdapterFactory::class.java)) {
             addModifiers(Modifier.PRIVATE, Modifier.FINAL)
@@ -91,12 +98,16 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
 
     private fun createPackageLocalTypeAdapterLoaders(
             packageName: String,
-            packageLocalGsonAdapters: List<AdapterGenerationResult>) {
+            packageLocalGsonAdapters: List<AdapterMetadata>) {
 
         TypeSpecExt.finalClassBuilder(ClassName.get(packageName, PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME))
                 .addSuperinterface(TypeAdapterFactory::class.java)
                 .packagePrivateTypeAdapterLoaderContent(packageLocalGsonAdapters)
-        TODO - GUESS WE ARE AGGREGATING :(
+                .apply {
+                    packageLocalGsonAdapters.forEach {
+                        addOriginatingElement(it.element)
+                    }
+                }
                 .writeFile(fileWriter, packageName)
     }
 
@@ -104,7 +115,7 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
     // <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type);
     //
     private fun TypeSpec.Builder.packagePrivateTypeAdapterLoaderContent(
-            packageLocalGsonAdapters: List<AdapterGenerationResult>): TypeSpec.Builder {
+            packageLocalGsonAdapters: List<AdapterMetadata>): TypeSpec.Builder {
 
         overrideMethod("create") {
             returns(TypeAdapter::class.java)
@@ -114,17 +125,17 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
                 createVariable(Class::class.java, RAW_TYPE, "type.getRawType()")
 
                 for ((currentAdapterIndex, result) in packageLocalGsonAdapters.withIndex()) {
-                    val condition = result.adapterGenericTypeClassNames
+                    val condition = result.elementClassNames
                             .joinToString(separator = " || ") { "rawType.equals(\$T.class)" }
 
                     if (currentAdapterIndex == 0) {
-                        ifWithoutClose(condition, *result.adapterGenericTypeClassNames) {
-                            `return`("new \$T($GSON)", result.adapterClassName)
+                        ifWithoutClose(condition, *(result.elementClassNames.toTypedArray())) {
+                            `return`("new \$T($GSON)", result.typeAdapterClassName)
                         }
                     } else {
                         newLine() // New line for easier readability.
-                        elseIf(condition, *result.adapterGenericTypeClassNames) {
-                            `return`("new \$T($GSON)", result.adapterClassName)
+                        elseIf(condition, *(result.elementClassNames.toTypedArray())) {
+                            `return`("new \$T($GSON)", result.typeAdapterClassName)
                         }
                     }
                 }

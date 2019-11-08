@@ -1,7 +1,9 @@
 package gsonpath
 
 import com.google.common.collect.Sets
-import gsonpath.adapter.AdapterGenerationResult
+import gsonpath.adapter.enums.EnumAdapterFactory
+import gsonpath.adapter.standard.StandardAdapterFactory
+import gsonpath.adapter.subType.SubTypeAdapterFactory
 import gsonpath.dependencies.Dependencies
 import gsonpath.dependencies.DependencyFactory
 import gsonpath.util.Logger
@@ -34,7 +36,7 @@ open class GsonPathFactoryProcessor : AbstractProcessor() {
 
         val dependencies = DependencyFactory.create(processingEnv)
 
-        generateTypeAdapterFactories(env, dependencies)
+        generateTypeAdapterFactories(env, annotations, dependencies)
 
         logger.printMessage("Finished annotation processing")
         println()
@@ -42,9 +44,15 @@ open class GsonPathFactoryProcessor : AbstractProcessor() {
 
     private fun generateTypeAdapterFactories(
             env: RoundEnvironment,
+            annotations: Set<TypeElement>,
             dependencies: Dependencies) {
 
-        if (autoGsonAdapterResults.isNotEmpty()) {
+        val typeAdapterElements =
+                StandardAdapterFactory.getHandledElements(env, annotations)
+                        .plus(SubTypeAdapterFactory.getHandledElements(env, annotations))
+                        .plus(EnumAdapterFactory.getHandledElements(env, annotations))
+
+        if (typeAdapterElements.isNotEmpty()) {
             val gsonPathFactories = env.getElementsAnnotatedWith(AutoGsonAdapterFactory::class.java)
 
             when {
@@ -58,7 +66,7 @@ open class GsonPathFactoryProcessor : AbstractProcessor() {
                 }
                 else -> {
                     val factoryElement = gsonPathFactories.first()
-                    dependencies.typeAdapterFactoryGenerator.generate(factoryElement as TypeElement, autoGsonAdapterResults)
+                    dependencies.typeAdapterFactoryGenerator.generate(factoryElement as TypeElement, typeAdapterElements)
                 }
             }
         }
