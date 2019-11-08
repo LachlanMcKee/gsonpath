@@ -11,7 +11,7 @@ interface AdapterFactory {
             env: RoundEnvironment,
             logger: Logger,
             annotations: Set<TypeElement>,
-            dependencies: Dependencies): List<AdapterGenerationResult>
+            dependencies: Dependencies)
 }
 
 class AdapterGenerationResult(

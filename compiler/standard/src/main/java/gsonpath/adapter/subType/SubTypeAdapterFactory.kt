@@ -6,7 +6,6 @@ import com.squareup.javapoet.ParameterizedTypeName
 import gsonpath.GsonPathTypeAdapter
 import gsonpath.GsonSubtype
 import gsonpath.adapter.AdapterFactory
-import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.Constants
 import gsonpath.adapter.common.GsonSubTypeFactory
 import gsonpath.adapter.common.GsonSubTypeResult
@@ -28,17 +27,17 @@ object SubTypeAdapterFactory : AdapterFactory {
             env: RoundEnvironment,
             logger: Logger,
             annotations: Set<TypeElement>,
-            dependencies: Dependencies): List<AdapterGenerationResult> {
+            dependencies: Dependencies) {
 
         return getAnnotatedModelElements<GsonSubtype>(env, annotations)
-                .map { generateAdapter(it.element, it.annotation, logger, dependencies) }
+                .forEach { generateAdapter(it.element, it.annotation, logger, dependencies) }
     }
 
     private fun generateAdapter(
             element: TypeElement,
             gsonSubtype: GsonSubtype,
             logger: Logger,
-            dependencies: Dependencies): AdapterGenerationResult {
+            dependencies: Dependencies) {
 
         logger.printMessage("Generating TypeAdapter ($element)")
 
@@ -52,15 +51,14 @@ object SubTypeAdapterFactory : AdapterFactory {
                 "Type",
                 element)
 
-        return GsonSubTypeFactory.createSubTypeMetadata(typeName, subTypeMetadata)
-                .let { result ->
+        GsonSubTypeFactory.createSubTypeMetadata(typeName, subTypeMetadata)
+                .also { result ->
                     val adapterClassName = ClassName.get(typeName.packageName(),
                             generateClassName(typeName, "GsonTypeAdapter"))
 
                     createSubTypeAdapterSpec(adapterClassName, typeName, result)
                             .addOriginatingElement(element)
                             .writeFile(dependencies.fileWriter, adapterClassName.packageName())
-                    AdapterGenerationResult(arrayOf(typeName), adapterClassName)
                 }
     }
 
