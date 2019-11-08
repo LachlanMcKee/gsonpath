@@ -1,9 +1,10 @@
 package gsonpath.adapter.standard.factory
 
 import com.google.gson.TypeAdapterFactory
+import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
-import gsonpath.adapter.AdapterGenerationResult
+import gsonpath.adapter.AdapterMetadata
 import javax.lang.model.element.TypeElement
 
 object TypeAdapterFactoryHandlersFactory {
@@ -11,7 +12,7 @@ object TypeAdapterFactoryHandlersFactory {
 
     fun createResults(
             factoryElement: TypeElement,
-            generatedGsonAdapters: List<AdapterGenerationResult>): Map<String, List<AdapterGenerationResult>> {
+            generatedGsonAdapters: List<AdapterMetadata>): Map<String, List<AdapterMetadata>> {
 
         if (generatedGsonAdapters.isEmpty()) {
             return emptyMap()
@@ -31,9 +32,9 @@ object TypeAdapterFactoryHandlersFactory {
         }
 
         return generatedGsonAdapters.fold(emptyMap()) { map, generatedGsonAdapter ->
-            val packageName = generatedGsonAdapter.adapterClassName.packageName()
+            val packageName = ClassName.get(generatedGsonAdapter.element).packageName()
 
-            val newList: List<AdapterGenerationResult> =
+            val newList: List<AdapterMetadata> =
                     map[packageName]?.plus(generatedGsonAdapter) ?: listOf(generatedGsonAdapter)
 
             return@fold map.plus(Pair(packageName, newList))
