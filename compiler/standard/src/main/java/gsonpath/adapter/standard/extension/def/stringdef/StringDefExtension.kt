@@ -5,7 +5,6 @@ import com.sun.source.tree.AssignmentTree
 import com.sun.source.tree.IdentifierTree
 import com.sun.source.tree.MemberSelectTree
 import com.sun.source.util.TreePathScanner
-import com.sun.source.util.Trees
 import com.sun.tools.javac.tree.JCTree
 import gsonpath.adapter.standard.extension.addException
 import gsonpath.adapter.standard.extension.def.DefAnnotationMirrors
@@ -26,7 +25,9 @@ import javax.lang.model.element.AnnotationValue
  * This is due to how the lint validation works in Android Studio. The linting requires that the exact same String
  * reference is used, rather than another String instance that has the same equality.
  */
-class StringDefExtension : GsonPathExtension {
+class StringDefExtension(
+        private val sunTreesProvider: SunTreesProvider
+) : GsonPathExtension {
 
     override val extensionName: String
         get() = "'String Def' Annotation"
@@ -50,7 +51,7 @@ class StringDefExtension : GsonPathExtension {
         // the actual source code and obtain the variable names.
         //
         val annotationElement = defAnnotationMirrors.annotationMirror.annotationType.asElement()
-        val treesInstance = Trees.instance(processingEnvironment)
+        val treesInstance = sunTreesProvider.getTrees()
         val stringDefConstants: List<String>? = AnnotationValueConstantsVisitor().scan(
                 treesInstance.getPath(annotationElement, defAnnotationMirrors.defAnnotationMirror, defAnnotationValues),
                 null)

@@ -41,7 +41,7 @@ object DependencyFactory {
         val gsonObjectTreeFactory = GsonObjectTreeFactory(gsonObjectFactory)
 
         val subTypeMetadataFactory = SubTypeMetadataFactoryImpl(typeHandler)
-        val extensions = loadExtensions(processingEnv)
+        val extensions = loadExtensions(processingEnv, sunTreesProvider)
         val extensionsHandler = ExtensionsHandler(processingEnv, extensions)
         val readFunctions = ReadFunctions(extensionsHandler)
         val writeFunctions = WriteFunctions(extensionsHandler)
@@ -78,12 +78,13 @@ object DependencyFactory {
     }
 
     private fun loadExtensions(
-            processingEnv: ProcessingEnvironment): List<GsonPathExtension> {
+            processingEnv: ProcessingEnvironment,
+            sunTreesProvider: SunTreesProvider): List<GsonPathExtension> {
 
         return ExtensionsLoader.loadExtensions(Logger(processingEnv))
                 .plus(arrayOf(
                         IntDefExtension(),
-                        StringDefExtension(),
+                        StringDefExtension(sunTreesProvider),
                         EmptyToNullExtension(),
                         FlattenJsonExtension(),
                         RemoveInvalidElementsExtension(),
