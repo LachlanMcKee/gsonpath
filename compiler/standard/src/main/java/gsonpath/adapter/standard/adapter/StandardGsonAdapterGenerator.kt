@@ -7,7 +7,6 @@ import com.squareup.javapoet.TypeSpec
 import gsonpath.AutoGsonAdapter
 import gsonpath.GsonPathTypeAdapter
 import gsonpath.ProcessingException
-import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.Constants.GENERATED_ANNOTATION
 import gsonpath.adapter.standard.adapter.read.ReadFunctions
 import gsonpath.adapter.standard.adapter.write.WriteFunctions
@@ -27,18 +26,16 @@ class StandardGsonAdapterGenerator(
     @Throws(ProcessingException::class)
     fun handle(
             modelElement: TypeElement,
-            autoGsonAnnotation: AutoGsonAdapter): AdapterGenerationResult {
+            autoGsonAnnotation: AutoGsonAdapter) {
 
         val metadata = adapterModelMetadataFactory.createMetadata(modelElement, autoGsonAnnotation)
         val adapterClassName = metadata.adapterClassName
-        return TypeSpecExt.finalClassBuilder(adapterClassName)
+        TypeSpecExt.finalClassBuilder(adapterClassName)
                 .addDetails(metadata)
-                .let { specBuilder ->
+                .also { specBuilder ->
                     specBuilder
                             .addOriginatingElement(modelElement)
                             .writeFile(fileWriter, adapterClassName.packageName())
-
-                    AdapterGenerationResult(metadata.adapterGenericTypeClassNames.toTypedArray(), adapterClassName)
                 }
     }
 

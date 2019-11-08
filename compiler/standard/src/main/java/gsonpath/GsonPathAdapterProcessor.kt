@@ -1,11 +1,9 @@
 package gsonpath
 
 import com.google.common.collect.Sets
-import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.enums.EnumAdapterFactory
 import gsonpath.adapter.standard.StandardAdapterFactory
 import gsonpath.adapter.subType.SubTypeAdapterFactory
-import gsonpath.dependencies.Dependencies
 import gsonpath.dependencies.DependencyFactory
 import gsonpath.util.Logger
 import javax.annotation.processing.AbstractProcessor
@@ -36,41 +34,14 @@ open class GsonPathAdapterProcessor : AbstractProcessor() {
         logger.printMessage("Started annotation processing")
 
         val dependencies = DependencyFactory.create(processingEnv)
-        val autoGsonAdapterResults = StandardAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies)
-                .plus(SubTypeAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies))
-                .plus(EnumAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies))
-
-        generateTypeAdapterFactories(env, dependencies, autoGsonAdapterResults)
+        StandardAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies)
+        SubTypeAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies)
+        EnumAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies)
 
         logger.printMessage("Finished annotation processing")
         println()
     }
-
-    private fun generateTypeAdapterFactories(
-            env: RoundEnvironment,
-            dependencies: Dependencies,
-            autoGsonAdapterResults: List<AdapterGenerationResult>) {
-
-        if (autoGsonAdapterResults.isNotEmpty()) {
-            val gsonPathFactories = env.getElementsAnnotatedWith(AutoGsonAdapterFactory::class.java)
-
-            when {
-                gsonPathFactories.count() == 0 -> {
-                    throw ProcessingException("An interface annotated with @AutoGsonAdapterFactory (that directly extends " +
-                            "com.google.gson.TypeAdapterFactory) must exist before the annotation processor can succeed. " +
-                            "See the AutoGsonAdapterFactory annotation for further details.")
-                }
-                gsonPathFactories.count() > 1 -> {
-                    throw ProcessingException("Only one interface annotated with @AutoGsonAdapterFactory can exist")
-                }
-                else -> {
-                    val factoryElement = gsonPathFactories.first()
-                    dependencies.typeAdapterFactoryGenerator.generate(factoryElement as TypeElement, autoGsonAdapterResults)
-                }
-            }
-        }
-    }
-
+    
     override fun getSupportedAnnotationTypes(): Set<String> {
         return Sets.newHashSet("*")
     }
