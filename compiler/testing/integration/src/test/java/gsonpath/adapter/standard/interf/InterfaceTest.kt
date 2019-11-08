@@ -3,7 +3,7 @@ package gsonpath.adapter.standard.interf
 import com.google.common.truth.Truth.assertAbout
 import com.google.testing.compile.JavaFileObjects
 import com.google.testing.compile.JavaSourceSubjectFactory.javaSource
-import gsonpath.GsonProcessor
+import gsonpath.GsonPathAdapterProcessor
 import gsonpath.generator.GeneratorTester.assertGeneratedContent
 import gsonpath.generator.TestCriteria
 import org.junit.Test
@@ -31,7 +31,7 @@ class InterfaceTest {
         val source = JavaFileObjects.forResource("generator/interf/invalid/TestValidInterface_ReturningVoid.java")
 
         assertAbout(javaSource()).that(source)
-                .processedWith(GsonProcessor())
+                .processedWith(GsonPathAdapterProcessor())
                 .failsToCompile()
                 .withErrorContaining("Gson Path interface methods must have a return type")
                 .`in`(source)
@@ -43,7 +43,7 @@ class InterfaceTest {
         val source = JavaFileObjects.forResource("generator/interf/invalid/TestValidInterface_WithParameters.java")
 
         assertAbout(javaSource()).that(source)
-                .processedWith(GsonProcessor())
+                .processedWith(GsonPathAdapterProcessor())
                 .failsToCompile()
                 .withErrorContaining("Gson Path interface methods must not have parameters")
                 .`in`(source)

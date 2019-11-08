@@ -3,7 +3,7 @@ package gsonpath.generator.standard
 import com.google.common.truth.Truth.assertAbout
 import com.google.testing.compile.JavaFileObjects
 import com.google.testing.compile.JavaSourceSubjectFactory.javaSource
-import gsonpath.GsonProcessor
+import gsonpath.GsonPathAdapterProcessor
 import org.junit.Test
 
 class ProcessorErrorsTest {
@@ -12,7 +12,7 @@ class ProcessorErrorsTest {
         val source = JavaFileObjects.forResource("generator/standard/processor_errors/TestInvalidFieldTypeError.java")
 
         assertAbout(javaSource()).that(source)
-                .processedWith(GsonProcessor())
+                .processedWith(GsonPathAdapterProcessor())
                 .failsToCompile()
                 .withErrorContaining("Invalid field type: java.lang.Object")
                 .`in`(source)
@@ -24,7 +24,7 @@ class ProcessorErrorsTest {
         val source = JavaFileObjects.forResource("generator/standard/processor_errors/TestInvalidFieldPathError.java")
 
         assertAbout(javaSource()).that(source)
-                .processedWith(GsonProcessor())
+                .processedWith(GsonPathAdapterProcessor())
                 .failsToCompile()
                 .withErrorContaining("Unexpected duplicate field 'value' found. Each tree branch must use a unique value!")
                 .`in`(source)
@@ -36,7 +36,7 @@ class ProcessorErrorsTest {
         val source = JavaFileObjects.forResource("generator/standard/processor_errors/TestDuplicateFieldError.java")
 
         assertAbout(javaSource()).that(source)
-                .processedWith(GsonProcessor())
+                .processedWith(GsonPathAdapterProcessor())
                 .failsToCompile()
                 .withErrorContaining("Unexpected duplicate field 'value' found. Each tree branch must use a unique value!")
                 .`in`(source)
@@ -48,7 +48,7 @@ class ProcessorErrorsTest {
         val source = JavaFileObjects.forResource("generator/standard/processor_errors/TestSerializedNameAlternateUsedError.java")
 
         assertAbout(javaSource()).that(source)
-                .processedWith(GsonProcessor())
+                .processedWith(GsonPathAdapterProcessor())
                 .failsToCompile()
                 .withErrorContaining("SerializedName 'alternate' feature is not supported")
                 .`in`(source)
