@@ -39,6 +39,7 @@ class ModelInterfaceGenerator(
         addHashCodeMethod(modelMetadataList)
         addToStringMethod(element, modelMetadataList)
 
+        addOriginatingElement(element)
         writeFile(fileWriter, outputClassName.packageName())
 
         return InterfaceInfo(outputClassName, modelMetadataList.map {

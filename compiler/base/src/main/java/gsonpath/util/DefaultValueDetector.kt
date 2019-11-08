@@ -4,18 +4,16 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import com.sun.source.tree.VariableTree
 import com.sun.source.util.TreePathScanner
-import com.sun.source.util.Trees
-import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
 
 interface DefaultValueDetector {
     fun hasDefaultValue(element: Element): Boolean
 }
 
-class DefaultValueDetectorImpl(private val processingEnvironment: ProcessingEnvironment) : DefaultValueDetector {
+class DefaultValueDetectorImpl(private val sunTreesProvider: SunTreesProvider) : DefaultValueDetector {
     override fun hasDefaultValue(element: Element): Boolean {
         return DefaultValueScanner(element)
-                .scan(Trees.instance(processingEnvironment).getPath(element), null) != null
+                .scan(sunTreesProvider.getTrees().getPath(element), null) != null
     }
 
     /**
