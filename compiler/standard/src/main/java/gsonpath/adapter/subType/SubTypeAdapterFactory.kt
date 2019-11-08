@@ -58,6 +58,7 @@ object SubTypeAdapterFactory : AdapterFactory {
                             generateClassName(typeName, "GsonTypeAdapter"))
 
                     createSubTypeAdapterSpec(adapterClassName, typeName, result)
+                            .addOriginatingElement(element)
                             .writeFile(dependencies.fileWriter, adapterClassName.packageName())
                     AdapterGenerationResult(arrayOf(typeName), adapterClassName)
                 }

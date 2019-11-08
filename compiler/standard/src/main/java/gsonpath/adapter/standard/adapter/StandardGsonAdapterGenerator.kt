@@ -33,8 +33,11 @@ class StandardGsonAdapterGenerator(
         val adapterClassName = metadata.adapterClassName
         return TypeSpecExt.finalClassBuilder(adapterClassName)
                 .addDetails(metadata)
-                .let {
-                    it.writeFile(fileWriter, adapterClassName.packageName())
+                .let { specBuilder ->
+                    specBuilder
+                            .addOriginatingElement(modelElement)
+                            .writeFile(fileWriter, adapterClassName.packageName())
+
                     AdapterGenerationResult(metadata.adapterGenericTypeClassNames.toTypedArray(), adapterClassName)
                 }
     }

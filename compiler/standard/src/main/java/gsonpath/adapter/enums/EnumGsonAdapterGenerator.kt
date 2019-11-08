@@ -41,6 +41,7 @@ class EnumGsonAdapterGenerator(
                 generateClassName(typeName, "GsonTypeAdapter"))
 
         createEnumAdapterSpec(adapterClassName, modelElement, properties, fields)
+                .addOriginatingElement(modelElement)
                 .writeFile(fileWriter, adapterClassName.packageName()) {
                     it.addStaticImport(GsonUtil::class.java, "*")
                 }

@@ -40,6 +40,7 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
         TypeSpecExt.finalClassBuilder(factoryClassName.simpleName() + "Impl")
                 .addSuperinterface(factoryClassName)
                 .gsonTypeFactoryImplContent(packageLocalAdapterGenerationResults)
+                TODO - GUESS WE ARE AGGREGATING :(
                 .writeFile(fileWriter, factoryClassName.packageName())
     }
 
@@ -96,6 +97,7 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
         TypeSpecExt.finalClassBuilder(ClassName.get(packageName, PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME))
                 .addSuperinterface(TypeAdapterFactory::class.java)
                 .packagePrivateTypeAdapterLoaderContent(packageLocalGsonAdapters)
+        TODO - GUESS WE ARE AGGREGATING :(
                 .writeFile(fileWriter, packageName)
     }
 
