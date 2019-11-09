@@ -23,7 +23,7 @@ object StandardAdapterFactory : AdapterFactory<AutoGsonAdapter>() {
                             generateClassName(typeName, "GsonTypeAdapter"))
 
                     val elementClassNames = if (it.element.kind.isInterface) {
-                        listOf(typeName, ClassName.get(typeName.packageName(), generateClassName(typeName, "GsonPathModel")))
+                        listOf(ClassName.get(typeName.packageName(), generateClassName(typeName, "GsonPathModel")), typeName)
                     } else {
                         listOf(typeName)
                     }
