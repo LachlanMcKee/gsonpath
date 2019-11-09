@@ -17,6 +17,12 @@ buildscript {
     }
 }
 
+kapt {
+    arguments {
+        arg("gsonpath.addtionalAnnotations", "gsonpath.kotlin.CustomAnnotation,gsonpath.kotlin.TypeSubType")
+    }
+}
+
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "com.google.code.gson:gson:$gson_version"
