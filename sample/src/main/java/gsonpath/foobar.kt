@@ -1,0 +1,4 @@
+package gsonpath
+
+class foobar {
+}

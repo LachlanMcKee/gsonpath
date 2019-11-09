@@ -32,6 +32,8 @@ open class GsonPathAdapterProcessor : AbstractProcessor() {
         println()
         logger.printMessage("Started annotation processing")
 
+        Thread.sleep(5000)
+
         val dependencies = DependencyFactory.create(processingEnv)
         StandardAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies)
         SubTypeAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies)
