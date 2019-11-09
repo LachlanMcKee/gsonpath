@@ -71,13 +71,22 @@ open class GsonPathFactoryProcessor : AbstractProcessor() {
         }
     }
 
-    override fun getSupportedAnnotationTypes() = setOf(
-            AutoGsonAdapterFactory::class.java.canonicalName,
+    override fun getSupportedAnnotationTypes(): Set<String> {
+        val additonalAnnotations: Set<String> = processingEnv.options["gsonpath.addtionalAnnotations"]
+                ?.split(",")
+                ?.toSet()
+                ?: emptySet()
 
-            // Used to find the classes generated via GsonPathAdapterProcessor
-            AutoGsonAdapter::class.java.canonicalName,
-            GsonSubtype::class.java.canonicalName
-    )
+        println("GsonPathAdapterProcessor. additonalAnnotations: $additonalAnnotations")
+
+        return additonalAnnotations.plus(setOf(
+                AutoGsonAdapterFactory::class.java.canonicalName,
+
+                // Used to find the classes generated via GsonPathAdapterProcessor
+                AutoGsonAdapter::class.java.canonicalName,
+                GsonSubtype::class.java.canonicalName
+        ))
+    }
 
     override fun getSupportedSourceVersion(): SourceVersion {
         return SourceVersion.latestSupported()

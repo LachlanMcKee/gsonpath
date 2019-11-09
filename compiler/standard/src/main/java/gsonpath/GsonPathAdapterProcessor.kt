@@ -40,12 +40,19 @@ open class GsonPathAdapterProcessor : AbstractProcessor() {
         logger.printMessage("Finished annotation processing")
         println()
     }
-    
+
     override fun getSupportedAnnotationTypes(): Set<String> {
-        return setOf(
+        val additonalAnnotations: Set<String> = processingEnv.options["gsonpath.addtionalAnnotations"]
+                ?.split(",")
+                ?.toSet()
+                ?: emptySet()
+
+        println("GsonPathAdapterProcessor. additonalAnnotations: $additonalAnnotations")
+
+        return additonalAnnotations.plus(setOf(
                 AutoGsonAdapter::class.java.canonicalName,
                 GsonSubtype::class.java.canonicalName
-        )
+        ))
     }
 
     override fun getSupportedSourceVersion(): SourceVersion {
