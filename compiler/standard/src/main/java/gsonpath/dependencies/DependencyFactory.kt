@@ -9,8 +9,6 @@ import gsonpath.adapter.standard.adapter.read.ReadFunctions
 import gsonpath.adapter.standard.adapter.write.WriteFunctions
 import gsonpath.adapter.standard.extension.ExtensionsHandler
 import gsonpath.adapter.standard.extension.ExtensionsLoader
-import gsonpath.adapter.standard.extension.def.intdef.IntDefExtension
-import gsonpath.adapter.standard.extension.def.stringdef.StringDefExtension
 import gsonpath.adapter.standard.extension.empty.EmptyToNullExtension
 import gsonpath.adapter.standard.extension.flatten.FlattenJsonExtension
 import gsonpath.adapter.standard.extension.invalid.RemoveInvalidElementsExtension
@@ -76,13 +74,9 @@ object DependencyFactory {
         )
     }
 
-    private fun loadExtensions(
-            processingEnv: ProcessingEnvironment): List<GsonPathExtension> {
-
+    private fun loadExtensions(processingEnv: ProcessingEnvironment): List<GsonPathExtension> {
         return ExtensionsLoader.loadExtensions(Logger(processingEnv))
                 .plus(arrayOf(
-                        IntDefExtension(),
-                        StringDefExtension(),
                         EmptyToNullExtension(),
                         FlattenJsonExtension(),
                         RemoveInvalidElementsExtension(),
