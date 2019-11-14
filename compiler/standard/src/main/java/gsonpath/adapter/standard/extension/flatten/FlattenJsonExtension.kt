@@ -3,6 +3,7 @@ package gsonpath.adapter.standard.extension.flatten
 import com.google.gson.JsonElement
 import com.squareup.javapoet.ClassName
 import gsonpath.ProcessingException
+import gsonpath.adapter.Constants.GSON
 import gsonpath.compiler.CLASS_NAME_STRING
 import gsonpath.compiler.ExtensionFieldMetadata
 import gsonpath.compiler.GsonPathExtension
@@ -39,7 +40,7 @@ class FlattenJsonExtension : GsonPathExtension {
 
         return GsonPathExtension.ExtensionResult(codeBlock {
             val jsonElementVariableName = "${variableName}_jsonElement"
-            createVariable(CLASS_NAME_JSON_ELEMENT, jsonElementVariableName, "mGson.getAdapter(\$T.class).read(in)",
+            createVariable(CLASS_NAME_JSON_ELEMENT, jsonElementVariableName, "$GSON.getAdapter(\$T.class).read(in)",
                     CLASS_NAME_JSON_ELEMENT)
 
             if (checkIfResultIsNull) {

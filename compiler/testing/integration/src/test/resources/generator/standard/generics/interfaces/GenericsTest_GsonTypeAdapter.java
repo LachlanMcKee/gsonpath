@@ -1,77 +1,55 @@
 package generator.standard.generics.interfaces;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.GsonUtil;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Double;
 import java.lang.Integer;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Map;
-
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class GenericsTest_GsonTypeAdapter extends TypeAdapter<GenericsTest> {
-    private final Gson mGson;
-
+public final class GenericsTest_GsonTypeAdapter extends GsonPathTypeAdapter<GenericsTest> {
     public GenericsTest_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public GenericsTest read(JsonReader in) throws IOException {
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public GenericsTest readImpl(JsonReader in) throws IOException {
         String value_value1 = null;
         Map<String, Integer> value_value2 = null;
         Double value_value3 = null;
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 3) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 3)) {
             switch (in.nextName()) {
                 case "value1":
-                    jsonFieldCounter0++;
-
-                    value_value1 = mGson.getAdapter(String.class).read(in);
+                    value_value1 = gson.getAdapter(String.class).read(in);
                     break;
 
                 case "value2":
-                    jsonFieldCounter0++;
-
-                    value_value2 = mGson.getAdapter(new com.google.gson.reflect.TypeToken<Map<String, Integer>>(){}).read(in);
+                    value_value2 = gson.getAdapter(new com.google.gson.reflect.TypeToken<Map<String, Integer>>(){}).read(in);
                     break;
 
                 case "value3":
-                    jsonFieldCounter0++;
-
-                    value_value3 = mGson.getAdapter(Double.class).read(in);
+                    value_value3 = gson.getAdapter(Double.class).read(in);
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-        in.endObject();
         return new GenericsTest_GsonPathModel(
                 value_value1,
                 value_value2,
@@ -79,30 +57,25 @@ public final class GenericsTest_GsonTypeAdapter extends TypeAdapter<GenericsTest
     }
 
     @Override
-    public void write(JsonWriter out, GenericsTest value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, GenericsTest value) throws IOException {
         // Begin
         out.beginObject();
         String obj0 = value.getValue1();
         if (obj0 != null) {
             out.name("value1");
-            writeWithGenericAdapter(mGson, obj0.getClass(), out, obj0);
+            GsonUtil.writeWithGenericAdapter(gson, obj0.getClass(), out, obj0);
         }
 
         Map<String, Integer> obj1 = value.getValue2();
         if (obj1 != null) {
             out.name("value2");
-            mGson.getAdapter(new com.google.gson.reflect.TypeToken<Map<String, Integer>>(){}).write(out, obj1);
+            gson.getAdapter(new com.google.gson.reflect.TypeToken<Map<String, Integer>>(){}).write(out, obj1);
         }
 
         Double obj2 = value.getValue3();
         if (obj2 != null) {
             out.name("value3");
-            writeWithGenericAdapter(mGson, obj2.getClass(), out, obj2)
+            GsonUtil.writeWithGenericAdapter(gson, obj2.getClass(), out, obj2);
         }
 
         // End

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import gsonpath.GsonPath;
-import gsonpath.JsonFieldMissingException;
+import gsonpath.JsonFieldNoKeyException;
 import gsonpath.TestGsonTypeFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class MandatoryFieldTest {
 
         } catch (JsonParseException e) {
             // Since the mandatory value is not found, we are expecting an exception.
-            Assert.assertEquals(e.getClass(), JsonFieldMissingException.class);
+            Assert.assertEquals(e.getClass(), JsonFieldNoKeyException.class);
             return;
         }
 

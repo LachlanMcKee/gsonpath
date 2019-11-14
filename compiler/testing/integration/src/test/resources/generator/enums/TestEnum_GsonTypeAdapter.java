@@ -3,49 +3,53 @@ package generator.enums;
 import static gsonpath.GsonUtil.*;
 
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonPathTypeAdapter;
 import java.io.IOException;
 import java.lang.Override;
-import java.lang.String;
-import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestEnum_GsonTypeAdapter extends TypeAdapter<TestEnum> {
-    private final Gson mGson;
-    private final Map<String, TestEnum> nameToConstant = new HashMap<String, TestEnum>();
-    private final Map<TestEnum, String> constantToName = new HashMap<TestEnum, String>();
-
+public final class TestEnum_GsonTypeAdapter extends GsonPathTypeAdapter<TestEnum> {
     public TestEnum_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
-
-        nameToConstant.put("value-abc", TestEnum.VALUE_ABC);
-        nameToConstant.put("value-def", TestEnum.VALUE_DEF);
-        nameToConstant.put("custom", TestEnum.VALUE_GHI);
-        nameToConstant.put("value-1", TestEnum.VALUE_1);
-
-        constantToName.put(TestEnum.VALUE_ABC, "value-abc");
-        constantToName.put(TestEnum.VALUE_DEF, "value-def");
-        constantToName.put(TestEnum.VALUE_GHI, "custom");
-        constantToName.put(TestEnum.VALUE_1, "value-1");
+        super(gson);
     }
 
     @Override
-    public TestEnum read(JsonReader in) throws IOException {
-        if (!isValidValue(in)) {
-            return null;
+    public TestEnum readImpl(JsonReader in) throws IOException {
+        switch (in.nextString()) {
+            case "value-abc":
+                return generator.enums.TestEnum.VALUE_ABC;
+            case "value-def":
+                return generator.enums.TestEnum.VALUE_DEF;
+            case "custom":
+                return generator.enums.TestEnum.VALUE_GHI;
+            case "value-1":
+                return generator.enums.TestEnum.VALUE_1;
+            default:
+                return null;
         }
-        return nameToConstant.get(in.nextString());
     }
 
     @Override
-    public void write(JsonWriter out, TestEnum value) throws IOException {
-        out.value(value == null ? null : constantToName.get(value));
+    public void writeImpl(JsonWriter out, TestEnum value) throws IOException {
+        switch (value) {
+            case VALUE_ABC:
+                out.value("value-abc");
+                break;
+            case VALUE_DEF:
+                out.value("value-def");
+                break;
+            case VALUE_GHI:
+                out.value("custom");
+                break;
+            case VALUE_1:
+                out.value("value-1");
+                break;
+        }
     }
 }

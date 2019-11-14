@@ -1,61 +1,34 @@
 package gsonpath.adapter.standard.model
 
-import java.util.*
-
 class MandatoryFieldInfoFactory {
-
-    /**
-     * Keeps track of mandatory json field metadata.
-     */
-    class MandatoryFieldInfo(
-            val indexVariableName: String,
-            val gsonField: GsonField)
 
     /**
      * Add any mandatory field indexes as constants. This is done for code readability.
      * We will obtain the values using a depth-first recursion.
      */
-    fun createMandatoryFieldsFromGsonObject(gsonObject: GsonObject): Map<String, MandatoryFieldInfo> {
+    fun createMandatoryFieldsFromGsonObject(gsonObject: GsonObject): List<GsonField> {
         return gsonObject.entries()
-                .fold(emptyMap()) { map, (_, gsonModel) ->
+                .flatMap { (_, gsonModel) ->
                     when (gsonModel) {
-                        is GsonField -> handleField(gsonModel, map)
-                        is GsonObject -> map.plus(createMandatoryFieldsFromGsonObject(gsonModel))
-                        is GsonArray -> handleArray(gsonModel, map)
+                        is GsonField -> handleField(gsonModel)
+                        is GsonObject -> createMandatoryFieldsFromGsonObject(gsonModel)
+                        is GsonArray -> {
+                            gsonModel.entries()
+                                    .flatMap { (_, arrayGsonModel) ->
+                                        when (arrayGsonModel) {
+                                            is GsonField -> handleField(arrayGsonModel)
+                                            is GsonObject -> createMandatoryFieldsFromGsonObject(arrayGsonModel)
+                                        }
+                                    }
+                        }
                     }
                 }
     }
 
-    /**
-     * For all required fields we add an index field so we can easily check whether the
-     * value has been assigned after the json has been parsed.
-     */
-    private fun handleField(
-            gsonModel: GsonField,
-            map: Map<String, MandatoryFieldInfo>): Map<String, MandatoryFieldInfo> {
-
+    private fun handleField(gsonField: GsonField): List<GsonField> {
         return when {
-            gsonModel.isRequired -> {
-                val fieldName = gsonModel.fieldInfo.fieldName
-                val mandatoryFieldIndexName = "MANDATORY_INDEX_" + fieldName.toUpperCase(Locale.ENGLISH)
-
-                // Keep track of the information for later use. Since this is a linked list, we keep track of insert order.
-                map.plus(Pair(fieldName, MandatoryFieldInfo(mandatoryFieldIndexName, gsonModel)))
-            }
-            else -> map
+            gsonField.isRequired -> listOf(gsonField)
+            else -> emptyList()
         }
-    }
-
-    private fun handleArray(
-            arrayModel: GsonArray,
-            map: Map<String, MandatoryFieldInfo>): Map<String, MandatoryFieldInfo> {
-
-        return arrayModel.entries()
-                .fold(map) { arrayMap, (_, arrayGsonModel) ->
-                    when (arrayGsonModel) {
-                        is GsonField -> handleField(arrayGsonModel, arrayMap)
-                        is GsonObject -> arrayMap.plus(createMandatoryFieldsFromGsonObject(arrayGsonModel))
-                    }
-                }
     }
 }

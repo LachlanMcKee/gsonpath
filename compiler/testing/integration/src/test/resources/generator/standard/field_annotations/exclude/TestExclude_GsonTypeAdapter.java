@@ -1,80 +1,54 @@
 package generator.standard.field_annotations.exclude;
 
-import static gsonpath.GsonUtil.*;
-
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
+import gsonpath.GsonPathTypeAdapter;
+import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
-
 import javax.annotation.Generated;
 
 @Generated(
         value = "gsonpath.GsonProcessor",
         comments = "https://github.com/LachlanMcKee/gsonpath"
 )
-public final class TestExclude_GsonTypeAdapter extends TypeAdapter<TestExclude> {
-    private final Gson mGson;
-
+public final class TestExclude_GsonTypeAdapter extends GsonPathTypeAdapter<TestExclude> {
     public TestExclude_GsonTypeAdapter(Gson gson) {
-        this.mGson = gson;
+        super(gson);
     }
 
     @Override
-    public TestExclude read(JsonReader in) throws IOException {
-
-        // Ensure the object is not null.
-        if (!isValidValue(in)) {
-            return null;
-        }
+    public TestExclude readImpl(JsonReader in) throws IOException {
         TestExclude result = new TestExclude();
+        JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
-        int jsonFieldCounter0 = 0;
-        in.beginObject();
-
-        while (in.hasNext()) {
-            if (jsonFieldCounter0 == 1) {
-                in.skipValue();
-                continue;
-            }
-
+        while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "element1":
-                    jsonFieldCounter0++;
-
-                    Integer value_element1 = mGson.getAdapter(Integer.class).read(in);
+                    Integer value_element1 = gson.getAdapter(Integer.class).read(in);
                     if (value_element1 != null) {
                         result.element1 = value_element1;
                     }
                     break;
 
                 default:
-                    in.skipValue();
+                    jsonReaderHelper.onObjectFieldNotFound(0);
                     break;
+
             }
         }
-
-
-        in.endObject();
         return result;
     }
 
     @Override
-    public void write(JsonWriter out, TestExclude value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public void writeImpl(JsonWriter out, TestExclude value) throws IOException {
         // Begin
         out.beginObject();
         int obj0 = value.element1;
         out.name("element1");
-        mGson.getAdapter(Integer.class).write(out, obj0);
+        gson.getAdapter(Integer.class).write(out, obj0);
 
         // End
         out.endObject();
