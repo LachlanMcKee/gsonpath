@@ -1,6 +1,5 @@
 package gsonpath
 
-import com.google.common.collect.Sets
 import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.enums.EnumAdapterFactory
 import gsonpath.adapter.standard.StandardAdapterFactory
@@ -16,7 +15,7 @@ import javax.lang.model.element.TypeElement
 open class GsonProcessor : AbstractProcessor() {
 
     override fun process(annotations: Set<TypeElement>?, env: RoundEnvironment): Boolean {
-        if (annotations == null) {
+        if (annotations == null || annotations.isEmpty()) {
             return false
         }
 
@@ -28,7 +27,7 @@ open class GsonProcessor : AbstractProcessor() {
             logger.printError(e.message, e.element)
         }
 
-        return false
+        return true
     }
 
     private fun processInternal(annotations: Set<TypeElement>, env: RoundEnvironment, logger: Logger) {
@@ -72,7 +71,16 @@ open class GsonProcessor : AbstractProcessor() {
     }
 
     override fun getSupportedAnnotationTypes(): Set<String> {
-        return Sets.newHashSet("*")
+        val additonalAnnotations: Set<String> = processingEnv.options["gsonpath.addtionalAnnotations"]
+                ?.split(",")
+                ?.toSet()
+                ?: emptySet()
+
+        return additonalAnnotations.plus(setOf(
+                AutoGsonAdapterFactory::class.java.canonicalName,
+                AutoGsonAdapter::class.java.canonicalName,
+                GsonSubtype::class.java.canonicalName
+        ))
     }
 
     override fun getSupportedSourceVersion(): SourceVersion {

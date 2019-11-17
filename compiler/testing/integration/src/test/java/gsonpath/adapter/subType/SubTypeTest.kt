@@ -22,7 +22,7 @@ class SubTypeTest {
                     absoluteSourceNames = listOf("generator/standard/TestGsonTypeFactory.java"),
                     relativeSourceNames = listOf("IndirectlyAnnotatedSubType.java"),
                     relativeGeneratedNames = listOf("IndirectlyAnnotatedSubType_GsonTypeAdapter.java")
-            ))
+            ), "-Agsonpath.addtionalAnnotations=generator.gson_sub_type.indirectly_annotated.IndirectSubType")
 
     @Test
     fun givenDuplicateKeys_whenProcessorExecuted_expectDuplicateKeysError() =
