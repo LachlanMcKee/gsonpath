@@ -4,7 +4,6 @@ import com.squareup.javapoet.ClassName
 import gsonpath.adapter.util.AdapterFactoryUtil.getAnnotatedModelElements
 import gsonpath.adapter.util.ElementAndAnnotation
 import gsonpath.dependencies.Dependencies
-import gsonpath.util.Logger
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
@@ -13,13 +12,12 @@ abstract class AdapterFactory<T : Annotation> {
 
     fun generateGsonAdapters(
             env: RoundEnvironment,
-            logger: Logger,
             annotations: Set<TypeElement>,
             dependencies: Dependencies) {
 
         return getAutoGsonAdapterElements(env, annotations)
                 .forEach {
-                    logger.printMessage("Generating TypeAdapter (${it.element})")
+                    dependencies.logger.printMessage("Generating TypeAdapter (${it.element})")
                     generate(env, dependencies, it)
                 }
     }

@@ -1,7 +1,8 @@
 package gsonpath
 
 import com.google.common.collect.Sets
-import gsonpath.util.Logger
+import gsonpath.dependencies.Dependencies
+import gsonpath.dependencies.DependencyFactory
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
@@ -9,7 +10,7 @@ import javax.lang.model.element.TypeElement
 
 abstract class CommonProcessor : AbstractProcessor() {
 
-    abstract fun handleAnnotations(annotations: Set<TypeElement>, env: RoundEnvironment, logger: Logger)
+    abstract fun handleAnnotations(annotations: Set<TypeElement>, env: RoundEnvironment, dependencies: Dependencies)
 
     abstract fun processorDescription(): String
 
@@ -18,12 +19,13 @@ abstract class CommonProcessor : AbstractProcessor() {
             return false
         }
 
-        val logger = Logger(processingEnv)
+        val dependencies = DependencyFactory.create(processingEnv)
+        val logger = dependencies.logger
 
         try {
             val description = processorDescription()
             logger.printMessage("Started processing $description")
-            handleAnnotations(annotations, env, logger)
+            handleAnnotations(annotations, env, dependencies)
             logger.printMessage("Finished processing $description")
 
         } catch (e: ProcessingException) {
