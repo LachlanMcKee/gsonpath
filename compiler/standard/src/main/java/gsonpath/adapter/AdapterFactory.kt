@@ -3,6 +3,7 @@ package gsonpath.adapter
 import com.squareup.javapoet.ClassName
 import gsonpath.adapter.util.AdapterFactoryUtil.getAnnotatedModelElements
 import gsonpath.adapter.util.ElementAndAnnotation
+import gsonpath.compiler.generateClassName
 import gsonpath.dependencies.Dependencies
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.ElementKind
@@ -22,14 +23,28 @@ abstract class AdapterFactory<T : Annotation> {
                 }
     }
 
-    protected fun getAutoGsonAdapterElements(
+    fun getHandledElements(env: RoundEnvironment, annotations: Set<TypeElement>): List<AdapterMetadata> {
+        return getAutoGsonAdapterElements(env, annotations)
+                .map { (element, _) ->
+                    val typeName = ClassName.get(element)
+                    val adapterClassName = ClassName.get(typeName.packageName(),
+                            generateClassName(typeName, "GsonTypeAdapter"))
+
+                    getHandledElement(element, typeName, adapterClassName)
+                }
+    }
+
+    private fun getAutoGsonAdapterElements(
             env: RoundEnvironment,
             annotations: Set<TypeElement>): Set<ElementAndAnnotation<T>> {
 
         return getAnnotatedModelElements(getAnnotationClass(), env, annotations, getSupportedElementKinds())
     }
 
-    abstract fun getHandledElements(env: RoundEnvironment, annotations: Set<TypeElement>): List<AdapterMetadata>
+    abstract fun getHandledElement(
+            element: TypeElement,
+            elementClassName: ClassName,
+            adapterClassName: ClassName): AdapterMetadata
 
     protected abstract fun getSupportedElementKinds(): List<ElementKind>
 

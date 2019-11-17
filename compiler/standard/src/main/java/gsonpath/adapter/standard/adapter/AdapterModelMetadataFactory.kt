@@ -40,12 +40,8 @@ class AdapterModelMetadataFactory(
                     findNonEmptyConstructor(modelElement) != null
                 }
 
-        val adapterGenericTypeClassNames: List<ClassName>
-
         if (!isModelInterface) {
             concreteClassName = modelClassName
-            adapterGenericTypeClassNames = listOf(modelClassName)
-
             fieldInfoList = fieldInfoFactory.getModelFieldsFromElement(
                     modelElement,
                     properties.fieldsRequireAnnotation,
@@ -54,8 +50,6 @@ class AdapterModelMetadataFactory(
         } else {
             val interfaceInfo = modelInterfaceGenerator.handle(modelElement)
             concreteClassName = interfaceInfo.parentClassName
-            adapterGenericTypeClassNames = listOf(interfaceInfo.parentClassName, modelClassName)
-
             fieldInfoList = fieldInfoFactory.getModelFieldsFromInterface(interfaceInfo)
         }
 
@@ -87,7 +81,6 @@ class AdapterModelMetadataFactory(
 
         return AdapterModelMetadata(
                 modelClassName,
-                adapterGenericTypeClassNames,
                 adapterClassName,
                 isModelInterface,
                 rootObject,

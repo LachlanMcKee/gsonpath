@@ -8,7 +8,6 @@ import gsonpath.adapter.standard.model.GsonObject
 
 data class AdapterModelMetadata(
         val modelClassName: ClassName,
-        val adapterGenericTypeClassNames: List<ClassName>,
         val adapterClassName: ClassName,
         val isModelInterface: Boolean,
         val rootGsonObject: GsonObject,

@@ -23,21 +23,13 @@ import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 
 object SubTypeAdapterFactory : AdapterFactory<GsonSubtype>() {
-    override fun getHandledElements(
-            env: RoundEnvironment,
-            annotations: Set<TypeElement>): List<AdapterMetadata> {
 
-        return getAutoGsonAdapterElements(env, annotations)
-                .map {
-                    val typeName = ClassName.get(it.element)
-                    val adapterClassName = ClassName.get(typeName.packageName(),
-                            generateClassName(typeName, "GsonTypeAdapter"))
-                    AdapterMetadata(
-                            element = it.element,
-                            elementClassNames = listOf(typeName),
-                            typeAdapterClassName = adapterClassName
-                    )
-                }
+    override fun getHandledElement(
+            element: TypeElement,
+            elementClassName: ClassName,
+            adapterClassName: ClassName): AdapterMetadata {
+
+        return AdapterMetadata(element, listOf(elementClassName), adapterClassName)
     }
 
     override fun getAnnotationClass() = GsonSubtype::class.java

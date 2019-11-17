@@ -30,11 +30,10 @@ class GsonPathFactoryProcessor : CommonProcessor() {
 
         when {
             gsonPathFactories.count() == 0 -> {
-                throw ProcessingException("""
-                        An interface annotated with @AutoGsonAdapterFactory (that directly extends 
-                        com.google.gson.TypeAdapterFactory) must exist before the annotation processor can succeed.
-                        See the AutoGsonAdapterFactory annotation for further details.
-                    """.trimIndent())
+                throw ProcessingException("An interface annotated with @AutoGsonAdapterFactory " +
+                        "(that directly extends com.google.gson.TypeAdapterFactory) must exist before the " +
+                        "annotation processor can succeed. See the AutoGsonAdapterFactory annotation " +
+                        "for further details.")
             }
             gsonPathFactories.count() > 1 -> {
                 throw ProcessingException("Only one interface annotated with @AutoGsonAdapterFactory can exist")
