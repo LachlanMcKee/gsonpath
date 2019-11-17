@@ -3,7 +3,7 @@ package generator.standard.invalid.mutable;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
+import gsonpath.GeneratedAdapter;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.GsonUtil;
 import gsonpath.JsonReaderHelper;
@@ -13,7 +13,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.util.List;
 
-@GsonPathGenerated
+@GeneratedAdapter(adapterElementClassNames = {"generator.standard.invalid.mutable.TestMutableRemoveInvalidElements"})
 public final class TestMutableRemoveInvalidElements_GsonTypeAdapter extends GsonPathTypeAdapter<TestMutableRemoveInvalidElements> {
     public TestMutableRemoveInvalidElements_GsonTypeAdapter(Gson gson) {
         super(gson);

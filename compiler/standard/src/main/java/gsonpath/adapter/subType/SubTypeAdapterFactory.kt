@@ -7,7 +7,6 @@ import gsonpath.GsonPathTypeAdapter
 import gsonpath.GsonSubtype
 import gsonpath.adapter.AdapterFactory
 import gsonpath.adapter.AdapterMetadata
-import gsonpath.adapter.Constants
 import gsonpath.adapter.common.GsonSubTypeFactory
 import gsonpath.adapter.common.GsonSubTypeResult
 import gsonpath.adapter.util.ElementAndAnnotation
@@ -15,6 +14,7 @@ import gsonpath.adapter.util.writeFile
 import gsonpath.compiler.generateClassName
 import gsonpath.dependencies.Dependencies
 import gsonpath.model.FieldType
+import gsonpath.util.GeneratedAdapterUtil.createGeneratedAdapterAnnotation
 import gsonpath.util.TypeSpecExt
 import gsonpath.util.constructor
 import javax.annotation.processing.RoundEnvironment
@@ -75,7 +75,7 @@ object SubTypeAdapterFactory : AdapterFactory<GsonSubtype>() {
             result: GsonSubTypeResult) = TypeSpecExt.finalClassBuilder(adapterClassName).apply {
 
         superclass(ParameterizedTypeName.get(ClassName.get(GsonPathTypeAdapter::class.java), typeName))
-        addAnnotation(Constants.GENERATED_ANNOTATION)
+        addAnnotation(createGeneratedAdapterAnnotation(typeName))
 
         // Add the constructor which takes a gson instance for future use.
         constructor {

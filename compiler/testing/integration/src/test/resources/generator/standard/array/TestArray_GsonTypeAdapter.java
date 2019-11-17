@@ -3,14 +3,14 @@ package generator.standard.array;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
+import gsonpath.GeneratedAdapter;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
 
-@GsonPathGenerated
+@GeneratedAdapter(adapterElementClassNames = {"generator.standard.array.TestArray"})
 public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArray> {
     public TestArray_GsonTypeAdapter(Gson gson) {
         super(gson);

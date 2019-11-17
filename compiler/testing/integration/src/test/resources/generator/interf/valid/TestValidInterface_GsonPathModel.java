@@ -1,13 +1,11 @@
 package generator.interf.valid;
 
 import com.google.gson.annotations.SerializedName;
-import gsonpath.GsonPathGenerated;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
-@GsonPathGenerated
 public final class TestValidInterface_GsonPathModel implements TestValidInterface {
     private final Integer value1;
 

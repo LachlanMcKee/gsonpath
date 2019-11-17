@@ -3,7 +3,7 @@ package generator.interf.java8;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
+import gsonpath.GeneratedAdapter;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.GsonUtil;
 import gsonpath.JsonReaderHelper;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
 
-@GsonPathGenerated
+@GeneratedAdapter(adapterElementClassNames = {"generator.interf.java8.TestJava8Interface_GsonPathModel", "generator.interf.java8.TestJava8Interface"})
 public final class TestJava8Interface_GsonTypeAdapter extends GsonPathTypeAdapter<TestJava8Interface> {
     public TestJava8Interface_GsonTypeAdapter(Gson gson) {
         super(gson);

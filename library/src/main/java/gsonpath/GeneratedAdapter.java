@@ -10,5 +10,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface GsonPathGenerated {
+public @interface GeneratedAdapter {
+    String[] adapterElementClassNames();
 }

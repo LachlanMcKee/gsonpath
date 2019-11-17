@@ -3,7 +3,7 @@ package generator.standard.field_types.custom_field;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
+import gsonpath.GeneratedAdapter;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.GsonUtil;
 import gsonpath.JsonReaderHelper;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.lang.Override;
 import java.util.Currency;
 
-@GsonPathGenerated
+@GeneratedAdapter(adapterElementClassNames = {"generator.standard.field_types.custom_field.TestCustomField"})
 public final class TestCustomField_GsonTypeAdapter extends GsonPathTypeAdapter<TestCustomField> {
     public TestCustomField_GsonTypeAdapter(Gson gson) {
         super(gson);

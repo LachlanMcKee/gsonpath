@@ -3,7 +3,7 @@ package generator.standard.using_constructor.valid;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
+import gsonpath.GeneratedAdapter;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.GsonUtil;
 import gsonpath.JsonReaderHelper;
@@ -12,7 +12,7 @@ import java.lang.Boolean;
 import java.lang.Override;
 import java.lang.String;
 
-@GsonPathGenerated
+@GeneratedAdapter(adapterElementClassNames = {"generator.standard.using_constructor.valid.ValidConstructorTest"})
 public final class ValidConstructorTest_GsonTypeAdapter extends GsonPathTypeAdapter<ValidConstructorTest> {
     public ValidConstructorTest_GsonTypeAdapter(Gson gson) {
         super(gson);

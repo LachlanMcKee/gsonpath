@@ -3,14 +3,16 @@ package generator.standard.naming_policy.upper_camel_case;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
+import gsonpath.GeneratedAdapter;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.JsonReaderHelper;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
 
-@GsonPathGenerated
+@GeneratedAdapter(
+        adapterElementClassNames = {"generator.standard.naming_policy.upper_camel_case.TestNamePolicyUpperCamelCase"}
+)
 public final class TestNamePolicyUpperCamelCase_GsonTypeAdapter extends GsonPathTypeAdapter<TestNamePolicyUpperCamelCase> {
     public TestNamePolicyUpperCamelCase_GsonTypeAdapter(Gson gson) {
         super(gson);

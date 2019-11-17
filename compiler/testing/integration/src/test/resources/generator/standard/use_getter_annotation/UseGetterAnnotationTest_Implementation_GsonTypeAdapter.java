@@ -3,7 +3,7 @@ package generator.standard.use_getter_annotation;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
+import gsonpath.GeneratedAdapter;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.GsonUtil;
 import gsonpath.JsonReaderHelper;
@@ -12,7 +12,7 @@ import java.lang.Integer;
 import java.lang.Override;
 import java.lang.String;
 
-@GsonPathGenerated
+@GeneratedAdapter(adapterElementClassNames = {"generator.standard.use_getter_annotation.UseGetterAnnotationTest.Implementation"})
 public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extends GsonPathTypeAdapter<UseGetterAnnotationTest.Implementation> {
 
     public UseGetterAnnotationTest_Implementation_GsonTypeAdapter(Gson gson) {

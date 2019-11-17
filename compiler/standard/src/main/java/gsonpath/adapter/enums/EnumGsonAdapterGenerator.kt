@@ -10,12 +10,12 @@ import gsonpath.GsonPathTypeAdapter
 import gsonpath.GsonUtil
 import gsonpath.ProcessingException
 import gsonpath.adapter.AdapterMethodBuilder
-import gsonpath.adapter.Constants
 import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterProperties
 import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterPropertiesFactory
 import gsonpath.adapter.util.writeFile
 import gsonpath.compiler.generateClassName
 import gsonpath.util.*
+import gsonpath.util.GeneratedAdapterUtil.createGeneratedAdapterAnnotation
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
@@ -53,7 +53,7 @@ class EnumGsonAdapterGenerator(
 
         val typeName = ClassName.get(element)
         superclass(ParameterizedTypeName.get(ClassName.get(GsonPathTypeAdapter::class.java), typeName))
-        addAnnotation(Constants.GENERATED_ANNOTATION)
+        addAnnotation(createGeneratedAdapterAnnotation(typeName))
 
         // Add the constructor which takes a gson instance for future use.
         constructor {

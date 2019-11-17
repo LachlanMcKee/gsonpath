@@ -3,7 +3,7 @@ package generator.standard.field_types.boxed_primitives;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
+import gsonpath.GeneratedAdapter;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.GsonUtil;
 import gsonpath.JsonReaderHelper;
@@ -19,7 +19,7 @@ import java.lang.Override;
 import java.lang.Short;
 import java.lang.String;
 
-@GsonPathGenerated
+@GeneratedAdapter(adapterElementClassNames = {"generator.standard.field_types.boxed_primitives.TestBoxedPrimitives"})
 public final class TestBoxedPrimitives_GsonTypeAdapter extends GsonPathTypeAdapter<TestBoxedPrimitives> {
     public TestBoxedPrimitives_GsonTypeAdapter(Gson gson) {
         super(gson);
