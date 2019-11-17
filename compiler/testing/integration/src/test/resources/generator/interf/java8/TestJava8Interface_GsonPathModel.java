@@ -1,15 +1,12 @@
 package generator.interf.java8;
 
+import gsonpath.GsonPathGenerated;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-import javax.annotation.Generated;
 
-@Generated(
-        value = "gsonpath.GsonProcessor",
-        comments = "https://github.com/LachlanMcKee/gsonpath"
-)
+@GsonPathGenerated
 public final class TestJava8Interface_GsonPathModel implements TestJava8Interface {
     private final Integer value1;
 

@@ -3,6 +3,7 @@ package generator.standard.class_annotations.serialize_nulls;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonPathGenerated;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.GsonUtil;
 import gsonpath.JsonReaderHelper;
@@ -12,12 +13,8 @@ import java.lang.Double;
 import java.lang.Integer;
 import java.lang.Override;
 import java.lang.String;
-import javax.annotation.Generated;
 
-@Generated(
-        value = "gsonpath.GsonProcessor",
-        comments = "https://github.com/LachlanMcKee/gsonpath"
-)
+@GsonPathGenerated
 public final class TestSerializeNulls_GsonTypeAdapter extends GsonPathTypeAdapter<TestSerializeNulls> {
     public TestSerializeNulls_GsonTypeAdapter(Gson gson) {
         super(gson);

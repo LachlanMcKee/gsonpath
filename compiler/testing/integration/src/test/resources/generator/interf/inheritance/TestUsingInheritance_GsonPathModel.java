@@ -1,17 +1,14 @@
 package generator.interf.inheritance;
 
 import com.google.gson.annotations.SerializedName;
+import gsonpath.GsonPathGenerated;
 import gsonpath.NonNull;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-import javax.annotation.Generated;
 
-@Generated(
-        value = "gsonpath.GsonProcessor",
-        comments = "https://github.com/LachlanMcKee/gsonpath"
-)
+@GsonPathGenerated
 public final class TestUsingInheritance_GsonPathModel implements TestUsingInheritance {
     private final Integer value3;
     private final Integer value1;

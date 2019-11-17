@@ -1,17 +1,14 @@
 package generator.standard.generics.interfaces;
 
+import gsonpath.GsonPathGenerated;
 import java.lang.Double;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Map;
-import javax.annotation.Generated;
 
-@Generated(
-        value = "gsonpath.GsonProcessor",
-        comments = "https://github.com/LachlanMcKee/gsonpath"
-)
+@GsonPathGenerated
 public final class GenericsTest_GsonPathModel implements GenericsTest {
     private final String value1;
 
