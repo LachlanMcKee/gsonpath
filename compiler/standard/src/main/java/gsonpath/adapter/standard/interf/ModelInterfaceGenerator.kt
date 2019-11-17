@@ -214,7 +214,7 @@ class ModelInterfaceGenerator(
 
         override val annotationNames: List<String>
             get() {
-                return underlyingElement.annotationMirrors.map { it ->
+                return underlyingElement.annotationMirrors.map {
                     it.annotationType.asElement().simpleName.toString()
                 }
             }

@@ -28,7 +28,7 @@ object GeneratorTester {
                 .and()
                 .apply {
                     // Add all the required 'generated' files based off the input source files.
-                    val generatedSources = (0 until criteria.relativeGeneratedNames.size).map {
+                    val generatedSources = criteria.relativeGeneratedNames.indices.map {
                         getGeneratedFileObject(criteria, it)
                     }
 
