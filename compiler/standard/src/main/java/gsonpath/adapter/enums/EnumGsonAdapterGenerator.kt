@@ -9,7 +9,6 @@ import gsonpath.AutoGsonAdapter
 import gsonpath.GsonPathTypeAdapter
 import gsonpath.GsonUtil
 import gsonpath.ProcessingException
-import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.adapter.Constants
 import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterProperties
@@ -31,7 +30,7 @@ class EnumGsonAdapterGenerator(
     @Throws(ProcessingException::class)
     fun handle(
             modelElement: TypeElement,
-            autoGsonAnnotation: AutoGsonAdapter): AdapterGenerationResult {
+            autoGsonAnnotation: AutoGsonAdapter) {
 
         val properties = AutoGsonAdapterPropertiesFactory().create(modelElement, autoGsonAnnotation, false)
         val fields = typeHandler.getFields(modelElement) { it.kind == ElementKind.ENUM_CONSTANT }
@@ -44,7 +43,6 @@ class EnumGsonAdapterGenerator(
                 .writeFile(fileWriter, adapterClassName.packageName()) {
                     it.addStaticImport(GsonUtil::class.java, "*")
                 }
-        return AdapterGenerationResult(arrayOf(typeName), adapterClassName)
     }
 
     private fun createEnumAdapterSpec(

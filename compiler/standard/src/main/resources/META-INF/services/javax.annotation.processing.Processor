@@ -1,1 +1,2 @@
-gsonpath.GsonProcessor
+gsonpath.GsonPathAdapterProcessor
+gsonpath.GsonPathFactoryProcessor

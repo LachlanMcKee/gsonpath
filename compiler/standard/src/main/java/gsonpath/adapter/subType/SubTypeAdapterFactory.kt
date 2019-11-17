@@ -6,41 +6,56 @@ import com.squareup.javapoet.ParameterizedTypeName
 import gsonpath.GsonPathTypeAdapter
 import gsonpath.GsonSubtype
 import gsonpath.adapter.AdapterFactory
-import gsonpath.adapter.AdapterGenerationResult
+import gsonpath.adapter.AdapterMetadata
 import gsonpath.adapter.Constants
 import gsonpath.adapter.common.GsonSubTypeFactory
 import gsonpath.adapter.common.GsonSubTypeResult
-import gsonpath.adapter.util.AdapterFactoryUtil.getAnnotatedModelElements
+import gsonpath.adapter.util.ElementAndAnnotation
 import gsonpath.adapter.util.writeFile
 import gsonpath.compiler.generateClassName
 import gsonpath.dependencies.Dependencies
 import gsonpath.model.FieldType
-import gsonpath.util.Logger
 import gsonpath.util.TypeSpecExt
 import gsonpath.util.constructor
 import javax.annotation.processing.RoundEnvironment
+import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 
-object SubTypeAdapterFactory : AdapterFactory {
-
-    override fun generateGsonAdapters(
+object SubTypeAdapterFactory : AdapterFactory<GsonSubtype>() {
+    override fun getHandledElements(
             env: RoundEnvironment,
-            logger: Logger,
-            annotations: Set<TypeElement>,
-            dependencies: Dependencies): List<AdapterGenerationResult> {
+            annotations: Set<TypeElement>): List<AdapterMetadata> {
 
-        return getAnnotatedModelElements<GsonSubtype>(env, annotations)
-                .map { generateAdapter(it.element, it.annotation, logger, dependencies) }
+        return getAutoGsonAdapterElements(env, annotations)
+                .map {
+                    val typeName = ClassName.get(it.element)
+                    val adapterClassName = ClassName.get(typeName.packageName(),
+                            generateClassName(typeName, "GsonTypeAdapter"))
+                    AdapterMetadata(
+                            element = it.element,
+                            elementClassNames = listOf(typeName),
+                            typeAdapterClassName = adapterClassName
+                    )
+                }
+    }
+
+    override fun getAnnotationClass() = GsonSubtype::class.java
+
+    override fun getSupportedElementKinds() = listOf(ElementKind.CLASS)
+
+    override fun generate(
+            env: RoundEnvironment,
+            dependencies: Dependencies,
+            elementAndAnnotation: ElementAndAnnotation<GsonSubtype>) {
+
+        generateAdapter(elementAndAnnotation.element, elementAndAnnotation.annotation, dependencies)
     }
 
     private fun generateAdapter(
             element: TypeElement,
             gsonSubtype: GsonSubtype,
-            logger: Logger,
-            dependencies: Dependencies): AdapterGenerationResult {
-
-        logger.printMessage("Generating TypeAdapter ($element)")
+            dependencies: Dependencies) {
 
         val typeName = ClassName.get(element)
         val subTypeMetadata = dependencies.subTypeMetadataFactory.getGsonSubType(
@@ -52,14 +67,13 @@ object SubTypeAdapterFactory : AdapterFactory {
                 "Type",
                 element)
 
-        return GsonSubTypeFactory.createSubTypeMetadata(typeName, subTypeMetadata)
-                .let { result ->
+        GsonSubTypeFactory.createSubTypeMetadata(typeName, subTypeMetadata)
+                .also { result ->
                     val adapterClassName = ClassName.get(typeName.packageName(),
                             generateClassName(typeName, "GsonTypeAdapter"))
 
                     createSubTypeAdapterSpec(adapterClassName, typeName, result)
                             .writeFile(dependencies.fileWriter, adapterClassName.packageName())
-                    AdapterGenerationResult(arrayOf(typeName), adapterClassName)
                 }
     }
 

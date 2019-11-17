@@ -3,7 +3,7 @@ package gsonpath.adapter.subType
 import com.google.common.truth.Truth
 import com.google.testing.compile.JavaFileObjects
 import com.google.testing.compile.JavaSourcesSubjectFactory
-import gsonpath.GsonProcessor
+import gsonpath.GsonPathAdapterProcessor
 import gsonpath.generator.GeneratorTester.assertGeneratedContent
 import gsonpath.generator.TestCriteria
 import org.junit.Test
@@ -20,7 +20,7 @@ class SubTypeTest {
     fun testIndirectlyAnnotatedSubType() =
             assertGeneratedContent(TestCriteria("generator/gson_sub_type/indirectly_annotated",
                     absoluteSourceNames = listOf("generator/standard/TestGsonTypeFactory.java"),
-                    relativeSourceNames = listOf("IndirectlyAnnotatedSubType.java"),
+                    relativeSourceNames = listOf("IndirectSubType.java", "IndirectlyAnnotatedSubType.java"),
                     relativeGeneratedNames = listOf("IndirectlyAnnotatedSubType_GsonTypeAdapter.java")
             ))
 
@@ -72,7 +72,7 @@ class SubTypeTest {
                         JavaFileObjects.forResource("generator/standard/TestGsonTypeFactory.java"),
                         JavaFileObjects.forResource("generator/gson_sub_type/$folder/$className")
                 ))
-                .processedWith(GsonProcessor())
+                .processedWith(GsonPathAdapterProcessor())
                 .failsToCompile()
                 .withErrorContaining(errorMessage)
     }
