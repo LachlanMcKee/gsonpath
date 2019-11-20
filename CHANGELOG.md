@@ -1,6 +1,11 @@
 Change Log
 ===========
 
+Version 3.7.1 *(2019-11-20)*
+----------------------------
+
+* Fix: Reverted Kotlin to 1.3.50 as 1.3.60 was causing an issue with setting processor arguments via gradle.
+
 Version 3.7.0 *(2019-11-18)*
 ----------------------------
 
