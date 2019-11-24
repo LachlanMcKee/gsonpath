@@ -19,6 +19,7 @@ buildscript {
 
 kapt {
     arguments {
+        arg("gsonpath.incremental", "true")
         arg("gsonpath.additionalAnnotations", "gsonpath.kotlin.CustomAnnotation,gsonpath.kotlin.TypeSubType")
     }
 }

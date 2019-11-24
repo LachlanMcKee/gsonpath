@@ -71,19 +71,43 @@ open class GsonProcessor : AbstractProcessor() {
     }
 
     override fun getSupportedAnnotationTypes(): Set<String> {
-        val additonalAnnotations: Set<String> = processingEnv.options["gsonpath.additionalAnnotations"]
-                ?.split(",")
-                ?.toSet()
-                ?: emptySet()
-
-        return additonalAnnotations.plus(setOf(
-                AutoGsonAdapterFactory::class.java.canonicalName,
-                AutoGsonAdapter::class.java.canonicalName,
-                GsonSubtype::class.java.canonicalName
-        ))
+        return incrementalMetadata
+                ?.let { (customAnnotations) ->
+                    customAnnotations.plus(setOf(
+                            AutoGsonAdapterFactory::class.java.canonicalName,
+                            AutoGsonAdapter::class.java.canonicalName,
+                            GsonSubtype::class.java.canonicalName
+                    ))
+                }
+                ?: setOf("*")
     }
 
     override fun getSupportedSourceVersion(): SourceVersion {
         return SourceVersion.latestSupported()
+    }
+
+    override fun getSupportedOptions(): Set<String> {
+        return if (incrementalMetadata != null) {
+            setOf("org.gradle.annotation.processing.aggregating")
+        } else {
+            emptySet()
+        }
+    }
+
+    private val incrementalMetadata: IncrementalMetadata? by lazy {
+        if ("true" != processingEnv.options[OPTION_INCREMENTAL]) {
+            null
+        } else {
+            processingEnv.options[OPTION_ADDITIONAL_ANNOTATIONS]
+                    ?.let { IncrementalMetadata(it.split(",").toSet()) }
+                    ?: IncrementalMetadata(emptySet())
+        }
+    }
+
+    private data class IncrementalMetadata(val customAnnotations: Set<String>)
+
+    private companion object {
+        private const val OPTION_INCREMENTAL = "gsonpath.incremental"
+        private const val OPTION_ADDITIONAL_ANNOTATIONS = "gsonpath.additionalAnnotations"
     }
 }
