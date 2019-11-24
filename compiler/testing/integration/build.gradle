@@ -24,6 +24,6 @@ buildscript {
 dependencies {
     compile project(":compiler:testing:base")
     compile "com.google.truth:truth:0.34"
-    compile "com.google.testing.compile:compile-testing:0.11"
+    compile "com.google.testing.compile:compile-testing:0.18"
     compile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
 }

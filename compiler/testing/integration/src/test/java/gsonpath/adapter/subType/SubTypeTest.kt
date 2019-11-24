@@ -18,11 +18,14 @@ class SubTypeTest {
 
     @Test
     fun testIndirectlyAnnotatedSubType() =
-            assertGeneratedContent(TestCriteria("generator/gson_sub_type/indirectly_annotated",
-                    absoluteSourceNames = listOf("generator/standard/TestGsonTypeFactory.java"),
-                    relativeSourceNames = listOf("IndirectlyAnnotatedSubType.java"),
-                    relativeGeneratedNames = listOf("IndirectlyAnnotatedSubType_GsonTypeAdapter.java")
-            ), "-Agsonpath.additionalAnnotations=generator.gson_sub_type.indirectly_annotated.IndirectSubType")
+            assertGeneratedContent(
+                    TestCriteria("generator/gson_sub_type/indirectly_annotated",
+                            absoluteSourceNames = listOf("generator/standard/TestGsonTypeFactory.java"),
+                            relativeSourceNames = listOf("IndirectlyAnnotatedSubType.java"),
+                            relativeGeneratedNames = listOf("IndirectlyAnnotatedSubType_GsonTypeAdapter.java")
+                    ),
+                    "-Agsonpath.incremental=true",
+                    "-Agsonpath.additionalAnnotations=generator.gson_sub_type.indirectly_annotated.IndirectSubType")
 
     @Test
     fun givenDuplicateKeys_whenProcessorExecuted_expectDuplicateKeysError() =
