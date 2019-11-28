@@ -19,13 +19,13 @@ class CustomAutoGsonAdapterTest {
 
     private fun standardGeneratorTester(relativePath: String): GeneratorTester {
         return GeneratorTester(relativePath)
-                .absoluteFiles("generator/standard/TestGsonTypeFactory.java")
+                .absoluteInputFiles("generator/standard/TestGsonTypeFactory.java")
     }
 
     @Test
     fun testCustomAutoGsonAdapterAnnotationWithoutIncrementalProcessing() {
         standardGeneratorTester("generator/standard/custom_adapter_annotation")
-                .relativeFiles("CustomAutoGsonAdapter.java", "TestCustomAutoGsonAdapterModel.java")
+                .relativeInputFiles("CustomAutoGsonAdapter.java", "TestCustomAutoGsonAdapterModel.java")
                 .compilesWithoutError { relativePath ->
                     generatesFiles("$relativePath/TestCustomAutoGsonAdapterModel_GsonTypeAdapter.java")
                 }
@@ -34,7 +34,7 @@ class CustomAutoGsonAdapterTest {
     @Test
     fun testCustomAutoGsonAdapterAnnotationWithIncrementalProcessingAndAdditionalAnnotations() {
         standardGeneratorTester("generator/standard/custom_adapter_annotation")
-                .relativeFiles("CustomAutoGsonAdapter.java", "TestCustomAutoGsonAdapterModel.java")
+                .relativeInputFiles("CustomAutoGsonAdapter.java", "TestCustomAutoGsonAdapterModel.java")
                 .isIncremental(true)
                 .additionalAnnotations("generator.standard.custom_adapter_annotation.CustomAutoGsonAdapter")
                 .compilesWithoutError { relativePath ->
@@ -49,7 +49,7 @@ class CustomAutoGsonAdapterTest {
                 "/generator/standard/custom_adapter_annotation/TestCustomAutoGsonAdapterModel_GsonTypeAdapter.java"))
 
         standardGeneratorTester("generator/standard/custom_adapter_annotation")
-                .relativeFiles("CustomAutoGsonAdapter.java", "TestCustomAutoGsonAdapterModel.java")
+                .relativeInputFiles("CustomAutoGsonAdapter.java", "TestCustomAutoGsonAdapterModel.java")
                 .isIncremental(true)
                 .compilesWithoutError {
                     generatesFileNamed(StandardLocation.SOURCE_OUTPUT,
@@ -60,18 +60,17 @@ class CustomAutoGsonAdapterTest {
 }
 
 class GeneratorTester(private val relativePath: String) {
-    private val relativeFiles = mutableListOf<JavaFileObject>()
-    private val absoluteFiles = mutableListOf<JavaFileObject>()
+    private val javaFileObjects = mutableListOf<JavaFileObject>()
     private val additionalAnnotations = mutableListOf<String>()
     private var incremental = false
 
-    fun relativeFiles(vararg files: String): GeneratorTester {
-        files.forEach { relativeFiles.add(JavaFileObjects.forResource("$relativePath/$it")) }
+    fun relativeInputFiles(vararg files: String): GeneratorTester {
+        files.forEach { javaFileObjects.add(JavaFileObjects.forResource("$relativePath/$it")) }
         return this
     }
 
-    fun absoluteFiles(vararg files: String): GeneratorTester {
-        files.forEach { absoluteFiles.add(JavaFileObjects.forResource(it)) }
+    fun absoluteInputFiles(vararg files: String): GeneratorTester {
+        files.forEach { javaFileObjects.add(JavaFileObjects.forResource(it)) }
         return this
     }
 
@@ -86,38 +85,25 @@ class GeneratorTester(private val relativePath: String) {
     }
 
     private fun buildTester(): CompileTester {
-        val combinedList = relativeFiles.plus(absoluteFiles)
-        val compileTesterFactory: ProcessedCompileTesterFactory = if (combinedList.size == 1) {
-            assertAbout(JavaSourceSubjectFactory.javaSource()).that(combinedList.first())
+        val compileTesterFactory: ProcessedCompileTesterFactory = if (javaFileObjects.size == 1) {
+            assertAbout(JavaSourceSubjectFactory.javaSource()).that(javaFileObjects.first())
 
         } else {
             // Since we have multiple sources, we need to use a slightly different assert.
-            assertAbout(JavaSourcesSubjectFactory.javaSources()).that(combinedList)
+            assertAbout(JavaSourcesSubjectFactory.javaSources()).that(javaFileObjects)
         }
         return compileTesterFactory
-                .let {
-                    if (incremental) {
-                        it.withCompilerOptions("-Agsonpath.incremental=true")
-                    } else {
-                        it
-                    }
+                .builderTransformIf(incremental) {
+                    withCompilerOptions("-Agsonpath.incremental=true")
                 }
-                .let {
-                    if (additionalAnnotations.size > 0) {
-                        it.withCompilerOptions("-Agsonpath.additionalAnnotations=${additionalAnnotations.joinToString()}")
-                    } else {
-                        it
-                    }
+                .builderTransformIf(additionalAnnotations.size > 0) {
+                    withCompilerOptions("-Agsonpath.additionalAnnotations=${additionalAnnotations.joinToString()}")
                 }
                 .processedWith(GsonProcessor())
     }
 
     fun compilesWithoutError(func: GeneratedPredicateClause<SuccessfulCompilationClause>.(String) -> Unit) {
         func(buildTester().compilesWithoutError().and(), relativePath)
-    }
-
-    fun failsToCompile(): CompileTester.UnsuccessfulCompilationClause {
-        return buildTester().failsToCompile()
     }
 }
 
@@ -131,3 +117,6 @@ fun <T> GeneratedPredicateClause<T>.generatesFiles(vararg files: String): T {
                 *generatedSources.subList(1, generatedSources.size).toTypedArray())
     }
 }
+
+private inline fun <T> T.builderTransformIf(predicate: Boolean, f: T.() -> T): T =
+        if (predicate) f(this) else this
