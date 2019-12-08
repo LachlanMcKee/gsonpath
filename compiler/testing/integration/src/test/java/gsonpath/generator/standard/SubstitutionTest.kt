@@ -2,7 +2,7 @@ package gsonpath.generator.standard
 
 import com.google.common.truth.Truth.assertAbout
 import com.google.testing.compile.JavaFileObjects
-import com.google.testing.compile.JavaSourceSubjectFactory.javaSource
+import com.google.testing.compile.JavaSourcesSubjectFactory
 import gsonpath.GsonProcessor
 import gsonpath.generator.GeneratorTester.assertGeneratedContent
 import gsonpath.generator.TestCriteria
@@ -31,7 +31,11 @@ class SubstitutionTest {
     fun testSubstitutionError_duplicateKeys() {
         val source = JavaFileObjects.forResource("generator/standard/substitution/errors/TestSubstitutionError_DuplicateKeys.java")
 
-        assertAbout(javaSource()).that(source)
+        assertAbout(JavaSourcesSubjectFactory.javaSources())
+                .that(listOf(
+                        JavaFileObjects.forResource("generator/standard/TestGsonTypeFactory.java"),
+                        source
+                ))
                 .processedWith(GsonProcessor())
                 .failsToCompile()
                 .withErrorContaining("PathSubstitution original values must be unique")

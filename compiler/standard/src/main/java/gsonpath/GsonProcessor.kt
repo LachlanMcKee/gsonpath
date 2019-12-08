@@ -1,15 +1,15 @@
 package gsonpath
 
-import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.enums.EnumAdapterFactory
 import gsonpath.adapter.standard.StandardAdapterFactory
 import gsonpath.adapter.subType.SubTypeAdapterFactory
-import gsonpath.dependencies.Dependencies
+import gsonpath.adapter.util.AdapterFactoryUtil.getAnnotatedModelElements
 import gsonpath.dependencies.DependencyFactory
 import gsonpath.util.Logger
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
+import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
 
 open class GsonProcessor : AbstractProcessor() {
@@ -35,38 +35,37 @@ open class GsonProcessor : AbstractProcessor() {
         logger.printMessage("Started annotation processing")
 
         val dependencies = DependencyFactory.create(processingEnv)
-        val autoGsonAdapterResults = StandardAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies)
-                .plus(SubTypeAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies))
-                .plus(EnumAdapterFactory.generateGsonAdapters(env, logger, annotations, dependencies))
+        val lazyFactoryMetadata = getTypeAdapterFactoryElement(env, annotations)
 
-        generateTypeAdapterFactories(env, dependencies, autoGsonAdapterResults)
+        val autoGsonAdapterResults = StandardAdapterFactory
+                .generateGsonAdapters(env, logger, lazyFactoryMetadata, annotations, dependencies)
+                .plus(SubTypeAdapterFactory.generateGsonAdapters(
+                        env, logger, lazyFactoryMetadata, annotations, dependencies))
+                .plus(EnumAdapterFactory.generateGsonAdapters(
+                        env, logger, lazyFactoryMetadata, annotations, dependencies))
+
+        if (autoGsonAdapterResults.isNotEmpty()) {
+            dependencies.typeAdapterFactoryGenerator.generate(
+                    lazyFactoryMetadata.element, autoGsonAdapterResults)
+        }
 
         logger.printMessage("Finished annotation processing")
         println()
     }
 
-    private fun generateTypeAdapterFactories(
+    private fun getTypeAdapterFactoryElement(
             env: RoundEnvironment,
-            dependencies: Dependencies,
-            autoGsonAdapterResults: List<AdapterGenerationResult>) {
+            annotations: Set<TypeElement>
+    ): LazyFactoryMetadata {
 
-        if (autoGsonAdapterResults.isNotEmpty()) {
-            val gsonPathFactories = env.getElementsAnnotatedWith(AutoGsonAdapterFactory::class.java)
+        val gsonPathFactories = getAnnotatedModelElements<AutoGsonAdapterFactory>(
+                env, annotations, listOf(ElementKind.INTERFACE))
 
-            when {
-                gsonPathFactories.count() == 0 -> {
-                    throw ProcessingException("An interface annotated with @AutoGsonAdapterFactory (that directly extends " +
-                            "com.google.gson.TypeAdapterFactory) must exist before the annotation processor can succeed. " +
-                            "See the AutoGsonAdapterFactory annotation for further details.")
-                }
-                gsonPathFactories.count() > 1 -> {
-                    throw ProcessingException("Only one interface annotated with @AutoGsonAdapterFactory can exist")
-                }
-                else -> {
-                    val factoryElement = gsonPathFactories.first()
-                    dependencies.typeAdapterFactoryGenerator.generate(factoryElement as TypeElement, autoGsonAdapterResults)
-                }
+        return when {
+            gsonPathFactories.count() > 1 -> {
+                throw ProcessingException("Only one interface annotated with @AutoGsonAdapterFactory can exist")
             }
+            else -> LazyFactoryMetadata(gsonPathFactories.firstOrNull())
         }
     }
 

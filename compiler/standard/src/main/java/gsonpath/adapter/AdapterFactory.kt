@@ -1,6 +1,7 @@
 package gsonpath.adapter
 
 import com.squareup.javapoet.ClassName
+import gsonpath.LazyFactoryMetadata
 import gsonpath.dependencies.Dependencies
 import gsonpath.util.Logger
 import javax.annotation.processing.RoundEnvironment
@@ -10,6 +11,7 @@ interface AdapterFactory {
     fun generateGsonAdapters(
             env: RoundEnvironment,
             logger: Logger,
+            lazyFactoryMetadata: LazyFactoryMetadata,
             annotations: Set<TypeElement>,
             dependencies: Dependencies): List<AdapterGenerationResult>
 }

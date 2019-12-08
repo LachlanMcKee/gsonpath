@@ -6,6 +6,7 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeSpec
 import gsonpath.AutoGsonAdapter
 import gsonpath.GsonPathTypeAdapter
+import gsonpath.LazyFactoryMetadata
 import gsonpath.ProcessingException
 import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.Constants.GENERATED_ANNOTATION
@@ -27,9 +28,10 @@ class StandardGsonAdapterGenerator(
     @Throws(ProcessingException::class)
     fun handle(
             modelElement: TypeElement,
-            autoGsonAnnotation: AutoGsonAdapter): AdapterGenerationResult {
+            autoGsonAnnotation: AutoGsonAdapter,
+            lazyFactoryMetadata: LazyFactoryMetadata): AdapterGenerationResult {
 
-        val metadata = adapterModelMetadataFactory.createMetadata(modelElement, autoGsonAnnotation)
+        val metadata = adapterModelMetadataFactory.createMetadata(modelElement, autoGsonAnnotation, lazyFactoryMetadata)
         val adapterClassName = metadata.adapterClassName
         return TypeSpecExt.finalClassBuilder(adapterClassName)
                 .addDetails(metadata)

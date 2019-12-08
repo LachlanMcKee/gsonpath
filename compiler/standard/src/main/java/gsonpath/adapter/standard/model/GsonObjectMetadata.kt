@@ -4,8 +4,8 @@ import com.google.gson.FieldNamingPolicy
 import gsonpath.GsonFieldValidationType
 import gsonpath.PathSubstitution
 
-class GsonObjectMetadata(
+data class GsonObjectMetadata(
         val flattenDelimiter: Char,
         val gsonFieldNamingPolicy: FieldNamingPolicy,
         val gsonFieldValidationType: GsonFieldValidationType,
-        val pathSubstitutions: Array<PathSubstitution>)
+        val pathSubstitutions: List<PathSubstitution>)

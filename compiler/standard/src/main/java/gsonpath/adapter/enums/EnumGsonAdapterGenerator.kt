@@ -5,10 +5,7 @@ import com.google.gson.annotations.SerializedName
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterizedTypeName
-import gsonpath.AutoGsonAdapter
-import gsonpath.GsonPathTypeAdapter
-import gsonpath.GsonUtil
-import gsonpath.ProcessingException
+import gsonpath.*
 import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.adapter.Constants
@@ -25,15 +22,19 @@ class EnumGsonAdapterGenerator(
         private val typeHandler: TypeHandler,
         private val fileWriter: FileWriter,
         private val annotationFetcher: AnnotationFetcher,
-        private val enumFieldLabelMapper: EnumFieldLabelMapper
+        private val enumFieldLabelMapper: EnumFieldLabelMapper,
+        private val autoGsonAdapterPropertiesFactory: AutoGsonAdapterPropertiesFactory
 ) {
 
     @Throws(ProcessingException::class)
     fun handle(
             modelElement: TypeElement,
-            autoGsonAnnotation: AutoGsonAdapter): AdapterGenerationResult {
+            autoGsonAnnotation: AutoGsonAdapter,
+            lazyFactoryMetadata: LazyFactoryMetadata): AdapterGenerationResult {
 
-        val properties = AutoGsonAdapterPropertiesFactory().create(modelElement, autoGsonAnnotation, false)
+        val properties = autoGsonAdapterPropertiesFactory.create(
+                modelElement, autoGsonAnnotation, lazyFactoryMetadata, false)
+
         val fields = typeHandler.getFields(modelElement) { it.kind == ElementKind.ENUM_CONSTANT }
 
         val typeName = ClassName.get(modelElement)

@@ -1,5 +1,7 @@
 package gsonpath;
 
+import com.google.gson.FieldNamingPolicy;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -46,4 +48,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface AutoGsonAdapterFactory {
+    char flattenDelimiter() default '.';
+
+    FieldNamingPolicy fieldNamingPolicy() default FieldNamingPolicy.IDENTITY;
+
+    boolean serializeNulls() default false;
+
+    GsonFieldValidationType fieldValidationType() default GsonFieldValidationType.NO_VALIDATION;
 }

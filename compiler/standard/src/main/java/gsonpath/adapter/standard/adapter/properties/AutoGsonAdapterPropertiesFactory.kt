@@ -2,32 +2,38 @@ package gsonpath.adapter.standard.adapter.properties
 
 import gsonpath.AutoGsonAdapter
 import gsonpath.GsonFieldValidationType
+import gsonpath.LazyFactoryMetadata
 import gsonpath.ProcessingException
 import javax.lang.model.element.TypeElement
 
-class AutoGsonAdapterPropertiesFactory {
+class AutoGsonAdapterPropertiesFactory(
+        private val adapterCommonPropertiesFactory: AdapterCommonPropertiesFactory
+) {
 
     @Throws(ProcessingException::class)
     fun create(
             modelElement: TypeElement,
-            autoGsonAnnotation: AutoGsonAdapter,
+            adapterAnnotation: AutoGsonAdapter,
+            lazyFactoryMetadata: LazyFactoryMetadata,
             isInterface: Boolean): AutoGsonAdapterProperties {
 
-        val gsonFieldValidationType =
-                if (isInterface) {
-                    // Interfaces must use field validation to prevent issues with primitives.
-                    when (autoGsonAnnotation.fieldValidationType) {
-                        GsonFieldValidationType.NO_VALIDATION ->
-                            GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL
+        val commonProperties = adapterCommonPropertiesFactory
+                .create(modelElement, adapterAnnotation, lazyFactoryMetadata)
 
-                        else ->
-                            autoGsonAnnotation.fieldValidationType
-                    }
-                } else {
-                    autoGsonAnnotation.fieldValidationType
-                }
+        val finalFieldValidationType = if (isInterface) {
+            // Interfaces must use field validation to prevent issues with primitives.
+            when (commonProperties.fieldValidationType) {
+                GsonFieldValidationType.NO_VALIDATION ->
+                    GsonFieldValidationType.VALIDATE_EXPLICIT_NON_NULL
 
-        val pathSubstitutions = autoGsonAnnotation.substitutions
+                else ->
+                    commonProperties.fieldValidationType
+            }
+        } else {
+            commonProperties.fieldValidationType
+        }
+
+        val pathSubstitutions = adapterAnnotation.substitutions
 
         // Validate the path substitutions. Duplicate keys are not allowed.
         pathSubstitutions.fold(emptySet()) { set: Set<String>, pathSubstitution ->
@@ -38,13 +44,12 @@ class AutoGsonAdapterPropertiesFactory {
         }
 
         return AutoGsonAdapterProperties(
-                autoGsonAnnotation.ignoreNonAnnotatedFields,
-                autoGsonAnnotation.flattenDelimiter,
-                autoGsonAnnotation.serializeNulls,
-                autoGsonAnnotation.rootField,
-                gsonFieldValidationType,
-                autoGsonAnnotation.fieldNamingPolicy,
-                pathSubstitutions)
+                adapterAnnotation.ignoreNonAnnotatedFields,
+                commonProperties.flattenDelimiter,
+                commonProperties.serializeNulls,
+                adapterAnnotation.rootField,
+                finalFieldValidationType,
+                commonProperties.fieldNamingPolicy,
+                pathSubstitutions.toList())
     }
-
 }

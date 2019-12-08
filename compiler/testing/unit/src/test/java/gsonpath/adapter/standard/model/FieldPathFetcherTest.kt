@@ -38,7 +38,7 @@ class FieldPathFetcherTest {
     fun testNoSerializedName() {
         givenNamingPolicyIs("value")
 
-        val metadata = givenMetadataIs(emptyArray())
+        val metadata = givenMetadataIs(emptyList())
         assertFieldPath(metadata, FieldPath.Standard("value"))
     }
 
@@ -47,7 +47,7 @@ class FieldPathFetcherTest {
         whenever(serializedNameFetcher.getSerializedName(fieldInfo, delimiter))
                 .thenReturn("value")
 
-        val metadata = givenMetadataIs(emptyArray())
+        val metadata = givenMetadataIs(emptyList())
         assertFieldPath(metadata, FieldPath.Standard("value"))
     }
 
@@ -56,7 +56,7 @@ class FieldPathFetcherTest {
         whenever(serializedNameFetcher.getSerializedName(fieldInfo, delimiter))
                 .thenReturn("{FIRST}{SECOND}")
 
-        val metadata = givenMetadataIs(arrayOf(
+        val metadata = givenMetadataIs(listOf(
                 mock(PathSubstitution::class.java).apply {
                     whenever(original).thenReturn("FIRST")
                     whenever(replacement).thenReturn("FOO")
@@ -73,7 +73,7 @@ class FieldPathFetcherTest {
         whenever(serializedNameFetcher.getSerializedName(fieldInfo, delimiter))
                 .thenReturn("foo.bar")
 
-        val metadata = givenMetadataIs(emptyArray())
+        val metadata = givenMetadataIs(emptyList())
         assertFieldPath(metadata, FieldPath.Nested("foo.bar"))
     }
 
@@ -82,7 +82,7 @@ class FieldPathFetcherTest {
         whenever(serializedNameFetcher.getSerializedName(fieldInfo, delimiter))
                 .thenReturn("bar.")
 
-        val metadata = givenMetadataIs(emptyArray())
+        val metadata = givenMetadataIs(emptyList())
         assertFieldPath(metadata, FieldPath.Nested("bar.foo"))
     }
 
@@ -91,7 +91,7 @@ class FieldPathFetcherTest {
                 .thenReturn(result)
     }
 
-    private fun givenMetadataIs(pathSubstitutions: Array<PathSubstitution>): GsonObjectMetadata {
+    private fun givenMetadataIs(pathSubstitutions: List<PathSubstitution>): GsonObjectMetadata {
         return GsonObjectMetadata(delimiter, fieldNamingPolicy, GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE, pathSubstitutions)
     }
 

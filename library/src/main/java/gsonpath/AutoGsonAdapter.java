@@ -110,7 +110,7 @@ public @interface AutoGsonAdapter {
      *
      * @return the flatten delimiter to use.
      */
-    char flattenDelimiter() default '.';
+    char[] flattenDelimiter() default {};
 
     /**
      * Exposes the Gson field naming policy at compile time rather than runtime.
@@ -120,7 +120,7 @@ public @interface AutoGsonAdapter {
      *
      * @return the field naming policy
      */
-    FieldNamingPolicy fieldNamingPolicy() default FieldNamingPolicy.IDENTITY;
+    FieldNamingPolicy[] fieldNamingPolicy() default {};
 
     /**
      * Determines whether the Type Adapter will allow null values into the JSON when writing.
@@ -129,7 +129,7 @@ public @interface AutoGsonAdapter {
      *
      * @return whether nulls are serialized.
      */
-    boolean serializeNulls() default false;
+    boolean[] serializeNulls() default {};
 
     /**
      * Defines validation rule which can be used to ensure that the parsed JSON conforms to a particular format.
@@ -143,7 +143,7 @@ public @interface AutoGsonAdapter {
      *
      * @return the field validation type.
      */
-    GsonFieldValidationType fieldValidationType() default GsonFieldValidationType.NO_VALIDATION;
+    GsonFieldValidationType[] fieldValidationType() default {};
 
     /**
      * An array of substitutions which are applied to all fields annotated with <i>com.google.gson.annotations.SerializedName</i>.

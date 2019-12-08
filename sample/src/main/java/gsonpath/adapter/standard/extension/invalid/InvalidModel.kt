@@ -17,6 +17,6 @@ interface InvalidModel {
         val value: Collection<Data>
     }
 
-    @AutoGsonAdapter(fieldValidationType = GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE)
+    @AutoGsonAdapter(fieldValidationType = [GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE])
     data class Data(val text: String)
 }

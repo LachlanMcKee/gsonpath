@@ -8,7 +8,6 @@ import gsonpath.model.FieldInfo
 import org.junit.Rule
 import org.junit.rules.ExpectedException
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when` as whenever
 
 open class BaseGsonObjectFactoryTest {
 
@@ -34,7 +33,7 @@ open class BaseGsonObjectFactoryTest {
     fun createMetadata(flattenDelimiter: Char = '.',
                        gsonFieldNamingPolicy: FieldNamingPolicy = FieldNamingPolicy.IDENTITY,
                        gsonFieldValidationType: GsonFieldValidationType = GsonFieldValidationType.NO_VALIDATION,
-                       pathSubstitutions: Array<PathSubstitution> = emptyArray()): GsonObjectMetadata {
+                       pathSubstitutions: List<PathSubstitution> = emptyList()): GsonObjectMetadata {
 
         return GsonObjectMetadata(
                 flattenDelimiter,

@@ -2,6 +2,7 @@ package gsonpath.adapter.standard.adapter
 
 import com.squareup.javapoet.ClassName
 import gsonpath.AutoGsonAdapter
+import gsonpath.LazyFactoryMetadata
 import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterPropertiesFactory
 import gsonpath.adapter.standard.adapter.read.ReadParams
 import gsonpath.adapter.standard.adapter.write.WriteParams
@@ -18,10 +19,13 @@ class AdapterModelMetadataFactory(
         private val fieldInfoFactory: FieldInfoFactory,
         private val gsonObjectTreeFactory: GsonObjectTreeFactory,
         private val typeHandler: TypeHandler,
-        private val modelInterfaceGenerator: ModelInterfaceGenerator) {
+        private val modelInterfaceGenerator: ModelInterfaceGenerator,
+        private val autoGsonAdapterPropertiesFactory: AutoGsonAdapterPropertiesFactory) {
 
-    fun createMetadata(modelElement: TypeElement,
-                       autoGsonAnnotation: AutoGsonAdapter): AdapterModelMetadata {
+    fun createMetadata(
+            modelElement: TypeElement,
+            autoGsonAnnotation: AutoGsonAdapter,
+            lazyFactoryMetadata: LazyFactoryMetadata): AdapterModelMetadata {
 
         val modelClassName = ClassName.get(modelElement)
         val adapterClassName = ClassName.get(modelClassName.packageName(),
@@ -31,7 +35,8 @@ class AdapterModelMetadataFactory(
         val fieldInfoList: List<FieldInfo>
         val isModelInterface = modelElement.kind.isInterface
 
-        val properties = AutoGsonAdapterPropertiesFactory().create(modelElement, autoGsonAnnotation, isModelInterface)
+        val properties = autoGsonAdapterPropertiesFactory.create(
+                modelElement, autoGsonAnnotation, lazyFactoryMetadata, isModelInterface)
 
         val requiresConstructorInjection: Boolean =
                 if (isModelInterface) {

@@ -5,6 +5,8 @@ import gsonpath.adapter.enums.EnumFieldLabelMapper
 import gsonpath.adapter.enums.EnumGsonAdapterGenerator
 import gsonpath.adapter.standard.adapter.AdapterModelMetadataFactory
 import gsonpath.adapter.standard.adapter.StandardGsonAdapterGenerator
+import gsonpath.adapter.standard.adapter.properties.AdapterCommonPropertiesFactory
+import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterPropertiesFactory
 import gsonpath.adapter.standard.adapter.read.ReadFunctions
 import gsonpath.adapter.standard.adapter.write.WriteFunctions
 import gsonpath.adapter.standard.extension.ExtensionsHandler
@@ -44,6 +46,10 @@ object DependencyFactory {
         val readFunctions = ReadFunctions(extensionsHandler)
         val writeFunctions = WriteFunctions(extensionsHandler)
         val modelInterfaceGenerator = ModelInterfaceGenerator(InterfaceModelMetadataFactory(typeHandler), fileWriter)
+
+        val adapterCommonPropertiesFactory = AdapterCommonPropertiesFactory()
+        val autoGsonAdapterPropertiesFactory = AutoGsonAdapterPropertiesFactory(adapterCommonPropertiesFactory)
+
         val adapterModelMetadataFactory = AdapterModelMetadataFactory(
                 FieldInfoFactory(
                         typeHandler,
@@ -53,7 +59,8 @@ object DependencyFactory {
                         defaultValueDetector),
                 gsonObjectTreeFactory,
                 typeHandler,
-                modelInterfaceGenerator
+                modelInterfaceGenerator,
+                autoGsonAdapterPropertiesFactory
         )
 
         // Handle the standard type adapters.
@@ -71,7 +78,8 @@ object DependencyFactory {
                         typeHandler,
                         fileWriter,
                         annotationFetcher,
-                        EnumFieldLabelMapper)
+                        EnumFieldLabelMapper,
+                        autoGsonAdapterPropertiesFactory)
         )
     }
 

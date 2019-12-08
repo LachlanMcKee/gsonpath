@@ -6,7 +6,7 @@ import gsonpath.AutoGsonAdapter
 @AutoGsonAdapter
 class EnumExample(val values: Array<EnumValue>) {
 
-    @AutoGsonAdapter(fieldNamingPolicy = FieldNamingPolicy.LOWER_CASE_WITH_DASHES)
+    @AutoGsonAdapter(fieldNamingPolicy = [FieldNamingPolicy.LOWER_CASE_WITH_DASHES])
     enum class EnumValue {
         VALUE1,
         VALUE_2,
