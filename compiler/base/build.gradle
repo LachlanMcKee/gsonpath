@@ -2,6 +2,7 @@ import org.gradle.internal.jvm.Jvm
 
 apply plugin: 'java'
 apply plugin: "kotlin"
+apply from: "${project.rootDir}/scripts/clean-util.gradle"
 
 buildscript {
     repositories {

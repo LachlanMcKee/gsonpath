@@ -1,0 +1,5 @@
+task cleanBuildDir(type: Delete) {
+    delete "${projectDir}/build"
+    delete "${projectDir}/out"
+}
+tasks.clean.dependsOn(cleanBuildDir)
