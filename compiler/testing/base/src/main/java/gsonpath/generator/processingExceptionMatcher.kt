@@ -8,6 +8,7 @@ import javax.lang.model.element.Element
 fun processingExceptionMatcher(element: Element?, message: String): TypeSafeMatcher<ProcessingException> {
     return object : TypeSafeMatcher<ProcessingException>() {
         override fun describeTo(description: Description) {
+            description.appendText("message: '$message'")
         }
 
         override fun matchesSafely(item: ProcessingException): Boolean {

@@ -1,6 +1,6 @@
 package gsonpath.dependencies
 
-import gsonpath.adapter.common.SubTypeMetadataFactoryImpl
+import gsonpath.adapter.common.*
 import gsonpath.adapter.enums.EnumFieldLabelMapper
 import gsonpath.adapter.enums.EnumGsonAdapterGenerator
 import gsonpath.adapter.standard.adapter.AdapterModelMetadataFactory
@@ -38,7 +38,12 @@ object DependencyFactory {
                 FieldPathFetcher(SerializedNameFetcher, FieldNamingPolicyMapper()))
         val gsonObjectTreeFactory = GsonObjectTreeFactory(gsonObjectFactory)
 
-        val subTypeMetadataFactory = SubTypeMetadataFactoryImpl(typeHandler)
+        val subTypeMetadataFactory = SubTypeMetadataFactoryImpl(
+                GsonSubTypeGetterMapper(typeHandler),
+                GsonSubTypeFieldInfoMapper(),
+                SubTypeJsonKeysValidator(),
+                SubTypeGetterValidator())
+
         val extensions = loadExtensions(processingEnv)
         val extensionsHandler = ExtensionsHandler(processingEnv, extensions)
         val readFunctions = ReadFunctions(extensionsHandler)

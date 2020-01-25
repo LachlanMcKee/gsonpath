@@ -14,7 +14,6 @@ import gsonpath.adapter.util.AdapterFactoryUtil.getAnnotatedModelElements
 import gsonpath.adapter.util.writeFile
 import gsonpath.compiler.generateClassName
 import gsonpath.dependencies.Dependencies
-import gsonpath.model.FieldType
 import gsonpath.util.Logger
 import gsonpath.util.TypeSpecExt
 import gsonpath.util.constructor
@@ -43,14 +42,7 @@ object SubTypeAdapterFactory : AdapterFactory {
         logger.printMessage("Generating TypeAdapter ($element)")
 
         val typeName = ClassName.get(element)
-        val subTypeMetadata = dependencies.subTypeMetadataFactory.getGsonSubType(
-                gsonSubtype,
-                FieldType.Other(
-                        typeName = typeName,
-                        elementTypeMirror = element.asType()
-                ),
-                "Type",
-                element)
+        val subTypeMetadata = dependencies.subTypeMetadataFactory.getGsonSubType(gsonSubtype, element)
 
         return GsonSubTypeFactory.createSubTypeMetadata(typeName, subTypeMetadata)
                 .let { result ->
