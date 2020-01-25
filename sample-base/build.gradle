@@ -1,0 +1,9 @@
+apply plugin: 'java'
+apply from: "${project.rootDir}/scripts/clean-util.gradle"
+
+targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    compile project(":library")
+}

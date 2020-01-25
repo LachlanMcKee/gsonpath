@@ -2,6 +2,6 @@ package gsonpath;
 
 import com.google.gson.TypeAdapterFactory;
 
-@AutoGsonAdapterFactory
+@SampleAdapterFactory
 public interface TestGsonTypeFactory extends TypeAdapterFactory {
 }

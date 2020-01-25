@@ -21,7 +21,10 @@ buildscript {
 kapt {
     arguments {
         arg("gsonpath.incremental", "true")
-        arg("gsonpath.additionalAnnotations", "gsonpath.kotlin.CustomAnnotation,gsonpath.kotlin.TypeSubType")
+        arg("gsonpath.additionalAnnotations",
+                "gsonpath.SampleAdapterFactory," +
+                "gsonpath.kotlin.CustomAnnotation," +
+                        "gsonpath.kotlin.TypeSubType")
     }
 }
 
@@ -29,7 +32,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "com.google.code.gson:gson:$gson_version"
 
-    compile project(":library")
+    compile project(":sample-base")
     kapt project(":compiler:standard")
 
     testCompile "junit:junit:$junit_version"

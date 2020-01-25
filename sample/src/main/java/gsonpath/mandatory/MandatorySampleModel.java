@@ -3,7 +3,7 @@ package gsonpath.mandatory;
 import gsonpath.AutoGsonAdapter;
 import gsonpath.GsonFieldValidationType;
 
-@AutoGsonAdapter(fieldValidationType = GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE)
+@AutoGsonAdapter
 class MandatorySampleModel {
     int test;
 }
