@@ -1,8 +1,12 @@
-package gsonpath.adapter.standard.model
+package gsonpath.unit.adapter.standard.model
 
 import com.google.gson.FieldNamingPolicy
 import gsonpath.GsonFieldValidationType
 import gsonpath.PathSubstitution
+import gsonpath.adapter.standard.model.FieldPath
+import gsonpath.adapter.standard.model.FieldPathFetcher
+import gsonpath.adapter.standard.model.GsonObjectMetadata
+import gsonpath.adapter.standard.model.SerializedNameFetcher
 import gsonpath.model.FieldInfo
 import gsonpath.util.FieldNamingPolicyMapper
 import org.junit.Assert.assertEquals
@@ -44,7 +48,7 @@ class FieldPathFetcherTest {
 
     @Test
     fun testSerializedNameWithNoSubstitutions() {
-        whenever(serializedNameFetcher.getSerializedName(fieldInfo, delimiter))
+        whenever(SerializedNameFetcher.getSerializedName(fieldInfo, delimiter))
                 .thenReturn("value")
 
         val metadata = givenMetadataIs(emptyList())
@@ -53,7 +57,7 @@ class FieldPathFetcherTest {
 
     @Test
     fun testSerializedNameWithSubstitutions() {
-        whenever(serializedNameFetcher.getSerializedName(fieldInfo, delimiter))
+        whenever(SerializedNameFetcher.getSerializedName(fieldInfo, delimiter))
                 .thenReturn("{FIRST}{SECOND}")
 
         val metadata = givenMetadataIs(listOf(
@@ -70,7 +74,7 @@ class FieldPathFetcherTest {
 
     @Test
     fun testNameWithDelimiters() {
-        whenever(serializedNameFetcher.getSerializedName(fieldInfo, delimiter))
+        whenever(SerializedNameFetcher.getSerializedName(fieldInfo, delimiter))
                 .thenReturn("foo.bar")
 
         val metadata = givenMetadataIs(emptyList())
@@ -79,7 +83,7 @@ class FieldPathFetcherTest {
 
     @Test
     fun testNameEndingWithDelimiter() {
-        whenever(serializedNameFetcher.getSerializedName(fieldInfo, delimiter))
+        whenever(SerializedNameFetcher.getSerializedName(fieldInfo, delimiter))
                 .thenReturn("bar.")
 
         val metadata = givenMetadataIs(emptyList())

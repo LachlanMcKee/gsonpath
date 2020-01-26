@@ -1,11 +1,11 @@
-package gsonpath.adapter.enums
+package gsonpath.unit.adapter.enums
 
 import com.google.gson.FieldNamingPolicy
+import gsonpath.adapter.enums.EnumFieldLabelMapper
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.mockito.Mockito.`when` as whenever
 
 @RunWith(Parameterized::class)
 class EnumFieldLabelMapperTest(

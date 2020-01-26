@@ -1,8 +1,10 @@
-package gsonpath.model
+package gsonpath.unit.model
 
 import com.google.gson.annotations.SerializedName
 import com.nhaarman.mockitokotlin2.mock
 import com.squareup.javapoet.TypeName
+import gsonpath.model.FieldInfo
+import gsonpath.model.FieldType
 import org.mockito.Mockito
 import org.mockito.Mockito.`when` as whenever
 

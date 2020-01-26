@@ -1,6 +1,10 @@
-package gsonpath.adapter.standard.model
+package gsonpath.unit.adapter.standard.model
 
 import com.nhaarman.mockitokotlin2.mock
+import gsonpath.adapter.standard.model.GsonArray
+import gsonpath.adapter.standard.model.GsonField
+import gsonpath.adapter.standard.model.GsonModelIndexAssigner
+import gsonpath.adapter.standard.model.GsonObject
 import gsonpath.emptyGsonObject
 import gsonpath.simpleGsonArray
 import gsonpath.simpleGsonObject

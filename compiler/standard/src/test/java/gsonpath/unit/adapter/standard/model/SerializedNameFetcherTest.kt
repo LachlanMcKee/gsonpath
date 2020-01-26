@@ -1,8 +1,9 @@
-package gsonpath.adapter.standard.model
+package gsonpath.unit.adapter.standard.model
 
 import com.google.gson.annotations.SerializedName
 import gsonpath.NestedJson
-import gsonpath.generator.processingExceptionMatcher
+import gsonpath.adapter.standard.model.SerializedNameFetcher
+import gsonpath.processingExceptionMatcher
 import gsonpath.model.FieldInfo
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert

@@ -1,7 +1,9 @@
-package gsonpath.adapter.standard.interf
+package gsonpath.unit.adapter.standard.interf
 
 import com.squareup.javapoet.TypeName
-import gsonpath.generator.processingExceptionMatcher
+import gsonpath.adapter.standard.interf.InterfaceModelMetadata
+import gsonpath.adapter.standard.interf.InterfaceModelMetadataFactory
+import gsonpath.processingExceptionMatcher
 import gsonpath.util.MethodElementContent
 import gsonpath.util.TypeHandler
 import org.hamcrest.CoreMatchers.`is`

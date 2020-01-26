@@ -1,4 +1,4 @@
-package gsonpath.adapter.standard.adapter.properties
+package gsonpath.unit.adapter.standard.adapter.properties
 
 import com.google.gson.FieldNamingPolicy
 import com.nhaarman.mockitokotlin2.mock
@@ -7,7 +7,9 @@ import gsonpath.AutoGsonAdapter
 import gsonpath.AutoGsonAdapterFactory
 import gsonpath.GsonFieldValidationType
 import gsonpath.LazyFactoryMetadata
-import gsonpath.generator.processingExceptionMatcher
+import gsonpath.adapter.standard.adapter.properties.AdapterCommonProperties
+import gsonpath.adapter.standard.adapter.properties.AdapterCommonPropertiesFactory
+import gsonpath.processingExceptionMatcher
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertEquals
 import org.junit.Rule

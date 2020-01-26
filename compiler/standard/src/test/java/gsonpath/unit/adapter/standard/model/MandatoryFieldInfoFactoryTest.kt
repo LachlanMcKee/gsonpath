@@ -1,7 +1,11 @@
-package gsonpath.adapter.standard.model
+package gsonpath.unit.adapter.standard.model
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import gsonpath.adapter.standard.model.GsonArray
+import gsonpath.adapter.standard.model.GsonField
+import gsonpath.adapter.standard.model.GsonObject
+import gsonpath.adapter.standard.model.MandatoryFieldInfoFactory
 import gsonpath.simpleGsonObject
 import org.junit.Assert
 import org.junit.Test

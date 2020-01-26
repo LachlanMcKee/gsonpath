@@ -1,12 +1,16 @@
-package gsonpath.adapter.standard.model
+package gsonpath.unit.adapter.standard.model
 
 import com.nhaarman.mockitokotlin2.mock
 import com.squareup.javapoet.TypeName
 import gsonpath.GsonFieldValidationType
 import gsonpath.GsonFieldValidationType.*
 import gsonpath.ProcessingException
-import gsonpath.model.FieldInfoTestFactory.mockFieldInfo
+import gsonpath.adapter.standard.model.FieldPath
+import gsonpath.adapter.standard.model.GsonObjectValidator
+import gsonpath.unit.model.FieldInfoTestFactory.mockFieldInfo
 import gsonpath.adapter.standard.model.GsonObjectValidator.Result.*
+import gsonpath.adapter.standard.model.MutableGsonField
+import gsonpath.adapter.standard.model.MutableGsonObject
 import gsonpath.model.FieldType
 import org.junit.Assert
 import org.junit.Test

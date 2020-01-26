@@ -1,4 +1,4 @@
-package gsonpath.adapter.standard.extension
+package gsonpath.unit.adapter.standard.extension
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever

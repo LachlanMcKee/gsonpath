@@ -1,7 +1,8 @@
-package gsonpath.adapter.standard.model
+package gsonpath.unit.adapter.standard.model
 
+import gsonpath.adapter.standard.model.*
 import gsonpath.emptyGsonObject
-import gsonpath.generator.processingExceptionMatcher
+import gsonpath.processingExceptionMatcher
 import gsonpath.model.FieldInfo
 import gsonpath.simpleGsonArray
 import org.hamcrest.CoreMatchers.`is`
