@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: "kotlin"
+apply from: "${project.rootDir}/scripts/jacoco-setup.gradle"
 apply from: "${project.rootDir}/scripts/clean-util.gradle"
 
 buildscript {
@@ -26,4 +27,9 @@ dependencies {
     compile "com.squareup:javapoet:$javapoet_version"
     compile "com.google.auto:auto-common:0.6"
     compile "com.google.code.gson:gson:$gson_version"
+
+    testCompile "com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0"
+    testCompile "com.google.truth:truth:0.34"
+    testCompile "com.google.testing.compile:compile-testing:0.18"
+    testCompile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
 }
