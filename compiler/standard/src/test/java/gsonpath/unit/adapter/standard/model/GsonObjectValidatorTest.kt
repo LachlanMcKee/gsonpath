@@ -4,8 +4,8 @@ import com.nhaarman.mockitokotlin2.mock
 import com.squareup.javapoet.TypeName
 import gsonpath.ProcessingException
 import gsonpath.adapter.standard.model.GsonObjectValidator
-import gsonpath.unit.model.FieldInfoTestFactory.mockFieldInfo
 import gsonpath.model.FieldType
+import gsonpath.unit.model.FieldInfoTestFactory.mockFieldInfo
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test

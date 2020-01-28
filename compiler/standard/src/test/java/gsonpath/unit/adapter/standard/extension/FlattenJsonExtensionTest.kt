@@ -3,9 +3,9 @@ package gsonpath.unit.adapter.standard.extension
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.squareup.javapoet.TypeName
+import gsonpath.adapter.standard.extension.flatten.FlattenJsonExtension
 import gsonpath.compiler.CLASS_NAME_STRING
 import gsonpath.extension.annotation.FlattenJson
-import gsonpath.adapter.standard.extension.flatten.FlattenJsonExtension
 import gsonpath.model.FieldType
 import org.junit.Test
 

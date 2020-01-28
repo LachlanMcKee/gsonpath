@@ -2,8 +2,8 @@ package gsonpath.unit.adapter.standard.model
 
 import gsonpath.adapter.standard.model.*
 import gsonpath.emptyGsonObject
-import gsonpath.processingExceptionMatcher
 import gsonpath.model.FieldInfo
+import gsonpath.processingExceptionMatcher
 import gsonpath.simpleGsonArray
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert

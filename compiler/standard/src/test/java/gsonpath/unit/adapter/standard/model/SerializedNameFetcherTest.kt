@@ -3,8 +3,8 @@ package gsonpath.unit.adapter.standard.model
 import com.google.gson.annotations.SerializedName
 import gsonpath.NestedJson
 import gsonpath.adapter.standard.model.SerializedNameFetcher
-import gsonpath.processingExceptionMatcher
 import gsonpath.model.FieldInfo
+import gsonpath.processingExceptionMatcher
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert
 import org.junit.Before

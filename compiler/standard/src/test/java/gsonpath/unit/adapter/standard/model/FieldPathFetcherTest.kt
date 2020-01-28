@@ -48,7 +48,7 @@ class FieldPathFetcherTest {
 
     @Test
     fun testSerializedNameWithNoSubstitutions() {
-        whenever(SerializedNameFetcher.getSerializedName(fieldInfo, delimiter))
+        whenever(serializedNameFetcher.getSerializedName(fieldInfo, delimiter))
                 .thenReturn("value")
 
         val metadata = givenMetadataIs(emptyList())
@@ -57,7 +57,7 @@ class FieldPathFetcherTest {
 
     @Test
     fun testSerializedNameWithSubstitutions() {
-        whenever(SerializedNameFetcher.getSerializedName(fieldInfo, delimiter))
+        whenever(serializedNameFetcher.getSerializedName(fieldInfo, delimiter))
                 .thenReturn("{FIRST}{SECOND}")
 
         val metadata = givenMetadataIs(listOf(
@@ -74,7 +74,7 @@ class FieldPathFetcherTest {
 
     @Test
     fun testNameWithDelimiters() {
-        whenever(SerializedNameFetcher.getSerializedName(fieldInfo, delimiter))
+        whenever(serializedNameFetcher.getSerializedName(fieldInfo, delimiter))
                 .thenReturn("foo.bar")
 
         val metadata = givenMetadataIs(emptyList())
@@ -83,7 +83,7 @@ class FieldPathFetcherTest {
 
     @Test
     fun testNameEndingWithDelimiter() {
-        whenever(SerializedNameFetcher.getSerializedName(fieldInfo, delimiter))
+        whenever(serializedNameFetcher.getSerializedName(fieldInfo, delimiter))
                 .thenReturn("bar.")
 
         val metadata = givenMetadataIs(emptyList())
