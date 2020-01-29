@@ -1,9 +1,6 @@
 package gsonpath.result
 
-import com.google.gson.Gson
-import com.google.gson.JsonIOException
-import com.google.gson.TypeAdapter
-import com.google.gson.TypeAdapterFactory
+import com.google.gson.*
 import com.google.gson.internal.Streams
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
@@ -40,7 +37,7 @@ internal class GsonResultListTypeAdapterFactory : TypeAdapterFactory {
                     .map { jsonElement ->
                         try {
                             GsonResult.Success(elementTypeAdapter.fromJsonTree(jsonElement))
-                        } catch (e: Exception) {
+                        } catch (e: JsonParseException) {
                             GsonResult.Failure<E>(e)
                         }
                     })
