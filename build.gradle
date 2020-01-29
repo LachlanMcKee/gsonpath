@@ -32,7 +32,7 @@ sonarqube {
 }
 
 task integrationCodeCoverageReport(type: JacocoReport) {
-    executionData fileTree(dir: "compiler/testing/integration").include("**/build/jacoco/*.exec")
+    executionData fileTree(dir: "compiler/standard").include("**/build/jacoco/*.exec")
 
     // Ignore extension code
     def excludes = ['gsonpath/compiler/ExtensionFieldMetadata.class']
@@ -52,12 +52,12 @@ task integrationCodeCoverageReport(type: JacocoReport) {
         csv.setEnabled(false)
     }
 
-    dependsOn(':compiler:testing:integration:test')
+    dependsOn(':compiler:standard:test')
 }
 
 task unitCodeCoverageReport(type: JacocoReport) {
     executionData(
-            fileTree(dir: "compiler/testing/unit").include("**/build/jacoco/*.exec"),
+            fileTree(dir: "compiler/standard").include("**/build/jacoco/*.exec"),
             fileTree(dir: "library").include("**/build/jacoco/*.exec"),
             fileTree(dir: "library-kt").include("**/build/jacoco/*.exec")
     )
@@ -86,7 +86,7 @@ task unitCodeCoverageReport(type: JacocoReport) {
     }
 
     dependsOn(
-            ':compiler:testing:unit:test',
+            ':compiler:standard:test',
             ':library:test',
             ':library-kt:test'
     )
