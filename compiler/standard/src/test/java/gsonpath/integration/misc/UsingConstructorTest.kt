@@ -1,6 +1,7 @@
-package gsonpath.integration
+package gsonpath.integration.misc
 
-import gsonpath.integration.GeneratorTester.assertGeneratedContent
+import gsonpath.integration.common.GeneratorTester.assertGeneratedContent
+import gsonpath.integration.common.TestCriteria
 import org.junit.Test
 
 class UsingConstructorTest {

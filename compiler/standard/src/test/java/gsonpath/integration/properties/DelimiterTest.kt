@@ -1,7 +1,7 @@
 package gsonpath.integration.properties
 
-import gsonpath.integration.GeneratorTester.assertGeneratedContent
-import gsonpath.integration.TestCriteria
+import gsonpath.integration.common.GeneratorTester.assertGeneratedContent
+import gsonpath.integration.common.TestCriteria
 import org.junit.Test
 
 class DelimiterTest {

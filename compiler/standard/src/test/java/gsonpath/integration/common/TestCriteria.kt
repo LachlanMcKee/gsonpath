@@ -1,4 +1,4 @@
-package gsonpath.integration
+package gsonpath.integration.common
 
 class TestCriteria(val resourcePath: String,
                    val relativeSourceNames: List<String> = emptyList(),

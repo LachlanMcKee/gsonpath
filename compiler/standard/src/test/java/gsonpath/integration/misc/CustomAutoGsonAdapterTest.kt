@@ -1,4 +1,4 @@
-package gsonpath.integration
+package gsonpath.integration.misc
 
 import com.google.common.truth.Truth.assertAbout
 import com.google.testing.compile.*

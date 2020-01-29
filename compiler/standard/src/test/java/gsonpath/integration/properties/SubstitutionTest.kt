@@ -4,8 +4,8 @@ import com.google.common.truth.Truth.assertAbout
 import com.google.testing.compile.JavaFileObjects
 import com.google.testing.compile.JavaSourcesSubjectFactory
 import gsonpath.GsonProcessor
-import gsonpath.integration.GeneratorTester.assertGeneratedContent
-import gsonpath.integration.TestCriteria
+import gsonpath.integration.common.GeneratorTester.assertGeneratedContent
+import gsonpath.integration.common.TestCriteria
 import org.junit.Test
 
 class SubstitutionTest {
