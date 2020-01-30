@@ -1,6 +1,6 @@
 package gsonpath.adapter.enums
 
-import gsonpath.AutoGsonAdapter
+import gsonpath.EnumGsonAdapter
 import gsonpath.LazyFactoryMetadata
 import gsonpath.adapter.AdapterFactory
 import gsonpath.adapter.AdapterGenerationResult
@@ -20,7 +20,7 @@ object EnumAdapterFactory : AdapterFactory {
             annotations: Set<TypeElement>,
             dependencies: Dependencies): List<AdapterGenerationResult> {
 
-        return getAnnotatedModelElements<AutoGsonAdapter>(env, annotations, listOf(ElementKind.ENUM))
+        return getAnnotatedModelElements<EnumGsonAdapter>(env, annotations, listOf(ElementKind.ENUM))
                 .onEach { logger.printMessage("Generating TypeAdapter (${it.element})") }
                 .map {
                     dependencies.enumGsonAdapterGenerator.handle(it.element, it.annotation, lazyFactoryMetadata)

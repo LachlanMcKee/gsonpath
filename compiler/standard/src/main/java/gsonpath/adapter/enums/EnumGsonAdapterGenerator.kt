@@ -1,5 +1,6 @@
 package gsonpath.adapter.enums
 
+import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.squareup.javapoet.ClassName
@@ -9,8 +10,7 @@ import gsonpath.*
 import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.adapter.Constants
-import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterProperties
-import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterPropertiesFactory
+import gsonpath.adapter.standard.adapter.properties.PropertyFetcher
 import gsonpath.adapter.util.writeFile
 import gsonpath.compiler.generateClassName
 import gsonpath.util.*
@@ -22,18 +22,19 @@ class EnumGsonAdapterGenerator(
         private val typeHandler: TypeHandler,
         private val fileWriter: FileWriter,
         private val annotationFetcher: AnnotationFetcher,
-        private val enumFieldLabelMapper: EnumFieldLabelMapper,
-        private val autoGsonAdapterPropertiesFactory: AutoGsonAdapterPropertiesFactory
+        private val enumFieldLabelMapper: EnumFieldLabelMapper
 ) {
 
     @Throws(ProcessingException::class)
     fun handle(
             modelElement: TypeElement,
-            autoGsonAnnotation: AutoGsonAdapter,
+            autoGsonAnnotation: EnumGsonAdapter,
             lazyFactoryMetadata: LazyFactoryMetadata): AdapterGenerationResult {
 
-        val properties = autoGsonAdapterPropertiesFactory.create(
-                modelElement, autoGsonAnnotation, lazyFactoryMetadata, false)
+        val propertyFetcher = PropertyFetcher(modelElement)
+        val fieldNamingPolicy = propertyFetcher.getProperty("fieldNamingPolicy",
+                autoGsonAnnotation.fieldNamingPolicy,
+                lazyFactoryMetadata.annotation.fieldNamingPolicy)
 
         val fields = typeHandler.getFields(modelElement) { it.kind == ElementKind.ENUM_CONSTANT }
 
@@ -41,7 +42,7 @@ class EnumGsonAdapterGenerator(
         val adapterClassName = ClassName.get(typeName.packageName(),
                 generateClassName(typeName, "GsonTypeAdapter"))
 
-        createEnumAdapterSpec(adapterClassName, modelElement, properties, fields)
+        createEnumAdapterSpec(adapterClassName, modelElement, fieldNamingPolicy, fields)
                 .writeFile(fileWriter, adapterClassName.packageName()) {
                     it.addStaticImport(GsonUtil::class.java, "*")
                 }
@@ -51,7 +52,7 @@ class EnumGsonAdapterGenerator(
     private fun createEnumAdapterSpec(
             adapterClassName: ClassName,
             element: TypeElement,
-            properties: AutoGsonAdapterProperties,
+            fieldNamingPolicy: FieldNamingPolicy,
             fields: List<FieldElementContent>) = TypeSpecExt.finalClassBuilder(adapterClassName).apply {
 
         val typeName = ClassName.get(element)
@@ -67,20 +68,20 @@ class EnumGsonAdapterGenerator(
             }
         }
 
-        addMethod(createReadMethod(element, properties, fields))
-        addMethod(createWriteMethod(element, properties, fields))
+        addMethod(createReadMethod(element, fieldNamingPolicy, fields))
+        addMethod(createWriteMethod(element, fieldNamingPolicy, fields))
     }
 
     private fun createReadMethod(
             element: TypeElement,
-            properties: AutoGsonAdapterProperties,
+            fieldNamingPolicy: FieldNamingPolicy,
             fields: List<FieldElementContent>): MethodSpec {
 
         val typeName = ClassName.get(element)
         return AdapterMethodBuilder.createReadMethodBuilder(typeName).applyAndBuild {
             code {
                 switch("in.nextString()") {
-                    handleFields(element, fields, properties) { enumConstantName, label ->
+                    handleFields(element, fields, fieldNamingPolicy) { enumConstantName, label ->
                         case("\"$label\"", addBreak = false) {
                             `return`("$typeName.$enumConstantName"
                             )
@@ -96,14 +97,14 @@ class EnumGsonAdapterGenerator(
 
     private fun createWriteMethod(
             element: TypeElement,
-            properties: AutoGsonAdapterProperties,
+            fieldNamingPolicy: FieldNamingPolicy,
             fields: List<FieldElementContent>): MethodSpec {
 
         val typeName = ClassName.get(element)
         return AdapterMethodBuilder.createWriteMethodBuilder(typeName).applyAndBuild {
             code {
                 switch("value") {
-                    handleFields(element, fields, properties) { enumConstantName, label ->
+                    handleFields(element, fields, fieldNamingPolicy) { enumConstantName, label ->
                         case(enumConstantName) {
                             addStatement("out.value(\"$label\")")
                         }
@@ -116,14 +117,14 @@ class EnumGsonAdapterGenerator(
     private fun handleFields(
             element: TypeElement,
             fields: List<FieldElementContent>,
-            properties: AutoGsonAdapterProperties,
+            fieldNamingPolicy: FieldNamingPolicy,
             fieldFunc: (String, String) -> Unit) {
 
         fields.forEach { field ->
             val serializedName = annotationFetcher.getAnnotation(element, field.element, SerializedName::class.java)
             val enumConstantName = field.element.simpleName.toString()
             val label = serializedName?.value
-                    ?: enumFieldLabelMapper.map(enumConstantName, properties.gsonFieldNamingPolicy)
+                    ?: enumFieldLabelMapper.map(enumConstantName, fieldNamingPolicy)
             fieldFunc(enumConstantName, label)
         }
     }

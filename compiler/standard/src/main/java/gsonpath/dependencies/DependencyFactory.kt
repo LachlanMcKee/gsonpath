@@ -78,8 +78,7 @@ object DependencyFactory {
                         typeHandler,
                         fileWriter,
                         annotationFetcher,
-                        EnumFieldLabelMapper,
-                        autoGsonAdapterPropertiesFactory)
+                        EnumFieldLabelMapper)
         )
     }
 

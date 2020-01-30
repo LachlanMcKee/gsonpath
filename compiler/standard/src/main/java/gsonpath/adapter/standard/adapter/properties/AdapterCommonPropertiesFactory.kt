@@ -4,8 +4,6 @@ import com.google.gson.FieldNamingPolicy
 import gsonpath.AutoGsonAdapter
 import gsonpath.GsonFieldValidationType
 import gsonpath.LazyFactoryMetadata
-import gsonpath.ProcessingException
-import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 
 class AdapterCommonPropertiesFactory {
@@ -34,21 +32,6 @@ class AdapterCommonPropertiesFactory {
                 lazyFactoryMetadata.annotation.fieldValidationType)
 
         return AdapterCommonProperties(flattenDelimiter, serializeNulls, fieldNamingPolicy, fieldValidationType)
-    }
-
-    private class PropertyFetcher(val adapterElement: Element) {
-
-        fun <T> getProperty(
-                propertyName: String,
-                adapterArray: Array<T>,
-                factoryProperty: T
-        ): T {
-            if (adapterArray.size > 1) {
-                throw ProcessingException("$propertyName should never have more than one element", adapterElement)
-            }
-
-            return adapterArray.firstOrNull() ?: factoryProperty
-        }
     }
 }
 
