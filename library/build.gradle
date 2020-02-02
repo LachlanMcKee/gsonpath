@@ -21,4 +21,5 @@ dependencies {
     compile "com.google.code.gson:gson:$gson_version"
 
     testCompile "junit:junit:$junit_version"
+    testCompile "com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0"
 }
