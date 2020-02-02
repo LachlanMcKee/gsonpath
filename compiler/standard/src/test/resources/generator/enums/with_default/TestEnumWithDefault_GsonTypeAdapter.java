@@ -9,6 +9,7 @@ import gsonpath.GsonPathGenerated;
 import gsonpath.GsonPathTypeAdapter;
 import java.io.IOException;
 import java.lang.Override;
+import java.lang.String;
 
 @GsonPathGenerated
 public final class TestEnumWithDefault_GsonTypeAdapter extends GsonPathTypeAdapter<TestEnumWithDefault> {

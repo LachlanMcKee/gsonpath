@@ -77,19 +77,31 @@ class EnumGsonAdapterGenerator(
             fieldNamingPolicy: FieldNamingPolicy,
             fields: List<FieldElementContent>): MethodSpec {
 
+        val defaultField: FieldElementContent? = fields
+                .filter { annotationFetcher.getAnnotation(element, it.element, EnumGsonAdapter.DefaultValue::class.java) != null }
+                .apply { if (size > 1) throw ProcessingException("Only one DefaultValue can be defined") }
+                .firstOrNull()
+
         val typeName = ClassName.get(element)
         return AdapterMethodBuilder.createReadMethodBuilder(typeName).applyAndBuild {
             code {
                 createVariable(String::class.java, "enumValue", "in.nextString()")
                 switch("enumValue") {
-                    handleFields(element, fields, fieldNamingPolicy) { enumConstantName, label ->
-                        case("\"$label\"", addBreak = false) {
-                            `return`("$typeName.$enumConstantName"
-                            )
+                    fields.forEach { field ->
+                        handleField(element, field, fieldNamingPolicy) { enumConstantName, label ->
+                            case("\"$label\"", addBreak = false) {
+                                `return`("$typeName.$enumConstantName")
+                            }
                         }
                     }
                     default(addBreak = false) {
-                        addEscapedStatement("""throw new gsonpath.JsonUnexpectedEnumValueException(enumValue, "$typeName")""")
+                        if (defaultField != null) {
+                            handleField(element, defaultField, fieldNamingPolicy) { enumConstantName, _ ->
+                                `return`("$typeName.$enumConstantName")
+                            }
+                        } else {
+                            addEscapedStatement("""throw new gsonpath.JsonUnexpectedEnumValueException(enumValue, "$typeName")""")
+                        }
                     }
                 }
             }
@@ -105,9 +117,11 @@ class EnumGsonAdapterGenerator(
         return AdapterMethodBuilder.createWriteMethodBuilder(typeName).applyAndBuild {
             code {
                 switch("value") {
-                    handleFields(element, fields, fieldNamingPolicy) { enumConstantName, label ->
-                        case(enumConstantName) {
-                            addStatement("out.value(\"$label\")")
+                    fields.forEach { field ->
+                        handleField(element, field, fieldNamingPolicy) { enumConstantName, label ->
+                            case(enumConstantName) {
+                                addStatement("out.value(\"$label\")")
+                            }
                         }
                     }
                 }
@@ -115,18 +129,16 @@ class EnumGsonAdapterGenerator(
         }
     }
 
-    private fun handleFields(
+    private fun handleField(
             element: TypeElement,
-            fields: List<FieldElementContent>,
+            field: FieldElementContent,
             fieldNamingPolicy: FieldNamingPolicy,
             fieldFunc: (String, String) -> Unit) {
 
-        fields.forEach { field ->
-            val serializedName = annotationFetcher.getAnnotation(element, field.element, SerializedName::class.java)
-            val enumConstantName = field.element.simpleName.toString()
-            val label = serializedName?.value
-                    ?: enumFieldLabelMapper.map(enumConstantName, fieldNamingPolicy)
-            fieldFunc(enumConstantName, label)
-        }
+        val serializedName = annotationFetcher.getAnnotation(element, field.element, SerializedName::class.java)
+        val enumConstantName = field.element.simpleName.toString()
+        val label = serializedName?.value
+                ?: enumFieldLabelMapper.map(enumConstantName, fieldNamingPolicy)
+        fieldFunc(enumConstantName, label)
     }
 }

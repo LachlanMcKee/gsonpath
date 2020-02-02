@@ -12,6 +12,8 @@ import java.lang.annotation.Target;
 public @interface EnumGsonAdapter {
     FieldNamingPolicy[] fieldNamingPolicy() default {};
 
+    boolean ignoreDefaultValue() default false;
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     @interface DefaultValue {
