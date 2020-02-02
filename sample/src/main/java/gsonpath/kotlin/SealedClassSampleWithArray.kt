@@ -54,7 +54,6 @@ sealed class Type {
 class SealedClassArray(
         val value1: String?,
 
-        @field:TypeSubType
         val items: Array<Type>,
 
         val value2: String?
@@ -72,7 +71,6 @@ class SealedClassSubTypePojo(
         val value1: String?,
 
         @SerializedName("items[0]")
-        @field:TypeSubType
         val item: Type,
 
         val value2: String?

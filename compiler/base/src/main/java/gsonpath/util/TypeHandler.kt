@@ -14,7 +14,8 @@ import kotlin.reflect.KClass
 
 interface TypeHandler {
     fun getTypeName(typeMirror: TypeMirror): TypeName?
-    fun getClassName(typeMirror: TypeMirror): TypeName?
+    fun getClassName(typeElement: TypeElement): ClassName
+    fun guessClassName(classNameString: String): ClassName
     fun isSubtype(t1: TypeMirror, t2: TypeMirror): Boolean
     fun asElement(t: TypeMirror): Element?
     fun getAllMembers(typeElement: TypeElement): List<Element>
@@ -37,7 +38,9 @@ data class MethodElementContent(
 class ProcessorTypeHandler(private val processingEnv: ProcessingEnvironment) : TypeHandler {
     override fun getTypeName(typeMirror: TypeMirror): TypeName? = TypeName.get(typeMirror)
 
-    override fun getClassName(typeMirror: TypeMirror): TypeName? = ClassName.get(typeMirror)
+    override fun getClassName(typeElement: TypeElement): ClassName = ClassName.get(typeElement)
+
+    override fun guessClassName(classNameString: String): ClassName = ClassName.bestGuess(classNameString)
 
     override fun asElement(t: TypeMirror): Element? {
         return processingEnv.typeUtils.asElement(t)

@@ -75,6 +75,7 @@ open class GsonProcessor : AbstractProcessor() {
                     customAnnotations.plus(setOf(
                             AutoGsonAdapterFactory::class.java.canonicalName,
                             AutoGsonAdapter::class.java.canonicalName,
+                            EnumGsonAdapter::class.java.canonicalName,
                             GsonSubtype::class.java.canonicalName
                     ))
                 }

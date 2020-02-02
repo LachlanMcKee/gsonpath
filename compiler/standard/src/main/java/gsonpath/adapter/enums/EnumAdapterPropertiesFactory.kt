@@ -2,7 +2,6 @@ package gsonpath.adapter.enums
 
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.annotations.SerializedName
-import com.squareup.javapoet.ClassName
 import gsonpath.EnumGsonAdapter
 import gsonpath.ProcessingException
 import gsonpath.util.AnnotationFetcher
@@ -23,7 +22,7 @@ class EnumAdapterPropertiesFactory(
         val enumFields = typeHandler.getFields(enumElement) { it.kind == ElementKind.ENUM_CONSTANT }
 
         return EnumAdapterProperties(
-                enumTypeName = ClassName.get(enumElement),
+                enumTypeName = typeHandler.getClassName(enumElement),
                 fields = enumFields.map { createEnumField(enumElement, it, fieldNamingPolicy) },
                 defaultValue = getDefaultValue(enumElement, enumFields, fieldNamingPolicy)
         )
@@ -37,7 +36,7 @@ class EnumAdapterPropertiesFactory(
         val serializedName = annotationFetcher.getAnnotation(enumElement, field.element, SerializedName::class.java)
         val enumConstantName = field.element.simpleName.toString()
         return EnumAdapterProperties.EnumField(
-                enumValueTypeName = ClassName.bestGuess("$enumElement.$enumConstantName"),
+                enumValueTypeName = typeHandler.guessClassName("$enumElement.$enumConstantName"),
                 label = serializedName?.value ?: enumFieldLabelMapper.map(enumConstantName, fieldNamingPolicy))
     }
 
