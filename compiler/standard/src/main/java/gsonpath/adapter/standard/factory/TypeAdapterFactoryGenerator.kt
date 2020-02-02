@@ -7,9 +7,11 @@ import com.google.gson.reflect.TypeToken
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeSpec
+import gsonpath.GsonPathErrorListener
 import gsonpath.GsonPathTypeAdapter
 import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.Constants.ARGUMENTS
+import gsonpath.adapter.Constants.ERROR_LISTENER
 import gsonpath.adapter.Constants.GSON
 import gsonpath.adapter.Constants.NULL
 import gsonpath.adapter.util.writeFile
@@ -54,7 +56,7 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
 
         constructor {
             addModifiers(Modifier.PUBLIC)
-            addParameter(GsonPathTypeAdapter.Arguments::class.java, ARGUMENTS)
+            addParameter(GsonPathErrorListener::class.java, ERROR_LISTENER)
             code {
                 assignNew(PACKAGE_PRIVATE_LOADERS,
                         "\$T[${packageLocalAdapterGenerationResults.size}]",
@@ -63,7 +65,7 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
                 // Add the package local type adapter loaders to the hash map.
                 for ((index, packageName) in packageLocalAdapterGenerationResults.keys.withIndex()) {
                     assignNew("$PACKAGE_PRIVATE_LOADERS[$index]",
-                            "$packageName.$PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME($ARGUMENTS)")
+                            "$packageName.$PACKAGE_PRIVATE_TYPE_ADAPTER_LOADER_CLASS_NAME($ERROR_LISTENER)")
                 }
             }
         }
@@ -108,15 +110,15 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
     private fun TypeSpec.Builder.packagePrivateTypeAdapterLoaderContent(
             packageLocalGsonAdapters: List<AdapterGenerationResult>): TypeSpec.Builder {
 
-        field(ARGUMENTS, ClassName.get(GsonPathTypeAdapter.Arguments::class.java)) {
+        field(ERROR_LISTENER, ClassName.get(GsonPathErrorListener::class.java)) {
             addModifiers(Modifier.PRIVATE, Modifier.FINAL)
         }
 
         constructor {
             addModifiers(Modifier.PUBLIC)
-            addParameter(GsonPathTypeAdapter.Arguments::class.java, ARGUMENTS)
+            addParameter(GsonPathErrorListener::class.java, ERROR_LISTENER)
             code {
-                assign("this.$ARGUMENTS", ARGUMENTS)
+                assign("this.$ERROR_LISTENER", ERROR_LISTENER)
             }
         }
 
