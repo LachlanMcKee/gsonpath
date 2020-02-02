@@ -7,11 +7,20 @@ import org.junit.Test
 class EnumTest {
 
     @Test
-    fun testEnum() {
-        assertGeneratedContent(TestCriteria("generator/enums",
+    fun testEnumWithoutDefault() {
+        assertGeneratedContent(TestCriteria("generator/enums/without_default",
                 absoluteSourceNames = listOf("generator/standard/TestGsonTypeFactory.java"),
-                relativeSourceNames = listOf("TestEnum.java"),
-                relativeGeneratedNames = listOf("TestEnum_GsonTypeAdapter.java")
+                relativeSourceNames = listOf("TestEnumWithoutDefault.java"),
+                relativeGeneratedNames = listOf("TestEnumWithoutDefault_GsonTypeAdapter.java")
+        ))
+    }
+
+    @Test
+    fun testEnumWithDefault() {
+        assertGeneratedContent(TestCriteria("generator/enums/with_default",
+                absoluteSourceNames = listOf("generator/standard/TestGsonTypeFactory.java"),
+                relativeSourceNames = listOf("TestEnumWithDefault.java"),
+                relativeGeneratedNames = listOf("TestEnumWithDefault_GsonTypeAdapter.java")
         ))
     }
 }

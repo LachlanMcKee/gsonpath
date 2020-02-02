@@ -1,4 +1,4 @@
-package generator.enums;
+package generator.enums.with_default;
 
 import static gsonpath.GsonUtil.*;
 
@@ -11,29 +11,29 @@ import java.io.IOException;
 import java.lang.Override;
 
 @GsonPathGenerated
-public final class TestEnum_GsonTypeAdapter extends GsonPathTypeAdapter<TestEnum> {
-    public TestEnum_GsonTypeAdapter(Gson gson) {
+public final class TestEnumWithDefault_GsonTypeAdapter extends GsonPathTypeAdapter<TestEnumWithDefault> {
+    public TestEnumWithDefault_GsonTypeAdapter(Gson gson) {
         super(gson);
     }
 
     @Override
-    public TestEnum readImpl(JsonReader in) throws IOException {
+    public TestEnumWithDefault readImpl(JsonReader in) throws IOException {
         switch (in.nextString()) {
             case "value-abc":
-                return generator.enums.TestEnum.VALUE_ABC;
+                return generator.enums.with_default.TestEnumWithDefault.VALUE_ABC;
             case "value-def":
-                return generator.enums.TestEnum.VALUE_DEF;
+                return generator.enums.with_default.TestEnumWithDefault.VALUE_DEF;
             case "custom":
-                return generator.enums.TestEnum.VALUE_GHI;
+                return generator.enums.with_default.TestEnumWithDefault.VALUE_GHI;
             case "value-1":
-                return generator.enums.TestEnum.VALUE_1;
+                return generator.enums.with_default.TestEnumWithDefault.VALUE_1;
             default:
                 return null;
         }
     }
 
     @Override
-    public void writeImpl(JsonWriter out, TestEnum value) throws IOException {
+    public void writeImpl(JsonWriter out, TestEnumWithDefault value) throws IOException {
         switch (value) {
             case VALUE_ABC:
                 out.value("value-abc");
