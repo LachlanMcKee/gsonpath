@@ -1,6 +1,5 @@
 package generator.standard.custom_adapter_annotation;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -14,8 +13,8 @@ import java.lang.Override;
 @GsonPathGenerated
 public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends GsonPathTypeAdapter<TestCustomAutoGsonAdapterModel> {
 
-    public TestCustomAutoGsonAdapterModel_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestCustomAutoGsonAdapterModel_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

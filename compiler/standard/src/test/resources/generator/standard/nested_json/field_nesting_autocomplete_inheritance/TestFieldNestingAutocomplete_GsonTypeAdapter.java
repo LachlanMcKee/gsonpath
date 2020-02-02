@@ -1,6 +1,5 @@
 package generator.standard.nested_json.field_nesting_autocomplete_inheritance;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -12,8 +11,8 @@ import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestFieldNestingAutocomplete_GsonTypeAdapter extends GsonPathTypeAdapter<TestFieldNestingAutocomplete> {
-    public TestFieldNestingAutocomplete_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestFieldNestingAutocomplete_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

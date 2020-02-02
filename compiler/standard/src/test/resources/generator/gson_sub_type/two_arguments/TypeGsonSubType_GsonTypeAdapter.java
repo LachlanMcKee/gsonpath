@@ -1,6 +1,5 @@
 package generator.gson_sub_type.two_arguments;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.TypeAdapter;
 import com.google.gson.internal.Streams;
@@ -17,8 +16,8 @@ import java.util.List;
 @GsonPathGenerated
 public final class TypeGsonSubType_GsonTypeAdapter extends GsonPathTypeAdapter<TypeGsonSubType> {
 
-    public TypeGsonSubType_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TypeGsonSubType_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

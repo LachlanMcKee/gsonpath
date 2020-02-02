@@ -1,6 +1,5 @@
 package generator.standard.custom_serialized_name_annotation;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -13,8 +12,8 @@ import java.lang.String;
 
 @GsonPathGenerated
 public final class TestCustomSerializedNameModel_GsonTypeAdapter extends GsonPathTypeAdapter<TestCustomSerializedNameModel> {
-    public TestCustomSerializedNameModel_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestCustomSerializedNameModel_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

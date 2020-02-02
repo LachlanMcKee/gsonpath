@@ -1,6 +1,5 @@
 package generator.standard.class_annotations.serialize_nulls;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -16,8 +15,8 @@ import java.lang.String;
 
 @GsonPathGenerated
 public final class TestSerializeNulls_GsonTypeAdapter extends GsonPathTypeAdapter<TestSerializeNulls> {
-    public TestSerializeNulls_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestSerializeNulls_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

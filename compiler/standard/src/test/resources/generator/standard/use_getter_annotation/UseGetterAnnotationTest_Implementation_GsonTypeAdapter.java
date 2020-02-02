@@ -1,6 +1,5 @@
 package generator.standard.use_getter_annotation;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -15,8 +14,8 @@ import java.lang.String;
 @GsonPathGenerated
 public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extends GsonPathTypeAdapter<UseGetterAnnotationTest.Implementation> {
 
-    public UseGetterAnnotationTest_Implementation_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public UseGetterAnnotationTest_Implementation_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

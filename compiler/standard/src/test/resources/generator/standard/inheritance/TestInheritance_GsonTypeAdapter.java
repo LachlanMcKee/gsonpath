@@ -1,6 +1,5 @@
 package generator.standard.inheritance;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -12,8 +11,8 @@ import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestInheritance_GsonTypeAdapter extends GsonPathTypeAdapter<TestInheritance> {
-    public TestInheritance_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestInheritance_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

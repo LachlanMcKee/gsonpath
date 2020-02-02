@@ -1,6 +1,5 @@
 package generator.standard.invalid.immutable;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -15,8 +14,8 @@ import java.util.List;
 
 @GsonPathGenerated
 public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends GsonPathTypeAdapter<TestImmutableRemoveInvalidElements> {
-    public TestImmutableRemoveInvalidElements_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestImmutableRemoveInvalidElements_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override
@@ -29,7 +28,7 @@ public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends Gs
             switch (in.nextName()) {
                 case "value1":
                     // Extension (Read) - 'RemoveInvalidElements' Annotation
-                    value_value1 = RemoveInvalidElementsUtil.removeInvalidElementsArray(String.class, gson, in, new RemoveInvalidElementsUtil.CreateArrayFunction<String>() {
+                    value_value1 = RemoveInvalidElementsUtil.removeInvalidElementsArray(String.class, gson, errorListener, in, new RemoveInvalidElementsUtil.CreateArrayFunction<String>() {
                         @Override
                         public String[] createArray() {
                             return new String[0];
@@ -40,7 +39,7 @@ public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends Gs
 
                 case "value2":
                     // Extension (Read) - 'RemoveInvalidElements' Annotation
-                    value_value2 = RemoveInvalidElementsUtil.removeInvalidElementsList(String.class, gson, in);
+                    value_value2 = RemoveInvalidElementsUtil.removeInvalidElementsList(String.class, gson, errorListener, in);
 
                     break;
 

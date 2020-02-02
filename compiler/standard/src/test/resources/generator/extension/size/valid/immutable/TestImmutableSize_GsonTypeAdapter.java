@@ -1,6 +1,5 @@
 package generator.standard.size.valid.nullable;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -13,8 +12,8 @@ import java.lang.String;
 
 @GsonPathGenerated
 public final class TestImmutableSize_GsonTypeAdapter extends GsonPathTypeAdapter<TestImmutableSize> {
-    public TestImmutableSize_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestImmutableSize_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package generator.standard.field_types.primitives.valid;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -19,8 +18,8 @@ import java.lang.Short;
 
 @GsonPathGenerated
 public final class TestValidPrimitives_GsonTypeAdapter extends GsonPathTypeAdapter<TestValidPrimitives> {
-    public TestValidPrimitives_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestValidPrimitives_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override
