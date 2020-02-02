@@ -2,9 +2,8 @@ package gsonpath.kotlin;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import gsonpath.GsonPath;
 import gsonpath.JsonFieldNoKeyException;
-import gsonpath.TestGsonTypeFactory;
+import gsonpath.TestGsonTypeFactoryImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -37,7 +36,7 @@ public class DataClassSampleTest {
 
     private DataClassSample runTest(String fileName) {
         GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory.class));
+        builder.registerTypeAdapterFactory(new TestGsonTypeFactoryImpl(null));
 
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         InputStream resourceAsStream = classLoader.getResourceAsStream(fileName);

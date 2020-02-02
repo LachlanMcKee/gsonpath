@@ -2,8 +2,7 @@ package gsonpath.adapter.subType;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import gsonpath.GsonPath;
-import gsonpath.TestGsonTypeFactory;
+import gsonpath.TestGsonTypeFactoryImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,7 +14,7 @@ public class GsonSubTypeTest {
     @Test
     public void testValidGsonSubTypeUsingList() {
         Gson gson = new GsonBuilder()
-                .registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory.class))
+                .registerTypeAdapterFactory(new TestGsonTypeFactoryImpl(null))
                 .create();
 
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -74,7 +73,7 @@ public class GsonSubTypeTest {
     @Test
     public void testValidGsonSubTypeUsingPojo() {
         Gson gson = new GsonBuilder()
-                .registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory.class))
+                .registerTypeAdapterFactory(new TestGsonTypeFactoryImpl(null))
                 .create();
 
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();

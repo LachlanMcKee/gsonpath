@@ -3,9 +3,8 @@ package gsonpath.mandatory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import gsonpath.GsonPath;
 import gsonpath.JsonFieldNoKeyException;
-import gsonpath.TestGsonTypeFactory;
+import gsonpath.TestGsonTypeFactoryImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,7 +15,7 @@ public class MandatoryFieldTest {
     @Test
     public void test() {
         GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory.class));
+        builder.registerTypeAdapterFactory(new TestGsonTypeFactoryImpl(null));
 
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         InputStream resourceAsStream = classLoader.getResourceAsStream("MandatoryTestJson.json");

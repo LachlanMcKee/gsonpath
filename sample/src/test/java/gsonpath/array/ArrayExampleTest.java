@@ -2,8 +2,7 @@ package gsonpath.array;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import gsonpath.GsonPath;
-import gsonpath.TestGsonTypeFactory;
+import gsonpath.TestGsonTypeFactoryImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -13,7 +12,7 @@ public class ArrayExampleTest {
     @Test
     public void testSerialize() {
         GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory.class));
+        builder.registerTypeAdapterFactory(new TestGsonTypeFactoryImpl(null));
         Gson gson = builder.create();
 
         ArrayExample model = new ArrayExample();
@@ -30,7 +29,7 @@ public class ArrayExampleTest {
     @Test
     public void testDeserialize() {
         GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory.class));
+        builder.registerTypeAdapterFactory(new TestGsonTypeFactoryImpl(null));
         Gson gson = builder.create();
 
         ArrayExample vanillaModel = gson.fromJson(ARRAY_VALUE, ArrayExample.class);

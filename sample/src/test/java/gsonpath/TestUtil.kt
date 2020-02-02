@@ -8,7 +8,7 @@ import java.io.InputStreamReader
 object TestUtil {
 
     private fun createBuilder() = GsonBuilder()
-            .registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory::class.java))
+            .registerTypeAdapterFactory(TestGsonTypeFactoryImpl(null))
             .create()
 
     fun <T> executeFromJson(clazz: Class<T>, jsonString: String): T = createBuilder()
