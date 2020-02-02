@@ -18,7 +18,8 @@ public final class TestEnumWithDefault_GsonTypeAdapter extends GsonPathTypeAdapt
 
     @Override
     public TestEnumWithDefault readImpl(JsonReader in) throws IOException {
-        switch (in.nextString()) {
+        String enumValue = in.nextString();
+        switch (enumValue) {
             case "value-abc":
                 return generator.enums.with_default.TestEnumWithDefault.VALUE_ABC;
             case "value-def":
@@ -28,7 +29,7 @@ public final class TestEnumWithDefault_GsonTypeAdapter extends GsonPathTypeAdapt
             case "value-1":
                 return generator.enums.with_default.TestEnumWithDefault.VALUE_1;
             default:
-                return null;
+                return generator.enums.with_default.TestEnumWithDefault.VALUE_ABC;
         }
     }
 

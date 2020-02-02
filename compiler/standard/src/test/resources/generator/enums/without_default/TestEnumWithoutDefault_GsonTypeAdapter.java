@@ -9,6 +9,7 @@ import gsonpath.GsonPathGenerated;
 import gsonpath.GsonPathTypeAdapter;
 import java.io.IOException;
 import java.lang.Override;
+import java.lang.String;
 
 @GsonPathGenerated
 public final class TestEnumWithoutDefault_GsonTypeAdapter extends GsonPathTypeAdapter<TestEnumWithoutDefault> {
@@ -18,7 +19,8 @@ public final class TestEnumWithoutDefault_GsonTypeAdapter extends GsonPathTypeAd
 
     @Override
     public TestEnumWithoutDefault readImpl(JsonReader in) throws IOException {
-        switch (in.nextString()) {
+        String enumValue = in.nextString();
+        switch (enumValue) {
             case "value-abc":
                 return generator.enums.without_default.TestEnumWithoutDefault.VALUE_ABC;
             case "value-def":
@@ -28,7 +30,7 @@ public final class TestEnumWithoutDefault_GsonTypeAdapter extends GsonPathTypeAd
             case "value-1":
                 return generator.enums.without_default.TestEnumWithoutDefault.VALUE_1;
             default:
-                return null;
+                throw new gsonpath.JsonUnexpectedEnumValueException(enumValue, "generator.enums.without_default.TestEnumWithoutDefault");
         }
     }
 

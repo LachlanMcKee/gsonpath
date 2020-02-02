@@ -80,7 +80,8 @@ class EnumGsonAdapterGenerator(
         val typeName = ClassName.get(element)
         return AdapterMethodBuilder.createReadMethodBuilder(typeName).applyAndBuild {
             code {
-                switch("in.nextString()") {
+                createVariable(String::class.java, "enumValue", "in.nextString()")
+                switch("enumValue") {
                     handleFields(element, fields, fieldNamingPolicy) { enumConstantName, label ->
                         case("\"$label\"", addBreak = false) {
                             `return`("$typeName.$enumConstantName"
@@ -88,7 +89,7 @@ class EnumGsonAdapterGenerator(
                         }
                     }
                     default(addBreak = false) {
-                        `return`("null")
+                        addEscapedStatement("""throw new gsonpath.JsonUnexpectedEnumValueException(enumValue, "$typeName")""")
                     }
                 }
             }

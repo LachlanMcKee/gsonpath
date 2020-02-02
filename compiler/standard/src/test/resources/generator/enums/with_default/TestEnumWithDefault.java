@@ -6,6 +6,7 @@ import gsonpath.EnumGsonAdapter;
 
 @EnumGsonAdapter(fieldNamingPolicy = FieldNamingPolicy.LOWER_CASE_WITH_DASHES)
 enum TestEnumWithDefault {
+    @EnumGsonAdapter.DefaultValue
     VALUE_ABC,
     VALUE_DEF,
     @SerializedName("custom")
