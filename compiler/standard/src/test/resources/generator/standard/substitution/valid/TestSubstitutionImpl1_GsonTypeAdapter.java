@@ -1,6 +1,5 @@
 package generator.standard.substitution.valid;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -12,8 +11,8 @@ import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestSubstitutionImpl1_GsonTypeAdapter extends GsonPathTypeAdapter<TestSubstitutionImpl1> {
-    public TestSubstitutionImpl1_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestSubstitutionImpl1_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

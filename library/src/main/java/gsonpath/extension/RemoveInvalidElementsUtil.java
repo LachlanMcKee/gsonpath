@@ -35,8 +35,8 @@ public class RemoveInvalidElementsUtil {
     public static <T> List<T> removeInvalidElementsList(
             Class<T> clazz,
             Gson gson,
-            JsonReader in,
-            GsonPathErrorListener errorListener) throws IOException {
+            GsonPathErrorListener errorListener,
+            JsonReader in) throws IOException {
 
         if (!isValidValue(in)) {
             return null;
@@ -50,11 +50,11 @@ public class RemoveInvalidElementsUtil {
     public static <T> T[] removeInvalidElementsArray(
             Class<T> clazz,
             Gson gson,
+            GsonPathErrorListener errorListener,
             JsonReader in,
-            CreateArrayFunction<T> createArrayFunction,
-            GsonPathErrorListener errorListener) throws IOException {
+            CreateArrayFunction<T> createArrayFunction) throws IOException {
 
-        List<T> adjustedList = removeInvalidElementsList(clazz, gson, in, errorListener);
+        List<T> adjustedList = removeInvalidElementsList(clazz, gson, errorListener, in);
         if (adjustedList == null) {
             return null;
         }

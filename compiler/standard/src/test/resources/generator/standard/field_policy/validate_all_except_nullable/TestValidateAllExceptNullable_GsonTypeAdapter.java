@@ -1,6 +1,5 @@
 package generator.standard.field_policy.validate_all_except_nullable;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -14,8 +13,8 @@ import java.lang.Override;
 @GsonPathGenerated
 public final class TestValidateAllExceptNullable_GsonTypeAdapter extends GsonPathTypeAdapter<TestValidateAllExceptNullable> {
 
-    public TestValidateAllExceptNullable_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestValidateAllExceptNullable_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

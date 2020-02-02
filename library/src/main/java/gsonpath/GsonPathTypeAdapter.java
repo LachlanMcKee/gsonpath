@@ -11,9 +11,11 @@ import static gsonpath.GsonUtil.isValidValue;
 
 public abstract class GsonPathTypeAdapter<T> extends TypeAdapter<T> {
     protected final Gson gson;
+    protected final GsonPathErrorListener errorListener;
 
-    public GsonPathTypeAdapter(Gson gson) {
-        this.gson = gson;
+    public GsonPathTypeAdapter(Arguments arguments) {
+        this.gson = arguments.gson;
+        this.errorListener = arguments.errorListener;
     }
 
     @Override
@@ -38,4 +40,14 @@ public abstract class GsonPathTypeAdapter<T> extends TypeAdapter<T> {
     public abstract T readImpl(JsonReader in) throws IOException;
 
     public abstract void writeImpl(JsonWriter out, T value) throws IOException;
+
+    public static final class Arguments {
+        private final Gson gson;
+        private final GsonPathErrorListener errorListener;
+
+        public Arguments(Gson gson, GsonPathErrorListener errorListener) {
+            this.gson = gson;
+            this.errorListener = errorListener;
+        }
+    }
 }

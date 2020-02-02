@@ -1,6 +1,5 @@
 package generator.standard.naming_policy.lowercase_underscores;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -12,8 +11,8 @@ import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestNamePolicyLowerCaseUnderscores_GsonTypeAdapter extends GsonPathTypeAdapter<TestNamePolicyLowerCaseUnderscores> {
-    public TestNamePolicyLowerCaseUnderscores_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestNamePolicyLowerCaseUnderscores_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

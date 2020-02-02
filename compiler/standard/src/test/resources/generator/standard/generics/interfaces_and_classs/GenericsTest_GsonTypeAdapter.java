@@ -1,6 +1,5 @@
 package generator.standard.generics.interfaces_and_classs;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -16,8 +15,8 @@ import java.util.Map;
 
 @GsonPathGenerated
 public final class GenericsTest_GsonTypeAdapter extends GsonPathTypeAdapter<GenericsTest> {
-    public GenericsTest_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public GenericsTest_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package generator.standard.nested_json.root_nesting;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -12,8 +11,8 @@ import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestRootNesting_GsonTypeAdapter extends GsonPathTypeAdapter<TestRootNesting> {
-    public TestRootNesting_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestRootNesting_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

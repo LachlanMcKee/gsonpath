@@ -1,6 +1,5 @@
 package generator.interf.java8;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -13,8 +12,8 @@ import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestJava8Interface_GsonTypeAdapter extends GsonPathTypeAdapter<TestJava8Interface> {
-    public TestJava8Interface_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestJava8Interface_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

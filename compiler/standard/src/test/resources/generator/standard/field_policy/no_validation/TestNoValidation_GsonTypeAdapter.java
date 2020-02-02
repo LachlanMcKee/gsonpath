@@ -1,6 +1,5 @@
 package generator.standard.field_policy.no_validation;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -13,8 +12,8 @@ import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestNoValidation_GsonTypeAdapter extends GsonPathTypeAdapter<TestNoValidation> {
-    public TestNoValidation_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestNoValidation_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override

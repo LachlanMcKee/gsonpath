@@ -1,6 +1,5 @@
 package generator.standard.naming_policy.identity;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonPathGenerated;
@@ -12,8 +11,8 @@ import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestNamePolicyIdentity_GsonTypeAdapter extends GsonPathTypeAdapter<TestNamePolicyIdentity> {
-    public TestNamePolicyIdentity_GsonTypeAdapter(Gson gson) {
-        super(gson);
+    public TestNamePolicyIdentity_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
+        super(arguments);
     }
 
     @Override
