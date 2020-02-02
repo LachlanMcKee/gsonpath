@@ -22,13 +22,13 @@ public final class TestEnumWithoutDefault_GsonTypeAdapter extends GsonPathTypeAd
         String enumValue = in.nextString();
         switch (enumValue) {
             case "value-abc":
-                return generator.enums.without_default.TestEnumWithoutDefault.VALUE_ABC;
+                return TestEnumWithoutDefault.VALUE_ABC;
             case "value-def":
-                return generator.enums.without_default.TestEnumWithoutDefault.VALUE_DEF;
+                return TestEnumWithoutDefault.VALUE_DEF;
             case "custom":
-                return generator.enums.without_default.TestEnumWithoutDefault.VALUE_GHI;
+                return TestEnumWithoutDefault.VALUE_GHI;
             case "value-1":
-                return generator.enums.without_default.TestEnumWithoutDefault.VALUE_1;
+                return TestEnumWithoutDefault.VALUE_1;
             default:
                 throw new gsonpath.JsonUnexpectedEnumValueException(enumValue, "generator.enums.without_default.TestEnumWithoutDefault");
         }
