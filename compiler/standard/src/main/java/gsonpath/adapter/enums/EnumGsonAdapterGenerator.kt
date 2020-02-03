@@ -76,6 +76,9 @@ class EnumGsonAdapterGenerator(
                     }
                     default(addBreak = false) {
                         if (properties.defaultValue != null) {
+                            `if`("listener != null") {
+                                addStatement("listener.onDefaultEnum(\$T.class, enumValue)", properties.enumTypeName)
+                            }
                             `return`("\$T", properties.defaultValue.enumValueTypeName)
                         } else {
                             addEscapedStatement("""throw new gsonpath.JsonUnexpectedEnumValueException(enumValue, "$enumTypeName")""")

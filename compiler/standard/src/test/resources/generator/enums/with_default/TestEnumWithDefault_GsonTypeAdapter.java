@@ -31,6 +31,9 @@ public final class TestEnumWithDefault_GsonTypeAdapter extends GsonPathTypeAdapt
             case "value-1":
                 return TestEnumWithDefault.VALUE_1;
             default:
+                if (listener != null) {
+                    listener.onDefaultEnum(TestEnumWithDefault.class, enumValue);
+                }
                 return TestEnumWithDefault.VALUE_ABC;
         }
     }
