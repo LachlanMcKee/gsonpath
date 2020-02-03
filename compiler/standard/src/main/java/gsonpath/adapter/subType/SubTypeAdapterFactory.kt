@@ -10,7 +10,8 @@ import gsonpath.LazyFactoryMetadata
 import gsonpath.adapter.AdapterFactory
 import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.Constants
-import gsonpath.adapter.Constants.ARGUMENTS
+import gsonpath.adapter.Constants.ERROR_LISTENER
+import gsonpath.adapter.Constants.GSON
 import gsonpath.adapter.common.GsonSubTypeFactory
 import gsonpath.adapter.common.GsonSubTypeResult
 import gsonpath.adapter.util.AdapterFactoryUtil.getAnnotatedModelElements
@@ -77,9 +78,9 @@ object SubTypeAdapterFactory : AdapterFactory {
 
         constructor {
             addModifiers(Modifier.PUBLIC)
-            addParameter(Gson::class.java, "gson")
-            addParameter(GsonPathErrorListener::class.java, "errorListener")
-            addStatement("super(gson, errorListener)")
+            addParameter(Gson::class.java, GSON)
+            addParameter(GsonPathErrorListener::class.java, ERROR_LISTENER)
+            addStatement("super($GSON, $ERROR_LISTENER)")
         }
 
         addMethod(result.readMethodSpecs)

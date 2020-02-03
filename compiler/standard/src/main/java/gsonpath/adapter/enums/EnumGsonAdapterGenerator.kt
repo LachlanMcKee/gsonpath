@@ -8,6 +8,8 @@ import gsonpath.*
 import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.adapter.Constants
+import gsonpath.adapter.Constants.ERROR_LISTENER
+import gsonpath.adapter.Constants.GSON
 import gsonpath.adapter.standard.adapter.properties.PropertyFetcher
 import gsonpath.adapter.util.writeFile
 import gsonpath.compiler.generateClassName
@@ -52,9 +54,9 @@ class EnumGsonAdapterGenerator(
 
         constructor {
             addModifiers(Modifier.PUBLIC)
-            addParameter(Gson::class.java, "gson")
-            addParameter(GsonPathErrorListener::class.java, "errorListener")
-            addStatement("super(gson, errorListener)")
+            addParameter(Gson::class.java, GSON)
+            addParameter(GsonPathErrorListener::class.java, ERROR_LISTENER)
+            addStatement("super($GSON, $ERROR_LISTENER)")
         }
 
         addMethod(createReadMethod(properties))
