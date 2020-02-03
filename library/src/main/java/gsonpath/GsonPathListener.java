@@ -1,5 +1,5 @@
 package gsonpath;
 
-public interface GsonPathErrorListener {
+public interface GsonPathListener {
     void onListElementIgnored(Exception exception);
 }

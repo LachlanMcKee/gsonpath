@@ -4,7 +4,7 @@ import com.squareup.javapoet.AnnotationSpec
 import gsonpath.GsonPathGenerated
 
 object Constants {
-    const val ERROR_LISTENER = "errorListener"
+    const val LISTENER = "listener"
     const val GSON = "gson"
     const val NULL = "null"
     const val IN = "in"

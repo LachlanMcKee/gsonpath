@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.TypeAdapter;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
-import gsonpath.GsonPathErrorListener;
+import gsonpath.GsonPathListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,15 +20,15 @@ public class RemoveInvalidElementsUtil {
             TypeAdapter<T> adapter,
             JsonReader in,
             List<T> outputList,
-            GsonPathErrorListener errorListener) {
+            GsonPathListener listener) {
 
         JsonArray jsonArray = Streams.parse(in).getAsJsonArray();
         for (JsonElement jsonElement : jsonArray) {
             try {
                 outputList.add(adapter.fromJsonTree(jsonElement));
             } catch (Exception e) {
-                if (errorListener != null) {
-                    errorListener.onListElementIgnored(e);
+                if (listener != null) {
+                    listener.onListElementIgnored(e);
                 }
             }
         }
@@ -37,7 +37,7 @@ public class RemoveInvalidElementsUtil {
     public static <T> List<T> removeInvalidElementsList(
             Class<T> clazz,
             Gson gson,
-            GsonPathErrorListener errorListener,
+            GsonPathListener listener,
             JsonReader in) throws IOException {
 
         if (!isValidValue(in)) {
@@ -45,18 +45,18 @@ public class RemoveInvalidElementsUtil {
         }
         TypeAdapter<T> adapter = gson.getAdapter(clazz);
         List<T> elements = new ArrayList<>();
-        removeInvalidElementsList(adapter, in, elements, errorListener);
+        removeInvalidElementsList(adapter, in, elements, listener);
         return elements;
     }
 
     public static <T> T[] removeInvalidElementsArray(
             Class<T> clazz,
             Gson gson,
-            GsonPathErrorListener errorListener,
+            GsonPathListener listener,
             JsonReader in,
             CreateArrayFunction<T> createArrayFunction) throws IOException {
 
-        List<T> adjustedList = removeInvalidElementsList(clazz, gson, errorListener, in);
+        List<T> adjustedList = removeInvalidElementsList(clazz, gson, listener, in);
         if (adjustedList == null) {
             return null;
         }

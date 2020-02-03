@@ -6,10 +6,9 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeSpec
 import gsonpath.*
 import gsonpath.adapter.AdapterGenerationResult
-import gsonpath.adapter.Constants
-import gsonpath.adapter.Constants.ERROR_LISTENER
 import gsonpath.adapter.Constants.GENERATED_ANNOTATION
 import gsonpath.adapter.Constants.GSON
+import gsonpath.adapter.Constants.LISTENER
 import gsonpath.adapter.standard.adapter.read.ReadFunctions
 import gsonpath.adapter.standard.adapter.write.WriteFunctions
 import gsonpath.adapter.util.writeFile
@@ -48,8 +47,8 @@ class StandardGsonAdapterGenerator(
         constructor {
             addModifiers(Modifier.PUBLIC)
             addParameter(Gson::class.java, GSON)
-            addParameter(GsonPathErrorListener::class.java, ERROR_LISTENER)
-            addStatement("super($GSON, $ERROR_LISTENER)")
+            addParameter(GsonPathListener::class.java, LISTENER)
+            addStatement("super($GSON, $LISTENER)")
         }
 
         readFunctions.handleRead(this, metadata.readParams)

@@ -3,8 +3,8 @@ package generator.standard.field_policy.validate_explicit_non_null;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathErrorListener;
 import gsonpath.GsonPathGenerated;
+import gsonpath.GsonPathListener;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.GsonUtil;
 import gsonpath.JsonReaderHelper;
@@ -14,8 +14,8 @@ import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestValidateWithDefaultValue_GsonTypeAdapter extends GsonPathTypeAdapter<TestValidateWithDefaultValue> {
-    public TestValidateWithDefaultValue_GsonTypeAdapter(Gson gson, GsonPathErrorListener errorListener) {
-        super(gson, errorListener);
+    public TestValidateWithDefaultValue_GsonTypeAdapter(Gson gson, GsonPathListener listener) {
+        super(gson, listener);
     }
 
     @Override

@@ -7,7 +7,7 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathErrorListener;
+import gsonpath.GsonPathListener;
 import gsonpath.extension.RemoveInvalidElementsUtil;
 
 import java.io.IOException;
@@ -22,10 +22,10 @@ import static gsonpath.GsonUtil.isValidValue;
  * Any elements being deserialied that throw an exception are removed from the list.
  */
 public final class GsonSafeListTypeAdapterFactory implements TypeAdapterFactory {
-    private final GsonPathErrorListener errorListener;
+    private final GsonPathListener listener;
 
-    public GsonSafeListTypeAdapterFactory(GsonPathErrorListener errorListener) {
-        this.errorListener = errorListener;
+    public GsonSafeListTypeAdapterFactory(GsonPathListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -38,17 +38,17 @@ public final class GsonSafeListTypeAdapterFactory implements TypeAdapterFactory 
         TypeAdapter<?> elementTypeAdapter = gson.getAdapter(TypeToken.get(elementType));
 
         @SuppressWarnings({"unchecked", "rawtypes"})
-        TypeAdapter<T> result = new Adapter(elementTypeAdapter, errorListener);
+        TypeAdapter<T> result = new Adapter(elementTypeAdapter, listener);
         return result;
     }
 
     private static final class Adapter<E> extends TypeAdapter<GsonSafeList<E>> {
         private final TypeAdapter<E> elementTypeAdapter;
-        private final GsonPathErrorListener errorListener;
+        private final GsonPathListener listener;
 
-        Adapter(TypeAdapter<E> elementTypeAdapter, GsonPathErrorListener errorListener) {
+        Adapter(TypeAdapter<E> elementTypeAdapter, GsonPathListener listener) {
             this.elementTypeAdapter = elementTypeAdapter;
-            this.errorListener = errorListener;
+            this.listener = listener;
         }
 
         @Override
@@ -58,7 +58,7 @@ public final class GsonSafeListTypeAdapterFactory implements TypeAdapterFactory 
             }
 
             GsonSafeList<E> collection = new GsonSafeList<>();
-            RemoveInvalidElementsUtil.removeInvalidElementsList(elementTypeAdapter, in, collection, errorListener);
+            RemoveInvalidElementsUtil.removeInvalidElementsList(elementTypeAdapter, in, collection, listener);
             return collection;
         }
 

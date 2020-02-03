@@ -3,8 +3,8 @@ package generator.standard.invalid.immutable;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathErrorListener;
 import gsonpath.GsonPathGenerated;
+import gsonpath.GsonPathListener;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.GsonUtil;
 import gsonpath.JsonReaderHelper;
@@ -16,8 +16,8 @@ import java.util.List;
 
 @GsonPathGenerated
 public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends GsonPathTypeAdapter<TestImmutableRemoveInvalidElements> {
-    public TestImmutableRemoveInvalidElements_GsonTypeAdapter(Gson gson, GsonPathErrorListener errorListener) {
-        super(gson, errorListener);
+    public TestImmutableRemoveInvalidElements_GsonTypeAdapter(Gson gson, GsonPathListener listener) {
+        super(gson, listener);
     }
 
     @Override
@@ -30,7 +30,7 @@ public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends Gs
             switch (in.nextName()) {
                 case "value1":
                     // Extension (Read) - 'RemoveInvalidElements' Annotation
-                    value_value1 = RemoveInvalidElementsUtil.removeInvalidElementsArray(String.class, gson, errorListener, in, new RemoveInvalidElementsUtil.CreateArrayFunction<String>() {
+                    value_value1 = RemoveInvalidElementsUtil.removeInvalidElementsArray(String.class, gson, listener, in, new RemoveInvalidElementsUtil.CreateArrayFunction<String>() {
                         @Override
                         public String[] createArray() {
                             return new String[0];
@@ -41,7 +41,7 @@ public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends Gs
 
                 case "value2":
                     // Extension (Read) - 'RemoveInvalidElements' Annotation
-                    value_value2 = RemoveInvalidElementsUtil.removeInvalidElementsList(String.class, gson, errorListener, in);
+                    value_value2 = RemoveInvalidElementsUtil.removeInvalidElementsList(String.class, gson, listener, in);
 
                     break;
 

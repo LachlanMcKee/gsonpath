@@ -3,8 +3,8 @@ package generator.standard.naming_policy.identity;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathErrorListener;
 import gsonpath.GsonPathGenerated;
+import gsonpath.GsonPathListener;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.JsonReaderHelper;
 import java.io.IOException;
@@ -13,8 +13,8 @@ import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestNamePolicyIdentity_GsonTypeAdapter extends GsonPathTypeAdapter<TestNamePolicyIdentity> {
-    public TestNamePolicyIdentity_GsonTypeAdapter(Gson gson, GsonPathErrorListener errorListener) {
-        super(gson, errorListener);
+    public TestNamePolicyIdentity_GsonTypeAdapter(Gson gson, GsonPathListener listener) {
+        super(gson, listener);
     }
 
     @Override

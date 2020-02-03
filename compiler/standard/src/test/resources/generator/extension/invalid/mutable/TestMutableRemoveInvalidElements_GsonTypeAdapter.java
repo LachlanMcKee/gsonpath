@@ -3,8 +3,8 @@ package generator.standard.invalid.mutable;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathErrorListener;
 import gsonpath.GsonPathGenerated;
+import gsonpath.GsonPathListener;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.GsonUtil;
 import gsonpath.JsonReaderHelper;
@@ -16,8 +16,8 @@ import java.util.List;
 
 @GsonPathGenerated
 public final class TestMutableRemoveInvalidElements_GsonTypeAdapter extends GsonPathTypeAdapter<TestMutableRemoveInvalidElements> {
-    public TestMutableRemoveInvalidElements_GsonTypeAdapter(Gson gson, GsonPathErrorListener errorListener) {
-        super(gson, errorListener);
+    public TestMutableRemoveInvalidElements_GsonTypeAdapter(Gson gson, GsonPathListener listener) {
+        super(gson, listener);
     }
 
     @Override
@@ -29,7 +29,7 @@ public final class TestMutableRemoveInvalidElements_GsonTypeAdapter extends Gson
             switch (in.nextName()) {
                 case "value1":
                     // Extension (Read) - 'RemoveInvalidElements' Annotation
-                    String[] value_value1 = RemoveInvalidElementsUtil.removeInvalidElementsArray(String.class, gson, errorListener, in, new RemoveInvalidElementsUtil.CreateArrayFunction<String>() {
+                    String[] value_value1 = RemoveInvalidElementsUtil.removeInvalidElementsArray(String.class, gson, listener, in, new RemoveInvalidElementsUtil.CreateArrayFunction<String>() {
                         @Override
                         public String[] createArray() {
                             return new String[0];
@@ -43,7 +43,7 @@ public final class TestMutableRemoveInvalidElements_GsonTypeAdapter extends Gson
 
                 case "value2":
                     // Extension (Read) - 'RemoveInvalidElements' Annotation
-                    List<String> value_value2 = RemoveInvalidElementsUtil.removeInvalidElementsList(String.class, gson, errorListener, in);
+                    List<String> value_value2 = RemoveInvalidElementsUtil.removeInvalidElementsList(String.class, gson, listener, in);
 
                     if (value_value2 != null) {
                         result.value2 = value_value2;

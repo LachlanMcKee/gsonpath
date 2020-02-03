@@ -12,8 +12,8 @@ import gsonpath.safe.GsonSafeListTypeAdapterFactory;
 public final class GsonPathTypeAdapterFactory implements TypeAdapterFactory {
     private final GsonSafeListTypeAdapterFactory safeListFactory;
 
-    public GsonPathTypeAdapterFactory(GsonPathErrorListener errorListener) {
-        safeListFactory = new GsonSafeListTypeAdapterFactory(errorListener);
+    public GsonPathTypeAdapterFactory(GsonPathListener listener) {
+        safeListFactory = new GsonSafeListTypeAdapterFactory(listener);
     }
 
     @Override

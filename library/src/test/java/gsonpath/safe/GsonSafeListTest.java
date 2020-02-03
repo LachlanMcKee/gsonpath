@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import gsonpath.GsonPathErrorListener;
+import gsonpath.GsonPathListener;
 import gsonpath.GsonPathTypeAdapterFactory;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -25,9 +25,9 @@ public class GsonSafeListTest {
     public void testUsingGsonSafeArrayList() {
         MockitoAnnotations.initMocks(this);
 
-        GsonPathErrorListener errorListener = mock(GsonPathErrorListener.class);
+        GsonPathListener listener = mock(GsonPathListener.class);
         Gson gson = new GsonBuilder()
-                .registerTypeAdapterFactory(new GsonPathTypeAdapterFactory(errorListener))
+                .registerTypeAdapterFactory(new GsonPathTypeAdapterFactory(listener))
                 .create();
 
         InputStream resourceAsStream = ClassLoader
@@ -43,7 +43,7 @@ public class GsonSafeListTest {
         assertEquals(new Integer(1), typesList.get(0));
         assertEquals(new Integer(4), typesList.get(1));
 
-        verify(errorListener, times(2)).onListElementIgnored(exceptionArgumentCaptor.capture());
+        verify(listener, times(2)).onListElementIgnored(exceptionArgumentCaptor.capture());
         Exception exception1 = exceptionArgumentCaptor.getAllValues().get(0);
         assertEquals(JsonSyntaxException.class, exception1.getClass());
         assertEquals("java.lang.NumberFormatException: For input string: \"a\"", exception1.getMessage());
