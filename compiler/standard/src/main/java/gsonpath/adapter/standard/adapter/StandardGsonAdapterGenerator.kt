@@ -1,12 +1,10 @@
 package gsonpath.adapter.standard.adapter
 
+import com.google.gson.Gson
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeSpec
-import gsonpath.AutoGsonAdapter
-import gsonpath.GsonPathTypeAdapter
-import gsonpath.LazyFactoryMetadata
-import gsonpath.ProcessingException
+import gsonpath.*
 import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.Constants.GENERATED_ANNOTATION
 import gsonpath.adapter.standard.adapter.read.ReadFunctions
@@ -44,11 +42,11 @@ class StandardGsonAdapterGenerator(
         superclass(ParameterizedTypeName.get(ClassName.get(GsonPathTypeAdapter::class.java), metadata.modelClassName))
         addAnnotation(GENERATED_ANNOTATION)
 
-        // Add the constructor which takes a gson instance for future use.
         constructor {
             addModifiers(Modifier.PUBLIC)
-            addParameter(GsonPathTypeAdapter.Arguments::class.java, "arguments")
-            addStatement("super(arguments)")
+            addParameter(Gson::class.java, "gson")
+            addParameter(GsonPathErrorListener::class.java, "errorListener")
+            addStatement("super(gson, errorListener)")
         }
 
         readFunctions.handleRead(this, metadata.readParams)

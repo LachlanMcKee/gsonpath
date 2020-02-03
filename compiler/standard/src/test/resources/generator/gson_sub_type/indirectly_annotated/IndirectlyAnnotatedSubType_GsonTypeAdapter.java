@@ -1,10 +1,12 @@
 package generator.gson_sub_type.indirectly_annotated;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.TypeAdapter;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonPathErrorListener;
 import gsonpath.GsonPathGenerated;
 import gsonpath.GsonPathTypeAdapter;
 
@@ -15,8 +17,8 @@ import java.lang.Override;
 @GsonPathGenerated
 public final class IndirectlyAnnotatedSubType_GsonTypeAdapter extends GsonPathTypeAdapter<IndirectlyAnnotatedSubType> {
 
-    public IndirectlyAnnotatedSubType_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
-        super(arguments);
+    public IndirectlyAnnotatedSubType_GsonTypeAdapter(Gson gson, GsonPathErrorListener errorListener) {
+        super(gson, errorListener);
     }
 
     @Override

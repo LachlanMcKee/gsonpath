@@ -1,7 +1,9 @@
 package generator.standard.delimiter.standard;
 
+import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonPathErrorListener;
 import gsonpath.GsonPathGenerated;
 import gsonpath.GsonPathTypeAdapter;
 import gsonpath.JsonReaderHelper;
@@ -11,8 +13,8 @@ import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestStandardDelimiter_GsonTypeAdapter extends GsonPathTypeAdapter<TestStandardDelimiter> {
-    public TestStandardDelimiter_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
-        super(arguments);
+    public TestStandardDelimiter_GsonTypeAdapter(Gson gson, GsonPathErrorListener errorListener) {
+        super(gson, errorListener);
     }
 
     @Override

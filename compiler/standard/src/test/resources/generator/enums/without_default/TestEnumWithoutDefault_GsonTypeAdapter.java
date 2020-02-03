@@ -2,8 +2,10 @@ package generator.enums.without_default;
 
 import static gsonpath.GsonUtil.*;
 
+import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonPathErrorListener;
 import gsonpath.GsonPathGenerated;
 import gsonpath.GsonPathTypeAdapter;
 import java.io.IOException;
@@ -12,8 +14,8 @@ import java.lang.String;
 
 @GsonPathGenerated
 public final class TestEnumWithoutDefault_GsonTypeAdapter extends GsonPathTypeAdapter<TestEnumWithoutDefault> {
-    public TestEnumWithoutDefault_GsonTypeAdapter(GsonPathTypeAdapter.Arguments arguments) {
-        super(arguments);
+    public TestEnumWithoutDefault_GsonTypeAdapter(Gson gson, GsonPathErrorListener errorListener) {
+        super(gson, errorListener);
     }
 
     @Override

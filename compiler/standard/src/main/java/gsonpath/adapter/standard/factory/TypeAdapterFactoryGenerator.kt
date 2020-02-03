@@ -8,9 +8,7 @@ import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeSpec
 import gsonpath.GsonPathErrorListener
-import gsonpath.GsonPathTypeAdapter
 import gsonpath.adapter.AdapterGenerationResult
-import gsonpath.adapter.Constants.ARGUMENTS
 import gsonpath.adapter.Constants.ERROR_LISTENER
 import gsonpath.adapter.Constants.GSON
 import gsonpath.adapter.Constants.NULL
@@ -135,12 +133,12 @@ class TypeAdapterFactoryGenerator(private val fileWriter: FileWriter) {
 
                     if (currentAdapterIndex == 0) {
                         ifWithoutClose(condition, *result.adapterGenericTypeClassNames) {
-                            `return`("new \$T($ARGUMENTS)", result.adapterClassName)
+                            `return`("new \$T($GSON, $ERROR_LISTENER)", result.adapterClassName)
                         }
                     } else {
                         newLine() // New line for easier readability.
                         elseIf(condition, *result.adapterGenericTypeClassNames) {
-                            `return`("new \$T($ARGUMENTS)", result.adapterClassName)
+                            `return`("new \$T($GSON, $ERROR_LISTENER)", result.adapterClassName)
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 package gsonpath.adapter.enums
 
+import com.google.gson.Gson
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterizedTypeName
@@ -7,7 +8,6 @@ import gsonpath.*
 import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.adapter.Constants
-import gsonpath.adapter.Constants.ARGUMENTS
 import gsonpath.adapter.standard.adapter.properties.PropertyFetcher
 import gsonpath.adapter.util.writeFile
 import gsonpath.compiler.generateClassName
@@ -50,13 +50,11 @@ class EnumGsonAdapterGenerator(
         superclass(ParameterizedTypeName.get(ClassName.get(GsonPathTypeAdapter::class.java), properties.enumTypeName))
         addAnnotation(Constants.GENERATED_ANNOTATION)
 
-        // Add the constructor which takes a gson instance for future use.
         constructor {
             addModifiers(Modifier.PUBLIC)
-            addParameter(GsonPathTypeAdapter.Arguments::class.java, ARGUMENTS)
-            code {
-                addStatement("super($ARGUMENTS)")
-            }
+            addParameter(Gson::class.java, "gson")
+            addParameter(GsonPathErrorListener::class.java, "errorListener")
+            addStatement("super(gson, errorListener)")
         }
 
         addMethod(createReadMethod(properties))
