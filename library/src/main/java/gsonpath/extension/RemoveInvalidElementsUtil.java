@@ -27,7 +27,9 @@ public class RemoveInvalidElementsUtil {
             try {
                 outputList.add(adapter.fromJsonTree(jsonElement));
             } catch (Exception e) {
-                errorListener.onListElementIgnored(e);
+                if (errorListener != null) {
+                    errorListener.onListElementIgnored(e);
+                }
             }
         }
     }

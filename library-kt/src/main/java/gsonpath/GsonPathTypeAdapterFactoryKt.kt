@@ -11,7 +11,7 @@ import gsonpath.result.GsonResultListTypeAdapterFactory
  *
  * This version of the class proxies to GsonPathTypeAdapterFactory, so it can be used as the sole factory.
  */
-class GsonPathTypeAdapterFactoryKt(errorListener: GsonPathErrorListener) : TypeAdapterFactory {
+class GsonPathTypeAdapterFactoryKt(errorListener: GsonPathErrorListener?) : TypeAdapterFactory {
     override fun <T> create(gson: Gson, type: TypeToken<T>): TypeAdapter<T>? {
         return gsonPathFactory.create(gson, type) ?: gsonResultListFactory.create(gson, type)
     }
