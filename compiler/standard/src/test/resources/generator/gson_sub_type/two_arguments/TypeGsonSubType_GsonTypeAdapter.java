@@ -6,9 +6,9 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
-
 import java.io.IOException;
 import java.lang.Class;
 import java.lang.Override;
@@ -17,13 +17,12 @@ import java.util.List;
 
 @GsonPathGenerated
 public final class TypeGsonSubType_GsonTypeAdapter extends GsonPathTypeAdapter<TypeGsonSubType> {
-
     public TypeGsonSubType_GsonTypeAdapter(Gson gson) {
         super(gson);
     }
 
     @Override
-    public TypeGsonSubType readImpl(JsonReader in) throws IOException {
+    public TypeGsonSubType readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         JsonElement jsonElement = Streams.parse(in);
 
         JsonElement subTypeElement0_jsonElement = jsonElement.getAsJsonObject().get("type1");

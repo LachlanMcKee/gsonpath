@@ -3,12 +3,12 @@ package generator.standard.invalid.immutable;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.extension.RemoveInvalidElementsUtil;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
@@ -21,7 +21,8 @@ public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends Gs
     }
 
     @Override
-    public TestImmutableRemoveInvalidElements readImpl(JsonReader in) throws IOException {
+    public TestImmutableRemoveInvalidElements readImpl(JsonReader in, GsonErrors gsonErrors) throws
+            IOException {
         String[] value_value1 = null;
         List<String> value_value2 = null;
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
@@ -52,8 +53,8 @@ public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends Gs
             }
         }
         return new TestImmutableRemoveInvalidElements(
-                value_value1,
-                value_value2);
+            value_value1,
+            value_value2);
     }
 
     @Override
@@ -73,7 +74,7 @@ public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends Gs
             gson.getAdapter(new com.google.gson.reflect.TypeToken<List<String>>(){}).write(out, obj1);
         }
 
-        // End
+        // End 
         out.endObject();
     }
 }

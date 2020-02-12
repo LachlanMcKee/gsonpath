@@ -3,24 +3,24 @@ package generator.standard.field_policy.validate_explicit_non_null;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathTypeAdapter<TestValidateExplicitNonNull> {
-
     public TestValidateExplicitNonNull_GsonTypeAdapter(Gson gson) {
         super(gson);
     }
 
     @Override
-    public TestValidateExplicitNonNull readImpl(JsonReader in) throws IOException {
+    public TestValidateExplicitNonNull readImpl(JsonReader in, GsonErrors gsonErrors) throws
+            IOException {
         TestValidateExplicitNonNull result = new TestValidateExplicitNonNull();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
         boolean[] mandatoryFieldsCheckList = new boolean[3];
@@ -28,7 +28,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
         while (jsonReaderHelper.handleObject(0, 4)) {
             switch (in.nextName()) {
                 case "mandatory1":
-                    Integer value_mandatory1 = gson.getAdapter(Integer.class).read(in);
+                    Integer value_mandatory1 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     if (value_mandatory1 != null) {
                         result.mandatory1 = value_mandatory1;
                         mandatoryFieldsCheckList[0] = true;
@@ -39,7 +39,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
                     break;
 
                 case "mandatory2":
-                    Integer value_mandatory2 = gson.getAdapter(Integer.class).read(in);
+                    Integer value_mandatory2 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     if (value_mandatory2 != null) {
                         result.mandatory2 = value_mandatory2;
                         mandatoryFieldsCheckList[1] = true;
@@ -50,7 +50,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
                     break;
 
                 case "mandatory3":
-                    Integer value_mandatory3 = gson.getAdapter(Integer.class).read(in);
+                    Integer value_mandatory3 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     if (value_mandatory3 != null) {
                         result.mandatory3 = value_mandatory3;
                         mandatoryFieldsCheckList[2] = true;
@@ -61,7 +61,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
                     break;
 
                 case "optional1":
-                    Integer value_optional1 = gson.getAdapter(Integer.class).read(in);
+                    Integer value_optional1 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     if (value_optional1 != null) {
                         result.optional1 = value_optional1;
                     }
@@ -128,7 +128,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
             GsonUtil.writeWithGenericAdapter(gson, obj3.getClass(), out, obj3);
         }
 
-        // End
+        // End 
         out.endObject();
     }
 }

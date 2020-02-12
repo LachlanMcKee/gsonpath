@@ -3,10 +3,11 @@ package generator.standard.nested_json.field_nesting_autocomplete_inheritance;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -18,7 +19,8 @@ public final class TestFieldNestingAutocomplete_GsonTypeAdapter extends GsonPath
     }
 
     @Override
-    public TestFieldNestingAutocomplete readImpl(JsonReader in) throws IOException {
+    public TestFieldNestingAutocomplete readImpl(JsonReader in, GsonErrors gsonErrors) throws
+            IOException {
         int value_Json1_value1 = 0;
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 2, 0);
 
@@ -28,7 +30,7 @@ public final class TestFieldNestingAutocomplete_GsonTypeAdapter extends GsonPath
                     while (jsonReaderHelper.handleObject(1, 1)) {
                         switch (in.nextName()) {
                             case "value1":
-                                value_Json1_value1 = gson.getAdapter(Integer.class).read(in);
+                                value_Json1_value1 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                 break;
 
                             default:
@@ -46,7 +48,7 @@ public final class TestFieldNestingAutocomplete_GsonTypeAdapter extends GsonPath
             }
         }
         return new TestFieldNestingAutocomplete(
-                value_Json1_value1);
+            value_Json1_value1);
     }
 
     @Override
@@ -63,7 +65,7 @@ public final class TestFieldNestingAutocomplete_GsonTypeAdapter extends GsonPath
 
         // End Json1
         out.endObject();
-        // End
+        // End 
         out.endObject();
     }
 }

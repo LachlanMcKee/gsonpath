@@ -3,10 +3,10 @@ package generator.standard.empty.ignored_fields;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Override;
 
@@ -17,7 +17,7 @@ public final class TestIgnoredFields_GsonTypeAdapter extends GsonPathTypeAdapter
     }
 
     @Override
-    public TestIgnoredFields readImpl(JsonReader in) throws IOException {
+    public TestIgnoredFields readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         TestIgnoredFields result = new TestIgnoredFields();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
@@ -28,7 +28,7 @@ public final class TestIgnoredFields_GsonTypeAdapter extends GsonPathTypeAdapter
     public void writeImpl(JsonWriter out, TestIgnoredFields value) throws IOException {
         // Begin
         out.beginObject();
-        // End
+        // End 
         out.endObject();
     }
 }

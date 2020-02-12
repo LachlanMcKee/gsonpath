@@ -3,10 +3,11 @@ package generator.standard.substitution.valid;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -18,7 +19,7 @@ public final class TestSubstitutionImpl1_GsonTypeAdapter extends GsonPathTypeAda
     }
 
     @Override
-    public TestSubstitutionImpl1 readImpl(JsonReader in) throws IOException {
+    public TestSubstitutionImpl1 readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         TestSubstitutionImpl1 result = new TestSubstitutionImpl1();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 3, 0);
 
@@ -28,7 +29,7 @@ public final class TestSubstitutionImpl1_GsonTypeAdapter extends GsonPathTypeAda
                     while (jsonReaderHelper.handleObject(1, 1)) {
                         switch (in.nextName()) {
                             case "Json1":
-                                Integer value_Impl1_A_Json1 = gson.getAdapter(Integer.class).read(in);
+                                Integer value_Impl1_A_Json1 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                 if (value_Impl1_A_Json1 != null) {
                                     result.value1 = value_Impl1_A_Json1;
                                 }
@@ -46,7 +47,7 @@ public final class TestSubstitutionImpl1_GsonTypeAdapter extends GsonPathTypeAda
                     while (jsonReaderHelper.handleObject(2, 1)) {
                         switch (in.nextName()) {
                             case "Json1":
-                                Integer value_Impl1_B_Json1 = gson.getAdapter(Integer.class).read(in);
+                                Integer value_Impl1_B_Json1 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                 if (value_Impl1_B_Json1 != null) {
                                     result.value2 = value_Impl1_B_Json1;
                                 }
@@ -93,7 +94,7 @@ public final class TestSubstitutionImpl1_GsonTypeAdapter extends GsonPathTypeAda
 
         // End Impl1_B
         out.endObject();
-        // End
+        // End 
         out.endObject();
     }
 }

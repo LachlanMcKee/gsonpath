@@ -3,10 +3,11 @@ package generator.standard.nested_json.field_nesting;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -18,14 +19,14 @@ public final class TestFieldNesting_GsonTypeAdapter extends GsonPathTypeAdapter<
     }
 
     @Override
-    public TestFieldNesting readImpl(JsonReader in) throws IOException {
+    public TestFieldNesting readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         TestFieldNesting result = new TestFieldNesting();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 3, 0);
 
         while (jsonReaderHelper.handleObject(0, 2)) {
             switch (in.nextName()) {
                 case "Json1":
-                    Integer value_Json1 = gson.getAdapter(Integer.class).read(in);
+                    Integer value_Json1 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     if (value_Json1 != null) {
                         result.value1 = value_Json1;
                     }
@@ -35,7 +36,7 @@ public final class TestFieldNesting_GsonTypeAdapter extends GsonPathTypeAdapter<
                     while (jsonReaderHelper.handleObject(1, 2)) {
                         switch (in.nextName()) {
                             case "Nest1":
-                                Integer value_Json2_Nest1 = gson.getAdapter(Integer.class).read(in);
+                                Integer value_Json2_Nest1 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                 if (value_Json2_Nest1 != null) {
                                     result.value2 = value_Json2_Nest1;
                                 }
@@ -45,14 +46,14 @@ public final class TestFieldNesting_GsonTypeAdapter extends GsonPathTypeAdapter<
                                 while (jsonReaderHelper.handleObject(2, 2)) {
                                     switch (in.nextName()) {
                                         case "EndPoint1":
-                                            Integer value_Json2_Nest2_EndPoint1 = gson.getAdapter(Integer.class).read(in);
+                                            Integer value_Json2_Nest2_EndPoint1 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                             if (value_Json2_Nest2_EndPoint1 != null) {
                                                 result.value3 = value_Json2_Nest2_EndPoint1;
                                             }
                                             break;
 
                                         case "EndPoint2":
-                                            Integer value_Json2_Nest2_EndPoint2 = gson.getAdapter(Integer.class).read(in);
+                                            Integer value_Json2_Nest2_EndPoint2 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                             if (value_Json2_Nest2_EndPoint2 != null) {
                                                 result.value4 = value_Json2_Nest2_EndPoint2;
                                             }
@@ -115,7 +116,7 @@ public final class TestFieldNesting_GsonTypeAdapter extends GsonPathTypeAdapter<
         out.endObject();
         // End Json2
         out.endObject();
-        // End
+        // End 
         out.endObject();
     }
 }

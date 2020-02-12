@@ -3,6 +3,7 @@ package generator.standard.custom_serialized_name_annotation;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
@@ -19,7 +20,8 @@ public final class TestCustomSerializedNameModel_GsonTypeAdapter extends GsonPat
     }
 
     @Override
-    public TestCustomSerializedNameModel readImpl(JsonReader in) throws IOException {
+    public TestCustomSerializedNameModel readImpl(JsonReader in, GsonErrors gsonErrors) throws
+            IOException {
         TestCustomSerializedNameModel result = new TestCustomSerializedNameModel();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 3, 0);
 
@@ -29,14 +31,14 @@ public final class TestCustomSerializedNameModel_GsonTypeAdapter extends GsonPat
                     while (jsonReaderHelper.handleObject(1, 5)) {
                         switch (in.nextName()) {
                             case "value1":
-                                String value_nest_value1 = gson.getAdapter(String.class).read(in);
+                                String value_nest_value1 = GsonUtil.read(gson, String.class, gsonErrors, in);
                                 if (value_nest_value1 != null) {
                                     result.value1 = value_nest_value1;
                                 }
                                 break;
 
                             case "value2":
-                                String value_nest_value2 = gson.getAdapter(String.class).read(in);
+                                String value_nest_value2 = GsonUtil.read(gson, String.class, gsonErrors, in);
                                 if (value_nest_value2 != null) {
                                     result.valueX = value_nest_value2;
                                 }
@@ -46,14 +48,14 @@ public final class TestCustomSerializedNameModel_GsonTypeAdapter extends GsonPat
                                 while (jsonReaderHelper.handleObject(2, 2)) {
                                     switch (in.nextName()) {
                                         case "value3":
-                                            String value_nest_second_value3 = gson.getAdapter(String.class).read(in);
+                                            String value_nest_second_value3 = GsonUtil.read(gson, String.class, gsonErrors, in);
                                             if (value_nest_second_value3 != null) {
                                                 result.value3 = value_nest_second_value3;
                                             }
                                             break;
 
                                         case "value3b":
-                                            String value_nest_second_value3b = gson.getAdapter(String.class).read(in);
+                                            String value_nest_second_value3b = GsonUtil.read(gson, String.class, gsonErrors, in);
                                             if (value_nest_second_value3b != null) {
                                                 result.value3b = value_nest_second_value3b;
                                             }
@@ -68,14 +70,14 @@ public final class TestCustomSerializedNameModel_GsonTypeAdapter extends GsonPat
                                 break;
 
                             case "value1b":
-                                String value_nest_value1b = gson.getAdapter(String.class).read(in);
+                                String value_nest_value1b = GsonUtil.read(gson, String.class, gsonErrors, in);
                                 if (value_nest_value1b != null) {
                                     result.value1b = value_nest_value1b;
                                 }
                                 break;
 
                             case "value2b":
-                                String value_nest_value2b = gson.getAdapter(String.class).read(in);
+                                String value_nest_value2b = GsonUtil.read(gson, String.class, gsonErrors, in);
                                 if (value_nest_value2b != null) {
                                     result.valueXb = value_nest_value2b;
                                 }

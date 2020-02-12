@@ -5,6 +5,7 @@ import static gsonpath.internal.GsonUtil.*;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 
@@ -19,17 +20,22 @@ public final class TestEnumWithoutDefault_GsonTypeAdapter extends GsonPathTypeAd
     }
 
     @Override
-    public TestEnumWithoutDefault readImpl(JsonReader in) throws IOException {
+    public TestEnumWithoutDefault readImpl(JsonReader in, GsonErrors gsonErrors) throws
+            IOException {
         String enumValue = in.nextString();
         switch (enumValue) {
             case "value-abc":
                 return TestEnumWithoutDefault.VALUE_ABC;
+
             case "value-def":
                 return TestEnumWithoutDefault.VALUE_DEF;
+
             case "custom":
                 return TestEnumWithoutDefault.VALUE_GHI;
+
             case "value-1":
                 return TestEnumWithoutDefault.VALUE_1;
+
             default:
                 throw new gsonpath.exception.JsonUnexpectedEnumValueException(enumValue, "generator.enums.without_default.TestEnumWithoutDefault");
         }
@@ -41,15 +47,19 @@ public final class TestEnumWithoutDefault_GsonTypeAdapter extends GsonPathTypeAd
             case VALUE_ABC:
                 out.value("value-abc");
                 break;
+
             case VALUE_DEF:
                 out.value("value-def");
                 break;
+
             case VALUE_GHI:
                 out.value("custom");
                 break;
+
             case VALUE_1:
                 out.value("value-1");
                 break;
+
         }
     }
 }

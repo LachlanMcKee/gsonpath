@@ -3,11 +3,11 @@ package generator.standard.class_annotations.serialize_nulls;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -22,56 +22,56 @@ public final class TestSerializeNulls_GsonTypeAdapter extends GsonPathTypeAdapte
     }
 
     @Override
-    public TestSerializeNulls readImpl(JsonReader in) throws IOException {
+    public TestSerializeNulls readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         TestSerializeNulls result = new TestSerializeNulls();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
         while (jsonReaderHelper.handleObject(0, 7)) {
             switch (in.nextName()) {
                 case "value1":
-                    Integer value_value1 = gson.getAdapter(Integer.class).read(in);
+                    Integer value_value1 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     if (value_value1 != null) {
                         result.value1 = value_value1;
                     }
                     break;
 
                 case "value2":
-                    Double value_value2 = gson.getAdapter(Double.class).read(in);
+                    Double value_value2 = GsonUtil.read(gson, Double.class, gsonErrors, in);
                     if (value_value2 != null) {
                         result.value2 = value_value2;
                     }
                     break;
 
                 case "value3":
-                    Boolean value_value3 = gson.getAdapter(Boolean.class).read(in);
+                    Boolean value_value3 = GsonUtil.read(gson, Boolean.class, gsonErrors, in);
                     if (value_value3 != null) {
                         result.value3 = value_value3;
                     }
                     break;
 
                 case "value4":
-                    String value_value4 = gson.getAdapter(String.class).read(in);
+                    String value_value4 = GsonUtil.read(gson, String.class, gsonErrors, in);
                     if (value_value4 != null) {
                         result.value4 = value_value4;
                     }
                     break;
 
                 case "value5":
-                    Integer value_value5 = gson.getAdapter(Integer.class).read(in);
+                    Integer value_value5 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     if (value_value5 != null) {
                         result.value5 = value_value5;
                     }
                     break;
 
                 case "value6":
-                    Double value_value6 = gson.getAdapter(Double.class).read(in);
+                    Double value_value6 = GsonUtil.read(gson, Double.class, gsonErrors, in);
                     if (value_value6 != null) {
                         result.value6 = value_value6;
                     }
                     break;
 
                 case "value7":
-                    Boolean value_value7 = gson.getAdapter(Boolean.class).read(in);
+                    Boolean value_value7 = GsonUtil.read(gson, Boolean.class, gsonErrors, in);
                     if (value_value7 != null) {
                         result.value7 = value_value7;
                     }
@@ -134,7 +134,7 @@ public final class TestSerializeNulls_GsonTypeAdapter extends GsonPathTypeAdapte
             out.nullValue();
         }
 
-        // End
+        // End 
         out.endObject();
     }
 }

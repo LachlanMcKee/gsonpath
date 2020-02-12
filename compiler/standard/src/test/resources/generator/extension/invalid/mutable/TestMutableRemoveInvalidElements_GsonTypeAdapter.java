@@ -3,12 +3,12 @@ package generator.standard.invalid.mutable;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.extension.RemoveInvalidElementsUtil;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
@@ -21,7 +21,8 @@ public final class TestMutableRemoveInvalidElements_GsonTypeAdapter extends Gson
     }
 
     @Override
-    public TestMutableRemoveInvalidElements readImpl(JsonReader in) throws IOException {
+    public TestMutableRemoveInvalidElements readImpl(JsonReader in, GsonErrors gsonErrors) throws
+            IOException {
         TestMutableRemoveInvalidElements result = new TestMutableRemoveInvalidElements();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
@@ -60,7 +61,8 @@ public final class TestMutableRemoveInvalidElements_GsonTypeAdapter extends Gson
     }
 
     @Override
-    public void writeImpl(JsonWriter out, TestMutableRemoveInvalidElements value) throws IOException {
+    public void writeImpl(JsonWriter out, TestMutableRemoveInvalidElements value) throws
+            IOException {
         // Begin
         out.beginObject();
         String[] obj0 = value.value1;
@@ -75,7 +77,7 @@ public final class TestMutableRemoveInvalidElements_GsonTypeAdapter extends Gson
             gson.getAdapter(new com.google.gson.reflect.TypeToken<List<String>>(){}).write(out, obj1);
         }
 
-        // End
+        // End 
         out.endObject();
     }
 }

@@ -3,11 +3,11 @@ package generator.standard.use_getter_annotation;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -15,13 +15,13 @@ import java.lang.String;
 
 @GsonPathGenerated
 public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extends GsonPathTypeAdapter<UseGetterAnnotationTest.Implementation> {
-
     public UseGetterAnnotationTest_Implementation_GsonTypeAdapter(Gson gson) {
         super(gson);
     }
 
     @Override
-    public UseGetterAnnotationTest.Implementation readImpl(JsonReader in) throws IOException {
+    public UseGetterAnnotationTest.Implementation readImpl(JsonReader in, GsonErrors gsonErrors)
+            throws IOException {
         String value_common_name = null;
         int value_specific_intTest = 0;
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 3, 0);
@@ -33,7 +33,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
                     while (jsonReaderHelper.handleObject(1, 1)) {
                         switch (in.nextName()) {
                             case "name":
-                                String value_common_name_safe = gson.getAdapter(String.class).read(in);
+                                String value_common_name_safe = GsonUtil.read(gson, String.class, gsonErrors, in);
                                 if (value_common_name_safe != null) {
                                     value_common_name = value_common_name_safe;
                                     mandatoryFieldsCheckList[0] = true;
@@ -55,7 +55,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
                     while (jsonReaderHelper.handleObject(2, 1)) {
                         switch (in.nextName()) {
                             case "intTest":
-                                value_specific_intTest = gson.getAdapter(Integer.class).read(in);
+                                value_specific_intTest = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                 break;
 
                             default:
@@ -91,8 +91,8 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
             }
         }
         return new UseGetterAnnotationTest.Implementation(
-                value_common_name,
-                value_specific_intTest);
+            value_common_name,
+            value_specific_intTest);
     }
 
     @Override
@@ -122,7 +122,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
 
         // End specific
         out.endObject();
-        // End
+        // End 
         out.endObject();
     }
 }

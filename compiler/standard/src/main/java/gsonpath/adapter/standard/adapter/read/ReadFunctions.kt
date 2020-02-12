@@ -6,7 +6,8 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeSpec
 import gsonpath.ProcessingException
 import gsonpath.adapter.AdapterMethodBuilder
-import gsonpath.adapter.Constants.GET_ADAPTER
+import gsonpath.adapter.Constants.GSON
+import gsonpath.adapter.Constants.GSON_ERRORS
 import gsonpath.adapter.Constants.IN
 import gsonpath.adapter.Constants.NULL
 import gsonpath.adapter.standard.extension.ExtensionsHandler
@@ -15,6 +16,7 @@ import gsonpath.adapter.standard.model.GsonField
 import gsonpath.adapter.standard.model.GsonModel
 import gsonpath.adapter.standard.model.GsonObject
 import gsonpath.compiler.createDefaultVariableValueForTypeName
+import gsonpath.internal.GsonUtil
 import gsonpath.internal.JsonReaderHelper
 import gsonpath.model.FieldType
 import gsonpath.util.*
@@ -222,10 +224,12 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
                         "\$T.class"
 
             if (checkIfResultIsNull) {
-                createVariable(fieldTypeName, variableName, "$GET_ADAPTER($adapterName).read($IN)", fieldTypeName)
+                createVariable(fieldTypeName, variableName, "\$T.read($GSON, $adapterName, $GSON_ERRORS, $IN)",
+                        GsonUtil::class.java, fieldTypeName)
 
             } else {
-                assign(variableName, "$GET_ADAPTER($adapterName).read($IN)", fieldTypeName)
+                assign(variableName, "\$T.read($GSON, $adapterName, $GSON_ERRORS, $IN)",
+                        GsonUtil::class.java, fieldTypeName)
             }
         }
 

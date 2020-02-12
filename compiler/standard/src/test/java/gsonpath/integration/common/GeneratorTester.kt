@@ -1,11 +1,13 @@
 package gsonpath.integration.common
 
 import com.google.common.truth.Truth.assertAbout
+import com.google.testing.compile.CompileTester
 import com.google.testing.compile.JavaFileObjects
 import com.google.testing.compile.JavaSourceSubjectFactory.javaSource
 import com.google.testing.compile.JavaSourcesSubjectFactory.javaSources
 import com.google.testing.compile.ProcessedCompileTesterFactory
 import gsonpath.GsonProcessor
+import java.io.File
 import javax.tools.JavaFileObject
 
 object GeneratorTester {
@@ -34,14 +36,67 @@ object GeneratorTester {
                         getGeneratedFileObject(criteria, it)
                     }
 
-                    if (generatedSources.size == 1) {
-                        generatesSources(generatedSources.first())
-
-                    } else {
-                        generatesSources(generatedSources.first(),
-                                *generatedSources.subList(1, generatedSources.size).toTypedArray())
-                    }
+                    assertGeneratedSources(generatedSources)
+                    // updateGeneratedSources(criteria, generatedSources)
                 }
+    }
+
+    private fun <T> CompileTester.GeneratedPredicateClause<T>.assertGeneratedSources(
+            generatedSources: List<JavaFileObject>
+    ) {
+        if (generatedSources.size == 1) {
+            generatesSources(generatedSources.first())
+
+        } else {
+            generatesSources(generatedSources.first(),
+                    *generatedSources.subList(1, generatedSources.size).toTypedArray())
+        }
+    }
+
+    private fun <T> CompileTester.GeneratedPredicateClause<T>.updateGeneratedSources(
+            criteria: TestCriteria,
+            generatedSources: List<JavaFileObject>
+    ) {
+        try {
+            if (generatedSources.size == 1) {
+                generatesSources(generatedSources.first())
+
+            } else {
+                generatesSources(generatedSources.first(),
+                        *generatedSources.subList(1, generatedSources.size).toTypedArray())
+            }
+        } catch (e: Throwable) {
+            val actualSources = e.message!!.split("Actual Source:")
+
+            val sourcesToReplace = criteria.relativeGeneratedNames
+                    .mapNotNull { generatedName ->
+                        val nameToFind = "class ${generatedName.removeSuffix(".java")}"
+                        println("nameToFind=$nameToFind")
+                        actualSources
+                                .filter { source -> source.contains(nameToFind) }
+                                .let {
+                                    println("size: ${it.size}")
+                                    if (it.size > 1) {
+                                        it[1]
+                                    } else {
+                                        null
+                                    }
+                                }
+                                ?.let { generatedName to it }
+                    }
+
+            sourcesToReplace.forEach { (generatedName: String, source: String) ->
+                val messageP1 = source.split("package ")[1]
+                val messageP2 = messageP1.substring(0, messageP1.indexOfLast { it == '}' } + 1)
+
+                println("Updating $generatedName. src/test/resources/${criteria.resourcePath}/$generatedName")
+                println("package $messageP2")
+                File("src/test/resources/${criteria.resourcePath}/$generatedName")
+                        .delete()
+                File("src/test/resources/${criteria.resourcePath}/$generatedName")
+                        .writeText("package $messageP2")
+            }
+        }
     }
 
     private fun getSourceFileObject(criteria: TestCriteria, index: Int): JavaFileObject {

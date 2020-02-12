@@ -3,24 +3,23 @@ package generator.interf.inheritance;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestUsingInheritance_GsonTypeAdapter extends GsonPathTypeAdapter<TestUsingInheritance> {
-
     public TestUsingInheritance_GsonTypeAdapter(Gson gson) {
         super(gson);
     }
 
     @Override
-    public TestUsingInheritance readImpl(JsonReader in) throws IOException {
+    public TestUsingInheritance readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         Integer value_value3 = null;
         Integer value_value1 = null;
         Integer value_Json1_Nest2 = null;
@@ -30,11 +29,11 @@ public final class TestUsingInheritance_GsonTypeAdapter extends GsonPathTypeAdap
         while (jsonReaderHelper.handleObject(0, 3)) {
             switch (in.nextName()) {
                 case "value3":
-                    value_value3 = gson.getAdapter(Integer.class).read(in);
+                    value_value3 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     break;
 
                 case "value1":
-                    Integer value_value1_safe = gson.getAdapter(Integer.class).read(in);
+                    Integer value_value1_safe = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     if (value_value1_safe != null) {
                         value_value1 = value_value1_safe;
                         mandatoryFieldsCheckList[0] = true;
@@ -48,7 +47,7 @@ public final class TestUsingInheritance_GsonTypeAdapter extends GsonPathTypeAdap
                     while (jsonReaderHelper.handleObject(1, 1)) {
                         switch (in.nextName()) {
                             case "Nest2":
-                                value_Json1_Nest2 = gson.getAdapter(Integer.class).read(in);
+                                value_Json1_Nest2 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                 break;
 
                             default:
@@ -84,9 +83,9 @@ public final class TestUsingInheritance_GsonTypeAdapter extends GsonPathTypeAdap
             }
         }
         return new TestUsingInheritance_GsonPathModel(
-                value_value3,
-                value_value1,
-                value_Json1_Nest2);
+            value_value3,
+            value_value1,
+            value_Json1_Nest2);
     }
 
     @Override
@@ -117,7 +116,7 @@ public final class TestUsingInheritance_GsonTypeAdapter extends GsonPathTypeAdap
 
         // End Json1
         out.endObject();
-        // End
+        // End 
         out.endObject();
     }
 }

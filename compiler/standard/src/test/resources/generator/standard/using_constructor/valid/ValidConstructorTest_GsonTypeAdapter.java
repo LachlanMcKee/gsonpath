@@ -3,11 +3,11 @@ package generator.standard.using_constructor.valid;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Override;
@@ -20,7 +20,7 @@ public final class ValidConstructorTest_GsonTypeAdapter extends GsonPathTypeAdap
     }
 
     @Override
-    public ValidConstructorTest readImpl(JsonReader in) throws IOException {
+    public ValidConstructorTest readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         String value_parent_child_value1 = null;
         boolean value_isBooleanTest1 = false;
         Boolean value_isBooleanTest2 = null;
@@ -35,7 +35,7 @@ public final class ValidConstructorTest_GsonTypeAdapter extends GsonPathTypeAdap
                                 while (jsonReaderHelper.handleObject(2, 1)) {
                                     switch (in.nextName()) {
                                         case "value1":
-                                            value_parent_child_value1 = gson.getAdapter(String.class).read(in);
+                                            value_parent_child_value1 = GsonUtil.read(gson, String.class, gsonErrors, in);
                                             break;
 
                                         default:
@@ -55,11 +55,11 @@ public final class ValidConstructorTest_GsonTypeAdapter extends GsonPathTypeAdap
                     break;
 
                 case "isBooleanTest1":
-                    value_isBooleanTest1 = gson.getAdapter(Boolean.class).read(in);
+                    value_isBooleanTest1 = GsonUtil.read(gson, Boolean.class, gsonErrors, in);
                     break;
 
                 case "isBooleanTest2":
-                    value_isBooleanTest2 = gson.getAdapter(Boolean.class).read(in);
+                    value_isBooleanTest2 = GsonUtil.read(gson, Boolean.class, gsonErrors, in);
                     break;
 
                 default:
@@ -69,9 +69,9 @@ public final class ValidConstructorTest_GsonTypeAdapter extends GsonPathTypeAdap
             }
         }
         return new ValidConstructorTest(
-                value_parent_child_value1,
-                value_isBooleanTest1,
-                value_isBooleanTest2);
+            value_parent_child_value1,
+            value_isBooleanTest1,
+            value_isBooleanTest2);
     }
 
     @Override
@@ -106,7 +106,7 @@ public final class ValidConstructorTest_GsonTypeAdapter extends GsonPathTypeAdap
             GsonUtil.writeWithGenericAdapter(gson, obj2.getClass(), out, obj2);
         }
 
-        // End
+        // End 
         out.endObject();
     }
 }

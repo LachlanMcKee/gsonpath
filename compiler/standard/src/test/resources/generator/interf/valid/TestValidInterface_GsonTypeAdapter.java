@@ -3,11 +3,11 @@ package generator.interf.valid;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -19,7 +19,7 @@ public final class TestValidInterface_GsonTypeAdapter extends GsonPathTypeAdapte
     }
 
     @Override
-    public TestValidInterface readImpl(JsonReader in) throws IOException {
+    public TestValidInterface readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         Integer value_Json1_Nest1 = null;
         Integer value_value2 = null;
         Integer value_Json1_Nest3 = null;
@@ -33,11 +33,11 @@ public final class TestValidInterface_GsonTypeAdapter extends GsonPathTypeAdapte
                     while (jsonReaderHelper.handleObject(1, 2)) {
                         switch (in.nextName()) {
                             case "Nest1":
-                                value_Json1_Nest1 = gson.getAdapter(Integer.class).read(in);
+                                value_Json1_Nest1 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                 break;
 
                             case "Nest3":
-                                value_Json1_Nest3 = gson.getAdapter(Integer.class).read(in);
+                                value_Json1_Nest3 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                 break;
 
                             default:
@@ -49,15 +49,15 @@ public final class TestValidInterface_GsonTypeAdapter extends GsonPathTypeAdapte
                     break;
 
                 case "value2":
-                    value_value2 = gson.getAdapter(Integer.class).read(in);
+                    value_value2 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     break;
 
                 case "result":
-                    value_result = gson.getAdapter(Integer.class).read(in);
+                    value_result = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     break;
 
                 case "that":
-                    value_that = gson.getAdapter(Integer.class).read(in);
+                    value_that = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     break;
 
                 default:
@@ -67,11 +67,11 @@ public final class TestValidInterface_GsonTypeAdapter extends GsonPathTypeAdapte
             }
         }
         return new TestValidInterface_GsonPathModel(
-                value_Json1_Nest1,
-                value_value2,
-                value_Json1_Nest3,
-                value_result,
-                value_that);
+            value_Json1_Nest1,
+            value_value2,
+            value_Json1_Nest3,
+            value_result,
+            value_that);
     }
 
     @Override
@@ -114,7 +114,7 @@ public final class TestValidInterface_GsonTypeAdapter extends GsonPathTypeAdapte
             GsonUtil.writeWithGenericAdapter(gson, obj4.getClass(), out, obj4);
         }
 
-        // End
+        // End 
         out.endObject();
     }
 }

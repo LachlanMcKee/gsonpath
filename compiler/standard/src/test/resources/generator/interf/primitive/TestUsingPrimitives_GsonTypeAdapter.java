@@ -3,11 +3,11 @@ package generator.interf.primitive;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -17,13 +17,12 @@ import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapter<TestUsingPrimitives> {
-
     public TestUsingPrimitives_GsonTypeAdapter(Gson gson) {
         super(gson);
     }
 
     @Override
-    public TestUsingPrimitives readImpl(JsonReader in) throws IOException {
+    public TestUsingPrimitives readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         int value_intExample = 0;
         long value_longExample = 0L;
         double value_doubleExample = 0d;
@@ -38,7 +37,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
         while (jsonReaderHelper.handleObject(0, 8)) {
             switch (in.nextName()) {
                 case "intExample":
-                    Integer value_intExample_safe = gson.getAdapter(Integer.class).read(in);
+                    Integer value_intExample_safe = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     if (value_intExample_safe != null) {
                         value_intExample = value_intExample_safe;
                         mandatoryFieldsCheckList[0] = true;
@@ -49,7 +48,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                     break;
 
                 case "longExample":
-                    Long value_longExample_safe = gson.getAdapter(Long.class).read(in);
+                    Long value_longExample_safe = GsonUtil.read(gson, Long.class, gsonErrors, in);
                     if (value_longExample_safe != null) {
                         value_longExample = value_longExample_safe;
                         mandatoryFieldsCheckList[1] = true;
@@ -60,7 +59,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                     break;
 
                 case "doubleExample":
-                    Double value_doubleExample_safe = gson.getAdapter(Double.class).read(in);
+                    Double value_doubleExample_safe = GsonUtil.read(gson, Double.class, gsonErrors, in);
                     if (value_doubleExample_safe != null) {
                         value_doubleExample = value_doubleExample_safe;
                         mandatoryFieldsCheckList[2] = true;
@@ -71,7 +70,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                     break;
 
                 case "booleanExample":
-                    Boolean value_booleanExample_safe = gson.getAdapter(Boolean.class).read(in);
+                    Boolean value_booleanExample_safe = GsonUtil.read(gson, Boolean.class, gsonErrors, in);
                     if (value_booleanExample_safe != null) {
                         value_booleanExample = value_booleanExample_safe;
                         mandatoryFieldsCheckList[3] = true;
@@ -82,19 +81,19 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                     break;
 
                 case "intArrayExample":
-                    value_intArrayExample = gson.getAdapter(int[].class).read(in);
+                    value_intArrayExample = GsonUtil.read(gson, int[].class, gsonErrors, in);
                     break;
 
                 case "longArrayExample":
-                    value_longArrayExample = gson.getAdapter(long[].class).read(in);
+                    value_longArrayExample = GsonUtil.read(gson, long[].class, gsonErrors, in);
                     break;
 
                 case "doubleArrayExample":
-                    value_doubleArrayExample = gson.getAdapter(double[].class).read(in);
+                    value_doubleArrayExample = GsonUtil.read(gson, double[].class, gsonErrors, in);
                     break;
 
                 case "booleanArrayExample":
-                    value_booleanArrayExample = gson.getAdapter(boolean[].class).read(in);
+                    value_booleanArrayExample = GsonUtil.read(gson, boolean[].class, gsonErrors, in);
                     break;
 
                 default:
@@ -134,14 +133,14 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
             }
         }
         return new TestUsingPrimitives_GsonPathModel(
-                value_intExample,
-                value_longExample,
-                value_doubleExample,
-                value_booleanExample,
-                value_intArrayExample,
-                value_longArrayExample,
-                value_doubleArrayExample,
-                value_booleanArrayExample);
+            value_intExample,
+            value_longExample,
+            value_doubleExample,
+            value_booleanExample,
+            value_intArrayExample,
+            value_longArrayExample,
+            value_doubleArrayExample,
+            value_booleanArrayExample);
     }
 
     @Override
@@ -188,7 +187,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
             GsonUtil.writeWithGenericAdapter(gson, obj7.getClass(), out, obj7);
         }
 
-        // End
+        // End 
         out.endObject();
     }
 }

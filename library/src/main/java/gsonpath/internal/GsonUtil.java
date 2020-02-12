@@ -9,6 +9,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 
 import java.io.IOException;
 

@@ -3,11 +3,11 @@ package generator.standard.size.valid.nullable;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
@@ -19,14 +19,14 @@ public final class TestMutableSize_GsonTypeAdapter extends GsonPathTypeAdapter<T
     }
 
     @Override
-    public TestMutableSize readImpl(JsonReader in) throws IOException {
+    public TestMutableSize readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         TestMutableSize result = new TestMutableSize();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
         while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "value1":
-                    String[] value_value1 = gson.getAdapter(String[].class).read(in);
+                    String[] value_value1 = GsonUtil.read(gson, String[].class, gsonErrors, in);
                     if (value_value1 != null) {
                         result.value1 = value_value1;
                     }
@@ -61,7 +61,7 @@ public final class TestMutableSize_GsonTypeAdapter extends GsonPathTypeAdapter<T
             GsonUtil.writeWithGenericAdapter(gson, obj0.getClass(), out, obj0);
         }
 
-        // End
+        // End 
         out.endObject();
     }
 }

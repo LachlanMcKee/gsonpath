@@ -3,6 +3,7 @@ package generator.standard.generics.interfaces_and_classs;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
@@ -22,28 +23,28 @@ public final class GenericsTest_GsonTypeAdapter extends GsonPathTypeAdapter<Gene
     }
 
     @Override
-    public GenericsTest readImpl(JsonReader in) throws IOException {
+    public GenericsTest readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         GenericsTest result = new GenericsTest();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
         while (jsonReaderHelper.handleObject(0, 3)) {
             switch (in.nextName()) {
                 case "value1":
-                    String value_value1 = gson.getAdapter(String.class).read(in);
+                    String value_value1 = GsonUtil.read(gson, String.class, gsonErrors, in);
                     if (value_value1 != null) {
                         result.value1 = value_value1;
                     }
                     break;
 
                 case "value2":
-                    Map<String, Integer> value_value2 = gson.getAdapter(new com.google.gson.reflect.TypeToken<Map<String, Integer>>(){}).read(in);
+                    Map<String, Integer> value_value2 = GsonUtil.read(gson, new com.google.gson.reflect.TypeToken<Map<String, Integer>>(){}, gsonErrors, in);
                     if (value_value2 != null) {
                         result.value2 = value_value2;
                     }
                     break;
 
                 case "value3":
-                    Double value_value3 = gson.getAdapter(Double.class).read(in);
+                    Double value_value3 = GsonUtil.read(gson, Double.class, gsonErrors, in);
                     if (value_value3 != null) {
                         result.value3 = value_value3;
                     }

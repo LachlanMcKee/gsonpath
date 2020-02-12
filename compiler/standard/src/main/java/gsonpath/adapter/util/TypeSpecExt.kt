@@ -13,6 +13,7 @@ fun TypeSpec.Builder.writeFile(
 
     try {
         JavaFile.builder(packageName, build()).apply {
+            indent("    ")
             fileBuiltFunc(this)
             build().writeTo(fileWriter.filer)
         }

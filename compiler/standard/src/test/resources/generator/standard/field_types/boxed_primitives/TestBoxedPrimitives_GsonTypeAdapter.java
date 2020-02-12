@@ -3,6 +3,7 @@ package generator.standard.field_types.boxed_primitives;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
@@ -27,70 +28,70 @@ public final class TestBoxedPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
     }
 
     @Override
-    public TestBoxedPrimitives readImpl(JsonReader in) throws IOException {
+    public TestBoxedPrimitives readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         TestBoxedPrimitives result = new TestBoxedPrimitives();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
         while (jsonReaderHelper.handleObject(0, 9)) {
             switch (in.nextName()) {
                 case "value1":
-                    String value_value1 = gson.getAdapter(String.class).read(in);
+                    String value_value1 = GsonUtil.read(gson, String.class, gsonErrors, in);
                     if (value_value1 != null) {
                         result.value1 = value_value1;
                     }
                     break;
 
                 case "value2":
-                    Boolean value_value2 = gson.getAdapter(Boolean.class).read(in);
+                    Boolean value_value2 = GsonUtil.read(gson, Boolean.class, gsonErrors, in);
                     if (value_value2 != null) {
                         result.value2 = value_value2;
                     }
                     break;
 
                 case "value3":
-                    Integer value_value3 = gson.getAdapter(Integer.class).read(in);
+                    Integer value_value3 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     if (value_value3 != null) {
                         result.value3 = value_value3;
                     }
                     break;
 
                 case "value4":
-                    Double value_value4 = gson.getAdapter(Double.class).read(in);
+                    Double value_value4 = GsonUtil.read(gson, Double.class, gsonErrors, in);
                     if (value_value4 != null) {
                         result.value4 = value_value4;
                     }
                     break;
 
                 case "value5":
-                    Long value_value5 = gson.getAdapter(Long.class).read(in);
+                    Long value_value5 = GsonUtil.read(gson, Long.class, gsonErrors, in);
                     if (value_value5 != null) {
                         result.value5 = value_value5;
                     }
                     break;
 
                 case "value6":
-                    Byte value_value6 = gson.getAdapter(Byte.class).read(in);
+                    Byte value_value6 = GsonUtil.read(gson, Byte.class, gsonErrors, in);
                     if (value_value6 != null) {
                         result.value6 = value_value6;
                     }
                     break;
 
                 case "value7":
-                    Short value_value7 = gson.getAdapter(Short.class).read(in);
+                    Short value_value7 = GsonUtil.read(gson, Short.class, gsonErrors, in);
                     if (value_value7 != null) {
                         result.value7 = value_value7;
                     }
                     break;
 
                 case "value8":
-                    Float value_value8 = gson.getAdapter(Float.class).read(in);
+                    Float value_value8 = GsonUtil.read(gson, Float.class, gsonErrors, in);
                     if (value_value8 != null) {
                         result.value8 = value_value8;
                     }
                     break;
 
                 case "value9":
-                    Character value_value9 = gson.getAdapter(Character.class).read(in);
+                    Character value_value9 = GsonUtil.read(gson, Character.class, gsonErrors, in);
                     if (value_value9 != null) {
                         result.value9 = value_value9;
                     }

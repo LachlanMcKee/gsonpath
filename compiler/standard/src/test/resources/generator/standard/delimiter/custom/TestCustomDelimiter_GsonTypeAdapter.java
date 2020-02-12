@@ -3,8 +3,10 @@ package generator.standard.delimiter.custom;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
 
 import java.io.IOException;
@@ -18,7 +20,7 @@ public final class TestCustomDelimiter_GsonTypeAdapter extends GsonPathTypeAdapt
     }
 
     @Override
-    public TestCustomDelimiter readImpl(JsonReader in) throws IOException {
+    public TestCustomDelimiter readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         TestCustomDelimiter result = new TestCustomDelimiter();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 2, 0);
 
@@ -28,7 +30,7 @@ public final class TestCustomDelimiter_GsonTypeAdapter extends GsonPathTypeAdapt
                     while (jsonReaderHelper.handleObject(1, 1)) {
                         switch (in.nextName()) {
                             case "Nest1":
-                                Integer value_Json1_Nest1 = gson.getAdapter(Integer.class).read(in);
+                                Integer value_Json1_Nest1 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                 if (value_Json1_Nest1 != null) {
                                     result.value1 = value_Json1_Nest1;
                                 }

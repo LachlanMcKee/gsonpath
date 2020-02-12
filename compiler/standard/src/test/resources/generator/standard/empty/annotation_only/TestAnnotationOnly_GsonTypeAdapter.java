@@ -3,6 +3,7 @@ package generator.standard.empty.annotation_only;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.JsonReaderHelper;
@@ -17,7 +18,7 @@ public final class TestAnnotationOnly_GsonTypeAdapter extends GsonPathTypeAdapte
     }
 
     @Override
-    public TestAnnotationOnly readImpl(JsonReader in) throws IOException {
+    public TestAnnotationOnly readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         TestAnnotationOnly result = new TestAnnotationOnly();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 

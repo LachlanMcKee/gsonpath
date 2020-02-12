@@ -3,8 +3,10 @@ package generator.standard.array;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
 
 import java.io.IOException;
@@ -18,7 +20,7 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
     }
 
     @Override
-    public TestArray readImpl(JsonReader in) throws IOException {
+    public TestArray readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         TestArray result = new TestArray();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 4, 5);
 
@@ -28,7 +30,7 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
                     while (jsonReaderHelper.handleArray(0)) {
                         switch (jsonReaderHelper.getArrayIndex(0)) {
                             case 1:
-                                Integer value_test1_1_ = gson.getAdapter(Integer.class).read(in);
+                                Integer value_test1_1_ = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                 if (value_test1_1_ != null) {
                                     result.plainArray = value_test1_1_;
                                 }
@@ -49,14 +51,14 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
                                 while (jsonReaderHelper.handleObject(1, 2)) {
                                     switch (in.nextName()) {
                                         case "child":
-                                            Integer value_test2_2__child = gson.getAdapter(Integer.class).read(in);
+                                            Integer value_test2_2__child = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                             if (value_test2_2__child != null) {
                                                 result.arrayWithNestedObject = value_test2_2__child;
                                             }
                                             break;
 
                                         case "child2":
-                                            Integer value_test2_2__child2 = gson.getAdapter(Integer.class).read(in);
+                                            Integer value_test2_2__child2 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                             if (value_test2_2__child2 != null) {
                                                 result.arrayWithNestedObject2 = value_test2_2__child2;
                                             }
@@ -88,7 +90,7 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
                                             while (jsonReaderHelper.handleArray(3)) {
                                                 switch (jsonReaderHelper.getArrayIndex(3)) {
                                                     case 1:
-                                                        Integer value_test3_3__child_1_ = gson.getAdapter(Integer.class).read(in);
+                                                        Integer value_test3_3__child_1_ = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                                         if (value_test3_3__child_1_ != null) {
                                                             result.arrayWithNestedArray = value_test3_3__child_1_;
                                                         }
@@ -125,7 +127,7 @@ public final class TestArray_GsonTypeAdapter extends GsonPathTypeAdapter<TestArr
                                 while (jsonReaderHelper.handleArray(4)) {
                                     switch (jsonReaderHelper.getArrayIndex(4)) {
                                         case 1:
-                                            Integer value_test4_child_1_ = gson.getAdapter(Integer.class).read(in);
+                                            Integer value_test4_child_1_ = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                             if (value_test4_child_1_ != null) {
                                                 result.objectWithNestedArray = value_test4_child_1_;
                                             }

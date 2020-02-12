@@ -3,6 +3,7 @@ package generator.standard.custom_adapter_annotation;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
@@ -14,13 +15,13 @@ import java.lang.Override;
 
 @GsonPathGenerated
 public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends GsonPathTypeAdapter<TestCustomAutoGsonAdapterModel> {
-
     public TestCustomAutoGsonAdapterModel_GsonTypeAdapter(Gson gson) {
         super(gson);
     }
 
     @Override
-    public TestCustomAutoGsonAdapterModel readImpl(JsonReader in) throws IOException {
+    public TestCustomAutoGsonAdapterModel readImpl(JsonReader in, GsonErrors gsonErrors) throws
+            IOException {
         TestCustomAutoGsonAdapterModel result = new TestCustomAutoGsonAdapterModel();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 2, 0);
         boolean[] mandatoryFieldsCheckList = new boolean[1];
@@ -31,7 +32,7 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends GsonPa
                     while (jsonReaderHelper.handleObject(1, 1)) {
                         switch (in.nextName()) {
                             case "expectedValue":
-                                Integer value_path_expectedValue = gson.getAdapter(Integer.class).read(in);
+                                Integer value_path_expectedValue = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                 if (value_path_expectedValue != null) {
                                     result.expectedValue = value_path_expectedValue;
                                     mandatoryFieldsCheckList[0] = true;

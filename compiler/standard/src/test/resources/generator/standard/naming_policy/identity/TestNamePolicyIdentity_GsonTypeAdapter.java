@@ -3,10 +3,11 @@ package generator.standard.naming_policy.identity;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -18,14 +19,15 @@ public final class TestNamePolicyIdentity_GsonTypeAdapter extends GsonPathTypeAd
     }
 
     @Override
-    public TestNamePolicyIdentity readImpl(JsonReader in) throws IOException {
+    public TestNamePolicyIdentity readImpl(JsonReader in, GsonErrors gsonErrors) throws
+            IOException {
         TestNamePolicyIdentity result = new TestNamePolicyIdentity();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
         while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "testValue":
-                    Integer value_testValue = gson.getAdapter(Integer.class).read(in);
+                    Integer value_testValue = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                     if (value_testValue != null) {
                         result.testValue = value_testValue;
                     }
@@ -48,7 +50,7 @@ public final class TestNamePolicyIdentity_GsonTypeAdapter extends GsonPathTypeAd
         out.name("testValue");
         gson.getAdapter(Integer.class).write(out, obj0);
 
-        // End
+        // End 
         out.endObject();
     }
 }

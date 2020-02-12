@@ -3,10 +3,11 @@ package generator.standard.nested_json.root_nesting;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
-
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -18,7 +19,7 @@ public final class TestRootNesting_GsonTypeAdapter extends GsonPathTypeAdapter<T
     }
 
     @Override
-    public TestRootNesting readImpl(JsonReader in) throws IOException {
+    public TestRootNesting readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         TestRootNesting result = new TestRootNesting();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 3, 0);
 
@@ -31,7 +32,7 @@ public final class TestRootNesting_GsonTypeAdapter extends GsonPathTypeAdapter<T
                                 while (jsonReaderHelper.handleObject(2, 1)) {
                                     switch (in.nextName()) {
                                         case "value1":
-                                            Integer value_value1 = gson.getAdapter(Integer.class).read(in);
+                                            Integer value_value1 = GsonUtil.read(gson, Integer.class, gsonErrors, in);
                                             if (value_value1 != null) {
                                                 result.value1 = value_value1;
                                             }
@@ -82,7 +83,7 @@ public final class TestRootNesting_GsonTypeAdapter extends GsonPathTypeAdapter<T
         out.endObject();
         // End Root
         out.endObject();
-        // End
+        // End 
         out.endObject();
     }
 }

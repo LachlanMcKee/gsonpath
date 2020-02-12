@@ -3,6 +3,7 @@ package generator.standard.field_types.custom_field;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
@@ -19,14 +20,14 @@ public final class TestCustomField_GsonTypeAdapter extends GsonPathTypeAdapter<T
     }
 
     @Override
-    public TestCustomField readImpl(JsonReader in) throws IOException {
+    public TestCustomField readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
         TestCustomField result = new TestCustomField();
         JsonReaderHelper jsonReaderHelper = new JsonReaderHelper(in, 1, 0);
 
         while (jsonReaderHelper.handleObject(0, 1)) {
             switch (in.nextName()) {
                 case "value1":
-                    Currency value_value1 = gson.getAdapter(Currency.class).read(in);
+                    Currency value_value1 = GsonUtil.read(gson, Currency.class, gsonErrors, in);
                     if (value_value1 != null) {
                         result.value1 = value_value1;
                     }
