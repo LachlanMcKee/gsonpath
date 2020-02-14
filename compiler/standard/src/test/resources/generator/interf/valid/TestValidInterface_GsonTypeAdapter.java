@@ -114,7 +114,7 @@ public final class TestValidInterface_GsonTypeAdapter extends GsonPathTypeAdapte
             GsonUtil.writeWithGenericAdapter(gson, obj4.getClass(), out, obj4);
         }
 
-        // End 
+        // End
         out.endObject();
     }
 }

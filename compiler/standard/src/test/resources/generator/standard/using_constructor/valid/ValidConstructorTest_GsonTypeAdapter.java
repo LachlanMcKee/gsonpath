@@ -106,7 +106,7 @@ public final class ValidConstructorTest_GsonTypeAdapter extends GsonPathTypeAdap
             GsonUtil.writeWithGenericAdapter(gson, obj2.getClass(), out, obj2);
         }
 
-        // End 
+        // End
         out.endObject();
     }
 }

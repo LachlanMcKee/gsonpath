@@ -66,7 +66,7 @@ public final class TestStandardDelimiter_GsonTypeAdapter extends GsonPathTypeAda
 
         // End Json1
         out.endObject();
-        // End 
+        // End
         out.endObject();
     }
 }

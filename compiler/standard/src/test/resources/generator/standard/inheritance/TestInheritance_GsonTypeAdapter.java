@@ -49,7 +49,7 @@ public final class TestInheritance_GsonTypeAdapter extends GsonPathTypeAdapter<T
         out.name("Json1");
         gson.getAdapter(Integer.class).write(out, obj0);
 
-        // End 
+        // End
         out.endObject();
     }
 }

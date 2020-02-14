@@ -109,7 +109,7 @@ public final class TestValidateAllExceptNullable_GsonTypeAdapter extends GsonPat
             GsonUtil.writeWithGenericAdapter(gson, obj2.getClass(), out, obj2);
         }
 
-        // End 
+        // End
         out.endObject();
     }
 }

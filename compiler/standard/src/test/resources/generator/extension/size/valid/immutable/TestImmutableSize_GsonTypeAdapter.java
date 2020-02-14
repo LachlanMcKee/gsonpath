@@ -65,7 +65,7 @@ public final class TestImmutableSize_GsonTypeAdapter extends GsonPathTypeAdapter
             GsonUtil.writeWithGenericAdapter(gson, obj0.getClass(), out, obj0);
         }
 
-        // End 
+        // End
         out.endObject();
     }
 }

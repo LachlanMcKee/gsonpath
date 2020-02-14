@@ -134,7 +134,7 @@ public final class TestSerializeNulls_GsonTypeAdapter extends GsonPathTypeAdapte
             out.nullValue();
         }
 
-        // End 
+        // End
         out.endObject();
     }
 }

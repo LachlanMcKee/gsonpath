@@ -128,7 +128,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
             GsonUtil.writeWithGenericAdapter(gson, obj3.getClass(), out, obj3);
         }
 
-        // End 
+        // End
         out.endObject();
     }
 }

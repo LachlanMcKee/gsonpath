@@ -57,7 +57,11 @@ class WriteFunctions(private val extensionsHandler: ExtensionsHandler) {
                     }
                 }
                 .also {
-                    comment("End $currentPath")
+                    if (currentPath.isNotEmpty()) {
+                        comment("End $currentPath")
+                    } else {
+                        comment("End")
+                    }
                     addStatement("$OUT.endObject()")
                 }
     }

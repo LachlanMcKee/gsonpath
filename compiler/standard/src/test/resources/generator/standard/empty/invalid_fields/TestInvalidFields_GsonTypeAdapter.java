@@ -28,7 +28,7 @@ public final class TestInvalidFields_GsonTypeAdapter extends GsonPathTypeAdapter
     public void writeImpl(JsonWriter out, TestInvalidFields value) throws IOException {
         // Begin
         out.beginObject();
-        // End 
+        // End
         out.endObject();
     }
 }

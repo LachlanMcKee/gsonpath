@@ -187,7 +187,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
             GsonUtil.writeWithGenericAdapter(gson, obj7.getClass(), out, obj7);
         }
 
-        // End 
+        // End
         out.endObject();
     }
 }

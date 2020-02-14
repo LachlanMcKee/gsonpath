@@ -49,7 +49,7 @@ public final class TestJava8Interface_GsonTypeAdapter extends GsonPathTypeAdapte
             GsonUtil.writeWithGenericAdapter(gson, obj0.getClass(), out, obj0);
         }
 
-        // End 
+        // End
         out.endObject();
     }
 }

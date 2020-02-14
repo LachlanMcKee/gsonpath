@@ -75,7 +75,7 @@ public final class TestNoValidation_GsonTypeAdapter extends GsonPathTypeAdapter<
         out.name("optional3");
         gson.getAdapter(Integer.class).write(out, obj2);
 
-        // End 
+        // End
         out.endObject();
     }
 }

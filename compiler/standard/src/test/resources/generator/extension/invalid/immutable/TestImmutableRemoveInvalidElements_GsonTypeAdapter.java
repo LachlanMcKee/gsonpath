@@ -74,7 +74,7 @@ public final class TestImmutableRemoveInvalidElements_GsonTypeAdapter extends Gs
             gson.getAdapter(new com.google.gson.reflect.TypeToken<List<String>>(){}).write(out, obj1);
         }
 
-        // End 
+        // End
         out.endObject();
     }
 }

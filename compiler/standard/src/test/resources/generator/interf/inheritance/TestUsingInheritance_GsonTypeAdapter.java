@@ -116,7 +116,7 @@ public final class TestUsingInheritance_GsonTypeAdapter extends GsonPathTypeAdap
 
         // End Json1
         out.endObject();
-        // End 
+        // End
         out.endObject();
     }
 }

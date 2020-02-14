@@ -51,7 +51,7 @@ public final class TestNamePolicyUpperCamelCaseSpaces_GsonTypeAdapter extends Gs
         out.name("Test Value");
         gson.getAdapter(Integer.class).write(out, obj0);
 
-        // End 
+        // End
         out.endObject();
     }
 }

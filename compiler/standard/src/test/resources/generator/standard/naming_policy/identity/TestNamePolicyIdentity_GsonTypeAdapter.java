@@ -50,7 +50,7 @@ public final class TestNamePolicyIdentity_GsonTypeAdapter extends GsonPathTypeAd
         out.name("testValue");
         gson.getAdapter(Integer.class).write(out, obj0);
 
-        // End 
+        // End
         out.endObject();
     }
 }

@@ -116,7 +116,7 @@ public final class TestFieldNesting_GsonTypeAdapter extends GsonPathTypeAdapter<
         out.endObject();
         // End Json2
         out.endObject();
-        // End 
+        // End
         out.endObject();
     }
 }

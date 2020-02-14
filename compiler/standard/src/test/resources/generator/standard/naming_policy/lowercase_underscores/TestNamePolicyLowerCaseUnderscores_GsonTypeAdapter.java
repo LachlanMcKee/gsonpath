@@ -51,7 +51,7 @@ public final class TestNamePolicyLowerCaseUnderscores_GsonTypeAdapter extends Gs
         out.name("test_value");
         gson.getAdapter(Integer.class).write(out, obj0);
 
-        // End 
+        // End
         out.endObject();
     }
 }

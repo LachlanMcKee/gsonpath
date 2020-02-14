@@ -122,7 +122,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
 
         // End specific
         out.endObject();
-        // End 
+        // End
         out.endObject();
     }
 }

@@ -78,7 +78,7 @@ public final class TestMultipleDelimiters_GsonTypeAdapter extends GsonPathTypeAd
         out.name("Json2.Nest1");
         gson.getAdapter(Integer.class).write(out, obj1);
 
-        // End 
+        // End
         out.endObject();
     }
 }

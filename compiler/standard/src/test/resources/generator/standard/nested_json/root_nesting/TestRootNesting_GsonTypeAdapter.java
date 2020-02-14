@@ -83,7 +83,7 @@ public final class TestRootNesting_GsonTypeAdapter extends GsonPathTypeAdapter<T
         out.endObject();
         // End Root
         out.endObject();
-        // End 
+        // End
         out.endObject();
     }
 }

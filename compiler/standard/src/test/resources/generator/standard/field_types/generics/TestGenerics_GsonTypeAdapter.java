@@ -52,7 +52,7 @@ public final class TestGenerics_GsonTypeAdapter extends GsonPathTypeAdapter<Test
             gson.getAdapter(new com.google.gson.reflect.TypeToken<List<String>>(){}).write(out, obj0);
         }
 
-        // End 
+        // End
         out.endObject();
     }
 }

@@ -49,7 +49,7 @@ public final class TestExclude_GsonTypeAdapter extends GsonPathTypeAdapter<TestE
         out.name("element1");
         gson.getAdapter(Integer.class).write(out, obj0);
 
-        // End 
+        // End
         out.endObject();
     }
 }

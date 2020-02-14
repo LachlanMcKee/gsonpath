@@ -52,7 +52,7 @@ public final class TestValidateWithDefaultValue_GsonTypeAdapter extends GsonPath
             GsonUtil.writeWithGenericAdapter(gson, obj0.getClass(), out, obj0);
         }
 
-        // End 
+        // End
         out.endObject();
     }
 }

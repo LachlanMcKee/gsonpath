@@ -94,7 +94,7 @@ public final class TestSubstitutionImpl2_GsonTypeAdapter extends GsonPathTypeAda
 
         // End Impl2_B
         out.endObject();
-        // End 
+        // End
         out.endObject();
     }
 }

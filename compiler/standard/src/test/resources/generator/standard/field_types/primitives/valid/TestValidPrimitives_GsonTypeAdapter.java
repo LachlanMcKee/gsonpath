@@ -133,7 +133,7 @@ public final class TestValidPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
         out.name("value8");
         gson.getAdapter(Character.class).write(out, obj7);
 
-        // End 
+        // End
         out.endObject();
     }
 }

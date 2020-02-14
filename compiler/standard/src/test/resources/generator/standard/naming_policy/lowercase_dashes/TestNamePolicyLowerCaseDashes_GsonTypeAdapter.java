@@ -50,7 +50,7 @@ public final class TestNamePolicyLowerCaseDashes_GsonTypeAdapter extends GsonPat
         out.name("test-value");
         gson.getAdapter(Integer.class).write(out, obj0);
 
-        // End 
+        // End
         out.endObject();
     }
 }

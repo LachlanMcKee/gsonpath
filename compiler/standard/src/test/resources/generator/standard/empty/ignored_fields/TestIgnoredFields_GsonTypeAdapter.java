@@ -28,7 +28,7 @@ public final class TestIgnoredFields_GsonTypeAdapter extends GsonPathTypeAdapter
     public void writeImpl(JsonWriter out, TestIgnoredFields value) throws IOException {
         // Begin
         out.beginObject();
-        // End 
+        // End
         out.endObject();
     }
 }

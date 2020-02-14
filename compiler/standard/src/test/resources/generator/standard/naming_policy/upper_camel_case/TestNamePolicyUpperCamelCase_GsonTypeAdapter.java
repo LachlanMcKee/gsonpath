@@ -50,7 +50,7 @@ public final class TestNamePolicyUpperCamelCase_GsonTypeAdapter extends GsonPath
         out.name("TestValue");
         gson.getAdapter(Integer.class).write(out, obj0);
 
-        // End 
+        // End
         out.endObject();
     }
 }

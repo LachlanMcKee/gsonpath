@@ -67,7 +67,7 @@ public final class TestFieldNestingAutocomplete_GsonTypeAdapter extends GsonPath
 
         // End Json1
         out.endObject();
-        // End 
+        // End
         out.endObject();
     }
 }
