@@ -1,4 +1,0 @@
-package gsonpath
-
-class GsonErrors {
-}
