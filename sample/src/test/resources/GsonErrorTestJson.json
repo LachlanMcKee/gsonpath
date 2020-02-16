@@ -1,0 +1,68 @@
+{
+  "singleValue": {
+    "values": [
+      {
+        "text": "reference"
+      },
+      {
+        "text": null
+      }
+    ]
+  },
+  "listValue": [
+    {
+      "values": [
+        {
+          "text": "reference"
+        },
+        {
+          "text": null
+        }
+      ]
+    },
+    {
+      "values": [
+        {
+          "text": "reference"
+        },
+        {
+          "text": null
+        }
+      ]
+    }
+  ],
+  "arrayValue": [
+    {
+      "values": [
+        {
+          "text": "reference"
+        },
+        {
+          "text": null
+        }
+      ]
+    },
+    {
+      "values": [
+        {
+          "text": "reference"
+        },
+        {
+          "text": null
+        }
+      ]
+    }
+  ],
+  "mapValue": {
+    "key1" : {
+      "values": [
+        {
+          "text": "reference"
+        },
+        {
+          "text": null
+        }
+      ]
+    }
+  }
+}

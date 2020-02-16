@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonSafeList;
+import gsonpath.GsonErrors;
 import gsonpath.extension.RemoveInvalidElementsUtil;
 
 import java.io.IOException;
@@ -32,19 +33,20 @@ public final class GsonSafeListTypeAdapterFactory implements TypeAdapterFactory 
         TypeAdapter<?> elementTypeAdapter = gson.getAdapter(TypeToken.get(elementType));
 
         @SuppressWarnings({"unchecked", "rawtypes"})
-        TypeAdapter<T> result = new Adapter(elementTypeAdapter);
+        TypeAdapter<T> result = new Adapter(gson, elementTypeAdapter);
         return result;
     }
 
-    private static final class Adapter<E> extends TypeAdapter<GsonSafeList<E>> {
+    private static final class Adapter<E> extends GsonPathTypeAdapter<GsonSafeList<E>> {
         private final TypeAdapter<E> elementTypeAdapter;
 
-        Adapter(TypeAdapter<E> elementTypeAdapter) {
+        Adapter(Gson gson, TypeAdapter<E> elementTypeAdapter) {
+            super(gson);
             this.elementTypeAdapter = elementTypeAdapter;
         }
 
         @Override
-        public GsonSafeList<E> read(JsonReader in) throws IOException {
+        public GsonSafeList<E> readImpl(JsonReader in, GsonErrors gsonErrors) throws IOException {
             if (!isValidValue(in)) {
                 return null;
             }
@@ -55,7 +57,7 @@ public final class GsonSafeListTypeAdapterFactory implements TypeAdapterFactory 
         }
 
         @Override
-        public void write(JsonWriter out, GsonSafeList<E> collection) throws IOException {
+        public void writeImpl(JsonWriter out, GsonSafeList<E> collection) throws IOException {
             throw new JsonIOException("Writing is not supported by GsonSafeArrayList");
         }
     }

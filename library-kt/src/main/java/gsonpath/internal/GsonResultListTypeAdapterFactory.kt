@@ -24,12 +24,16 @@ internal class GsonResultListTypeAdapterFactory : TypeAdapterFactory {
         val elementTypeAdapter = gson.getAdapter(TypeToken.get(elementType))
 
         @Suppress("UNCHECKED_CAST")
-        return Adapter(elementTypeAdapter) as TypeAdapter<T>
+        return Adapter(gson, elementTypeAdapter) as TypeAdapter<T>
     }
 
-    private class Adapter<E>(private val elementTypeAdapter: TypeAdapter<E>) : TypeAdapter<GsonResultList<E>>() {
+    private class Adapter<E>(
+            gson: Gson,
+            private val elementTypeAdapter: TypeAdapter<E>
+    ) : GsonPathTypeAdapter<GsonResultList<E>>(gson) {
+
         @Throws(IOException::class)
-        override fun read(reader: JsonReader): GsonResultList<E>? {
+        override fun readImpl(reader: JsonReader, gsonErrors: GsonErrors?): GsonResultList<E>? {
             if (!isValidValue(reader)) {
                 return null
             }
@@ -46,7 +50,7 @@ internal class GsonResultListTypeAdapterFactory : TypeAdapterFactory {
         }
 
         @Throws(IOException::class)
-        override fun write(writer: JsonWriter, collection: GsonResultList<E>) {
+        override fun writeImpl(writer: JsonWriter, collection: GsonResultList<E>) {
             throw JsonIOException("Writing is not supported by GsonResultList")
         }
     }
