@@ -30,7 +30,7 @@ public final class TestMutableRemoveInvalidElements_GsonTypeAdapter extends Gson
             switch (in.nextName()) {
                 case "value1":
                     // Extension (Read) - 'RemoveInvalidElements' Annotation
-                    String[] value_value1 = RemoveInvalidElementsUtil.removeInvalidElementsArray(String.class, gson, in, new RemoveInvalidElementsUtil.CreateArrayFunction<String>() {
+                    String[] value_value1 = RemoveInvalidElementsUtil.removeInvalidElementsArray(String.class, gson, in, gsonErrors, new RemoveInvalidElementsUtil.CreateArrayFunction<String>() {
                         @Override
                         public String[] createArray() {
                             return new String[0];
@@ -44,7 +44,7 @@ public final class TestMutableRemoveInvalidElements_GsonTypeAdapter extends Gson
 
                 case "value2":
                     // Extension (Read) - 'RemoveInvalidElements' Annotation
-                    List<String> value_value2 = RemoveInvalidElementsUtil.removeInvalidElementsList(String.class, gson, in);
+                    List<String> value_value2 = RemoveInvalidElementsUtil.removeInvalidElementsList(String.class, gson, in, gsonErrors);
 
                     if (value_value2 != null) {
                         result.value2 = value_value2;

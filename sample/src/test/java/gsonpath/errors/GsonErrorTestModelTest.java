@@ -29,6 +29,6 @@ public class GsonErrorTestModelTest {
         GsonErrorTestModel model = typeAdapter
                 .read(new JsonReader(new InputStreamReader(resourceAsStream)), gsonErrors);
 
-        Assert.assertEquals(2, model.arrayValue.length);
+        Assert.assertEquals(1, gsonErrors.getErrors().size());
     }
 }

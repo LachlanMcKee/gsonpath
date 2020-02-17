@@ -52,7 +52,7 @@ public final class GsonSafeListTypeAdapterFactory implements TypeAdapterFactory 
             }
 
             GsonSafeList<E> collection = new GsonSafeList<>();
-            RemoveInvalidElementsUtil.removeInvalidElementsList(elementTypeAdapter, in, collection);
+            RemoveInvalidElementsUtil.removeInvalidElementsList(elementTypeAdapter, in, collection, gsonErrors);
             return collection;
         }
 
