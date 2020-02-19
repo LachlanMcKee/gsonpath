@@ -2,6 +2,7 @@ package gsonpath.errors;
 
 import gsonpath.AutoGsonAdapter;
 import gsonpath.GsonFieldValidationType;
+import gsonpath.extension.annotation.Size;
 import gsonpath.safe.GsonSafeList;
 
 import java.util.List;
@@ -25,6 +26,7 @@ class GsonErrorTestModel {
 
     @AutoGsonAdapter(fieldValidationType = GsonFieldValidationType.VALIDATE_ALL_EXCEPT_NULLABLE)
     static class StrictTextModel {
+        @Size(min = 1, max = 5)
         public String text;
     }
 }

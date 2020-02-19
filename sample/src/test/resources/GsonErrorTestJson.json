@@ -2,7 +2,7 @@
   "singleValue": {
     "values": [
       {
-        "text": "reference"
+        "text": "valid"
       },
       {
         "text": null
@@ -13,7 +13,7 @@
     {
       "values": [
         {
-          "text": "reference"
+          "text": "valid"
         },
         {
           "text": null
@@ -23,7 +23,7 @@
     {
       "values": [
         {
-          "text": "reference"
+          "text": "valid"
         },
         {
           "text": null
@@ -35,20 +35,20 @@
     {
       "values": [
         {
-          "text": "reference"
+          "text": "valid"
         },
         {
-          "text": null
+          "text": ""
         }
       ]
     },
     {
       "values": [
         {
-          "text": "reference"
+          "text": "valid"
         },
         {
-          "text": null
+          "text": "123456"
         }
       ]
     }
@@ -57,7 +57,7 @@
     "key1" : {
       "values": [
         {
-          "text": "reference"
+          "text": "valid"
         },
         {
           "text": null

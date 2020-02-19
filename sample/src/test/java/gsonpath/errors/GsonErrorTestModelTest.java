@@ -2,6 +2,7 @@ package gsonpath.errors;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
 import gsonpath.*;
 import org.junit.Assert;
@@ -29,6 +30,13 @@ public class GsonErrorTestModelTest {
         GsonErrorTestModel model = typeAdapter
                 .read(new JsonReader(new InputStreamReader(resourceAsStream)), gsonErrors);
 
-        Assert.assertEquals(1, gsonErrors.getErrors().size());
+        Assert.assertEquals(6, gsonErrors.getErrors().size());
+        System.out.println("-------------");
+        System.out.println("-------------");
+        for (JsonParseException error : gsonErrors.getErrors()) {
+            System.out.println("Exception caught: " + error.getMessage());
+        }
+        System.out.println("-------------");
+        System.out.println("-------------");
     }
 }
