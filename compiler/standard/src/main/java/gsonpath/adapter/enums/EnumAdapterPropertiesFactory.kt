@@ -2,8 +2,8 @@ package gsonpath.adapter.enums
 
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.annotations.SerializedName
-import gsonpath.EnumGsonAdapter
 import gsonpath.ProcessingException
+import gsonpath.annotation.EnumGsonAdapter
 import gsonpath.util.AnnotationFetcher
 import gsonpath.util.FieldElementContent
 import gsonpath.util.TypeHandler

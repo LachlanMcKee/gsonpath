@@ -1,7 +1,7 @@
 package gsonpath.adapter.standard.extension.invalid
 
-import gsonpath.AutoGsonAdapter
 import gsonpath.GsonFieldValidationType
+import gsonpath.annotation.AutoGsonAdapter
 import gsonpath.extension.annotation.RemoveInvalidElements
 
 interface InvalidModel {

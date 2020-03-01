@@ -1,6 +1,6 @@
 package gsonpath.adapter.standard.extension.empty;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 import gsonpath.extension.annotation.EmptyToNull;
 
 import java.util.Collection;

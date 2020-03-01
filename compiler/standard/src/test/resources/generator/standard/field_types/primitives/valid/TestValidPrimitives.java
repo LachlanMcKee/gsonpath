@@ -1,6 +1,6 @@
 package generator.standard.field_types.primitives.valid;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 public class TestValidPrimitives {

@@ -2,9 +2,9 @@ package gsonpath.unit.adapter.standard.model
 
 import com.google.gson.FieldNamingPolicy
 import gsonpath.GsonFieldValidationType
-import gsonpath.PathSubstitution
 import gsonpath.ProcessingException
 import gsonpath.adapter.standard.model.*
+import gsonpath.annotation.PathSubstitution
 import gsonpath.model.FieldInfo
 import org.junit.Rule
 import org.junit.rules.ExpectedException

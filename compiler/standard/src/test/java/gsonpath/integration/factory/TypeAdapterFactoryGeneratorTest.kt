@@ -64,7 +64,7 @@ class TypeAdapterFactoryGeneratorTest {
     @Test
     fun givenTypeAdaptersAndTypeAdapterNotNotAnInterfaces_whenProcessorRuns_expectError() {
         assertTypeAdapterFactoryFailure(listOf("TestGsonTypeFactoryAsClass.java"),
-                "Gson Path: interface gsonpath.AutoGsonAdapterFactory can only be used with types: [INTERFACE]")
+                "Gson Path: interface gsonpath.annotation.AutoGsonAdapterFactory can only be used with types: [INTERFACE]")
     }
 
     private fun assertTypeAdapterFactoryFailure(typeAdapterFactoryFileName: List<String>, errorMessage: String) {

@@ -1,6 +1,6 @@
 package gsonpath.adapter.standard.extension.range.intrange;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 public interface IntRangeModel {
 

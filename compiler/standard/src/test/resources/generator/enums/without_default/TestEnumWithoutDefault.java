@@ -2,7 +2,7 @@ package generator.enums.without_default;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.annotations.SerializedName;
-import gsonpath.EnumGsonAdapter;
+import gsonpath.annotation.EnumGsonAdapter;
 
 @EnumGsonAdapter(fieldNamingPolicy = FieldNamingPolicy.LOWER_CASE_WITH_DASHES)
 enum TestEnumWithoutDefault {

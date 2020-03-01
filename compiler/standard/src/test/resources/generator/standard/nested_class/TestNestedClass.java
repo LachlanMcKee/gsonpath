@@ -1,6 +1,6 @@
 package generator.standard.nested_class;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 public class TestNestedClass {
     @AutoGsonAdapter

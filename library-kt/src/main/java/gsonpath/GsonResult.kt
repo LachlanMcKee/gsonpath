@@ -1,4 +1,4 @@
-package gsonpath.result
+package gsonpath
 
 import com.google.gson.JsonParseException
 

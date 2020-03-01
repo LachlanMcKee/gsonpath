@@ -1,6 +1,6 @@
 package generator.standard.generics.interfaces;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 interface GenericsTest extends IntermediateTest<String, Double> {

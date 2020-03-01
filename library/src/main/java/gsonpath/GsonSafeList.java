@@ -1,4 +1,4 @@
-package gsonpath.safe;
+package gsonpath;
 
 import java.util.ArrayList;
 

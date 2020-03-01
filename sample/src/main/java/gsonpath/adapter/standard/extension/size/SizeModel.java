@@ -1,6 +1,6 @@
 package gsonpath.adapter.standard.extension.size;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 import java.util.List;
 

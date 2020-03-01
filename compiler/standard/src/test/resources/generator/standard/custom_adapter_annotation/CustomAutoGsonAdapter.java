@@ -1,8 +1,8 @@
 package generator.standard.custom_adapter_annotation;
 
 import com.google.gson.FieldNamingPolicy;
-import gsonpath.AutoGsonAdapter;
 import gsonpath.GsonFieldValidationType;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter(
     flattenDelimiter = '$',

@@ -1,7 +1,6 @@
 package generator.gson_sub_type.indirectly_annotated;
 
-import gsonpath.GsonSubtype;
-import gsonpath.GsonSubtypeGetter;
+import gsonpath.annotation.GsonSubtypeGetter;
 
 @IndirectSubType
 public abstract class IndirectlyAnnotatedSubType {

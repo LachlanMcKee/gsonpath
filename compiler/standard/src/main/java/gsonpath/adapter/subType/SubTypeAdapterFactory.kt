@@ -3,8 +3,6 @@ package gsonpath.adapter.subType
 import com.google.gson.Gson
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
-import gsonpath.GsonPathTypeAdapter
-import gsonpath.GsonSubtype
 import gsonpath.LazyFactoryMetadata
 import gsonpath.adapter.AdapterFactory
 import gsonpath.adapter.AdapterGenerationResult
@@ -13,8 +11,10 @@ import gsonpath.adapter.common.GsonSubTypeFactory
 import gsonpath.adapter.common.GsonSubTypeResult
 import gsonpath.adapter.util.AdapterFactoryUtil.getAnnotatedModelElements
 import gsonpath.adapter.util.writeFile
+import gsonpath.annotation.GsonSubtype
 import gsonpath.compiler.generateClassName
 import gsonpath.dependencies.Dependencies
+import gsonpath.internal.GsonPathTypeAdapter
 import gsonpath.model.FieldType
 import gsonpath.util.Logger
 import gsonpath.util.TypeSpecExt

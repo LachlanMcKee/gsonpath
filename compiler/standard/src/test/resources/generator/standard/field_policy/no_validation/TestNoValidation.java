@@ -1,9 +1,9 @@
 package generator.standard.field_policy.no_validation;
 
-import gsonpath.AutoGsonAdapter;
 import gsonpath.GsonFieldValidationType;
 import gsonpath.NonNull;
 import gsonpath.Nullable;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter(fieldValidationType = GsonFieldValidationType.NO_VALIDATION)
 public class TestNoValidation {

@@ -3,10 +3,11 @@ package generator.interf.primitive;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
-import gsonpath.GsonPathTypeAdapter;
-import gsonpath.GsonUtil;
-import gsonpath.JsonReaderHelper;
+import gsonpath.annotation.GsonPathGenerated;
+import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.GsonUtil;
+import gsonpath.internal.JsonReaderHelper;
+
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -43,7 +44,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                         mandatoryFieldsCheckList[0] = true;
 
                     } else {
-                        throw new gsonpath.JsonFieldNullException("intExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
+                        throw new gsonpath.exception.JsonFieldNullException("intExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
                     }
                     break;
 
@@ -54,7 +55,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                         mandatoryFieldsCheckList[1] = true;
 
                     } else {
-                        throw new gsonpath.JsonFieldNullException("longExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
+                        throw new gsonpath.exception.JsonFieldNullException("longExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
                     }
                     break;
 
@@ -65,7 +66,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                         mandatoryFieldsCheckList[2] = true;
 
                     } else {
-                        throw new gsonpath.JsonFieldNullException("doubleExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
+                        throw new gsonpath.exception.JsonFieldNullException("doubleExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
                     }
                     break;
 
@@ -76,7 +77,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                         mandatoryFieldsCheckList[3] = true;
 
                     } else {
-                        throw new gsonpath.JsonFieldNullException("booleanExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
+                        throw new gsonpath.exception.JsonFieldNullException("booleanExample", "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
                     }
                     break;
 
@@ -129,7 +130,7 @@ public final class TestUsingPrimitives_GsonTypeAdapter extends GsonPathTypeAdapt
                         break;
 
                 }
-                throw new gsonpath.JsonFieldNoKeyException(fieldName, "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
+                throw new gsonpath.exception.JsonFieldNoKeyException(fieldName, "generator.interf.primitive.TestUsingPrimitives_GsonPathModel");
             }
         }
         return new TestUsingPrimitives_GsonPathModel(

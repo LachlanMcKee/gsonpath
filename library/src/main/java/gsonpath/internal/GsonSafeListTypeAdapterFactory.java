@@ -1,4 +1,4 @@
-package gsonpath.safe;
+package gsonpath.internal;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
@@ -7,13 +7,14 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gsonpath.GsonSafeList;
 import gsonpath.extension.RemoveInvalidElementsUtil;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import static gsonpath.GsonUtil.isValidValue;
+import static gsonpath.internal.GsonUtil.isValidValue;
 
 /**
  * A factory for the list that stores only valid results when parsing via Gson.

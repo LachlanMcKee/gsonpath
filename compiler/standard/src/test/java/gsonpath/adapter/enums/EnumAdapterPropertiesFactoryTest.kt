@@ -7,7 +7,7 @@ import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.squareup.javapoet.ClassName
-import gsonpath.EnumGsonAdapter
+import gsonpath.annotation.EnumGsonAdapter
 import gsonpath.processingExceptionMatcher
 import gsonpath.util.AnnotationFetcher
 import gsonpath.util.FieldElementContent

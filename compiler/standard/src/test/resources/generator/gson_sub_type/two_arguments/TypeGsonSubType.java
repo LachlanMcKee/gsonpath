@@ -1,8 +1,8 @@
 package generator.gson_sub_type.two_arguments;
 
-import gsonpath.GsonSubtype;
-import gsonpath.GsonSubtypeGetter;
 import gsonpath.NonNull;
+import gsonpath.annotation.GsonSubtype;
+import gsonpath.annotation.GsonSubtypeGetter;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package generator.standard.size.valid.nullable;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 import gsonpath.extension.annotation.Size;
 
 @AutoGsonAdapter

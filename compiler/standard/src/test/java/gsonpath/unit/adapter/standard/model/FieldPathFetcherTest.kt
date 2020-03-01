@@ -2,11 +2,11 @@ package gsonpath.unit.adapter.standard.model
 
 import com.google.gson.FieldNamingPolicy
 import gsonpath.GsonFieldValidationType
-import gsonpath.PathSubstitution
 import gsonpath.adapter.standard.model.FieldPath
 import gsonpath.adapter.standard.model.FieldPathFetcher
 import gsonpath.adapter.standard.model.GsonObjectMetadata
 import gsonpath.adapter.standard.model.SerializedNameFetcher
+import gsonpath.annotation.PathSubstitution
 import gsonpath.model.FieldInfo
 import gsonpath.util.FieldNamingPolicyMapper
 import org.junit.Assert.assertEquals

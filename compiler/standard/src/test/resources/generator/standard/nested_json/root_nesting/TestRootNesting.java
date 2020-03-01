@@ -1,6 +1,6 @@
 package generator.standard.nested_json.root_nesting;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter(rootField = "Root.Nest1")
 public class TestRootNesting {

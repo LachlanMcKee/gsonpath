@@ -4,6 +4,10 @@ import gsonpath.adapter.enums.EnumAdapterFactory
 import gsonpath.adapter.standard.StandardAdapterFactory
 import gsonpath.adapter.subType.SubTypeAdapterFactory
 import gsonpath.adapter.util.AdapterFactoryUtil.getAnnotatedModelElements
+import gsonpath.annotation.AutoGsonAdapter
+import gsonpath.annotation.AutoGsonAdapterFactory
+import gsonpath.annotation.EnumGsonAdapter
+import gsonpath.annotation.GsonSubtype
 import gsonpath.dependencies.DependencyFactory
 import gsonpath.util.Logger
 import javax.annotation.processing.AbstractProcessor

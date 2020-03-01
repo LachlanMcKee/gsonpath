@@ -1,6 +1,7 @@
 package gsonpath
 
 import gsonpath.adapter.util.ElementAndAnnotation
+import gsonpath.annotation.AutoGsonAdapterFactory
 import javax.lang.model.element.TypeElement
 
 class LazyFactoryMetadata(

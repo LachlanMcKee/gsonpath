@@ -3,10 +3,11 @@ package generator.standard.field_policy.validate_all_except_nullable;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
-import gsonpath.GsonPathTypeAdapter;
-import gsonpath.GsonUtil;
-import gsonpath.JsonReaderHelper;
+import gsonpath.annotation.GsonPathGenerated;
+import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.GsonUtil;
+import gsonpath.internal.JsonReaderHelper;
+
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -32,7 +33,7 @@ public final class TestValidateAllExceptNullable_GsonTypeAdapter extends GsonPat
                         result.mandatory1 = value_mandatory1;
                         mandatoryFieldsCheckList[0] = true;
                     } else {
-                        throw new gsonpath.JsonFieldNullException("mandatory1", "generator.standard.field_policy.validate_all_except_nullable.TestValidateAllExceptNullable");
+                        throw new gsonpath.exception.JsonFieldNullException("mandatory1", "generator.standard.field_policy.validate_all_except_nullable.TestValidateAllExceptNullable");
                     }
                     break;
 
@@ -42,7 +43,7 @@ public final class TestValidateAllExceptNullable_GsonTypeAdapter extends GsonPat
                         result.mandatory2 = value_mandatory2;
                         mandatoryFieldsCheckList[1] = true;
                     } else {
-                        throw new gsonpath.JsonFieldNullException("mandatory2", "generator.standard.field_policy.validate_all_except_nullable.TestValidateAllExceptNullable");
+                        throw new gsonpath.exception.JsonFieldNullException("mandatory2", "generator.standard.field_policy.validate_all_except_nullable.TestValidateAllExceptNullable");
                     }
                     break;
 
@@ -78,7 +79,7 @@ public final class TestValidateAllExceptNullable_GsonTypeAdapter extends GsonPat
                         break;
 
                 }
-                throw new gsonpath.JsonFieldNoKeyException(fieldName, "generator.standard.field_policy.validate_all_except_nullable.TestValidateAllExceptNullable");
+                throw new gsonpath.exception.JsonFieldNoKeyException(fieldName, "generator.standard.field_policy.validate_all_except_nullable.TestValidateAllExceptNullable");
             }
         }
         return result;

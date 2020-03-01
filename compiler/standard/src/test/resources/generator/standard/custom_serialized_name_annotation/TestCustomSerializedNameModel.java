@@ -1,8 +1,8 @@
 package generator.standard.custom_serialized_name_annotation;
 
 import com.google.gson.annotations.SerializedName;
-import gsonpath.AutoGsonAdapter;
-import gsonpath.NestedJson;
+import gsonpath.annotation.AutoGsonAdapter;
+import gsonpath.annotation.NestedJson;
 
 @AutoGsonAdapter(ignoreNonAnnotatedFields = true)
 public class TestCustomSerializedNameModel {

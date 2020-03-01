@@ -3,10 +3,11 @@ package generator.standard.custom_adapter_annotation;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
-import gsonpath.GsonPathTypeAdapter;
-import gsonpath.GsonUtil;
-import gsonpath.JsonReaderHelper;
+import gsonpath.annotation.GsonPathGenerated;
+import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.GsonUtil;
+import gsonpath.internal.JsonReaderHelper;
+
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -36,7 +37,7 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends GsonPa
                                     mandatoryFieldsCheckList[0] = true;
 
                                 } else {
-                                    throw new gsonpath.JsonFieldNullException("path$expectedValue", "generator.standard.custom_adapter_annotation.TestCustomAutoGsonAdapterModel");
+                                    throw new gsonpath.exception.JsonFieldNullException("path$expectedValue", "generator.standard.custom_adapter_annotation.TestCustomAutoGsonAdapterModel");
                                 }
                                 break;
 
@@ -69,7 +70,7 @@ public final class TestCustomAutoGsonAdapterModel_GsonTypeAdapter extends GsonPa
                         break;
 
                 }
-                throw new gsonpath.JsonFieldNoKeyException(fieldName, "generator.standard.custom_adapter_annotation.TestCustomAutoGsonAdapterModel");
+                throw new gsonpath.exception.JsonFieldNoKeyException(fieldName, "generator.standard.custom_adapter_annotation.TestCustomAutoGsonAdapterModel");
             }
         }
         return result;

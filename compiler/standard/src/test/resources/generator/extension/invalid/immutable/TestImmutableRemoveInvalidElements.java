@@ -1,6 +1,6 @@
 package generator.standard.invalid.immutable;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 import gsonpath.extension.annotation.RemoveInvalidElements;
 
 import java.util.List;

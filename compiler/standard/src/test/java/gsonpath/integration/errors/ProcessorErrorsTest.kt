@@ -20,7 +20,7 @@ class ProcessorErrorsTest {
                 .failsToCompile()
                 .withErrorContaining("Invalid field type: java.lang.Object")
                 .`in`(source)
-                .onLine(10)
+                .onLine(9)
     }
 
     @Test
@@ -36,7 +36,7 @@ class ProcessorErrorsTest {
                 .failsToCompile()
                 .withErrorContaining("Unexpected duplicate field 'value' found. Each tree branch must use a unique value!")
                 .`in`(source)
-                .onLine(16)
+                .onLine(15)
     }
 
     @Test
@@ -52,7 +52,7 @@ class ProcessorErrorsTest {
                 .failsToCompile()
                 .withErrorContaining("Unexpected duplicate field 'value' found. Each tree branch must use a unique value!")
                 .`in`(source)
-                .onLine(13)
+                .onLine(12)
     }
 
     @Test
@@ -68,6 +68,6 @@ class ProcessorErrorsTest {
                 .failsToCompile()
                 .withErrorContaining("SerializedName 'alternate' feature is not supported")
                 .`in`(source)
-                .onLine(10)
+                .onLine(9)
     }
 }

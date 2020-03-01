@@ -1,11 +1,6 @@
 package generator.standard.class_annotations.serialize_nulls;
 
-import java.lang.String;
-import java.lang.Integer;
-import java.lang.Double;
-import java.lang.Boolean;
-
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter(serializeNulls = true)
 public class TestSerializeNulls {

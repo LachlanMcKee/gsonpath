@@ -1,8 +1,8 @@
 package generator.interf.inheritance;
 
 import com.google.gson.annotations.SerializedName;
-import gsonpath.GsonPathGenerated;
 import gsonpath.NonNull;
+import gsonpath.annotation.GsonPathGenerated;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;

@@ -4,10 +4,10 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.WildcardTypeName
-import gsonpath.GsonSubtype
-import gsonpath.GsonSubtypeGetter
 import gsonpath.ProcessingException
 import gsonpath.adapter.util.NullableUtil
+import gsonpath.annotation.GsonSubtype
+import gsonpath.annotation.GsonSubtypeGetter
 import gsonpath.model.FieldType
 import gsonpath.util.MethodElementContent
 import gsonpath.util.TypeHandler

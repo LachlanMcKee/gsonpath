@@ -4,6 +4,8 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import gsonpath.GsonPathTypeAdapterFactoryKt
+import gsonpath.GsonResult
+import gsonpath.GsonResultList
 import org.hamcrest.CustomTypeSafeMatcher
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThat

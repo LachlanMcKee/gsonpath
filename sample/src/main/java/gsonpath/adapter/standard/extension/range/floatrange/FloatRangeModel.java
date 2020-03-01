@@ -1,6 +1,6 @@
 package gsonpath.adapter.standard.extension.range.floatrange;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 public interface FloatRangeModel {
 

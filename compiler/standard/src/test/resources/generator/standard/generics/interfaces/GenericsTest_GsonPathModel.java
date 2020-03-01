@@ -1,6 +1,6 @@
 package generator.standard.generics.interfaces;
 
-import gsonpath.GsonPathGenerated;
+import gsonpath.annotation.GsonPathGenerated;
 import java.lang.Double;
 import java.lang.Integer;
 import java.lang.Object;

@@ -1,4 +1,4 @@
-package gsonpath.result
+package gsonpath
 
 /**
  * A list that stores valid and invalid results when parsing via Gson.

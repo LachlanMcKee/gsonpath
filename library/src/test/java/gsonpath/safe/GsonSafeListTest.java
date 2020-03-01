@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import gsonpath.GsonPathTypeAdapterFactory;
+import gsonpath.GsonSafeList;
 import org.junit.Test;
 
 import java.io.InputStream;

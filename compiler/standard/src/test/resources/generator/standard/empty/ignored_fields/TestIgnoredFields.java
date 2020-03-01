@@ -1,6 +1,6 @@
 package generator.standard.empty.ignored_fields;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 public class TestIgnoredFields {

@@ -1,8 +1,9 @@
 package generator.standard.invalid.mutable;
 
-import java.util.List;
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 import gsonpath.extension.annotation.RemoveInvalidElements;
+
+import java.util.List;
 
 @AutoGsonAdapter
 public class TestMutableRemoveInvalidElements {

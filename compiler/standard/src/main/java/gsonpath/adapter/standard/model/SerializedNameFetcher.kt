@@ -1,8 +1,8 @@
 package gsonpath.adapter.standard.model
 
 import com.google.gson.annotations.SerializedName
-import gsonpath.NestedJson
 import gsonpath.ProcessingException
+import gsonpath.annotation.NestedJson
 import gsonpath.model.FieldInfo
 
 object SerializedNameFetcher {

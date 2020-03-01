@@ -1,4 +1,4 @@
-package gsonpath;
+package gsonpath.internal;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -7,7 +7,7 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 
-import static gsonpath.GsonUtil.isValidValue;
+import static gsonpath.internal.GsonUtil.isValidValue;
 
 public abstract class GsonPathTypeAdapter<T> extends TypeAdapter<T> {
     protected final Gson gson;

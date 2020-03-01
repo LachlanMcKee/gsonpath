@@ -1,9 +1,9 @@
 package gsonpath.adapter.subType;
 
-import gsonpath.AutoGsonAdapter;
-import gsonpath.GsonSubtype;
-import gsonpath.GsonSubtypeGetter;
 import gsonpath.Nullable;
+import gsonpath.annotation.AutoGsonAdapter;
+import gsonpath.annotation.GsonSubtype;
+import gsonpath.annotation.GsonSubtypeGetter;
 
 @GsonSubtype(
         jsonKeys = {"type"}

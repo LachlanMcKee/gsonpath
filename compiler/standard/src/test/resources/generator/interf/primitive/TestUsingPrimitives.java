@@ -1,6 +1,6 @@
 package generator.interf.primitive;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 public interface TestUsingPrimitives {

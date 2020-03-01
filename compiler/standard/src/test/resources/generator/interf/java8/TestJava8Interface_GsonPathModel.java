@@ -1,6 +1,6 @@
 package generator.interf.java8;
 
-import gsonpath.GsonPathGenerated;
+import gsonpath.annotation.GsonPathGenerated;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;

@@ -1,7 +1,7 @@
 package generator.standard.field_annotations.exclude;
 
-import gsonpath.AutoGsonAdapter;
-import gsonpath.ExcludeField;
+import gsonpath.annotation.AutoGsonAdapter;
+import gsonpath.annotation.ExcludeField;
 
 @AutoGsonAdapter
 public class TestExclude {

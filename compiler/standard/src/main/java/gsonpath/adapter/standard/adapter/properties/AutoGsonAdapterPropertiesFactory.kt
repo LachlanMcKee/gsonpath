@@ -1,9 +1,9 @@
 package gsonpath.adapter.standard.adapter.properties
 
-import gsonpath.AutoGsonAdapter
 import gsonpath.GsonFieldValidationType
 import gsonpath.LazyFactoryMetadata
 import gsonpath.ProcessingException
+import gsonpath.annotation.AutoGsonAdapter
 import javax.lang.model.element.TypeElement
 
 class AutoGsonAdapterPropertiesFactory(

@@ -1,7 +1,7 @@
 package gsonpath.adapter
 
 import com.squareup.javapoet.AnnotationSpec
-import gsonpath.GsonPathGenerated
+import gsonpath.annotation.GsonPathGenerated
 
 object Constants {
     const val GSON = "gson"

@@ -1,6 +1,6 @@
 package generator.gson_sub_type.failures;
 
-import gsonpath.GsonSubtype;
+import gsonpath.annotation.GsonSubtype;
 
 @GsonSubtype(
         jsonKeys = {""}

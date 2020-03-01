@@ -2,7 +2,7 @@ package gsonpath.adapter.standard.adapter.properties
 
 import com.google.gson.FieldNamingPolicy
 import gsonpath.GsonFieldValidationType
-import gsonpath.PathSubstitution
+import gsonpath.annotation.PathSubstitution
 
 data class AutoGsonAdapterProperties(
         val fieldsRequireAnnotation: Boolean,

@@ -1,8 +1,8 @@
 package gsonpath.adapter.enums
 
 import com.google.gson.FieldNamingPolicy
-import gsonpath.AutoGsonAdapter
-import gsonpath.EnumGsonAdapter
+import gsonpath.annotation.AutoGsonAdapter
+import gsonpath.annotation.EnumGsonAdapter
 
 @AutoGsonAdapter
 class EnumExample(val values: Array<EnumValue>) {

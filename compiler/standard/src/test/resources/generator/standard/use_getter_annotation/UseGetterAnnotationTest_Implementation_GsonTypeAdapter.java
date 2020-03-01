@@ -3,10 +3,11 @@ package generator.standard.use_getter_annotation;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
-import gsonpath.GsonPathTypeAdapter;
-import gsonpath.GsonUtil;
-import gsonpath.JsonReaderHelper;
+import gsonpath.annotation.GsonPathGenerated;
+import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.GsonUtil;
+import gsonpath.internal.JsonReaderHelper;
+
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -38,7 +39,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
                                     mandatoryFieldsCheckList[0] = true;
 
                                 } else {
-                                    throw new gsonpath.JsonFieldNullException("common.name", "generator.standard.use_getter_annotation.UseGetterAnnotationTest.Implementation");
+                                    throw new gsonpath.exception.JsonFieldNullException("common.name", "generator.standard.use_getter_annotation.UseGetterAnnotationTest.Implementation");
                                 }
                                 break;
 
@@ -86,7 +87,7 @@ public final class UseGetterAnnotationTest_Implementation_GsonTypeAdapter extend
                         break;
 
                 }
-                throw new gsonpath.JsonFieldNoKeyException(fieldName, "generator.standard.use_getter_annotation.UseGetterAnnotationTest.Implementation");
+                throw new gsonpath.exception.JsonFieldNoKeyException(fieldName, "generator.standard.use_getter_annotation.UseGetterAnnotationTest.Implementation");
             }
         }
         return new UseGetterAnnotationTest.Implementation(

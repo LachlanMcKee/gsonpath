@@ -4,7 +4,6 @@ import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
-import gsonpath.GsonUtil
 import gsonpath.ProcessingException
 import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.adapter.Constants.GET_ADAPTER
@@ -16,6 +15,7 @@ import gsonpath.adapter.standard.extension.ExtensionsHandler
 import gsonpath.adapter.standard.model.GsonArray
 import gsonpath.adapter.standard.model.GsonField
 import gsonpath.adapter.standard.model.GsonObject
+import gsonpath.internal.GsonUtil
 import gsonpath.model.FieldType
 import gsonpath.util.*
 

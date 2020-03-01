@@ -1,6 +1,6 @@
 package generator.standard.field_types.boxed_primitives;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 public class TestBoxedPrimitives {

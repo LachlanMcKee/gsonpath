@@ -1,4 +1,4 @@
-package gsonpath;
+package gsonpath.exception;
 
 public class JsonFieldNullException extends JsonFieldMissingException {
     public JsonFieldNullException(String field, String className) {

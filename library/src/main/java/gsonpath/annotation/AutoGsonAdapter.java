@@ -1,6 +1,7 @@
-package gsonpath;
+package gsonpath.annotation;
 
 import com.google.gson.FieldNamingPolicy;
+import gsonpath.GsonFieldValidationType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -56,7 +57,7 @@ public @interface AutoGsonAdapter {
      * Determines whether fields that do not use the 'SerializedName' gson annotation are added to the Type Adapter
      * or not. By default all fields are added.
      * <p>
-     * To exclude fields on a case-by-case basis, see {@link gsonpath.ExcludeField}
+     * To exclude fields on a case-by-case basis, see {@link ExcludeField}
      *
      * @return whether non-annotated fields are ignored.
      */

@@ -1,11 +1,13 @@
-package gsonpath.result
+package gsonpath.internal
 
 import com.google.gson.*
 import com.google.gson.internal.Streams
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-import gsonpath.GsonUtil.isValidValue
+import gsonpath.GsonResult
+import gsonpath.GsonResultList
+import gsonpath.internal.GsonUtil.isValidValue
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 

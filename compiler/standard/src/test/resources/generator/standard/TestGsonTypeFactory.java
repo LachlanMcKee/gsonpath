@@ -1,8 +1,7 @@
 package generator.standard;
 
 import com.google.gson.TypeAdapterFactory;
-
-import gsonpath.AutoGsonAdapterFactory;
+import gsonpath.annotation.AutoGsonAdapterFactory;
 
 @AutoGsonAdapterFactory
 public interface TestGsonTypeFactory extends TypeAdapterFactory {

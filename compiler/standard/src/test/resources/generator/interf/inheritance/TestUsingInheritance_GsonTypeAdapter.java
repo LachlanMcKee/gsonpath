@@ -3,10 +3,11 @@ package generator.interf.inheritance;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
-import gsonpath.GsonPathTypeAdapter;
-import gsonpath.GsonUtil;
-import gsonpath.JsonReaderHelper;
+import gsonpath.annotation.GsonPathGenerated;
+import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.GsonUtil;
+import gsonpath.internal.JsonReaderHelper;
+
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -39,7 +40,7 @@ public final class TestUsingInheritance_GsonTypeAdapter extends GsonPathTypeAdap
                         mandatoryFieldsCheckList[0] = true;
 
                     } else {
-                        throw new gsonpath.JsonFieldNullException("value1", "generator.interf.inheritance.TestUsingInheritance_GsonPathModel");
+                        throw new gsonpath.exception.JsonFieldNullException("value1", "generator.interf.inheritance.TestUsingInheritance_GsonPathModel");
                     }
                     break;
 
@@ -79,7 +80,7 @@ public final class TestUsingInheritance_GsonTypeAdapter extends GsonPathTypeAdap
                         break;
 
                 }
-                throw new gsonpath.JsonFieldNoKeyException(fieldName, "generator.interf.inheritance.TestUsingInheritance_GsonPathModel");
+                throw new gsonpath.exception.JsonFieldNoKeyException(fieldName, "generator.interf.inheritance.TestUsingInheritance_GsonPathModel");
             }
         }
         return new TestUsingInheritance_GsonPathModel(

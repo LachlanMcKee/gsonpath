@@ -4,7 +4,6 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeSpec
-import gsonpath.JsonReaderHelper
 import gsonpath.ProcessingException
 import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.adapter.Constants.GET_ADAPTER
@@ -16,6 +15,7 @@ import gsonpath.adapter.standard.model.GsonField
 import gsonpath.adapter.standard.model.GsonModel
 import gsonpath.adapter.standard.model.GsonObject
 import gsonpath.compiler.createDefaultVariableValueForTypeName
+import gsonpath.internal.JsonReaderHelper
 import gsonpath.model.FieldType
 import gsonpath.util.*
 
@@ -160,7 +160,7 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
                     newLine()
 
                     nextControlFlow("else")
-                    addEscapedStatement("""throw new gsonpath.JsonFieldNullException("${gsonField.jsonPath}", "${fieldInfo.parentClassName}")""")
+                    addEscapedStatement("""throw new gsonpath.exception.JsonFieldNullException("${gsonField.jsonPath}", "${fieldInfo.parentClassName}")""")
                 }
             }
         }
@@ -300,7 +300,7 @@ class ReadFunctions(private val extensionsHandler: ExtensionsHandler) {
                         }
                     }
                 }
-                addStatement("""throw new gsonpath.JsonFieldNoKeyException($FIELD_NAME, "${params.concreteElement}")""")
+                addStatement("""throw new gsonpath.exception.JsonFieldNoKeyException($FIELD_NAME, "${params.concreteElement}")""")
             }
         }
     }

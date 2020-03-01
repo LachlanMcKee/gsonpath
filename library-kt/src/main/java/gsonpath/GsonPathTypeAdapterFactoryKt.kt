@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
-import gsonpath.result.GsonResultListTypeAdapterFactory
+import gsonpath.internal.GsonResultListTypeAdapterFactory
 
 /**
  * Adds serialization/deserialization handling for GsonPath specific types to Gson.

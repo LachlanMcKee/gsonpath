@@ -3,8 +3,8 @@ package gsonpath.kotlin;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import gsonpath.GsonPath;
-import gsonpath.JsonFieldNoKeyException;
 import gsonpath.TestGsonTypeFactory;
+import gsonpath.exception.JsonFieldNoKeyException;
 import org.junit.Assert;
 import org.junit.Test;
 

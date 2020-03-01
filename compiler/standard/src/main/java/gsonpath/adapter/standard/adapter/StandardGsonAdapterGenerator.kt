@@ -4,8 +4,6 @@ import com.google.gson.Gson
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeSpec
-import gsonpath.AutoGsonAdapter
-import gsonpath.GsonPathTypeAdapter
 import gsonpath.LazyFactoryMetadata
 import gsonpath.ProcessingException
 import gsonpath.adapter.AdapterGenerationResult
@@ -13,6 +11,8 @@ import gsonpath.adapter.Constants.GENERATED_ANNOTATION
 import gsonpath.adapter.standard.adapter.read.ReadFunctions
 import gsonpath.adapter.standard.adapter.write.WriteFunctions
 import gsonpath.adapter.util.writeFile
+import gsonpath.annotation.AutoGsonAdapter
+import gsonpath.internal.GsonPathTypeAdapter
 import gsonpath.util.FileWriter
 import gsonpath.util.TypeSpecExt
 import gsonpath.util.constructor

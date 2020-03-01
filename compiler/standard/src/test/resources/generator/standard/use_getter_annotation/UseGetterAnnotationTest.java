@@ -1,8 +1,8 @@
 package generator.standard.use_getter_annotation;
 
 import com.google.gson.annotations.SerializedName;
-import gsonpath.AutoGsonAdapter;
 import gsonpath.GsonFieldValidationType;
+import gsonpath.annotation.AutoGsonAdapter;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class UseGetterAnnotationTest {

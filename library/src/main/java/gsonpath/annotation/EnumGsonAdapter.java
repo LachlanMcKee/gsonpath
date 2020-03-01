@@ -1,4 +1,4 @@
-package gsonpath;
+package gsonpath.annotation;
 
 import com.google.gson.FieldNamingPolicy;
 

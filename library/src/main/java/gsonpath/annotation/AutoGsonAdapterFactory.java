@@ -1,6 +1,7 @@
-package gsonpath;
+package gsonpath.annotation;
 
 import com.google.gson.FieldNamingPolicy;
+import gsonpath.GsonFieldValidationType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,13 +1,13 @@
 package gsonpath.adapter.standard.adapter
 
 import com.squareup.javapoet.ClassName
-import gsonpath.AutoGsonAdapter
 import gsonpath.LazyFactoryMetadata
 import gsonpath.adapter.standard.adapter.properties.AutoGsonAdapterPropertiesFactory
 import gsonpath.adapter.standard.adapter.read.ReadParams
 import gsonpath.adapter.standard.adapter.write.WriteParams
 import gsonpath.adapter.standard.interf.ModelInterfaceGenerator
 import gsonpath.adapter.standard.model.*
+import gsonpath.annotation.AutoGsonAdapter
 import gsonpath.compiler.generateClassName
 import gsonpath.model.FieldInfo
 import gsonpath.util.TypeHandler

@@ -4,13 +4,17 @@ import com.google.gson.Gson
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterizedTypeName
-import gsonpath.*
+import gsonpath.LazyFactoryMetadata
+import gsonpath.ProcessingException
 import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.AdapterMethodBuilder
 import gsonpath.adapter.Constants
 import gsonpath.adapter.standard.adapter.properties.PropertyFetcher
 import gsonpath.adapter.util.writeFile
+import gsonpath.annotation.EnumGsonAdapter
 import gsonpath.compiler.generateClassName
+import gsonpath.internal.GsonPathTypeAdapter
+import gsonpath.internal.GsonUtil
 import gsonpath.util.*
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
@@ -78,7 +82,7 @@ class EnumGsonAdapterGenerator(
                         if (properties.defaultValue != null) {
                             `return`("\$T", properties.defaultValue.enumValueTypeName)
                         } else {
-                            addEscapedStatement("""throw new gsonpath.JsonUnexpectedEnumValueException(enumValue, "$enumTypeName")""")
+                            addEscapedStatement("""throw new gsonpath.exception.JsonUnexpectedEnumValueException(enumValue, "$enumTypeName")""")
                         }
                     }
                 }

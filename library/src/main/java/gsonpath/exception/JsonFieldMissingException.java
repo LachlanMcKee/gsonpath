@@ -1,4 +1,4 @@
-package gsonpath;
+package gsonpath.exception;
 
 import com.google.gson.JsonParseException;
 

@@ -1,8 +1,7 @@
 package generator.standard.nested_json.field_nesting_autocomplete;
 
 import com.google.gson.annotations.SerializedName;
-
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 public class TestFieldNestingAutocomplete {

@@ -1,7 +1,6 @@
 package gsonpath.mandatory;
 
-import gsonpath.AutoGsonAdapter;
-import gsonpath.GsonFieldValidationType;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 class MandatorySampleModel {

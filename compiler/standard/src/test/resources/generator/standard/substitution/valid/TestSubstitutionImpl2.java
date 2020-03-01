@@ -1,7 +1,7 @@
 package generator.standard.substitution.valid;
 
-import gsonpath.AutoGsonAdapter;
-import gsonpath.PathSubstitution;
+import gsonpath.annotation.AutoGsonAdapter;
+import gsonpath.annotation.PathSubstitution;
 
 @AutoGsonAdapter(substitutions = {
         @PathSubstitution(original = "SUB_1", replacement = "Impl2_A"),

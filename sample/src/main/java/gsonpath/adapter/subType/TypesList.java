@@ -1,6 +1,6 @@
 package gsonpath.adapter.subType;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 interface TypesList {

@@ -1,6 +1,6 @@
 package generator.factory;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 class TestLoaderSource {

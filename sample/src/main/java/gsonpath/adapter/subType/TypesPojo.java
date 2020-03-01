@@ -1,7 +1,7 @@
 package gsonpath.adapter.subType;
 
 import com.google.gson.annotations.SerializedName;
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 interface TypesPojo {

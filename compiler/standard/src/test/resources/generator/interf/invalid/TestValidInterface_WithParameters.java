@@ -1,6 +1,6 @@
 package generator.interf.invalid;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 public interface TestValidInterface_WithParameters {

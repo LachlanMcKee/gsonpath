@@ -1,9 +1,6 @@
 package generator.interf.java8;
 
-import java.lang.Void;
-
-import gsonpath.AutoGsonAdapter;
-import com.google.gson.annotations.SerializedName;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 public interface TestJava8Interface {

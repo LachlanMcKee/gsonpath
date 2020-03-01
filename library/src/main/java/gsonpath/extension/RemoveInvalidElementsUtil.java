@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static gsonpath.GsonUtil.isValidValue;
+import static gsonpath.internal.GsonUtil.isValidValue;
 
 public class RemoveInvalidElementsUtil {
 

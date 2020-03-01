@@ -1,8 +1,8 @@
 package generator.interf.inheritance;
 
-import gsonpath.AutoGsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import gsonpath.NonNull;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 public interface TestUsingInheritance extends TestUsingInheritanceBase {

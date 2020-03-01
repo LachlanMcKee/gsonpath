@@ -3,9 +3,9 @@ package gsonpath.adapter.standard.model
 import com.google.gson.annotations.SerializedName
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
-import gsonpath.ExcludeField
-import gsonpath.NestedJson
 import gsonpath.ProcessingException
+import gsonpath.annotation.ExcludeField
+import gsonpath.annotation.NestedJson
 import gsonpath.model.FieldInfo
 import gsonpath.model.FieldType
 import gsonpath.util.*

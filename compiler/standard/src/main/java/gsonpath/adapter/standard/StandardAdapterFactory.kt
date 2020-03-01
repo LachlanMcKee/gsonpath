@@ -1,10 +1,10 @@
 package gsonpath.adapter.standard
 
-import gsonpath.AutoGsonAdapter
 import gsonpath.LazyFactoryMetadata
 import gsonpath.adapter.AdapterFactory
 import gsonpath.adapter.AdapterGenerationResult
 import gsonpath.adapter.util.AdapterFactoryUtil.getAnnotatedModelElements
+import gsonpath.annotation.AutoGsonAdapter
 import gsonpath.dependencies.Dependencies
 import gsonpath.util.Logger
 import javax.annotation.processing.RoundEnvironment

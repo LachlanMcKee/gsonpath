@@ -1,7 +1,7 @@
 package generator.standard.using_constructor.valid;
 
 import com.google.gson.annotations.SerializedName;
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 import kotlin.jvm.internal.Intrinsics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

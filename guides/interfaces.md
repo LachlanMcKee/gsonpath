@@ -124,7 +124,7 @@ public final class InterfaceExample_GsonTypeAdapter extends TypeAdapter<Interfac
                         mandatoryFieldsCheckList[MANDATORY_INDEX_PRIMITIVEEXAMPLE] = true;
                         
                     } else {
-                        throw new gsonpath.JsonFieldMissingException("Mandatory JSON element 'primitiveExample' was null for class 'generator.standard.primitive.InterfaceExample_GsonPathModel'");
+                        throw new gsonpath.exception.JsonFieldMissingException("Mandatory JSON element 'primitiveExample' was null for class 'generator.standard.primitive.InterfaceExample_GsonPathModel'");
                     }
                     break;
                 
@@ -150,7 +150,7 @@ public final class InterfaceExample_GsonTypeAdapter extends TypeAdapter<Interfac
                         break;
                         
                 }
-                throw new gsonpath.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class 'generator.standard.primitive.InterfaceExample_GsonPathModel'");
+                throw new gsonpath.exception.JsonFieldMissingException("Mandatory JSON element '" + fieldName + "' was not found for class 'generator.standard.primitive.InterfaceExample_GsonPathModel'");
             }
         }
         

@@ -3,10 +3,11 @@ package generator.standard.field_policy.validate_explicit_non_null;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
-import gsonpath.GsonPathTypeAdapter;
-import gsonpath.GsonUtil;
-import gsonpath.JsonReaderHelper;
+import gsonpath.annotation.GsonPathGenerated;
+import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.GsonUtil;
+import gsonpath.internal.JsonReaderHelper;
+
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Override;
@@ -33,7 +34,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
                         mandatoryFieldsCheckList[0] = true;
 
                     } else {
-                        throw new gsonpath.JsonFieldNullException("mandatory1", "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
+                        throw new gsonpath.exception.JsonFieldNullException("mandatory1", "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
                     }
                     break;
 
@@ -44,7 +45,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
                         mandatoryFieldsCheckList[1] = true;
 
                     } else {
-                        throw new gsonpath.JsonFieldNullException("mandatory2", "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
+                        throw new gsonpath.exception.JsonFieldNullException("mandatory2", "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
                     }
                     break;
 
@@ -55,7 +56,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
                         mandatoryFieldsCheckList[2] = true;
 
                     } else {
-                        throw new gsonpath.JsonFieldNullException("mandatory3", "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
+                        throw new gsonpath.exception.JsonFieldNullException("mandatory3", "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
                     }
                     break;
 
@@ -95,7 +96,7 @@ public final class TestValidateExplicitNonNull_GsonTypeAdapter extends GsonPathT
                         break;
 
                 }
-                throw new gsonpath.JsonFieldNoKeyException(fieldName, "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
+                throw new gsonpath.exception.JsonFieldNoKeyException(fieldName, "generator.standard.field_policy.validate_explicit_non_null.TestValidateExplicitNonNull");
             }
         }
         return result;

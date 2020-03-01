@@ -1,6 +1,6 @@
 package gsonpath.interface_test;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 interface InterfaceExample {

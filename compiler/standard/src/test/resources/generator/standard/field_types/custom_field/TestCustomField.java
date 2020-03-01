@@ -1,6 +1,6 @@
 package generator.standard.field_types.custom_field;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 public class TestCustomField {

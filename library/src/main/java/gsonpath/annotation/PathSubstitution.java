@@ -1,4 +1,4 @@
-package gsonpath;
+package gsonpath.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

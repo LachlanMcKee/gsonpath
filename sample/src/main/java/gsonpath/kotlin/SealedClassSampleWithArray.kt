@@ -1,9 +1,9 @@
 package gsonpath.kotlin
 
 import com.google.gson.annotations.SerializedName
-import gsonpath.AutoGsonAdapter
-import gsonpath.GsonSubtype
-import gsonpath.GsonSubtypeGetter
+import gsonpath.annotation.AutoGsonAdapter
+import gsonpath.annotation.GsonSubtype
+import gsonpath.annotation.GsonSubtypeGetter
 
 @GsonSubtype(jsonKeys = ["type"])
 annotation class TypeSubType

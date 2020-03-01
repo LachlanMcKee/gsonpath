@@ -1,12 +1,13 @@
 package generator.enums.without_default;
 
-import static gsonpath.GsonUtil.*;
+import static gsonpath.internal.GsonUtil.*;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonPathGenerated;
-import gsonpath.GsonPathTypeAdapter;
+import gsonpath.annotation.GsonPathGenerated;
+import gsonpath.internal.GsonPathTypeAdapter;
+
 import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
@@ -30,7 +31,7 @@ public final class TestEnumWithoutDefault_GsonTypeAdapter extends GsonPathTypeAd
             case "value-1":
                 return TestEnumWithoutDefault.VALUE_1;
             default:
-                throw new gsonpath.JsonUnexpectedEnumValueException(enumValue, "generator.enums.without_default.TestEnumWithoutDefault");
+                throw new gsonpath.exception.JsonUnexpectedEnumValueException(enumValue, "generator.enums.without_default.TestEnumWithoutDefault");
         }
     }
 

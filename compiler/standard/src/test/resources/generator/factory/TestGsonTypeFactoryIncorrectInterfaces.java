@@ -1,6 +1,6 @@
 package generator.factory;
 
-import gsonpath.AutoGsonAdapterFactory;
+import gsonpath.annotation.AutoGsonAdapterFactory;
 
 @AutoGsonAdapterFactory
 public interface TestGsonTypeFactoryIncorrectInterfaces extends java.io.Serializable {

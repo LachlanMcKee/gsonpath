@@ -1,6 +1,6 @@
 package generator.standard.field_types.generics;
 
-import gsonpath.AutoGsonAdapter;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter
 public class TestGenerics {

@@ -1,7 +1,7 @@
 package generator.standard.delimiter.multiple;
 
-import gsonpath.AutoGsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import gsonpath.annotation.AutoGsonAdapter;
 
 @AutoGsonAdapter(flattenDelimiter = '$')
 public class TestMultipleDelimiters {
