@@ -13,7 +13,7 @@ import gsonpath.adapter.standard.adapter.properties.PropertyFetcher
 import gsonpath.adapter.util.writeFile
 import gsonpath.annotation.EnumGsonAdapter
 import gsonpath.compiler.generateClassName
-import gsonpath.internal.GsonPathTypeAdapter
+import gsonpath.internal.adapter.GsonPathTypeAdapter
 import gsonpath.internal.GsonUtil
 import gsonpath.util.*
 import javax.lang.model.element.Modifier

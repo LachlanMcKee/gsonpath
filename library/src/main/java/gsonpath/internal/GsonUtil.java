@@ -15,9 +15,10 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonErrors;
 import gsonpath.GsonSafeList;
-import gsonpath.temp.ArrayTypeAdapter;
-import gsonpath.temp.CollectionTypeAdapter;
-import gsonpath.temp.MapTypeAdapter;
+import gsonpath.internal.adapter.ArrayTypeAdapter;
+import gsonpath.internal.adapter.CollectionTypeAdapter;
+import gsonpath.internal.adapter.GsonPathTypeAdapter;
+import gsonpath.internal.adapter.MapTypeAdapter;
 
 import java.io.IOException;
 import java.lang.reflect.GenericArrayType;

@@ -12,7 +12,7 @@ import gsonpath.adapter.standard.adapter.read.ReadFunctions
 import gsonpath.adapter.standard.adapter.write.WriteFunctions
 import gsonpath.adapter.util.writeFile
 import gsonpath.annotation.AutoGsonAdapter
-import gsonpath.internal.GsonPathTypeAdapter
+import gsonpath.internal.adapter.GsonPathTypeAdapter
 import gsonpath.util.FileWriter
 import gsonpath.util.TypeSpecExt
 import gsonpath.util.constructor

@@ -5,9 +5,11 @@ import com.google.gson.internal.Streams
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
+import gsonpath.GsonErrors
 import gsonpath.GsonResult
 import gsonpath.GsonResultList
 import gsonpath.internal.GsonUtil.isValidValue
+import gsonpath.internal.adapter.GsonPathTypeAdapter
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 

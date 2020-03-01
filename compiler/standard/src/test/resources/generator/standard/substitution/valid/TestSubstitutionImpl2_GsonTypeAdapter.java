@@ -5,7 +5,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
-import gsonpath.internal.GsonPathTypeAdapter;
+import gsonpath.internal.adapter.GsonPathTypeAdapter;
 import gsonpath.internal.GsonUtil;
 import gsonpath.internal.JsonReaderHelper;
 import java.io.IOException;

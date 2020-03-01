@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package gsonpath.temp;
+package gsonpath.internal.adapter;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonErrors;
-import gsonpath.internal.GsonPathTypeAdapter;
 
 import java.io.IOException;
 import java.lang.reflect.Array;

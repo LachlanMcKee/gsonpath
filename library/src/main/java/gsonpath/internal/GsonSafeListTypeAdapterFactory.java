@@ -7,9 +7,10 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gsonpath.GsonSafeList;
 import gsonpath.GsonErrors;
+import gsonpath.GsonSafeList;
 import gsonpath.extension.RemoveInvalidElementsUtil;
+import gsonpath.internal.adapter.GsonPathTypeAdapter;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;

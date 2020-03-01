@@ -14,7 +14,7 @@ import gsonpath.adapter.util.writeFile
 import gsonpath.annotation.GsonSubtype
 import gsonpath.compiler.generateClassName
 import gsonpath.dependencies.Dependencies
-import gsonpath.internal.GsonPathTypeAdapter
+import gsonpath.internal.adapter.GsonPathTypeAdapter
 import gsonpath.model.FieldType
 import gsonpath.util.Logger
 import gsonpath.util.TypeSpecExt

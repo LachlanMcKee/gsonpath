@@ -1,4 +1,4 @@
-package gsonpath.internal;
+package gsonpath.internal.adapter;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
