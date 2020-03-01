@@ -1,12 +1,13 @@
 package generator.enums.with_default;
 
+import static gsonpath.internal.GsonUtil.*;
+
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.GsonErrors;
 import gsonpath.annotation.GsonPathGenerated;
 import gsonpath.internal.adapter.GsonPathTypeAdapter;
-
 import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;

@@ -1,9 +1,9 @@
 package gsonpath.errors;
 
-import gsonpath.AutoGsonAdapter;
 import gsonpath.GsonFieldValidationType;
+import gsonpath.GsonSafeList;
+import gsonpath.annotation.AutoGsonAdapter;
 import gsonpath.extension.annotation.Size;
-import gsonpath.safe.GsonSafeList;
 
 import java.util.List;
 import java.util.Map;

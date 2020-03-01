@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
 import gsonpath.*;
+import gsonpath.internal.adapter.GsonPathTypeAdapter;
 import org.junit.Assert;
 import org.junit.Test;
 
