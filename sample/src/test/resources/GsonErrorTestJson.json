@@ -1,0 +1,68 @@
+{
+  "singleValue": {
+    "values": [
+      {
+        "text": "valid"
+      },
+      {
+        "text": null
+      }
+    ]
+  },
+  "listValue": [
+    {
+      "values": [
+        {
+          "text": "valid"
+        },
+        {
+          "text": null
+        }
+      ]
+    },
+    {
+      "values": [
+        {
+          "text": "valid"
+        },
+        {
+          "text": null
+        }
+      ]
+    }
+  ],
+  "arrayValue": [
+    {
+      "values": [
+        {
+          "text": "valid"
+        },
+        {
+          "text": ""
+        }
+      ]
+    },
+    {
+      "values": [
+        {
+          "text": "valid"
+        },
+        {
+          "text": "123456"
+        }
+      ]
+    }
+  ],
+  "mapValue": {
+    "key1" : {
+      "values": [
+        {
+          "text": "valid"
+        },
+        {
+          "text": null
+        }
+      ]
+    }
+  }
+}

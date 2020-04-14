@@ -1,11 +1,11 @@
 package gsonpath.extension;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.TypeAdapter;
+import com.google.gson.*;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
+import gsonpath.audit.AuditLog;
+import gsonpath.audit.AuditLog.RemovedElement;
+import gsonpath.audit.AuditJsonReader;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,12 +15,22 @@ import static gsonpath.internal.GsonUtil.isValidValue;
 
 public class RemoveInvalidElementsUtil {
 
-    public static <T> void removeInvalidElementsList(TypeAdapter<T> adapter, JsonReader in, List<T> outputList) throws IOException {
+    public static <T> void removeInvalidElementsList(TypeAdapter<T> adapter, JsonReader in, List<T> outputList) {
+        final AuditLog auditLog;
+        if (in instanceof AuditJsonReader) {
+            auditLog = ((AuditJsonReader) in).getAuditLog();
+        } else {
+            auditLog = null;
+        }
+
         JsonArray jsonArray = Streams.parse(in).getAsJsonArray();
         for (JsonElement jsonElement : jsonArray) {
             try {
                 outputList.add(adapter.fromJsonTree(jsonElement));
-            } catch (Exception ignored) {
+            } catch (JsonParseException e) {
+                if (auditLog != null) {
+                    auditLog.addRemovedElement(new RemovedElement(in.getPath(), e, jsonElement));
+                }
             }
         }
     }
