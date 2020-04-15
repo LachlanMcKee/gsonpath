@@ -161,8 +161,8 @@ To use proguard within your project, you must add the generated type adapter fac
 This library is available on Maven, you can add it to your project using the following gradle dependencies:
 
 ```gradle
-compile 'net.lachlanmckee:gsonpath:3.8.0'
-apt 'net.lachlanmckee:gsonpath-compiler:3.8.0'
+compile 'net.lachlanmckee:gsonpath:4.0.0'
+apt 'net.lachlanmckee:gsonpath-compiler:4.0.0'
 
-compile 'net.lachlanmckee:gsonpath-kt:3.8.0' // an optional Kotlin library 
+compile 'net.lachlanmckee:gsonpath-kt:4.0.0' // an optional Kotlin library 
 ```

@@ -1,6 +1,21 @@
 Change Log
 ===========
 
+Version 4.0.0 *(2020-04-15)*
+----------------------------
+
+* Tech Debt: Improved `gsonpath` module package structure [#261](../../issues/261).
+     * This is a breaking change, and will require some updates when updating.
+     * This will ensure that the project is more scalable.
+* Improvement: Created `@EnumGsonAdapter` [#253](../../issues/253).
+     * This is a replacement for using `@AutoGsonAdapter` on enum classes (this is a breaking change).
+     * Provides the ability to specify a default enum value when an unexpected value is found.
+     * Look at [EnumExample](../../blob/master/sample/src/main/java/gsonpath/adapter/enums/EnumExample.kt) for a demonstration.
+* Improvement: Added `AuditLog` and `AuditJsonReader` [#263](../../issues/263).
+     * This will provide developers the ability to detect filtered collection values, and mismapped enum values (when defaults are used)
+     * Look at [GsonErrorTestModelTest](../../blob/master/sample/src/test/java/gsonpath/errors/GsonErrorTestModelTest.kt) and [EnumExampleTests](../../blob/master/sample/src/test/java/gsonpath/adapter/enums/EnumExampleTests.kt) for a demonstration.
+
+
 Version 3.8.0 *(2020-01-29)*
 ----------------------------
 
