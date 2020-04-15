@@ -12,6 +12,10 @@ import java.lang.annotation.Target;
 public @interface EnumGsonAdapter {
     FieldNamingPolicy[] fieldNamingPolicy() default {};
 
+    /**
+     * Specifies whether a default value needs to be specified.
+     * If this is set to false, the processor will throw an error if no default is provided.
+     */
     boolean ignoreDefaultValue() default false;
 
     @Retention(RetentionPolicy.RUNTIME)

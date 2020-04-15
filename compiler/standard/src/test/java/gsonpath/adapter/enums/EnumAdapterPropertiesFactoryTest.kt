@@ -71,7 +71,7 @@ class EnumAdapterPropertiesFactoryTest {
                         fields = emptyList(),
                         defaultValue = null
                 ),
-                factory.create(enumElement, FieldNamingPolicy.IDENTITY)
+                factory.create(true, enumElement, FieldNamingPolicy.IDENTITY)
         )
     }
 
@@ -88,8 +88,21 @@ class EnumAdapterPropertiesFactoryTest {
                         fields = listOf(EnumAdapterProperties.EnumField(enumValue1ClassName, "EnumValue1")),
                         defaultValue = null
                 ),
-                factory.create(enumElement, FieldNamingPolicy.IDENTITY)
+                factory.create(true, enumElement, FieldNamingPolicy.IDENTITY)
         )
+    }
+
+    @Test
+    fun givenOneFieldWithNoDefaultAndNotIgnoringDefaults_whenCreate_thenExpectException() {
+        whenever(typeHandler.getFields(eq(enumElement), any()))
+                .thenReturn(listOf(enumField1))
+
+        setElementLabel(enumValueName1)
+
+        expectedException.expect(`is`(processingExceptionMatcher(enumElement,
+                "DefaultValue mut be defined. If you do not want a default value set ignoreDefaultValue=true")))
+
+        factory.create(false, enumElement, FieldNamingPolicy.IDENTITY)
     }
 
     @Test
@@ -112,7 +125,7 @@ class EnumAdapterPropertiesFactoryTest {
                         ),
                         defaultValue = enumField2
                 ),
-                factory.create(enumElement, FieldNamingPolicy.IDENTITY)
+                factory.create(true, enumElement, FieldNamingPolicy.IDENTITY)
         )
     }
 
@@ -130,7 +143,7 @@ class EnumAdapterPropertiesFactoryTest {
         expectedException.expect(`is`(processingExceptionMatcher(enumElement,
                 "Only one DefaultValue can be defined")))
 
-        factory.create(enumElement, FieldNamingPolicy.IDENTITY)
+        factory.create(true, enumElement, FieldNamingPolicy.IDENTITY)
     }
 
     @Test
@@ -152,7 +165,7 @@ class EnumAdapterPropertiesFactoryTest {
                         fields = listOf(EnumAdapterProperties.EnumField(enumValue1ClassName, "CustomLabel")),
                         defaultValue = null
                 ),
-                factory.create(enumElement, FieldNamingPolicy.IDENTITY)
+                factory.create(true, enumElement, FieldNamingPolicy.IDENTITY)
         )
     }
 

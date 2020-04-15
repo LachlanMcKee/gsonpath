@@ -10,7 +10,7 @@ class EnumExample(
         val valuesWithDefault: Array<EnumValueWithDefault>
 ) {
 
-    @EnumGsonAdapter(fieldNamingPolicy = [FieldNamingPolicy.LOWER_CASE_WITH_DASHES])
+    @EnumGsonAdapter(fieldNamingPolicy = [FieldNamingPolicy.LOWER_CASE_WITH_DASHES], ignoreDefaultValue = true)
     enum class EnumValue {
         VALUE1,
         VALUE_2,

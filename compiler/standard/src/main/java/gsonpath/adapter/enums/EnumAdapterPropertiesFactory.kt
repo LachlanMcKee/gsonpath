@@ -16,6 +16,7 @@ class EnumAdapterPropertiesFactory(
         private val enumFieldLabelMapper: EnumFieldLabelMapper
 ) {
     fun create(
+            ignoreDefaultValue: Boolean,
             enumElement: TypeElement,
             fieldNamingPolicy: FieldNamingPolicy): EnumAdapterProperties {
 
@@ -24,7 +25,7 @@ class EnumAdapterPropertiesFactory(
         return EnumAdapterProperties(
                 enumTypeName = typeHandler.getClassName(enumElement),
                 fields = enumFields.map { createEnumField(enumElement, it, fieldNamingPolicy) },
-                defaultValue = getDefaultValue(enumElement, enumFields, fieldNamingPolicy)
+                defaultValue = getDefaultValue(enumElement, enumFields, fieldNamingPolicy, ignoreDefaultValue)
         )
     }
 
@@ -43,7 +44,8 @@ class EnumAdapterPropertiesFactory(
     private fun getDefaultValue(
             enumElement: TypeElement,
             enumFields: List<FieldElementContent>,
-            fieldNamingPolicy: FieldNamingPolicy
+            fieldNamingPolicy: FieldNamingPolicy,
+            ignoreDefaultValue: Boolean
     ): EnumAdapterProperties.EnumField? {
         return enumFields
                 .filter {
@@ -52,6 +54,10 @@ class EnumAdapterPropertiesFactory(
                 }
                 .apply {
                     if (size > 1) throw ProcessingException("Only one DefaultValue can be defined", enumElement)
+                    if (size == 0 && !ignoreDefaultValue) {
+                        throw ProcessingException("DefaultValue mut be defined. If you do not want a default " +
+                                "value set ignoreDefaultValue=true", enumElement)
+                    }
                 }
                 .firstOrNull()
                 ?.let { createEnumField(enumElement, it, fieldNamingPolicy) }

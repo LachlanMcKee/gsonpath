@@ -38,7 +38,9 @@ class EnumGsonAdapterGenerator(
                 autoGsonAnnotation.fieldNamingPolicy,
                 lazyFactoryMetadata.annotation.fieldNamingPolicy)
 
-        val properties = enumAdapterPropertiesFactory.create(enumElement, fieldNamingPolicy)
+        val properties = enumAdapterPropertiesFactory.create(
+                autoGsonAnnotation.ignoreDefaultValue, enumElement, fieldNamingPolicy)
+
         val typeName = properties.enumTypeName
         val adapterClassName = ClassName.get(typeName.packageName(), generateClassName(typeName, "GsonTypeAdapter"))
 
