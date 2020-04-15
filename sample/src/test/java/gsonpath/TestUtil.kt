@@ -1,5 +1,6 @@
 package gsonpath
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParseException
 import org.junit.Assert
@@ -7,15 +8,13 @@ import java.io.InputStreamReader
 
 object TestUtil {
 
-    private fun createBuilder() = GsonBuilder()
+    fun createGson(): Gson = GsonBuilder()
+            .registerTypeAdapterFactory(GsonPathTypeAdapterFactory())
             .registerTypeAdapterFactory(GsonPath.createTypeAdapterFactory(TestGsonTypeFactory::class.java))
             .create()
 
-    fun <T> executeFromJson(clazz: Class<T>, jsonString: String): T = createBuilder()
+    fun <T> executeFromJson(clazz: Class<T>, jsonString: String): T = createGson()
             .fromJson(jsonString, clazz)
-
-    fun <T> executeFromJsonFile(clazz: Class<T>, filePath: String): T = createBuilder()
-            .fromJson(InputStreamReader(ClassLoader.getSystemClassLoader().getResourceAsStream(filePath)), clazz)
 
     fun expectException(clazz: Class<*>, jsonString: String, message: String) {
         val exception: JsonParseException? =

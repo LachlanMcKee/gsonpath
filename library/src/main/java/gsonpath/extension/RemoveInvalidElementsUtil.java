@@ -16,12 +16,7 @@ import static gsonpath.internal.GsonUtil.isValidValue;
 public class RemoveInvalidElementsUtil {
 
     public static <T> void removeInvalidElementsList(TypeAdapter<T> adapter, JsonReader in, List<T> outputList) {
-        final AuditLog auditLog;
-        if (in instanceof AuditJsonReader) {
-            auditLog = ((AuditJsonReader) in).getAuditLog();
-        } else {
-            auditLog = null;
-        }
+        AuditLog auditLog = AuditJsonReader.getAuditLogFromReader(in);
 
         JsonArray jsonArray = Streams.parse(in).getAsJsonArray();
         for (JsonElement jsonElement : jsonArray) {

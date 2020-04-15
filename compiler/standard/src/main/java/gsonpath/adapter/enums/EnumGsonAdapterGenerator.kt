@@ -12,6 +12,8 @@ import gsonpath.adapter.Constants
 import gsonpath.adapter.standard.adapter.properties.PropertyFetcher
 import gsonpath.adapter.util.writeFile
 import gsonpath.annotation.EnumGsonAdapter
+import gsonpath.audit.AuditJsonReader
+import gsonpath.audit.AuditLog
 import gsonpath.compiler.generateClassName
 import gsonpath.internal.GsonPathTypeAdapter
 import gsonpath.internal.GsonUtil
@@ -80,6 +82,12 @@ class EnumGsonAdapterGenerator(
                     }
                     default(addBreak = false) {
                         if (properties.defaultValue != null) {
+                            createVariable(AuditLog::class.java, "auditLog", "\$T.getAuditLogFromReader(in)", AuditJsonReader::class.java)
+                            `if`("auditLog != null") {
+                                addStatement(
+                                        "auditLog.addUnexpectedEnumValue(new \$T(\"${properties.enumTypeName}\", in.getPath(), enumValue))",
+                                        AuditLog.UnexpectedEnumValue::class.java)
+                            }
                             `return`("\$T", properties.defaultValue.enumValueTypeName)
                         } else {
                             addEscapedStatement("""throw new gsonpath.exception.JsonUnexpectedEnumValueException(enumValue, "$enumTypeName")""")

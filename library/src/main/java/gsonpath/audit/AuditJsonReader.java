@@ -27,4 +27,12 @@ public final class AuditJsonReader extends JsonReader {
     public AuditLog getAuditLog() {
         return auditLog;
     }
+
+    public static AuditLog getAuditLogFromReader(JsonReader reader) {
+        if (reader instanceof AuditJsonReader) {
+            return ((AuditJsonReader) reader).getAuditLog();
+        } else {
+            return null;
+        }
+    }
 }

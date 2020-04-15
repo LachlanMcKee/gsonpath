@@ -10,6 +10,7 @@ import java.util.List;
  */
 public final class AuditLog {
     private List<RemovedElement> removedElements;
+    private List<UnexpectedEnumValue> unexpectedEnumValues;
 
     AuditLog() {
     }
@@ -25,10 +26,27 @@ public final class AuditLog {
     }
 
     /**
-     * Returns a list of any elements were removed due to a failure during deserialization.
+     * Track when a default enum value was used due to an unexpected value during deserialization.
+     */
+    public void addUnexpectedEnumValue(UnexpectedEnumValue unexpectedEnumValue) {
+        if (unexpectedEnumValues == null) {
+            unexpectedEnumValues = new ArrayList<>();
+        }
+        unexpectedEnumValues.add(unexpectedEnumValue);
+    }
+
+    /**
+     * Returns a list of elements that were removed due to a failure during deserialization.
      */
     public List<RemovedElement> getRemovedElements() {
         return removedElements;
+    }
+
+    /**
+     * Returns a list of unexpected enum values.
+     */
+    public List<UnexpectedEnumValue> getUnexpectedEnumValues() {
+        return unexpectedEnumValues;
     }
 
     /**
@@ -43,6 +61,21 @@ public final class AuditLog {
             this.path = path;
             this.exception = exception;
             this.jsonElement = jsonElement;
+        }
+    }
+
+    /**
+     * Metadata associated with an unexpected enum value during deserialization.
+     */
+    public static final class UnexpectedEnumValue {
+        public final String typeName;
+        public final String path;
+        public final String value;
+
+        public UnexpectedEnumValue(String typeName, String path, String value) {
+            this.typeName = typeName;
+            this.path = path;
+            this.value = value;
         }
     }
 }

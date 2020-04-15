@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gsonpath.annotation.GsonPathGenerated;
+import gsonpath.audit.AuditJsonReader;
+import gsonpath.audit.AuditLog;
 import gsonpath.internal.GsonPathTypeAdapter;
 
 import java.io.IOException;
@@ -31,6 +33,10 @@ public final class TestEnumWithDefault_GsonTypeAdapter extends GsonPathTypeAdapt
             case "value-1":
                 return TestEnumWithDefault.VALUE_1;
             default:
+                AuditLog auditLog = AuditJsonReader.getAuditLogFromReader(in);
+                if (auditLog != null) {
+                    auditLog.addUnexpectedEnumValue(new AuditLog.UnexpectedEnumValue("generator.enums.with_default.TestEnumWithDefault", in.getPath(), enumValue));
+                }
                 return TestEnumWithDefault.VALUE_ABC;
         }
     }
