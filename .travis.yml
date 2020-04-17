@@ -31,3 +31,4 @@ cache:
 before_install:
   - chmod +x gradlew
   - chmod +x gradle/wrapper/gradle-wrapper.jar
+  - openssl aes-256-cbc -K $encrypted_09dc68928889_key -iv $encrypted_09dc68928889_iv -in secring.gpg.enc -out secring.gpg -d
